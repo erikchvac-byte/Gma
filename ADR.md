@@ -102,13 +102,13 @@ Gma's Helper (working title; BMad project name: "Happy") is a single-page web ap
 **Consequences:** Adding a new dispensary requires a one-time manual distance lookup. Not suitable if user-variable origin points are added later.
 **Testing:** Spot-check computed distances against Google Maps for 3–5 dispensaries.
 
-### ADR-012: EIA API for Gas Price (weekly refresh)
+### ADR-012: EIA API for Gas Price (daily ≤24h refresh)
 **Status:** Accepted
 **Date:** 2026-06-09
 **Context:** PRD OQ-1 — needed a reliable public source for US average gas price. Options: EIA (US govt), GasBuddy (unofficial API, fragile), AAA (no public API, requires scraping).
-**Decision:** EIA (Energy Information Administration) public API. Refreshed weekly in `refreshGasPrice.ts`. API key stored in `.env` as `EIA_API_KEY`.
-**Rationale:** Free, official, stable. Weekly cadence is sufficient — gas price fluctuations don't flip go/no-go decisions. GasBuddy/AAA scraping would be a maintenance liability.
-**Consequences:** Gas price may be up to 7 days stale. Acceptable given SM-2's 15% accuracy margin.
+**Decision:** EIA (Energy Information Administration) public API. Refreshed daily (≤24h) in `refreshGasPrice.ts`. API key stored in `.env` as `EIA_API_KEY`.
+**Rationale:** Free, official, stable. Daily (≤24h) cadence is sufficient — gas price fluctuations don't flip go/no-go decisions. GasBuddy/AAA scraping would be a maintenance liability.
+**Consequences:** Gas price may be up to 24h stale. Acceptable given SM-2's 15% accuracy margin.
 **Testing:** SM-2 — gas cost within 15% of actual trip fuel cost.
 
 ### ADR-013: Hardcoded National Average MPG (28 for R&D)
@@ -205,7 +205,7 @@ Gma's Helper (working title; BMad project name: "Happy") is a single-page web ap
 **Resolved during architecture (2026-06-09):**
 - ~~Routing API selection~~ → ADR-011: hardcoded JSON lookups, no API needed
 - ~~National-average MPG source~~ → ADR-013: hardcoded 28 MPG for R&D
-- ~~Gas Price source~~ → ADR-012: EIA public API (weekly)
+- ~~Gas Price source~~ → ADR-012: EIA public API (daily ≤24h)
 - ~~Scraper infrastructure~~ → ADR-010: setInterval in Express process
 
 ---

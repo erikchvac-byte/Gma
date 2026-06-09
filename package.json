@@ -1,0 +1,13 @@
+{
+  "name": "happy",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix client\" \"npx tsx watch server/index.ts\"",
+    "build": "npm run build --prefix client && cd server && npx tsc",
+    "start": "node server/dist/index.js"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}
