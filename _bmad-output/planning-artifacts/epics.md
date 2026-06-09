@@ -80,6 +80,7 @@ NFR-10: Testing via Vitest. Test files co-located with source files (*.test.ts /
 - AR-13: EIA_API_KEY stored in `.env` (never committed). `.env.example` committed as template. `.env` in .gitignore.
 - AR-14: Single `GET /api/data` endpoint returns `{ meta, dispensaries[] }` (active deals only, pre-filtered server-side). Frontend applies only client-side distance filter on received data.
 - AR-15: camelCase for all JSON field names in data.json and API responses. Never snake_case (e.g., `discountPct` not `discount_pct`).
+- AR-16: Distance filter control is a **slider** (`<input type="range">`). Not a numeric text input. Decision recorded 2026-06-09.
 
 ### UX Design Requirements
 
@@ -395,17 +396,17 @@ So that I only see deals worth the drive from my location.
 **When** I check its default value,
 **Then** it is 25 miles.
 
-**Given** I change the distance control to 10 miles,
-**When** I release the control,
+**Given** I drag the distance slider to 10 miles,
+**When** I release the slider,
 **Then** the deal feed immediately shows only dispensaries ≤10 road miles away — no page reload.
 
-**Given** I set the control to maximum (50 miles),
+**Given** I drag the slider to maximum (50 miles),
 **When** the feed updates,
 **Then** all Coverage Zone dispensaries with active deals appear.
 
-**Given** the distance control,
+**Given** the distance slider (`<input type="range" min="1" max="50">`),
 **When** I attempt to set it above 50,
-**Then** the control does not allow values above 50.
+**Then** the slider does not allow values above 50.
 
 **Given** I set the distance to 30 miles and reload,
 **When** the page loads,
@@ -595,7 +596,7 @@ So that the deals shown in the feed are live and verified against the actual sou
 
 **Given** the initial R&D dispensary set (seeded in Story 1.2),
 **When** `runScrapers.ts` executes,
-**Then** at least one plain HTML scraper successfully fetches and parses real deals from a live dispensary website.
+**Then** at least four plain HTML scrapers successfully fetch and parse real deals from live dispensary websites.
 
 **Given** a parsed deal with an explicit time window,
 **When** stored in `data.json`,

@@ -262,10 +262,10 @@ On first page load (no prior localStorage confirmation), a full-page age gate wi
 - Stale source count indicator.
 - Age gate (21+ button-click confirmation, localStorage).
 - Operator scraper monitoring log.
-- Banner/sidebar advertising slots (non-intrusive, no pop-ups or interstitials).
 
 ### 6.2 Out of Scope for MVP
 
+- Banner/sidebar advertising slots — deferred to Phase 2. Not required to validate the core "is this deal worth the drive?" R&D hypothesis.
 - Weedmaps/Leafly aggregator integration — deferred to Phase 2 (requires JS rendering or private API access).
 - Dispensaries whose deal data lives on third-party platforms — excluded from v1 Coverage Zone.
 - User GPS/geolocation — origin fixed at 98270 centroid. [NOTE FOR PM: geolocation would meaningfully improve accuracy for users elsewhere in the zone; revisit if R&D validates the concept.]
@@ -307,8 +307,8 @@ On first page load (no prior localStorage confirmation), a full-page age gate wi
 
 ### Monetization
 
-- Banner and sidebar ads only. No pop-ups, interstitials, or sponsored placement that competes with Deal content.
-- Ad creative must not be cannabis-culture branded.
+- Advertising deferred to Phase 2 — not in v1 scope.
+- When introduced: banner and sidebar slots only. No pop-ups, interstitials, or sponsored placement. Ad creative appropriate for adults 21+, not cannabis-culture branded.
 
 ### Aesthetic and Tone
 
