@@ -414,6 +414,9 @@ const { data, isLoading, error } = useDeals()
 ```ts
 export default async function scrape(): Promise<Deal[]>
 // Returns [] on parse failure. Never throws. Caller handles Stale marking.
+// Plain HTML dispensaries: use Axios + Cheerio directly.
+// Dutchie/iFrame dispensaries: call scraperClient.ts → POST /scrape on Python service,
+//   then transform intercepted[].data (raw GraphQL JSON) → Deal[].
 ```
 
 ---
@@ -492,7 +495,8 @@ happy/
     │   ├── filterActiveDeals.ts     # FR-1: active deal logic using Pacific Time
     │   ├── runScrapers.ts           # FR-9, FR-12: orchestrates scrapers, writes data.json + logs.json
     │   ├── refreshGasPrice.ts       # FR-7: fetches EIA API, patches meta.gasPrice in data.json
-    │   └── atomicWrite.ts           # Writes data.tmp.json then fs.renameSync → data.json
+    │   ├── atomicWrite.ts           # Writes data.tmp.json then fs.renameSync → data.json
+    │   └── scraperClient.ts         # POST /scrape wrapper for Dutchie scrapers — returns raw intercepted[] or []
     └── types/
         └── index.ts                 # Server-only types: ScraperResult, LogEntry, LogRun
 ```
@@ -534,11 +538,13 @@ happy/
 |---|---|---|---|
 | EIA API (gas price) | Server outbound | `refreshGasPrice.ts` | Keep last known value in data.json |
 | fueleconomy.gov (vehicle MPG) | Client outbound | `useFuelEconomy.ts` | Show error in dropdown, fall back to `nationalMpg` |
+| Python Scraper service (Dutchie/iFrame menus) | Server outbound | `server/utils/scraperClient.ts` → `server/scrapers/happy-time-*.ts` | Return `[]`; `runScrapers.ts` marks source Stale |
 
 **Data Flow (end-to-end):**
 ```
-[Dispensary sites] → scrapers/*.ts → runScrapers.ts → atomicWrite → data.json
-[EIA API]          → refreshGasPrice.ts              → atomicWrite → data.json (meta.gasPrice)
+[Plain HTML sites]     → scrapers/*.ts (Axios+Cheerio)                              → runScrapers.ts → atomicWrite → data.json
+[Dutchie iFrame sites] → Python Scraper :8000 → scrapers/*.ts (GraphQL → Deal[])   → runScrapers.ts → atomicWrite → data.json
+[EIA API]              → refreshGasPrice.ts                                         → atomicWrite → data.json (meta.gasPrice)
 data.json → dataRoute.ts → filterActiveDeals.ts → GET /api/data response
 GET /api/data → useDeals.ts → DealFeed.tsx → DealCard.tsx (× n)
 localStorage(gma_distance_miles) → DealFeed client-side filter

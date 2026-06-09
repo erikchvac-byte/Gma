@@ -138,14 +138,23 @@ Gma's Helper (working title; BMad project name: "Happy") is a single-page web ap
 **Consequences:** All time-zone sensitive logic couples to the server. Acceptable — this is a feature, not a bug.
 **Testing:** Verify Happy Hours that have expired do not appear in API response. Verify Daily Deals expire at Pacific midnight.
 
-### ADR-016: Axios + Cheerio Scraper with Playwright Upgrade Path
+### ADR-016: Axios + Cheerio Scraper with Python Microservice Upgrade Path
+**Status:** Accepted (refined by ADR-017)
+**Date:** 2026-06-09
+**Context:** Need to scrape dispensary HTML for deal data. Most target sites serve plain HTML; some require JS rendering (Dutchie iFrame menus specifically).
+**Decision:** Axios + Cheerio for plain HTML scrapers. Upgrade individual scrapers to call the Python Scraper microservice (ADR-017) if a site requires a real browser runtime.
+**Rationale:** Cheerio is lightweight and fast for plain HTML. The Python Scraper handles browser complexity without bringing Playwright into the Node.js process.
+**Consequences:** Sites that load deals via JavaScript will fail silently (empty `Deal[]` returned) until upgraded to call the Python service.
+**Testing:** Verify each dispensary scraper returns expected Deal[] before adding to production data.json.
+
+### ADR-017: Python Scraper Microservice for Dutchie/iFrame Dispensaries
 **Status:** Accepted
 **Date:** 2026-06-09
-**Context:** Need to scrape dispensary HTML for deal data. Most target sites serve plain HTML; some may require JS rendering.
-**Decision:** Axios + Cheerio for all scrapers. Upgrade individual scrapers to Playwright only if a specific site requires a real browser runtime.
-**Rationale:** Cheerio is lightweight and fast. ~80% of target area dispensaries serve plain HTML. Playwright upgrade path exists without changing the scraper contract.
-**Consequences:** Sites that load deals via JavaScript will fail silently (empty `Deal[]` returned) until upgraded to Playwright.
-**Testing:** Verify each dispensary scraper returns expected Deal[] before adding to production data.json.
+**Context:** Dutchie iFrame menus cannot be scraped by Axios+Cheerio — menu data is loaded by JavaScript inside an iFrame and is invisible to standard HTTP clients. Happy Time (the primary target dispensary) uses Dutchie for all three WA locations (Mt Vernon, Pullman, Yakima). A working Python Playwright microservice already exists at `C:\Users\erikc\Dev\Scraper` (FastAPI on port 8000), tested against live Dutchie menus.
+**Decision:** Dutchie dispensary scraper files in `server/scrapers/` call `POST http://localhost:8000/scrape` on the Python Scraper service via a shared `server/utils/scraperClient.ts` wrapper. The TypeScript scraper file transforms raw GraphQL JSON (`intercepted[].data`) → `Deal[]`. The scraper contract (`export default async function scrape(): Promise<Deal[]>`) is unchanged — `runScrapers.ts` has no knowledge of which tier a scraper uses.
+**Rationale:** The Python Scraper encapsulates browser automation, playwright-stealth fingerprint spoofing, and GraphQL network interception. Isolating this complexity in a separate service means Dutchie API changes, stealth patches, and browser engine upgrades never touch the Node.js codebase. The Happy scraper files stay thin — they own only the business logic (GraphQL → Deal transform).
+**Consequences:** Dutchie scrapers require the Python service on port 8000. Local dev: start Python service alongside Node.js. Production: both processes must be deployed (Docker Compose at `C:\Users\erikc\Dev\Scraper\docker-compose.yml`). If the service is unavailable, `scraperClient.ts` catches the error and the scraper returns `[]` — existing stale-handling in `runScrapers.ts` applies.
+**Testing:** Verify Happy Time Mt Vernon `scrape()` returns non-empty `Deal[]` with Scraper service running. Verify `[]` returned (no throw) when service is down.
 
 ### ADR-005: Non-Intrusive Ads Only
 **Status:** Accepted
@@ -162,7 +171,7 @@ Gma's Helper (working title; BMad project name: "Happy") is a single-page web ap
 
 - US only, v1 zone: 50 road-miles from zip 98270 (Marysville, WA), no ferry crossings
 - Road distances are pre-computed and hardcoded in data.json (no routing API at R&D scale)
-- Deal data sourced by scraping public dispensary sites (Axios + Cheerio; Playwright upgrade path per site)
+- Deal data sourced by scraping public dispensary sites (Axios + Cheerio for plain HTML; Python Scraper microservice on port 8000 for Dutchie/iFrame sites — see ADR-017)
 - Gas-cost calc: fueleconomy.gov API for vehicle precision mode; nationalMpg hardcoded at 28 for default
 - Gas price: EIA public API (weekly refresh), stored in data.json meta
 - All active-deal time logic uses America/Los_Angeles (Pacific Time), enforced server-side
@@ -228,3 +237,4 @@ Gma's Helper (working title; BMad project name: "Happy") is a single-page web ap
 | 2026-06-08 | Initial ADR created. Product brief session complete. ADR-001 through ADR-005 recorded from brief decisions. |
 | 2026-06-08 | PRD session complete. PRD finalized. ADR-006 through ADR-009 added from PRD decisions and crawl spike. Open questions updated. Status updated to PRD final. |
 | 2026-06-09 | Architecture session complete. ADR-010 through ADR-016 added. ADR-002 superseded by ADR-011 (hardcoded distances). ADR-003 refined (hardcoded MPG). Four open questions resolved. Technical constraints updated. Status updated to Architecture complete. |
+| 2026-06-09 | Scraper integration update. ADR-016 refined (Playwright upgrade path → Python microservice). ADR-017 added (Python Scraper service for Dutchie/iFrame sites). Technical constraints updated. Architecture.md Integration Points and Data Flow updated to reflect two-tier scraping strategy. |
