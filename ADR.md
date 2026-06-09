@@ -4,7 +4,7 @@
 
 Gma's Helper (working title; BMad project name: "Happy") is a single-page web app that shows active cannabis happy-hour deals within a user-set road-distance radius from the user's location. Each listing shows miles to the shop and a gas-cost-vs-savings calculation. No browsing, no discovery — just "is this deal worth the drive, right now?"
 
-**Status:** R&D / pre-build. Product brief complete. PRD final (2026-06-08).
+**Status:** R&D / pre-build. Architecture complete (2026-06-09). Next: Epics & Stories.
 **Owner:** Erik (solo founder), Marysville WA area.
 
 ---
@@ -21,21 +21,22 @@ Gma's Helper (working title; BMad project name: "Happy") is a single-page web ap
 **Testing:** N/A at this stage.
 
 ### ADR-002: Road-Distance Routing (not straight-line radius)
-**Status:** Accepted
+**Status:** Superseded by ADR-011
 **Date:** 2026-06-08
 **Context:** User explicitly specified 50-road-miles from zip 98270 (Marysville, WA), excluding destinations requiring ferry crossings (Olympic Peninsula, Bremerton).
 **Decision:** Use driving-route distance, not straight-line/as-the-crow-flies radius math.
 **Rationale:** Straight-line radius would include unreachable destinations across Puget Sound. Road-distance accurately reflects "is this worth the drive."
 **Consequences:** Requires a routing/driving-distance API (meaningfully costlier and more complex than a naive geo-radius filter). Need to evaluate API options (Google Maps Routes API, OSRM, etc.) during architecture phase.
 **Testing:** Validate by comparing selected WA dispensary addresses against expected include/exclude results.
+**Superseded by:** ADR-011 (hardcoded JSON lookups eliminate the routing API entirely for R&D).
 
-### ADR-003: Gas-Cost Calculator — fueleconomy.gov API
-**Status:** Accepted
-**Date:** 2026-06-08
+### ADR-003: Gas-Cost Calculator — fueleconomy.gov API + Hardcoded National MPG
+**Status:** Accepted (refined by ADR-013)
+**Date:** 2026-06-08 / Refined 2026-06-09
 **Context:** Core differentiator is the gas-cost-vs-savings comparison. Need vehicle MPG data.
-**Decision:** Default to live national-average US MPG (refreshed every 24h, no hardcoded value). Optional precision mode via fueleconomy.gov public API (Year/Make/Model cascading dropdowns, persisted in browser localStorage).
+**Decision:** Default MPG is hardcoded at 28 (US fleet average) — see ADR-013. Optional precision mode via fueleconomy.gov public API (Year/Make/Model cascading dropdowns, persisted in browser localStorage). fueleconomy.gov API returns XML; client must send `Accept: application/json` header.
 **Rationale:** fueleconomy.gov is a free US government API with proper endpoints intended for third-party use — no scraping, no cost, no ToS risk. The default path requires zero user setup.
-**Consequences:** Dependency on fueleconomy.gov availability. Need a fallback for the national-average source. Vehicle selection UX must be friction-free (gear icon, 3 taps, saved forever).
+**Consequences:** Dependency on fueleconomy.gov availability for precision mode. Fallback: show error in dropdown, Gas Cost falls back to nationalMpg silently.
 **Testing:** Verify fueleconomy.gov API returns expected MPG values for known Year/Make/Model combinations. Verify localStorage persistence across sessions.
 
 ### ADR-004: Scrape/Aggregate for Deal Sourcing
@@ -83,6 +84,69 @@ Gma's Helper (working title; BMad project name: "Happy") is a single-page web ap
 **Consequences:** The "is it worth it?" verdict is less instant than a single number. If SM-3 fails (users want a dollar figure), Phase 2 options are: fixed assumed basket size, or user-entered intended spend.
 **Testing:** SM-3 — test group confirms Discount Display was sufficient for trip decisions.
 
+### ADR-010: Lean R&D Stack (Vite + React + Express + data.json)
+**Status:** Accepted
+**Date:** 2026-06-09
+**Context:** Architecture phase — need a full-stack for R&D validation. Priorities: zero infrastructure cost, zero setup friction, maximum iteration speed for solo founder.
+**Decision:** Frontend: Vite 6.3 + React + TypeScript + Tailwind CSS v4. Backend: Express v5 + Node.js + TypeScript (tsx). Storage: data.json flat file. Scraper: Axios 1.17 + Cheerio 1.2. Scheduler: setInterval in Express process.
+**Rationale:** Every choice eliminates a dependency that would slow R&D validation. No database migrations, no cloud scheduler, no infrastructure provisioning.
+**Consequences:** data.json will not scale past ~50 dispensaries without migration to SQLite. setInterval is not production-grade scheduling. Both acceptable for R&D phase.
+**Testing:** R&D validation trip accuracy (SM-1, SM-2).
+
+### ADR-011: Hardcoded Road Distance Lookups (no routing API for v1)
+**Status:** Accepted — supersedes ADR-002 for R&D
+**Date:** 2026-06-09
+**Context:** ADR-002 flagged routing API as required. Architecture phase evaluated cost vs. R&D scale (~20–50 dispensaries, static locations, fixed origin at 98270).
+**Decision:** Pre-compute road distance (via Google Maps, once) from zip 98270 to each dispensary and hardcode in `data.json` as `distanceMiles`. No routing API call at runtime.
+**Rationale:** Dispensary locations are static. Zero API cost, zero latency, zero failure mode. Ferry exclusion handled at data-entry time (excluded dispensaries never added).
+**Consequences:** Adding a new dispensary requires a one-time manual distance lookup. Not suitable if user-variable origin points are added later.
+**Testing:** Spot-check computed distances against Google Maps for 3–5 dispensaries.
+
+### ADR-012: EIA API for Gas Price (weekly refresh)
+**Status:** Accepted
+**Date:** 2026-06-09
+**Context:** PRD OQ-1 — needed a reliable public source for US average gas price. Options: EIA (US govt), GasBuddy (unofficial API, fragile), AAA (no public API, requires scraping).
+**Decision:** EIA (Energy Information Administration) public API. Refreshed weekly in `refreshGasPrice.ts`. API key stored in `.env` as `EIA_API_KEY`.
+**Rationale:** Free, official, stable. Weekly cadence is sufficient — gas price fluctuations don't flip go/no-go decisions. GasBuddy/AAA scraping would be a maintenance liability.
+**Consequences:** Gas price may be up to 7 days stale. Acceptable given SM-2's 15% accuracy margin.
+**Testing:** SM-2 — gas cost within 15% of actual trip fuel cost.
+
+### ADR-013: Hardcoded National Average MPG (28 for R&D)
+**Status:** Accepted
+**Date:** 2026-06-09
+**Context:** PRD required a daily-refreshed national-average MPG figure. No reliable live API found for a single fleet-average number (fueleconomy.gov endpoints are vehicle-specific, not fleet-average).
+**Decision:** Hardcode `nationalMpg: 28` in `data.json` meta. Update manually if fleet average shifts significantly.
+**Rationale:** US fleet average consistently ~28–30 MPG. Satisfies SM-2 (15% accuracy margin). Eliminates a live API dependency.
+**Consequences:** Inaccurate for heavy truck owners; precision mode (ADR-003) mitigates this. If users complain math feels off, add a simple "Your MPG" text input later.
+**Testing:** SM-2 — gas cost within 15% of actual trip fuel cost.
+
+### ADR-014: data.json + logs.json Flat File Storage
+**Status:** Accepted
+**Date:** 2026-06-09
+**Context:** Need persistent storage for dispensary config, cached deals, gas price meta, and scraper run logs.
+**Decision:** Two JSON files: `data.json` (frontend-served data) and `logs.json` (operator-only scraper log). Writes are atomic (write to `data.tmp.json`, rename). `logs.json` never served to frontend.
+**Rationale:** Zero cost, zero setup, zero migrations. Sufficient for R&D scale. Separation of concerns: scraper log bloat doesn't affect frontend payload.
+**Consequences:** Not suitable for concurrent writes (single-process Node.js avoids this at R&D scale). Upgrade path: SQLite when dispensary count exceeds ~50.
+**Testing:** Verify atomic write prevents partial data from being served during scraper runs.
+
+### ADR-015: Single GET /api/data Endpoint with Server-Side Active Deal Filtering
+**Status:** Accepted
+**Date:** 2026-06-09
+**Context:** Need API design for frontend to consume deal data. Active deal status depends on Pacific Time — timezone logic must be centralized.
+**Decision:** Single `GET /api/data` endpoint returns `{ meta, dispensaries[] }` with active deals pre-filtered. Server enforces `TZ=America/Los_Angeles` as the first line of `index.ts`.
+**Rationale:** Timezone logic in one place (server). Frontend stays stateless — client-side filter is distance only.
+**Consequences:** All time-zone sensitive logic couples to the server. Acceptable — this is a feature, not a bug.
+**Testing:** Verify Happy Hours that have expired do not appear in API response. Verify Daily Deals expire at Pacific midnight.
+
+### ADR-016: Axios + Cheerio Scraper with Playwright Upgrade Path
+**Status:** Accepted
+**Date:** 2026-06-09
+**Context:** Need to scrape dispensary HTML for deal data. Most target sites serve plain HTML; some may require JS rendering.
+**Decision:** Axios + Cheerio for all scrapers. Upgrade individual scrapers to Playwright only if a specific site requires a real browser runtime.
+**Rationale:** Cheerio is lightweight and fast. ~80% of target area dispensaries serve plain HTML. Playwright upgrade path exists without changing the scraper contract.
+**Consequences:** Sites that load deals via JavaScript will fail silently (empty `Deal[]` returned) until upgraded to Playwright.
+**Testing:** Verify each dispensary scraper returns expected Deal[] before adding to production data.json.
+
 ### ADR-005: Non-Intrusive Ads Only
 **Status:** Accepted
 **Date:** 2026-06-08
@@ -97,11 +161,15 @@ Gma's Helper (working title; BMad project name: "Happy") is a single-page web ap
 ## Technical Constraints
 
 - US only, v1 zone: 50 road-miles from zip 98270 (Marysville, WA), no ferry crossings
-- Road-distance routing required (not straight-line)
-- Deal data sourced by scraping public dispensary sites — no API or partnership dependency at launch
-- Gas-cost calc: fueleconomy.gov API + live national-average MPG default
-- Browser-based only; vehicle selection persisted in localStorage
+- Road distances are pre-computed and hardcoded in data.json (no routing API at R&D scale)
+- Deal data sourced by scraping public dispensary sites (Axios + Cheerio; Playwright upgrade path per site)
+- Gas-cost calc: fueleconomy.gov API for vehicle precision mode; nationalMpg hardcoded at 28 for default
+- Gas price: EIA public API (weekly refresh), stored in data.json meta
+- All active-deal time logic uses America/Los_Angeles (Pacific Time), enforced server-side
+- Browser-based only; user preferences (distance, vehicle MPG, age confirmation) persisted in localStorage
 - Web app must be mobile-responsive (primary use case: checking from a phone before getting in the car)
+- fueleconomy.gov API returns XML by default — must send `Accept: application/json` header
+- data.json writes must be atomic (tmp file + rename) to prevent serving partial data
 
 ---
 
@@ -113,22 +181,23 @@ Gma's Helper (working title; BMad project name: "Happy") is a single-page web ap
 
 ## Known Issues
 
-- Deal scraping fragility and ToS exposure: unresolved, flagged for architecture phase
-- Routing API selection: not yet decided (see ADR-002 consequences)
-- National-average MPG live source: not yet specified
-- Gas Price daily source not yet selected (EIA, AAA, or GasBuddy — OQ-1 in PRD)
+- Deal scraping fragility and ToS exposure: unresolved — ToS review required before expanding beyond the R&D dispensary set (PRD OQ-5)
 - Discount Display (side-by-side % + gas cost) may be insufficient as a go/no-go signal — validated by SM-3 in R&D (see ADR-009)
+- fueleconomy.gov API response format: must send `Accept: application/json` — default is XML
+- Initial data.json requires a one-time manual setup (dispensary list + distanceMiles) before first scraper run
 
 ---
 
 ## Open Questions
 
-- Which routing API for road-distance calculation? (cost, accuracy, ferry-exclusion capability) — PRD OQ-2
-- What is the live source for US national-average vehicle MPG? — PRD OQ-3
-- Which public source for daily Gas Price? (EIA, AAA, GasBuddy) — PRD OQ-1
-- Legal/ethical position on scraping cannabis retail sites in WA state? — PRD OQ-5
-- Scraper infrastructure: co-located job vs. separate cron/serverless? — PRD OQ-4
-- Is Discount Display (% + gas cost side by side) sufficient for users to decide, or is a computed dollar savings figure needed? — PRD OQ-7
+- Legal/ethical position on scraping cannabis retail sites in WA state? — PRD OQ-5 (low priority at 3–5 sites; higher before public launch)
+- Is Discount Display (% + gas cost side by side) sufficient for users to decide, or is a computed dollar savings figure needed? — PRD OQ-7 (validated by SM-3 during R&D)
+
+**Resolved during architecture (2026-06-09):**
+- ~~Routing API selection~~ → ADR-011: hardcoded JSON lookups, no API needed
+- ~~National-average MPG source~~ → ADR-013: hardcoded 28 MPG for R&D
+- ~~Gas Price source~~ → ADR-012: EIA public API (weekly)
+- ~~Scraper infrastructure~~ → ADR-010: setInterval in Express process
 
 ---
 
@@ -147,6 +216,7 @@ Gma's Helper (working title; BMad project name: "Happy") is a single-page web ap
 - Brief decision log: `_bmad-output/planning-artifacts/briefs/brief-Happy-2026-06-08/.decision-log.md`
 - PRD: `_bmad-output/planning-artifacts/prds/prd-Happy-2026-06-08/prd.md`
 - PRD decision log: `_bmad-output/planning-artifacts/prds/prd-Happy-2026-06-08/.decision-log.md`
+- Architecture: `_bmad-output/planning-artifacts/architecture.md`
 - fueleconomy.gov API: https://www.fueleconomy.gov/feg/ws/
 
 ---
@@ -157,3 +227,4 @@ Gma's Helper (working title; BMad project name: "Happy") is a single-page web ap
 |------|--------|
 | 2026-06-08 | Initial ADR created. Product brief session complete. ADR-001 through ADR-005 recorded from brief decisions. |
 | 2026-06-08 | PRD session complete. PRD finalized. ADR-006 through ADR-009 added from PRD decisions and crawl spike. Open questions updated. Status updated to PRD final. |
+| 2026-06-09 | Architecture session complete. ADR-010 through ADR-016 added. ADR-002 superseded by ADR-011 (hardcoded distances). ADR-003 refined (hardcoded MPG). Four open questions resolved. Technical constraints updated. Status updated to Architecture complete. |
