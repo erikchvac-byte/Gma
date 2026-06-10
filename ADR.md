@@ -4,7 +4,7 @@
 
 Gma's Helper (working title; BMad project name: "Happy") is a single-page web app that shows active cannabis happy-hour deals within a user-set road-distance radius from the user's location. Each listing shows miles to the shop and a gas-cost-vs-savings calculation. No browsing, no discovery — just "is this deal worth the drive, right now?"
 
-**Status:** R&D / pre-build. Architecture complete (2026-06-09). Next: Epics & Stories.
+**Status:** Implementation in progress. Epic 1 (Foundation & Data Layer): stories 1.1–1.3 implemented. Epic 2 (Core Deal Experience): Story 2.1 Age Gate done (2026-06-10); next: Story 2.2 Deal Feed.
 **Owner:** Erik (solo founder), Marysville WA area.
 
 ---
@@ -183,6 +183,15 @@ Gma's Helper (working title; BMad project name: "Happy") is a single-page web ap
 **Consequences:** None — same-day window logic unchanged; only the `end <= start` branch is new.
 **Testing:** Added 3 unit tests to `filterActiveDeals.test.ts` covering: active before midnight, active after midnight (previous day in `daysValid`), and expired the next morning. Full suite: 13/13 passing.
 
+### ADR-021: Age Gate — Single-Button Design, Strict Boolean Check, Dialog A11y
+**Status**: Accepted
+**Date**: 2026-06-10
+**Context**: Story 2.1 implemented the 21+ age gate (`AgeGate.tsx` wrapping App content, persisted via generic `useLocalStorage` hook under `gma_age_confirmed`). Adversarial code review (Blind Hunter + Edge Case Hunter + Acceptance Auditor) found no AC violations but surfaced hardening issues and one product decision.
+**Decision**: (1) Single-button gate ("I am 21 or older" only, no under-21 decline path) is the intended design — explicitly dismissed in review. (2) Gate check is strict `ageConfirmed === true`, not truthiness — `JSON.parse(item) as T` in the generic hook is an unchecked cast, so corrupted/hand-edited localStorage values (e.g. `1`, `"yes"`) must not open the gate. (3) Overlay carries `role="alertdialog"`, `aria-modal`, a labelled heading, and moves focus to the confirm button on mount; button contrast raised to `bg-green-700` for WCAG AA. (4) `setValue` wrapped in `useCallback` for stable identity.
+**Rationale**: WA-compliance gate is a click-through attestation, not security; one button keeps it frictionless. The strict check costs nothing and closes the only code path where garbage storage data bypasses the gate. Dialog semantics make the takeover screen non-broken for screen-reader/keyboard users.
+**Consequences**: Deferred to `_bmad-output/implementation-artifacts/deferred-work.md`: no cross-tab storage sync, no functional-update form on `setValue`, hook ignores `key` changes after mount. None affect the single-key, single-tab R&D use case. Confirmation never expires (persists in localStorage indefinitely) — required by AC3.
+**Testing**: 18 client tests passing (parameterized gate-bypass cases, storage-throws branches, focus/dialog-role assertions, setValue identity). `tsc -b` and lint clean.
+
 ### ADR-005: Non-Intrusive Ads Only
 **Status:** Accepted
 **Date:** 2026-06-08
@@ -266,3 +275,4 @@ Gma's Helper (working title; BMad project name: "Happy") is a single-page web ap
 | 2026-06-09 | Architecture session complete. ADR-010 through ADR-016 added. ADR-002 superseded by ADR-011 (hardcoded distances). ADR-003 refined (hardcoded MPG). Four open questions resolved. Technical constraints updated. Status updated to Architecture complete. |
 | 2026-06-09 | Scraper integration update. ADR-016 refined (Playwright upgrade path → Python microservice). ADR-017 added (Python Scraper service for Dutchie/iFrame sites). Technical constraints updated. Architecture.md Integration Points and Data Flow updated to reflect two-tier scraping strategy. |
 | 2026-06-09 | Story 1.3 code review fixes. ADR-018 added (build-time `copyData.mjs` for `dist/server/data/`). ADR-019 added (root `package.json` start/build scripts aligned to `dist/server/` output). ADR-020 added (overnight Happy Hour deal handling in `filterActiveDeals`). |
+| 2026-06-10 | Story 2.1 (Age Gate) implemented, code-reviewed, and marked done. ADR-021 added (single-button gate design, strict boolean check, dialog a11y). Overview status updated to implementation-in-progress. `deferred-work.md` created for review items deferred out of MVP scope. |
