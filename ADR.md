@@ -4,7 +4,7 @@
 
 Gma's Helper (working title; BMad project name: "Happy") is a single-page web app that shows active cannabis happy-hour deals within a user-set road-distance radius from the user's location. Each listing shows miles to the shop and a gas-cost-vs-savings calculation. No browsing, no discovery — just "is this deal worth the drive, right now?"
 
-**Status:** Implementation in progress. Epic 1 (Foundation & Data Layer): stories 1.1–1.3 implemented. Epic 2 (Core Deal Experience): Story 2.1 Age Gate done (2026-06-10); Story 2.2 Deal Feed implemented (2026-06-10); next: Story 2.3 Deal Cards.
+**Status:** Implementation in progress. Epic 1 (Foundation & Data Layer): stories 1.1–1.3 implemented. Epic 2 (Core Deal Experience): 2.1 Age Gate, 2.2 Deal Feed, 2.3 Deal Cards done (2026-06-10); next: Story 2.4 Gas Cost Calculation.
 **Owner:** Erik (solo founder), Marysville WA area.
 
 ---
@@ -201,6 +201,15 @@ Gma's Helper (working title; BMad project name: "Happy") is a single-page web ap
 **Consequences**: Single fetch per mount — no polling/refresh yet (stale handling is Story 2.6). Minimal deal rows (name — description — % off) are placeholder UI replaced by `DealCard` in Story 2.3. Within-tier order of null-window Happy Hours is input order (unspecified by spec).
 **Testing**: 38 client tests passing (18 pre-existing + 20 new: hook success/500/network-reject/abort-on-unmount, all I/O-matrix sort cases incl. overnight wrap, format valid/invalid, four DealFeed render states + sort order + timestamp presence, App feed-region render with stubbed fetch). `tsc -b` and lint clean.
 
+### ADR-023: Deal Cards — Single Time-Window Predicate, 60s Clock, Server-Mirror for Degenerate Shapes
+**Status**: Accepted
+**Date**: 2026-06-10
+**Context**: Story 2.3 replaced the 2.2 placeholder rows with `DealCard` and added a live countdown plus client-side expiry. Adversarial review caught the implementation inventing "end-only deal = since-midnight window" semantics that contradicted the server (which treats ANY null time as day-long-active), and three subsystems (display, expiry, sort) routing degenerate time shapes inconsistently.
+**Decision**: (1) One predicate, `hasValidTimedWindow(deal)` (both times present AND parseable), drives expiry, countdown, and sort-tier routing — only fully-valid timed windows compete in the urgency tier, get a countdown, or expire client-side. (2) Every other shape (null, partial, malformed times) mirrors the server's null-time behavior: always shown, never client-expired, sorted with the all-day tier. (3) A single `useNow` hook (60s `setInterval`, cleanup on unmount) is the only clock; the expiry filter runs BEFORE `sortDeals` so expired deals never reach the overnight-wrap heuristic. (4) `DealCard` is purely presentational — window/countdown strings computed in `DealFeed`, passed as props. (5) Window copy ladder: "9:00 PM – 11:30 PM" / "9:00 PM – close" / "Until 11:30 PM" (end-only, display-only) / "Active today".
+**Rationale**: Splitting time policy across display/expiry/sort caused the exact disagreements review found (a malformed-start deal sorting as urgent while rendering as malformed and living forever). A single predicate makes disagreement structurally impossible. Mirroring the server for degenerate shapes keeps client and server answering "is this active?" identically — the client tick only ever removes what the server would also drop.
+**Consequences**: Deferred (see `deferred-work.md`): long-open tabs resurrect stale deals when their clock window next matches (no refetch is a frozen 2.3 boundary — needs monotonic removal or polling, Epic 3 candidate); no `visibilitychange` resync on mobile; server accepts zero-length windows (`start === end` = 24h-active) — scraper validation in Epic 4 should normalize. Countdown can lag up to ~59s (mount-anchored tick, minute precision) — accepted for R&D.
+**Testing**: 82 client tests passing (77 from implementation + 5 review regressions: server-mirror end-only, `hasValidTimedWindow` shapes, "– close"/"Until X" feed derivations, malformed-start tiering). `tsc -b` and lint clean.
+
 ### ADR-005: Non-Intrusive Ads Only
 **Status:** Accepted
 **Date:** 2026-06-08
@@ -286,3 +295,4 @@ Gma's Helper (working title; BMad project name: "Happy") is a single-page web ap
 | 2026-06-09 | Story 1.3 code review fixes. ADR-018 added (build-time `copyData.mjs` for `dist/server/data/`). ADR-019 added (root `package.json` start/build scripts aligned to `dist/server/` output). ADR-020 added (overnight Happy Hour deal handling in `filterActiveDeals`). |
 | 2026-06-10 | Story 2.1 (Age Gate) implemented, code-reviewed, and marked done. ADR-021 added (single-button gate design, strict boolean check, dialog a11y). Overview status updated to implementation-in-progress. `deferred-work.md` created for review items deferred out of MVP scope. |
 | 2026-06-10 | Story 2.2 (Deal Feed) implemented. ADR-022 added (hook-only data access via `useDeals`, pure `sortDeals` with overnight wrap, pinned en-US timestamp format, friendly-error rendering). 38 client tests passing. |
+| 2026-06-10 | Story 2.3 (Deal Cards) implemented and reviewed. ADR-023 added (single `hasValidTimedWindow` predicate for expiry/countdown/sort coherence, 60s `useNow` clock, server-mirror semantics for degenerate time shapes, presentational `DealCard`). 82 client tests passing. |
