@@ -87,12 +87,13 @@ describe('sortDeals', () => {
     expect(rows[0].dispensary.id).toBe('full')
   })
 
-  it('treats missing or malformed endTime as all-day tier without crashing', () => {
+  it('treats missing or malformed times as all-day tier without crashing', () => {
     const dispensaries = [
       makeDispensary('a', [
         makeDeal({ type: 'daily', description: 'daily 50', discountPct: 50 }),
         makeDeal({ type: 'happy_hour', description: 'no endTime key', startTime: null, endTime: undefined as unknown as null }),
         makeDeal({ type: 'happy_hour', description: 'malformed endTime', startTime: '14:00', endTime: '4pm' }),
+        makeDeal({ type: 'happy_hour', description: 'malformed startTime', startTime: '9pm', endTime: '23:45' }),
         makeDeal({ type: 'happy_hour', description: 'timed HH', startTime: '20:00', endTime: '23:30' }),
       ]),
     ]
@@ -102,6 +103,7 @@ describe('sortDeals', () => {
       'timed HH',
       'no endTime key',
       'malformed endTime',
+      'malformed startTime',
       'daily 50',
     ])
   })
