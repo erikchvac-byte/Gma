@@ -4,7 +4,7 @@
 
 Gma's Helper (working title; BMad project name: "Happy") is a single-page web app that shows active cannabis happy-hour deals within a user-set road-distance radius from the user's location. Each listing shows miles to the shop and a gas-cost-vs-savings calculation. No browsing, no discovery — just "is this deal worth the drive, right now?"
 
-**Status:** Implementation in progress. Epic 1 (Foundation & Data Layer): stories 1.1–1.3 implemented. Epic 2 (Core Deal Experience): Story 2.1 Age Gate done (2026-06-10); next: Story 2.2 Deal Feed.
+**Status:** Implementation in progress. Epic 1 (Foundation & Data Layer): stories 1.1–1.3 implemented. Epic 2 (Core Deal Experience): Story 2.1 Age Gate done (2026-06-10); Story 2.2 Deal Feed implemented (2026-06-10); next: Story 2.3 Deal Cards.
 **Owner:** Erik (solo founder), Marysville WA area.
 
 ---
@@ -192,6 +192,15 @@ Gma's Helper (working title; BMad project name: "Happy") is a single-page web ap
 **Consequences**: Deferred to `_bmad-output/implementation-artifacts/deferred-work.md`: no cross-tab storage sync, no functional-update form on `setValue`, hook ignores `key` changes after mount. None affect the single-key, single-tab R&D use case. Confirmation never expires (persists in localStorage indefinitely) — required by AC3.
 **Testing**: 18 client tests passing (parameterized gate-bypass cases, storage-throws branches, focus/dialog-role assertions, setValue identity). `tsc -b` and lint clean.
 
+### ADR-022: Deal Feed — Hook-Only Data Access, Pure Sort Utility, Pinned en-US Timestamp Format
+**Status**: Accepted
+**Date**: 2026-06-10
+**Context**: Story 2.2 added the deal feed: `useDeals` hook (sole fetch path), `sortDeals` pure utility, `formatLastUpdated`, and `DealFeed` owning loading/error/empty/populated states, mounted under the header inside `AgeGate`.
+**Decision**: (1) `useDeals` fetches `/api/data` once on mount with `AbortController` cleanup; abort on unmount is swallowed (`err.name === 'AbortError'`) and never sets state — non-OK status and network failure set `error` (string), leave `data` null, no throw. (2) `sortDeals(dispensaries, now)` takes `now: Date` as a parameter (never reads the clock itself) and sorts via tiered keys: timed Happy Hours by minutes-until-end ascending — negative deltas wrap +1440 for overnight windows (e.g. 22:00–02:00, mirroring server-side ADR-020) — then null-window Happy Hours (stable input order), then Daily Deals by `discountPct` descending. (3) `formatLastUpdated` pins `toLocaleString('en-US', …)` → "Jun 10, 7:45 AM" so output doesn't drift with host locale; invalid ISO → empty string. (4) Error state shows a fixed friendly message — raw error text/status never rendered; timestamp footer renders in populated AND empty states only.
+**Rationale**: Passing `now` in keeps the sort pure and unit-testable without fake timers. Pinning en-US makes tests deterministic across machines and matches the spec's example format. Hook-only data access enforces the architecture rule (zero `fetch()` in components) ahead of Stories 2.3–2.6 building on the same hook.
+**Consequences**: Single fetch per mount — no polling/refresh yet (stale handling is Story 2.6). Minimal deal rows (name — description — % off) are placeholder UI replaced by `DealCard` in Story 2.3. Within-tier order of null-window Happy Hours is input order (unspecified by spec).
+**Testing**: 38 client tests passing (18 pre-existing + 20 new: hook success/500/network-reject/abort-on-unmount, all I/O-matrix sort cases incl. overnight wrap, format valid/invalid, four DealFeed render states + sort order + timestamp presence, App feed-region render with stubbed fetch). `tsc -b` and lint clean.
+
 ### ADR-005: Non-Intrusive Ads Only
 **Status:** Accepted
 **Date:** 2026-06-08
@@ -276,3 +285,4 @@ Gma's Helper (working title; BMad project name: "Happy") is a single-page web ap
 | 2026-06-09 | Scraper integration update. ADR-016 refined (Playwright upgrade path → Python microservice). ADR-017 added (Python Scraper service for Dutchie/iFrame sites). Technical constraints updated. Architecture.md Integration Points and Data Flow updated to reflect two-tier scraping strategy. |
 | 2026-06-09 | Story 1.3 code review fixes. ADR-018 added (build-time `copyData.mjs` for `dist/server/data/`). ADR-019 added (root `package.json` start/build scripts aligned to `dist/server/` output). ADR-020 added (overnight Happy Hour deal handling in `filterActiveDeals`). |
 | 2026-06-10 | Story 2.1 (Age Gate) implemented, code-reviewed, and marked done. ADR-021 added (single-button gate design, strict boolean check, dialog a11y). Overview status updated to implementation-in-progress. `deferred-work.md` created for review items deferred out of MVP scope. |
+| 2026-06-10 | Story 2.2 (Deal Feed) implemented. ADR-022 added (hook-only data access via `useDeals`, pure `sortDeals` with overnight wrap, pinned en-US timestamp format, friendly-error rendering). 38 client tests passing. |
