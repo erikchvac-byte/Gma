@@ -228,19 +228,27 @@ None — implementation followed the Dev Notes prescriptions directly; no failin
 - Added 6 unit tests to `filterActiveDeals.test.ts` (AC2 expired happy_hour, AC3 active happy_hour, AC4 active daily, wrong-weekday case, `everyday` case, plus a "dispensary never removed" case) and 2 route tests to `dataRoute.test.ts` (AC1 200 shape, AC6 500 shape via mocked `node:fs`).
 - **Architecture fix required for AC7's cross-package import (`server/**` importing `client/src/types/index.ts`)**: `server/tsconfig.json` had `rootDir: "./"`, which caused `tsc --noEmit` to fail with TS6059 ("File is not under 'rootDir'") for any file importing from `../../client/src/types`. Fixed by changing `rootDir` to `".."` (the repo root). This shifts `tsc`'s build output from `dist/index.js` to `dist/server/index.js`, so `server/package.json`'s `start` script was updated to `node dist/server/index.js` to match. `npm run build` was verified to produce the expected `dist/server/...` and `dist/client/src/types/...` structure; the generated `dist/` was removed afterward (already gitignored).
 - Full server suite: `npm test` → 3 files, 10 tests, all passing. Client suite: 1 file, 1 test, passing (no regressions).
+- **Post-review fixes (2026-06-09)**: `/code-review` found 3 issues, all resolved:
+  1. `data.json`/`logs.json` were not copied to `dist/` by `tsc`, so `/api/data` returned 500 in production builds. Fixed via new `server/scripts/copyData.mjs`, run from `server/package.json`'s `build` script (ADR-018).
+  2. Root `package.json` `start`/`build` scripts referenced the pre-`rootDir` change paths and skipped `copyData.mjs`. Fixed (ADR-019).
+  3. `isDealActive` couldn't represent overnight Happy Hour windows (e.g. `22:00`–`02:00`). Fixed with an overnight-window branch and 3 new tests (ADR-020).
+- Full server suite after fixes: `npm test` → 3 files, 13 tests, all passing.
 
 ### File List
 
 - `client/src/types/index.ts` (new)
 - `server/types/index.ts` (new)
-- `server/utils/filterActiveDeals.ts` (new)
-- `server/utils/filterActiveDeals.test.ts` (new)
+- `server/utils/filterActiveDeals.ts` (new; post-review: overnight deal handling added)
+- `server/utils/filterActiveDeals.test.ts` (new; post-review: 3 overnight tests added)
 - `server/routes/dataRoute.ts` (new)
 - `server/routes/dataRoute.test.ts` (new)
 - `server/index.ts` (modified — wired `dataRoute`, removed Story 1.1 placeholder)
 - `server/tsconfig.json` (modified — `rootDir: ".."` to support cross-package type imports)
-- `server/package.json` (modified — added `supertest`/`@types/supertest` devDependencies; `start` script updated to `node dist/server/index.js`)
+- `server/package.json` (modified — added `supertest`/`@types/supertest` devDependencies; `start`/`build` scripts updated for `dist/server/` output; post-review: `build` now runs `copyData.mjs`)
+- `server/scripts/copyData.mjs` (new, post-review — copies `server/data/` to `dist/server/data/` during build)
+- `package.json` (root, modified, post-review — `start`/`build` scripts aligned to `server/dist/server/` output)
 
 ## Change Log
 
 - 2026-06-09: Story implemented — shared types, `filterActiveDeals` utility, `GET /api/data` route wired into `server/index.ts`, full unit + route test coverage added. `server/tsconfig.json` `rootDir` adjusted to `".."` to support the cross-package `client/src/types` import required by AC7 (and `server/package.json` `start` script updated accordingly).
+- 2026-06-09: Post-review fixes — added `server/scripts/copyData.mjs` + build script update (ADR-018), aligned root `package.json` start/build scripts (ADR-019), and added overnight Happy Hour deal-window handling to `filterActiveDeals` with 3 new tests (ADR-020).

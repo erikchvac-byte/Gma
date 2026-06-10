@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "concurrently \"npm run dev --prefix client\" \"npx tsx watch server/index.ts\"",
-    "build": "npm run build --prefix client && cd server && npx tsc",
-    "start": "node server/dist/index.js"
+    "build": "npm run build --prefix client && npm run build --prefix server",
+    "start": "node server/dist/server/index.js"
   },
   "devDependencies": {
     "concurrently": "^9.0.0"

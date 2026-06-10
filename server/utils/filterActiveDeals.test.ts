@@ -99,6 +99,55 @@ describe('filterActiveDeals', () => {
     expect(result[0].deals).toEqual([everydayDeal])
   })
 
+  it('keeps an overnight deal active after midnight on the day after daysValid (e.g. Tue 22:00-02:00, now Wed 00:30)', () => {
+    const yesterday = DAY_NAMES[(NOW.getDay() + 6) % 7]
+    const overnightDeal: Deal = {
+      type: 'happy_hour',
+      description: 'Late Night Special',
+      discountPct: 10,
+      startTime: '22:00',
+      endTime: '02:00',
+      daysValid: [yesterday],
+    }
+
+    const earlyMorning = new Date(2026, 5, 10, 0, 30, 0)
+    const result = filterActiveDeals([makeDispensary([overnightDeal])], earlyMorning)
+
+    expect(result[0].deals).toEqual([overnightDeal])
+  })
+
+  it('keeps an overnight deal active before midnight on a daysValid day (e.g. Wed 22:00-02:00, now Wed 23:00)', () => {
+    const overnightDeal: Deal = {
+      type: 'happy_hour',
+      description: 'Late Night Special',
+      discountPct: 10,
+      startTime: '22:00',
+      endTime: '02:00',
+      daysValid: [TODAY],
+    }
+
+    const lateNight = new Date(2026, 5, 10, 23, 0, 0)
+    const result = filterActiveDeals([makeDispensary([overnightDeal])], lateNight)
+
+    expect(result[0].deals).toEqual([overnightDeal])
+  })
+
+  it('filters out an overnight deal once endTime has passed the next morning', () => {
+    const overnightDeal: Deal = {
+      type: 'happy_hour',
+      description: 'Late Night Special',
+      discountPct: 10,
+      startTime: '22:00',
+      endTime: '02:00',
+      daysValid: [DAY_NAMES[(NOW.getDay() + 6) % 7]],
+    }
+
+    const morning = new Date(2026, 5, 10, 9, 0, 0)
+    const result = filterActiveDeals([makeDispensary([overnightDeal])], morning)
+
+    expect(result[0].deals).toHaveLength(0)
+  })
+
   it('never removes a dispensary, even when all its deals are filtered out', () => {
     const expiredDeal: Deal = {
       type: 'happy_hour',

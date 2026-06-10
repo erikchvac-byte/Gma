@@ -9,13 +9,22 @@ function parseTimeToMinutes(time: string): number {
 
 function isDealActive(deal: Deal, now: Date): boolean {
   const today = DAY_NAMES[now.getDay()]
-  const dayMatches = deal.daysValid.includes('everyday') || deal.daysValid.includes(today)
-  if (!dayMatches) return false
+  const dayMatches = (day: string) => deal.daysValid.includes('everyday') || deal.daysValid.includes(day)
 
-  if (deal.startTime === null || deal.endTime === null) return true
+  if (deal.startTime === null || deal.endTime === null) return dayMatches(today)
 
   const nowMinutes = now.getHours() * 60 + now.getMinutes()
-  return nowMinutes >= parseTimeToMinutes(deal.startTime) && nowMinutes < parseTimeToMinutes(deal.endTime)
+  const startMinutes = parseTimeToMinutes(deal.startTime)
+  const endMinutes = parseTimeToMinutes(deal.endTime)
+
+  if (endMinutes > startMinutes) {
+    return dayMatches(today) && nowMinutes >= startMinutes && nowMinutes < endMinutes
+  }
+
+  // Overnight deal (e.g. 22:00-02:00): active from startTime to midnight on a
+  // valid day, and from midnight to endTime on the day after a valid day.
+  const yesterday = DAY_NAMES[(now.getDay() + 6) % 7]
+  return (dayMatches(today) && nowMinutes >= startMinutes) || (dayMatches(yesterday) && nowMinutes < endMinutes)
 }
 
 export function filterActiveDeals(dispensaries: Dispensary[], now: Date = new Date()): Dispensary[] {

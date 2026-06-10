@@ -156,6 +156,33 @@ Gma's Helper (working title; BMad project name: "Happy") is a single-page web ap
 **Consequences:** Dutchie scrapers require the Python service on port 8000. Local dev: start Python service alongside Node.js. Production: both processes must be deployed (Docker Compose at `C:\Users\erikc\Dev\Scraper\docker-compose.yml`). If the service is unavailable, `scraperClient.ts` catches the error and the scraper returns `[]` — existing stale-handling in `runScrapers.ts` applies.
 **Testing:** Verify Happy Time Mt Vernon `scrape()` returns non-empty `Deal[]` with Scraper service running. Verify `[]` returned (no throw) when service is down.
 
+### ADR-018: Build-Time Data Copy Script for dist/
+**Status:** Accepted
+**Date:** 2026-06-09
+**Context:** Code review of Story 1.3 found that `tsc` only compiles `.ts` files — `server/data/data.json` and `server/data/logs.json` were never copied to `dist/`, so `dataRoute.ts`'s `__dirname`-relative `DATA_PATH` resolved to a non-existent file in production builds, causing `/api/data` to return 500.
+**Decision:** Added `server/scripts/copyData.mjs` (Node `cpSync`/`mkdirSync`, cross-platform) that copies `server/data/` → `dist/server/data/`, run via `server/package.json`'s `build` script (`tsc && node scripts/copyData.mjs`).
+**Rationale:** Keeps `__dirname`-relative paths in `dataRoute.ts` valid at the same relative depth in both dev (tsx) and built (`dist/`) environments, without changing the route code itself.
+**Consequences:** Any future non-`.ts` runtime asset under `server/` must be added to `copyData.mjs` or it will be silently missing from `dist/`.
+**Testing:** Verified end-to-end — built the project, ran `dist/server/index.js` with `NODE_ENV=production`, confirmed `GET /api/data` returns 200 with correct data (previously 500/ENOENT).
+
+### ADR-019: Root package.json start/build Scripts Aligned to dist/server/ Output
+**Status:** Accepted
+**Date:** 2026-06-09
+**Context:** Following ADR-015's `rootDir: ".."` change, `tsc` output moved from `server/dist/index.js` to `server/dist/server/index.js`, but the root `package.json`'s `start` script (`node server/dist/index.js`) and `build` script (bare `cd server && npx tsc`, skipping `copyData.mjs`) were not updated — found during Story 1.3 code review.
+**Decision:** Root `start` → `node server/dist/server/index.js`. Root `build` → `npm run build --prefix client && npm run build --prefix server` (delegates to server's own build script, which includes `copyData.mjs`).
+**Rationale:** Single source of truth for the server build process lives in `server/package.json`; the root scripts should delegate rather than duplicate/diverge.
+**Consequences:** None — root scripts now match actual build output paths.
+**Testing:** Verified `npm run build` (root) → `npm start` (root) → `GET /api/data` returns 200.
+
+### ADR-020: Overnight Deal Time-Window Handling in filterActiveDeals
+**Status:** Accepted
+**Date:** 2026-06-09
+**Context:** Story 1.3 code review found `isDealActive` only handled same-day windows (`nowMinutes >= start && nowMinutes < end`). Happy Hour deals spanning midnight (e.g., `22:00`–`02:00`, per ADR-007) would never be active, since `end < start` makes the comparison always false.
+**Decision:** `isDealActive` now detects overnight windows (`endMinutes <= startMinutes`) and treats them as active if (today is in `daysValid` AND now ≥ startTime) OR (yesterday is in `daysValid` AND now < endTime).
+**Rationale:** `daysValid` lists the day the deal *starts*; the post-midnight portion of an overnight deal belongs to the previous day's entry, not the calendar day it's currently active on.
+**Consequences:** None — same-day window logic unchanged; only the `end <= start` branch is new.
+**Testing:** Added 3 unit tests to `filterActiveDeals.test.ts` covering: active before midnight, active after midnight (previous day in `daysValid`), and expired the next morning. Full suite: 13/13 passing.
+
 ### ADR-005: Non-Intrusive Ads Only
 **Status:** Accepted
 **Date:** 2026-06-08
@@ -238,3 +265,4 @@ Gma's Helper (working title; BMad project name: "Happy") is a single-page web ap
 | 2026-06-08 | PRD session complete. PRD finalized. ADR-006 through ADR-009 added from PRD decisions and crawl spike. Open questions updated. Status updated to PRD final. |
 | 2026-06-09 | Architecture session complete. ADR-010 through ADR-016 added. ADR-002 superseded by ADR-011 (hardcoded distances). ADR-003 refined (hardcoded MPG). Four open questions resolved. Technical constraints updated. Status updated to Architecture complete. |
 | 2026-06-09 | Scraper integration update. ADR-016 refined (Playwright upgrade path → Python microservice). ADR-017 added (Python Scraper service for Dutchie/iFrame sites). Technical constraints updated. Architecture.md Integration Points and Data Flow updated to reflect two-tier scraping strategy. |
+| 2026-06-09 | Story 1.3 code review fixes. ADR-018 added (build-time `copyData.mjs` for `dist/server/data/`). ADR-019 added (root `package.json` start/build scripts aligned to `dist/server/` output). ADR-020 added (overnight Happy Hour deal handling in `filterActiveDeals`). |
