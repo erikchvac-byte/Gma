@@ -1,5 +1,11 @@
 # Deferred Work
 
+## Deferred from: code review of spec-3-1-eia-gas-price-refresh (2026-06-11)
+
+- **`atomicWriteJson` is single-writer only** — the tmp filename is deterministic (`data.tmp.json`) and `refreshGasPrice` does an unserialized read-modify-write of the whole file. Safe today (one writer, sync read+write in one tick), but Epic 4's scraper engine reusing this utility MUST add writer serialization (shared mutex/queue) and unique tmp names (pid/random suffix) first — otherwise lost updates and tmp collisions. Blocker-grade for Story 4.1, noted in `atomicWrite.ts` comment.
+- **`copyData.mjs` build behavior vs. live data** — `npm run build` overwrites `dist/server/data/data.json` with the seed copy, silently reverting any refreshed gas price (recovered at next boot refresh only if the EIA key works); `cpSync` over a live-serving target is also non-atomic. Revisit at deployment time (pm2/VPS) — e.g., skip copy when dist data exists, or copy via tmp+rename. Relates to ADR-018.
+- **Optional plausibility bounds on gas price** — the finite>0 gate accepts an absurd-but-finite value (e.g. 443.9 if EIA ever changed scale); a $1–$15/gal sanity range would cap blast radius on every card's math. Product call on the range — Erik to decide if wanted.
+
 ## Deferred from: code review of spec-2-5-distance-filter (2026-06-10)
 
 - **`distanceMiles` payload shape is trusted blindly** — `useDeals` validates only the array shape, so a dispensary with `distanceMiles` missing/`NaN`/`Infinity` is now silently dropped by the distance filter at any slider setting, and `null` (coerces to 0 in `<=`) passes the filter then crashes `DealCard`'s `.toFixed(1)` — a pre-existing crash path. Proper fix: validate/normalize dispensary shape at the `useDeals` boundary (one home), not per-consumer. Candidate to batch with Epic 4 scraper-data hardening. *(2.6 review extends this: a `null`/non-object element inside `dispensaries[]` now crashes at the stale predicate — first property access — and a garbage `stale` value fails open to "fresh" by the frozen strict-`=== true` rule; both resolved by the same boundary validation.)*

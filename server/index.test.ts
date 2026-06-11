@@ -19,4 +19,12 @@ describe('server/index.ts', () => {
     process.env.TZ = 'America/Los_Angeles'
     expect(process.env.TZ).toBe('America/Los_Angeles')
   })
+
+  it('invokes refreshGasPrice at startup and schedules it on an interval', () => {
+    const content = readFileSync(join(__dirname, 'index.ts'), 'utf-8')
+
+    expect(content).toContain('void refreshGasPrice().catch(console.error)')
+    expect(content).toMatch(/setInterval\([\s\S]*?refreshGasPrice\(\)[\s\S]*?REFRESH_INTERVAL_MS\)/)
+    expect(content).toContain('const REFRESH_INTERVAL_MS = 24 * 60 * 60 * 1000')
+  })
 })
