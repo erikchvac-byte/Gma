@@ -11,7 +11,8 @@ import { hasValidTimedWindow, isDealActive, minutesUntilEnd } from '../utils/dea
 import { sortDeals } from '../utils/sortDeals'
 import { formatCountdown, formatLastUpdated, formatTimeOfDay } from '../utils/formatTime'
 import { formatGasCost, isPositiveFinite, roundTripGasCost } from '../utils/gasCost'
-import type { Deal } from '../types'
+import StaleIndicator from './StaleIndicator'
+import type { Deal, Dispensary } from '../types'
 
 // Window line per spec matrix: '9:00 PM – 11:30 PM' / '9:00 PM – close' /
 // 'Active today'. Any present-but-unparseable time → no window text at all.
@@ -75,9 +76,15 @@ export default function DealFeed() {
     )
   }
 
+  // one strict predicate drives both omission and count so they can't
+  // disagree (ADR-021 boolean precedent); count comes from the FULL API
+  // array — deliberately independent of the distance filter below
+  const isStale = (dispensary: Dispensary) => dispensary.stale === true
+  const staleCount = data.dispensaries.filter(isStale).length
+  const freshDispensaries = data.dispensaries.filter((dispensary) => !isStale(dispensary))
   // distance filter runs against the full in-memory array — no re-fetch;
   // inclusive boundary so a dispensary at exactly maxDistance stays visible
-  const nearbyDispensaries = data.dispensaries.filter(
+  const nearbyDispensaries = freshDispensaries.filter(
     (dispensary) => dispensary.distanceMiles <= maxDistance,
   )
   // expiry filter runs BEFORE sortDeals so expired deals never reach the
@@ -123,6 +130,7 @@ export default function DealFeed() {
       {lastUpdated !== '' && (
         <footer className="mt-4 text-sm text-gray-500">Last updated {lastUpdated}</footer>
       )}
+      <StaleIndicator count={staleCount} />
     </section>
   )
 }

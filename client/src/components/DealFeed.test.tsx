@@ -57,6 +57,7 @@ describe('DealFeed', () => {
     expect(screen.queryByText(/Last updated/)).not.toBeInTheDocument()
     expect(screen.queryByText('No active deals right now')).not.toBeInTheDocument()
     expect(screen.queryByRole('slider')).not.toBeInTheDocument()
+    expect(screen.queryByText(/unavailable/)).not.toBeInTheDocument()
   })
 
   it('shows a friendly error message without raw error text or timestamp', () => {
@@ -72,6 +73,7 @@ describe('DealFeed', () => {
     expect(screen.queryByText(/500/)).not.toBeInTheDocument()
     expect(screen.queryByText(/Last updated/)).not.toBeInTheDocument()
     expect(screen.queryByRole('slider')).not.toBeInTheDocument()
+    expect(screen.queryByText(/unavailable/)).not.toBeInTheDocument()
   })
 
   it('shows the empty state with the formatted timestamp when no deals exist', () => {
@@ -504,5 +506,136 @@ describe('DealFeed', () => {
       expect(screen.getByText('Closest deal')).toBeInTheDocument()
       expect(screen.queryByText('No active deals right now')).not.toBeInTheDocument()
     })
+  })
+
+  describe('stale source indicator', () => {
+    const named = (id: string, name: string, overrides: Partial<Dispensary> = {}): Dispensary => ({
+      ...makeDispensary(id, name, [makeDeal({ description: `${name} deal` })]),
+      ...overrides,
+    })
+
+    it('shows no "unavailable" text when every dispensary is fresh', () => {
+      mockUseDeals.mockReturnValue({
+        data: withData([named('a', 'Alpha'), named('b', 'Bravo')]),
+        isLoading: false,
+        error: null,
+      })
+      render(<DealFeed />)
+
+      expect(screen.getAllByRole('listitem')).toHaveLength(2)
+      expect(screen.queryByText(/unavailable/)).not.toBeInTheDocument()
+    })
+
+    it('omits a stale dispensary and shows the singular count', () => {
+      mockUseDeals.mockReturnValue({
+        data: withData([
+          named('a', 'Alpha'),
+          named('b', 'Bravo'),
+          named('c', 'Charlie'),
+          named('d', 'Delta', { stale: true }),
+        ]),
+        isLoading: false,
+        error: null,
+      })
+      render(<DealFeed />)
+
+      expect(screen.getAllByRole('listitem')).toHaveLength(3)
+      expect(screen.queryByText('Delta deal')).not.toBeInTheDocument()
+      expect(screen.getByText('1 source unavailable')).toBeInTheDocument()
+    })
+
+    it('omits two of four stale dispensaries and shows "2 sources unavailable" with the list intact (AC2)', () => {
+      mockUseDeals.mockReturnValue({
+        data: withData([
+          named('a', 'Alpha'),
+          named('b', 'Bravo', { stale: true }),
+          named('c', 'Charlie'),
+          named('d', 'Delta', { stale: true }),
+        ]),
+        isLoading: false,
+        error: null,
+      })
+      render(<DealFeed />)
+
+      expect(screen.getAllByRole('listitem')).toHaveLength(2)
+      expect(screen.queryByText('Bravo deal')).not.toBeInTheDocument()
+      expect(screen.queryByText('Delta deal')).not.toBeInTheDocument()
+      expect(screen.getByText('2 sources unavailable')).toBeInTheDocument()
+    })
+
+    it('treats a missing stale property as fresh', () => {
+      const noStaleField = named('m', 'Missing')
+      delete (noStaleField as Partial<Dispensary>).stale
+      mockUseDeals.mockReturnValue({ data: withData([noStaleField]), isLoading: false, error: null })
+      render(<DealFeed />)
+
+      expect(screen.getByText('Missing deal')).toBeInTheDocument()
+      expect(screen.queryByText(/unavailable/)).not.toBeInTheDocument()
+    })
+
+    it('counts several stale sources with plural copy and keeps only fresh ones', () => {
+      mockUseDeals.mockReturnValue({
+        data: withData([
+          named('a', 'Alpha', { stale: true }),
+          named('b', 'Bravo', { stale: true }),
+          named('c', 'Charlie', { stale: true }),
+          named('d', 'Delta'),
+          named('e', 'Echo'),
+        ]),
+        isLoading: false,
+        error: null,
+      })
+      render(<DealFeed />)
+
+      expect(screen.getAllByRole('listitem')).toHaveLength(2)
+      expect(screen.getByText('3 sources unavailable')).toBeInTheDocument()
+    })
+
+    it('shows the empty state together with the indicator when all sources are stale', () => {
+      mockUseDeals.mockReturnValue({
+        data: withData([named('a', 'Alpha', { stale: true }), named('b', 'Bravo', { stale: true })]),
+        isLoading: false,
+        error: null,
+      })
+      render(<DealFeed />)
+
+      expect(screen.getByText('No active deals right now')).toBeInTheDocument()
+      expect(screen.getByText('2 sources unavailable')).toBeInTheDocument()
+      expect(screen.queryByRole('listitem')).not.toBeInTheDocument()
+    })
+
+    it('keeps the count independent of the distance filter', () => {
+      localStorage.setItem('gma_distance_miles', '10')
+      mockUseDeals.mockReturnValue({
+        data: withData([
+          named('near', 'Near', { distanceMiles: 5 }),
+          named('far-stale', 'Far Stale', { distanceMiles: 40, stale: true }),
+        ]),
+        isLoading: false,
+        error: null,
+      })
+      render(<DealFeed />)
+
+      expect(screen.getByText('Near deal')).toBeInTheDocument()
+      expect(screen.getByText('1 source unavailable')).toBeInTheDocument()
+    })
+
+    it.each([['"true"', '"true"'], ['1', '1'], ['null', 'null']])(
+      'treats a garbage stale value (%s) as not stale',
+      (_label, raw) => {
+        const garbage = named('g', 'Garbage')
+        // simulate an out-of-contract payload value reaching the client
+        ;(garbage as unknown as Record<string, unknown>).stale = JSON.parse(raw)
+        mockUseDeals.mockReturnValue({
+          data: withData([garbage]),
+          isLoading: false,
+          error: null,
+        })
+        render(<DealFeed />)
+
+        expect(screen.getByText('Garbage deal')).toBeInTheDocument()
+        expect(screen.queryByText(/unavailable/)).not.toBeInTheDocument()
+      },
+    )
   })
 })
