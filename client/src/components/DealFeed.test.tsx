@@ -1,4 +1,4 @@
-import { render, screen, within, act } from '@testing-library/react'
+import { render, screen, within, act, fireEvent } from '@testing-library/react'
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import DealFeed from './DealFeed'
 import { useDeals } from '../hooks/useDeals'
@@ -56,6 +56,7 @@ describe('DealFeed', () => {
     expect(screen.getByRole('status', { name: 'Loading deals' })).toBeInTheDocument()
     expect(screen.queryByText(/Last updated/)).not.toBeInTheDocument()
     expect(screen.queryByText('No active deals right now')).not.toBeInTheDocument()
+    expect(screen.queryByRole('slider')).not.toBeInTheDocument()
   })
 
   it('shows a friendly error message without raw error text or timestamp', () => {
@@ -70,6 +71,7 @@ describe('DealFeed', () => {
     expect(screen.queryByText(/Request failed with status 500/)).not.toBeInTheDocument()
     expect(screen.queryByText(/500/)).not.toBeInTheDocument()
     expect(screen.queryByText(/Last updated/)).not.toBeInTheDocument()
+    expect(screen.queryByRole('slider')).not.toBeInTheDocument()
   })
 
   it('shows the empty state with the formatted timestamp when no deals exist', () => {
@@ -378,5 +380,129 @@ describe('DealFeed', () => {
     const item = screen.getByRole('listitem')
     expect(within(item).getByText('35% off')).toBeInTheDocument()
     expect(item.textContent).not.toContain('to get there')
+  })
+
+  describe('distance filter', () => {
+    const atDistance = (id: string, name: string, distanceMiles: number): Dispensary => ({
+      ...makeDispensary(id, name, [makeDeal({ description: `${name} deal` })]),
+      distanceMiles,
+    })
+
+    // mirrors the seed data spread: 2.5 / 9.8 / 10.5 / 12.5
+    const fourDispensaries = () =>
+      withData([
+        atDistance('a', 'Closest', 2.5),
+        atDistance('b', 'Near', 9.8),
+        atDistance('c', 'Mid', 10.5),
+        atDistance('d', 'Far', 12.5),
+      ])
+
+    it('defaults to 25 miles and shows all dispensaries', () => {
+      mockUseDeals.mockReturnValue({ data: fourDispensaries(), isLoading: false, error: null })
+      render(<DealFeed />)
+
+      expect(screen.getByRole('slider', { name: 'Within 25 miles' })).toHaveValue('25')
+      expect(screen.getAllByRole('listitem')).toHaveLength(4)
+    })
+
+    it('narrows the feed instantly on slider change without any network request', () => {
+      const fetchSpy = vi.spyOn(window, 'fetch')
+      mockUseDeals.mockReturnValue({ data: fourDispensaries(), isLoading: false, error: null })
+      render(<DealFeed />)
+
+      fireEvent.change(screen.getByRole('slider'), { target: { value: '10' } })
+
+      expect(screen.getAllByRole('listitem')).toHaveLength(2)
+      expect(screen.getByText('Closest deal')).toBeInTheDocument()
+      expect(screen.getByText('Near deal')).toBeInTheDocument()
+      expect(screen.queryByText('Mid deal')).not.toBeInTheDocument()
+      expect(screen.queryByText('Far deal')).not.toBeInTheDocument()
+      expect(fetchSpy).not.toHaveBeenCalled()
+      expect(localStorage.getItem('gma_distance_miles')).toBe('10')
+    })
+
+    it('includes a dispensary at exactly the selected distance', () => {
+      localStorage.setItem('gma_distance_miles', '10')
+      mockUseDeals.mockReturnValue({
+        data: withData([atDistance('edge', 'Edge', 10)]),
+        isLoading: false,
+        error: null,
+      })
+      render(<DealFeed />)
+
+      expect(screen.getByText('Edge deal')).toBeInTheDocument()
+    })
+
+    it('shows all coverage-zone dispensaries at the 50-mile maximum', () => {
+      localStorage.setItem('gma_distance_miles', '50')
+      mockUseDeals.mockReturnValue({
+        data: withData([atDistance('a', 'Closest', 2.5), atDistance('z', 'Farthest', 50)]),
+        isLoading: false,
+        error: null,
+      })
+      render(<DealFeed />)
+
+      expect(screen.getAllByRole('listitem')).toHaveLength(2)
+    })
+
+    it('reads a persisted gma_distance_miles of 30 on load and filters with it', () => {
+      localStorage.setItem('gma_distance_miles', '30')
+      mockUseDeals.mockReturnValue({
+        data: withData([atDistance('d', 'Far', 12.5), atDistance('x', 'Out of range', 35)]),
+        isLoading: false,
+        error: null,
+      })
+      render(<DealFeed />)
+
+      expect(screen.getByRole('slider', { name: 'Within 30 miles' })).toHaveValue('30')
+      expect(screen.getByText('Far deal')).toBeInTheDocument()
+      expect(screen.queryByText('Out of range deal')).not.toBeInTheDocument()
+    })
+
+    it.each(['abc', '0', '-5', '75', 'null', '"30"', '12.5'])(
+      'falls back to 25 when gma_distance_miles holds %s',
+      (stored) => {
+        localStorage.setItem('gma_distance_miles', stored)
+        mockUseDeals.mockReturnValue({
+          data: withData([atDistance('d', 'Far', 12.5), atDistance('x', 'Out of range', 35)]),
+          isLoading: false,
+          error: null,
+        })
+        render(<DealFeed />)
+
+        expect(screen.getByRole('slider', { name: 'Within 25 miles' })).toHaveValue('25')
+        expect(screen.getByText('Far deal')).toBeInTheDocument()
+        expect(screen.queryByText('Out of range deal')).not.toBeInTheDocument()
+      },
+    )
+
+    it.each([
+      ['1', 'Within 1 mile'],
+      ['50', 'Within 50 miles'],
+    ])('accepts the persisted boundary value %s', (stored, label) => {
+      localStorage.setItem('gma_distance_miles', stored)
+      mockUseDeals.mockReturnValue({ data: fourDispensaries(), isLoading: false, error: null })
+      render(<DealFeed />)
+
+      expect(screen.getByRole('slider', { name: label })).toHaveValue(stored)
+    })
+
+    it('keeps the slider visible and usable when filtering empties the feed', () => {
+      localStorage.setItem('gma_distance_miles', '1')
+      mockUseDeals.mockReturnValue({
+        data: withData([atDistance('a', 'Closest', 2.5)]),
+        isLoading: false,
+        error: null,
+      })
+      render(<DealFeed />)
+
+      expect(screen.getByText('No active deals right now')).toBeInTheDocument()
+      const slider = screen.getByRole('slider', { name: 'Within 1 mile' })
+
+      fireEvent.change(slider, { target: { value: '25' } })
+
+      expect(screen.getByText('Closest deal')).toBeInTheDocument()
+      expect(screen.queryByText('No active deals right now')).not.toBeInTheDocument()
+    })
   })
 })

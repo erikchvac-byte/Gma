@@ -1,4 +1,9 @@
 import DealCard from './DealCard'
+import DistanceFilter, {
+  DEFAULT_DISTANCE_MILES,
+  MAX_DISTANCE_MILES,
+  MIN_DISTANCE_MILES,
+} from './DistanceFilter'
 import { useDeals } from '../hooks/useDeals'
 import { useLocalStorage } from '../hooks/useLocalStorage'
 import { useNow } from '../hooks/useNow'
@@ -36,6 +41,19 @@ export default function DealFeed() {
   // hook JSON-parses, so garbage values can arrive as any type — the runtime
   // check (not the type parameter) guards the fallback to nationalMpg
   const [vehicleMpg] = useLocalStorage<number | null>('gma_vehicle_mpg', null)
+  const [storedDistance, setStoredDistance] = useLocalStorage<number>(
+    'gma_distance_miles',
+    DEFAULT_DISTANCE_MILES,
+  )
+  // same use-site validation pattern as MPG: stored value counts only as a
+  // whole number of miles within the slider's range; anything else means 25
+  const maxDistance =
+    typeof storedDistance === 'number' &&
+    Number.isInteger(storedDistance) &&
+    storedDistance >= MIN_DISTANCE_MILES &&
+    storedDistance <= MAX_DISTANCE_MILES
+      ? storedDistance
+      : DEFAULT_DISTANCE_MILES
 
   if (isLoading) {
     return (
@@ -57,9 +75,14 @@ export default function DealFeed() {
     )
   }
 
+  // distance filter runs against the full in-memory array — no re-fetch;
+  // inclusive boundary so a dispensary at exactly maxDistance stays visible
+  const nearbyDispensaries = data.dispensaries.filter(
+    (dispensary) => dispensary.distanceMiles <= maxDistance,
+  )
   // expiry filter runs BEFORE sortDeals so expired deals never reach the
   // comparator's overnight-wrap heuristic
-  const activeDispensaries = data.dispensaries.map((dispensary) => ({
+  const activeDispensaries = nearbyDispensaries.map((dispensary) => ({
     ...dispensary,
     deals: dispensary.deals.filter((deal) => isDealActive(deal, now)),
   }))
@@ -79,6 +102,7 @@ export default function DealFeed() {
 
   return (
     <section aria-label="Deal feed" className="px-4">
+      <DistanceFilter value={maxDistance} onChange={setStoredDistance} />
       {rows.length === 0 ? (
         <p aria-live="polite" className="text-gray-700">No active deals right now</p>
       ) : (
