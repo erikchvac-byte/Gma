@@ -4,7 +4,7 @@
 
 Gma's Helper (working title; BMad project name: "Happy") is a single-page web app that shows active cannabis happy-hour deals within a user-set road-distance radius from the user's location. Each listing shows miles to the shop and a gas-cost-vs-savings calculation. No browsing, no discovery — just "is this deal worth the drive, right now?"
 
-**Status:** Implementation in progress. Epic 1 (Foundation & Data Layer): stories 1.1–1.3 implemented. Epic 2 (Core Deal Experience): 2.1 Age Gate, 2.2 Deal Feed, 2.3 Deal Cards done (2026-06-10); next: Story 2.4 Gas Cost Calculation.
+**Status:** Implementation in progress. Epic 1 (Foundation & Data Layer): stories 1.1–1.3 implemented. Epic 2 (Core Deal Experience): 2.1 Age Gate, 2.2 Deal Feed, 2.3 Deal Cards, 2.4 Gas Cost done (2026-06-10); next: Story 2.5 Distance Filter.
 **Owner:** Erik (solo founder), Marysville WA area.
 
 ---
@@ -210,6 +210,15 @@ Gma's Helper (working title; BMad project name: "Happy") is a single-page web ap
 **Consequences**: Deferred (see `deferred-work.md`): long-open tabs resurrect stale deals when their clock window next matches (no refetch is a frozen 2.3 boundary — needs monotonic removal or polling, Epic 3 candidate); no `visibilitychange` resync on mobile; server accepts zero-length windows (`start === end` = 24h-active) — scraper validation in Epic 4 should normalize. Countdown can lag up to ~59s (mount-anchored tick, minute precision) — accepted for R&D.
 **Testing**: 82 client tests passing (77 from implementation + 5 review regressions: server-mirror end-only, `hasValidTimedWindow` shapes, "– close"/"Until X" feed derivations, malformed-start tiering). `tsc -b` and lint clean.
 
+### ADR-024: Gas Cost — Pure Formula Module with Shared Validity Predicate, Number-Only MPG Contract
+**Status**: Accepted
+**Date**: 2026-06-10
+**Context**: Story 2.4 delivered the product's core differentiator (ADR-009 side-by-side Discount Display: "35% off — $1.80 to get there"). Review found the MPG-validity rule duplicated between `DealFeed` and `gasCost.ts`, and no guard against a non-finite product reaching display.
+**Decision**: (1) `roundTripGasCost(distanceMiles, gasPrice, mpg)` in `client/src/utils/gasCost.ts` is the ONLY home of the formula `(distanceMiles × 2) × (gasPrice / mpg)`; returns null on any non-positive/non-finite input OR non-finite product — callers render the discount alone, never a broken fragment. (2) `isPositiveFinite` is exported and reused by `DealFeed` for the vehicle-MPG fallback so the validity rule has one definition. (3) `gma_vehicle_mpg` contract: the stored value must be a JSON **number**; strings (even `"20"`), booleans, ≤ 0, and garbage silently fall back to `meta.nationalMpg` — locked by test so Epic 3's writer (Story 3.2) must serialize a number.
+**Rationale**: Money math scattered across components is how display and calculation drift; null-propagation beats defensive formatting (`$NaN`/`$Infinity` can never render). The number-only localStorage contract is asserted now, while the reader is built, so the Epic 3 writer has a failing test to satisfy rather than a silent mismatch.
+**Consequences**: Distance 0 and sub-cent costs are treated as "no gas line" — irrelevant for hardcoded R&D distances (all > 1 mile). `toFixed(2)` half-cent float rounding accepted (estimate with SM-2's 15% margin). Cross-tab MPG staleness inherits the known `useLocalStorage` limitation (deferred since 2.1).
+**Testing**: 97 client tests passing (+15 this story: formula matrix math $1.46/$2.05/$3.63, full invalid-input sweep, overflow guard, vehicle/garbage/JSON-string MPG fallbacks, per-dispensary distances, gasPrice-0 degradation). `tsc -b` and lint clean.
+
 ### ADR-005: Non-Intrusive Ads Only
 **Status:** Accepted
 **Date:** 2026-06-08
@@ -296,3 +305,4 @@ Gma's Helper (working title; BMad project name: "Happy") is a single-page web ap
 | 2026-06-10 | Story 2.1 (Age Gate) implemented, code-reviewed, and marked done. ADR-021 added (single-button gate design, strict boolean check, dialog a11y). Overview status updated to implementation-in-progress. `deferred-work.md` created for review items deferred out of MVP scope. |
 | 2026-06-10 | Story 2.2 (Deal Feed) implemented. ADR-022 added (hook-only data access via `useDeals`, pure `sortDeals` with overnight wrap, pinned en-US timestamp format, friendly-error rendering). 38 client tests passing. |
 | 2026-06-10 | Story 2.3 (Deal Cards) implemented and reviewed. ADR-023 added (single `hasValidTimedWindow` predicate for expiry/countdown/sort coherence, 60s `useNow` clock, server-mirror semantics for degenerate time shapes, presentational `DealCard`). 82 client tests passing. |
+| 2026-06-10 | Story 2.4 (Gas Cost) implemented and reviewed. ADR-024 added (pure formula module with shared `isPositiveFinite` predicate, null-propagation over defensive formatting, number-only `gma_vehicle_mpg` contract locked by test for Epic 3). 97 client tests passing. |

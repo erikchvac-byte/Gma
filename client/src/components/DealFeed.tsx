@@ -1,9 +1,11 @@
 import DealCard from './DealCard'
 import { useDeals } from '../hooks/useDeals'
+import { useLocalStorage } from '../hooks/useLocalStorage'
 import { useNow } from '../hooks/useNow'
 import { hasValidTimedWindow, isDealActive, minutesUntilEnd } from '../utils/dealTime'
 import { sortDeals } from '../utils/sortDeals'
 import { formatCountdown, formatLastUpdated, formatTimeOfDay } from '../utils/formatTime'
+import { formatGasCost, isPositiveFinite, roundTripGasCost } from '../utils/gasCost'
 import type { Deal } from '../types'
 
 // Window line per spec matrix: '9:00 PM – 11:30 PM' / '9:00 PM – close' /
@@ -31,6 +33,9 @@ function countdownText(deal: Deal, now: Date): string | null {
 export default function DealFeed() {
   const { data, isLoading, error } = useDeals()
   const now = useNow()
+  // hook JSON-parses, so garbage values can arrive as any type — the runtime
+  // check (not the type parameter) guards the fallback to nationalMpg
+  const [vehicleMpg] = useLocalStorage<number | null>('gma_vehicle_mpg', null)
 
   if (isLoading) {
     return (
@@ -61,6 +66,17 @@ export default function DealFeed() {
   const rows = sortDeals(activeDispensaries, now)
   const lastUpdated = formatLastUpdated(data.meta.lastScraperRun)
 
+  // stored vehicle MPG wins only when it's a finite number > 0; anything else
+  // (absent, null, garbage string, ≤ 0) silently falls back to nationalMpg
+  const effectiveMpg =
+    typeof vehicleMpg === 'number' && isPositiveFinite(vehicleMpg)
+      ? vehicleMpg
+      : data.meta.nationalMpg
+  const gasCostText = (distanceMiles: number): string | null => {
+    const cost = roundTripGasCost(distanceMiles, data.meta.gasPrice, effectiveMpg)
+    return cost === null ? null : formatGasCost(cost)
+  }
+
   return (
     <section aria-label="Deal feed" className="px-4">
       {rows.length === 0 ? (
@@ -74,6 +90,7 @@ export default function DealFeed() {
                 deal={deal}
                 windowText={windowText(deal)}
                 countdown={countdownText(deal, now)}
+                gasCostText={gasCostText(dispensary.distanceMiles)}
               />
             </li>
           ))}

@@ -6,11 +6,13 @@ export interface DealCardProps {
   // computed upstream (DealFeed): null means "render nothing" — e.g. malformed times
   windowText: string | null
   countdown: string | null
+  // pre-formatted '$X.XX' from gasCost.ts; null → discount renders alone
+  gasCostText: string | null
 }
 
 // Purely presentational: receives data and computed values as props.
 // No fetching, no intervals, no hooks.
-export default function DealCard({ dispensary, deal, windowText, countdown }: DealCardProps) {
+export default function DealCard({ dispensary, deal, windowText, countdown, gasCostText }: DealCardProps) {
   return (
     <article className="rounded-lg border border-gray-200 bg-white p-3">
       <div className="flex items-baseline justify-between gap-2">
@@ -18,7 +20,12 @@ export default function DealCard({ dispensary, deal, windowText, countdown }: De
         <span className="text-sm text-gray-500">{dispensary.distanceMiles.toFixed(1)} miles</span>
       </div>
       <p className="text-gray-700">{deal.description}</p>
-      <p className="font-medium">{deal.discountPct}% off</p>
+      {/* side-by-side Discount Display (ADR-009): one line, em dash */}
+      <p className="font-medium">
+        {gasCostText !== null
+          ? `${deal.discountPct}% off — ${gasCostText} to get there`
+          : `${deal.discountPct}% off`}
+      </p>
       {windowText !== null && <p className="text-sm text-gray-500">{windowText}</p>}
       {countdown !== null && <p className="text-sm font-medium">{countdown} left</p>}
     </article>

@@ -39,6 +39,7 @@ const withData = (dispensaries: Dispensary[]): ApiDataResponse => ({ meta, dispe
 
 describe('DealFeed', () => {
   beforeEach(() => {
+    localStorage.clear()
     vi.useFakeTimers()
     vi.setSystemTime(new Date(2026, 5, 10, 23, 0))
   })
@@ -122,10 +123,11 @@ describe('DealFeed', () => {
       expect(within(items[index]).getByText(description)).toBeInTheDocument()
     })
 
-    // timed HH card: name, distance, discount, 12-hour window, countdown
+    // timed HH card: name, distance, side-by-side Discount Display
+    // (5 mi × 2 × 4.1/28 = $1.46), 12-hour window, countdown
     expect(within(items[0]).getByText('Bravo Buds')).toBeInTheDocument()
     expect(within(items[0]).getByText('5.0 miles')).toBeInTheDocument()
-    expect(within(items[0]).getByText('30% off')).toBeInTheDocument()
+    expect(within(items[0]).getByText('30% off — $1.46 to get there')).toBeInTheDocument()
     expect(within(items[0]).getByText('8:00 PM – 11:30 PM')).toBeInTheDocument()
     expect(within(items[0]).getByText('0:30 left')).toBeInTheDocument()
 
@@ -142,6 +144,34 @@ describe('DealFeed', () => {
     expect(screen.getByText('Last updated Jun 10, 7:45 AM')).toBeInTheDocument()
     expect(screen.queryByText('Charlie Cannabis')).not.toBeInTheDocument()
     expect(screen.queryByText('No active deals right now')).not.toBeInTheDocument()
+  })
+
+  it('computes each card from its own dispensary distance', () => {
+    const near = makeDispensary('near', 'Near Greens', [
+      makeDeal({ type: 'daily', description: 'near deal', discountPct: 20 }),
+    ])
+    const far = { ...makeDispensary('far', 'Far Buds', [
+      makeDeal({ type: 'daily', description: 'far deal', discountPct: 30 }),
+    ]), distanceMiles: 12.4 }
+    mockUseDeals.mockReturnValue({ data: withData([near, far]), isLoading: false, error: null })
+    render(<DealFeed />)
+
+    expect(screen.getByText('30% off — $3.63 to get there')).toBeInTheDocument()
+    expect(screen.getByText('20% off — $1.46 to get there')).toBeInTheDocument()
+  })
+
+  it('falls back to nationalMpg when gma_vehicle_mpg holds a JSON string like "20"', () => {
+    localStorage.setItem('gma_vehicle_mpg', '"20"') // string, not number — contract is a number
+    mockUseDeals.mockReturnValue({
+      data: withData([
+        makeDispensary('a', 'Alpha Greens', [makeDeal({ type: 'daily', description: 'a deal', discountPct: 10 })]),
+      ]),
+      isLoading: false,
+      error: null,
+    })
+    render(<DealFeed />)
+
+    expect(screen.getByText('10% off — $1.46 to get there')).toBeInTheDocument()
   })
 
   it('drops deals that ended earlier today (startTime-aware expiry)', () => {
@@ -239,7 +269,7 @@ describe('DealFeed', () => {
 
     const item = screen.getByRole('listitem')
     expect(within(item).getByText('malformed HH')).toBeInTheDocument()
-    expect(within(item).getByText('10% off')).toBeInTheDocument()
+    expect(within(item).getByText('10% off — $1.46 to get there')).toBeInTheDocument()
     expect(within(item).queryByText(/left/)).not.toBeInTheDocument()
     expect(within(item).queryByText(/AM|PM|close|Active today/)).not.toBeInTheDocument()
     expect(item.textContent).not.toContain('NaN')
@@ -289,5 +319,64 @@ describe('DealFeed', () => {
     expect(screen.queryByRole('listitem')).not.toBeInTheDocument()
     expect(screen.getByText('No active deals right now')).toBeInTheDocument()
     expect(screen.getByText('Last updated Jun 10, 7:45 AM')).toBeInTheDocument()
+  })
+
+  it('uses a valid gma_vehicle_mpg from localStorage instead of nationalMpg', () => {
+    localStorage.setItem('gma_vehicle_mpg', '20')
+    mockUseDeals.mockReturnValue({
+      data: withData([
+        makeDispensary('a', 'Alpha Greens', [makeDeal({ discountPct: 30 })]),
+      ]),
+      isLoading: false,
+      error: null,
+    })
+    render(<DealFeed />)
+
+    // 5 mi × 2 × 4.1/20 = $2.05
+    expect(screen.getByText('30% off — $2.05 to get there')).toBeInTheDocument()
+  })
+
+  it('silently falls back to nationalMpg when gma_vehicle_mpg is garbage', () => {
+    localStorage.setItem('gma_vehicle_mpg', 'abc')
+    mockUseDeals.mockReturnValue({
+      data: withData([
+        makeDispensary('a', 'Alpha Greens', [makeDeal({ discountPct: 30 })]),
+      ]),
+      isLoading: false,
+      error: null,
+    })
+    render(<DealFeed />)
+
+    expect(screen.getByText('30% off — $1.46 to get there')).toBeInTheDocument()
+  })
+
+  it('falls back to nationalMpg when gma_vehicle_mpg is non-positive', () => {
+    localStorage.setItem('gma_vehicle_mpg', '0')
+    mockUseDeals.mockReturnValue({
+      data: withData([
+        makeDispensary('a', 'Alpha Greens', [makeDeal({ discountPct: 30 })]),
+      ]),
+      isLoading: false,
+      error: null,
+    })
+    render(<DealFeed />)
+
+    expect(screen.getByText('30% off — $1.46 to get there')).toBeInTheDocument()
+  })
+
+  it('shows the discount alone when gasPrice is invalid', () => {
+    mockUseDeals.mockReturnValue({
+      data: {
+        meta: { ...meta, gasPrice: 0 },
+        dispensaries: [makeDispensary('a', 'Alpha Greens', [makeDeal({ discountPct: 35 })])],
+      },
+      isLoading: false,
+      error: null,
+    })
+    render(<DealFeed />)
+
+    const item = screen.getByRole('listitem')
+    expect(within(item).getByText('35% off')).toBeInTheDocument()
+    expect(item.textContent).not.toContain('to get there')
   })
 })
