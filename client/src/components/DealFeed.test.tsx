@@ -1,4 +1,4 @@
-import { render, screen, within, act, fireEvent } from '@testing-library/react'
+import { render, screen, within, act, fireEvent, waitFor } from '@testing-library/react'
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import DealFeed from './DealFeed'
 import { useDeals } from '../hooks/useDeals'
@@ -637,5 +637,104 @@ describe('DealFeed', () => {
         expect(screen.queryByText(/unavailable/)).not.toBeInTheDocument()
       },
     )
+  })
+
+  describe('vehicle precision mode', () => {
+    const jsonResponse = (body: unknown): Response =>
+      ({ ok: true, status: 200, json: async () => body }) as unknown as Response
+
+    const menu = (...values: string[]) =>
+      jsonResponse({ menuItem: values.map((value) => ({ text: value, value })) })
+
+    const stubFuelEconomy = (comb08: number) => {
+      const fetchMock = vi.fn((input: RequestInfo | URL) => {
+        const url = String(input)
+        if (url.includes('/menu/year')) return Promise.resolve(menu('2019'))
+        if (url.includes('/menu/make?')) return Promise.resolve(menu('Toyota'))
+        if (url.includes('/menu/model?')) return Promise.resolve(menu('Camry'))
+        if (url.includes('/menu/options?')) return Promise.resolve(menu('41234'))
+        return Promise.resolve(jsonResponse({ comb08 }))
+      })
+      vi.stubGlobal('fetch', fetchMock)
+      return fetchMock
+    }
+
+    afterEach(() => {
+      vi.unstubAllGlobals()
+    })
+
+    it('shows the gear icon and uses nationalMpg when no vehicle is set', () => {
+      mockUseDeals.mockReturnValue({
+        data: withData([makeDispensary('a', 'Alpha Greens', [makeDeal({ discountPct: 30 })])]),
+        isLoading: false,
+        error: null,
+      })
+      render(<DealFeed />)
+
+      expect(screen.getByRole('button', { name: 'Vehicle settings' })).toBeInTheDocument()
+      expect(screen.queryByText(/· \d+ MPG/)).not.toBeInTheDocument()
+      expect(screen.getByText('30% off — $1.46 to get there')).toBeInTheDocument()
+    })
+
+    it('recalculates every visible gas cost immediately on vehicle selection and persists it', async () => {
+      // async fueleconomy cascade needs real timers (deal has no timed window)
+      vi.useRealTimers()
+      stubFuelEconomy(20)
+      mockUseDeals.mockReturnValue({
+        data: withData([
+          makeDispensary('a', 'Alpha Greens', [makeDeal({ description: 'a deal', discountPct: 30 })]),
+          { ...makeDispensary('b', 'Bravo Buds', [makeDeal({ description: 'b deal', discountPct: 10 })]), distanceMiles: 12.4 },
+        ]),
+        isLoading: false,
+        error: null,
+      })
+      render(<DealFeed />)
+      expect(screen.getByText('30% off — $1.46 to get there')).toBeInTheDocument()
+
+      fireEvent.click(screen.getByRole('button', { name: 'Vehicle settings' }))
+      await screen.findByRole('option', { name: '2019' })
+      fireEvent.change(screen.getByLabelText('Year'), { target: { value: '2019' } })
+      await screen.findByRole('option', { name: 'Toyota' })
+      fireEvent.change(screen.getByLabelText('Make'), { target: { value: 'Toyota' } })
+      await screen.findByRole('option', { name: 'Camry' })
+      fireEvent.change(screen.getByLabelText('Model'), { target: { value: 'Camry' } })
+
+      // 5 mi × 2 × 4.1/20 = $2.05 and 12.4 mi × 2 × 4.1/20 = $5.08 — no reload
+      await waitFor(() => {
+        expect(screen.getByText('30% off — $2.05 to get there')).toBeInTheDocument()
+      })
+      expect(screen.getByText('10% off — $5.08 to get there')).toBeInTheDocument()
+      expect(screen.getByText('2019 Toyota Camry · 20 MPG')).toBeInTheDocument()
+      expect(localStorage.getItem('gma_vehicle_mpg')).toBe('20')
+      expect(localStorage.getItem('gma_vehicle_label')).toBe('"2019 Toyota Camry"')
+    })
+
+    it('restores the saved vehicle label and MPG on load', () => {
+      localStorage.setItem('gma_vehicle_mpg', '20')
+      localStorage.setItem('gma_vehicle_label', '"2019 Toyota Camry"')
+      mockUseDeals.mockReturnValue({
+        data: withData([makeDispensary('a', 'Alpha Greens', [makeDeal({ discountPct: 30 })])]),
+        isLoading: false,
+        error: null,
+      })
+      render(<DealFeed />)
+
+      expect(screen.getByText('2019 Toyota Camry · 20 MPG')).toBeInTheDocument()
+      expect(screen.getByText('30% off — $2.05 to get there')).toBeInTheDocument()
+    })
+
+    it('treats corrupt stored mpg as no vehicle: no summary, costs use nationalMpg', () => {
+      localStorage.setItem('gma_vehicle_mpg', 'abc')
+      localStorage.setItem('gma_vehicle_label', '"2019 Toyota Camry"')
+      mockUseDeals.mockReturnValue({
+        data: withData([makeDispensary('a', 'Alpha Greens', [makeDeal({ discountPct: 30 })])]),
+        isLoading: false,
+        error: null,
+      })
+      render(<DealFeed />)
+
+      expect(screen.queryByText(/· \d+ MPG/)).not.toBeInTheDocument()
+      expect(screen.getByText('30% off — $1.46 to get there')).toBeInTheDocument()
+    })
   })
 })

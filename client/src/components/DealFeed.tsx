@@ -4,9 +4,11 @@ import DistanceFilter, {
   MAX_DISTANCE_MILES,
   MIN_DISTANCE_MILES,
 } from './DistanceFilter'
+import VehicleSelector from './VehicleSelector'
 import { useDeals } from '../hooks/useDeals'
 import { useLocalStorage } from '../hooks/useLocalStorage'
 import { useNow } from '../hooks/useNow'
+import { useVehicleMpg } from '../hooks/useVehicleMpg'
 import { hasValidTimedWindow, isDealActive, minutesUntilEnd } from '../utils/dealTime'
 import { sortDeals } from '../utils/sortDeals'
 import { formatCountdown, formatLastUpdated, formatTimeOfDay } from '../utils/formatTime'
@@ -39,9 +41,9 @@ function countdownText(deal: Deal, now: Date): string | null {
 export default function DealFeed() {
   const { data, isLoading, error } = useDeals()
   const now = useNow()
-  // hook JSON-parses, so garbage values can arrive as any type — the runtime
-  // check (not the type parameter) guards the fallback to nationalMpg
-  const [vehicleMpg] = useLocalStorage<number | null>('gma_vehicle_mpg', null)
+  // hook validates the stored pair (garbage → null); selection re-renders
+  // this component, so every card recalculates without a reload
+  const { mpg: vehicleMpg, label: vehicleLabel, setVehicle } = useVehicleMpg()
   const [storedDistance, setStoredDistance] = useLocalStorage<number>(
     'gma_distance_miles',
     DEFAULT_DISTANCE_MILES,
@@ -109,6 +111,7 @@ export default function DealFeed() {
 
   return (
     <section aria-label="Deal feed" className="px-4">
+      <VehicleSelector mpg={vehicleMpg} label={vehicleLabel} onMpgChange={setVehicle} />
       <DistanceFilter value={maxDistance} onChange={setStoredDistance} />
       {rows.length === 0 ? (
         <p aria-live="polite" className="text-gray-700">No active deals right now</p>
