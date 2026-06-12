@@ -2,7 +2,7 @@
 title: 'Vehicle Precision Mode'
 type: 'feature'
 created: '2026-06-11'
-status: 'in-review'
+status: 'in-progress'
 context: ['{project-root}/_bmad-output/implementation-artifacts/epic-3-context.md']
 baseline_commit: 'fdc051a'
 ---
@@ -76,6 +76,23 @@ baseline_commit: 'fdc051a'
 - Given a saved vehicle, when the page reloads, then the label and vehicle MPG are restored and used.
 - Given fueleconomy.gov is down, when the panel is opened, then an error shows in the panel only and no unhandled rejection or feed error occurs.
 - Given `cd client; npm test -- --run; npx tsc -b; npm run lint`, when run, then all pass; `server/` untouched (`cd server; npm test -- --run` unchanged).
+
+### Review Findings
+
+Three-layer adversarial review 2026-06-11 (Blind Hunter / Edge Case Hunter / Acceptance Auditor) on `fdc051a..b34689b`. Auditor verdict: 5/5 ACs pass, 0 spec violations. Findings:
+
+- [ ] [Review][Patch] Cascade menu fetches have no stale-response invalidation — out-of-order `loadMakes`/`loadModels` responses can populate lists for the wrong year/make; shared `run` lets overlapping calls corrupt `isLoading`/`error`; previous year's makes stay enabled and selectable while the replacement fetch is in flight [client/src/hooks/useFuelEconomy.ts:52-80, client/src/components/VehicleSelector.tsx:105,124]
+- [ ] [Review][Patch] In-flight `resolveMpg` not invalidated by a newer selection — last network response wins, can fire `onMpgChange` with an abandoned vehicle (or a pre-change `${year} ${make}` closure) and persist the wrong MPG/label [client/src/components/VehicleSelector.tsx:43-52, client/src/hooks/useFuelEconomy.ts:99-123]
+- [ ] [Review][Patch] Panel error message is hardcoded and misleading — hook's specific errors ("No vehicles found…", "No MPG available…") are dead code, and "Gas costs will use the national average" is false when a saved vehicle remains in effect [client/src/components/VehicleSelector.tsx:62-66]
+- [ ] [Review][Patch] mpg/label pair validated independently — valid `gma_vehicle_mpg` + corrupt/missing `gma_vehicle_label` personalizes every gas cost with zero visible indicator; validate the pair atomically [client/src/hooks/useVehicleMpg.ts:29-30]
+- [ ] [Review][Patch] Stale error alert survives panel close/reopen — `togglePanel` never clears `error` and skips `loadYears` once populated [client/src/components/VehicleSelector.tsx:24-28]
+- [ ] [Review][Patch] Duplicate menu `value` entries collide as React keys — dedupe in `toMenuValues` [client/src/hooks/useFuelEconomy.ts:22-32]
+- [ ] [Review][Patch] A11y: decorative ⚙️ glyph not `aria-hidden`; `aria-expanded` without `aria-controls` [client/src/components/VehicleSelector.tsx:55-64]
+- [x] [Review][Defer] No loading indicator and no fetch timeout — `isLoading` exposed but never rendered; a hung request leaves an empty panel with no feedback — deferred, UX polish beyond spec scope
+- [x] [Review][Defer] Failed mid-cascade load has no retry path — same-value re-select fires no change event; reopen skips `loadYears` — deferred, retry affordance is a UX design decision
+- [x] [Review][Defer] HTTP 200 with empty menu is a silent dead end — placeholder-only dropdown, no "no data" message — deferred, UX polish beyond spec scope
+
+Dismissed as noise (3): `setVehicle` write-path validation (guarded upstream by `resolveMpg`'s finite>0 gate + read-path validation); `vi.useRealTimers()` leak (false positive — top-level `beforeEach` re-fakes timers per test); cross-tab localStorage sync (already tracked in deferred-work.md).
 
 ## Spec Change Log
 

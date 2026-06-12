@@ -1,5 +1,19 @@
 # Deferred Work
 
+## PRE-LAUNCH GATE — verify-with-counsel register (from UX Reviewer Gate, 2026-06-12)
+
+**These three items MUST be cleared with counsel before public launch** (source: `_bmad-output/planning-artifacts/ux-designs/ux-Happy-2026-06-11/{.decision-log.md, review-regulated-content.md}`):
+
+1. **WAC 314-55-155 advertiser status** — does republishing scraped retailer promotional copy make the aggregator an "advertiser" under WA cannabis advertising rules? (Meanwhile, EXPERIENCE.md Honest Math rule 6 constrains display: plain text, ~80-char cap, blocklist suppression — implement before launch.)
+2. **WA mandatory-warning applicability** — do any mandatory warning statements ("This product has intoxicating effects…" family) apply to a non-commerce aggregator? The specced disclaimer footer reserves a slot for this text.
+3. **Age-gate no-decline posture** — ADR-021's single-button attestation (no decline path) needs defensibility confirmation; industry norm is a two-option gate.
+
+
+
+- **No loading indicator and no fetch timeout in the vehicle panel** — `useFuelEconomy` exposes `isLoading` but `VehicleSelector` never renders it, and `fetchJson` has no AbortController/timeout, so a hung fueleconomy.gov connection leaves a permanently empty Year dropdown with no spinner, no error, no recovery. UX polish beyond the 3.2 spec; needs Erik's call on the affordance (spinner vs. disabled state vs. timeout-to-error).
+- **Failed mid-cascade load has no retry path** — if `loadMakes`/`loadModels` fails transiently, the error shows but re-selecting the same value fires no change event and reopening the panel skips `loadYears` once populated; the only recovery is switching to another value and back. Retry affordance is a UX design decision.
+- **HTTP 200 with an empty menu is a silent dead end** — `{ menuItem: [] }` (or an unrecognized shape) renders a placeholder-only dropdown with the next select disabled and no message; "no data" feedback distinct from success needs copy/design input.
+
 ## Deferred from: code review of spec-3-1-eia-gas-price-refresh (2026-06-11)
 
 - **`atomicWriteJson` is single-writer only** — the tmp filename is deterministic (`data.tmp.json`) and `refreshGasPrice` does an unserialized read-modify-write of the whole file. Safe today (one writer, sync read+write in one tick), but Epic 4's scraper engine reusing this utility MUST add writer serialization (shared mutex/queue) and unique tmp names (pid/random suffix) first — otherwise lost updates and tmp collisions. Blocker-grade for Story 4.1, noted in `atomicWrite.ts` comment.
