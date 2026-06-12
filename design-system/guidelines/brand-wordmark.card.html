@@ -1,0 +1,47 @@
+<!-- @dsCard group="Brand" viewport="700x230" name="Wordmark" subtitle="The mark: a navigation arrow + plain Public Sans wordmark — a tool, not a stoner brand" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="../styles.css" />
+<script src="../assets/icons.js"></script>
+<style>
+  body { margin: 0; padding: 32px; background: var(--surface-card); font-family: var(--font-sans); }
+  .lockup { display: flex; align-items: center; gap: 16px; }
+  .mark {
+    width: 56px; height: 56px; border-radius: 14px;
+    background: var(--green-700); color: var(--white);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: var(--shadow-sm);
+  }
+  .mark svg { transform: rotate(0deg); }
+  .word { font-size: 34px; font-weight: 700; letter-spacing: -0.02em; color: var(--text-strong); line-height: 1; }
+  .word .apos { color: var(--green-700); }
+  .tag { margin-top: 8px; font-size: 15px; color: var(--text-muted); }
+  .row2 { display: flex; align-items: center; gap: 28px; margin-top: 30px; }
+  .small { display: flex; align-items: center; gap: 9px; }
+  .small .m { width: 28px; height: 28px; border-radius: 8px; background: var(--green-700); color: #fff; display: flex; align-items: center; justify-content: center; }
+  .small .w { font-size: 17px; font-weight: 700; letter-spacing: -0.01em; color: var(--text-strong); }
+  .inv { background: var(--surface-inverse); padding: 12px 16px; border-radius: 12px; }
+  .inv .w { color: #fff; }
+</style>
+</head>
+<body>
+  <div class="lockup">
+    <div class="mark" id="mark"></div>
+    <div>
+      <div class="word">Gma<span class="apos">'</span>s&nbsp;Helper</div>
+      <div class="tag">Is it worth the drive?</div>
+    </div>
+  </div>
+  <div class="row2">
+    <div class="small"><span class="m" id="m2"></span><span class="w">Gma's Helper</span></div>
+    <div class="small inv"><span class="m" id="m3"></span><span class="w">Gma's Helper</span></div>
+  </div>
+  <script>
+    document.getElementById('mark').innerHTML = gmaIcon('navigation', 30, 2.25);
+    document.getElementById('m2').innerHTML = gmaIcon('navigation', 16, 2.25);
+    document.getElementById('m3').innerHTML = gmaIcon('navigation', 16, 2.25);
+  </script>
+</body>
+</html>

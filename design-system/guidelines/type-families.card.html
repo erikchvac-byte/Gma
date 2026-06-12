@@ -1,0 +1,44 @@
+<!-- @dsCard group="Type" viewport="700x230" name="Typefaces" subtitle="Public Sans for everything readable; IBM Plex Mono for trusted numbers" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="../styles.css" />
+<style>
+  body { margin: 0; padding: 24px; background: var(--surface-card); }
+  .block { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  .lab { font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+  .meta { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); margin-bottom: 12px; }
+  .sans-spec { font-family: var(--font-sans); color: var(--text-strong); }
+  .mono-spec { font-family: var(--font-mono); color: var(--text-strong); font-variant-numeric: tabular-nums slashed-zero; }
+  .big { font-size: 40px; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; }
+  .big-mono { font-size: 34px; font-weight: 600; line-height: 1.1; }
+  .weights { margin-top: 14px; font-size: 16px; display:flex; gap:18px; flex-wrap:wrap; color: var(--text-body); }
+  .weights span { color: var(--text-strong); }
+</style>
+</head>
+<body>
+  <div class="block">
+    <div>
+      <div class="lab">Display / Body</div>
+      <div class="meta">Public Sans</div>
+      <div class="sans-spec big">Worth the drive?</div>
+      <div class="weights sans-spec">
+        <span style="font-weight:400">Regular</span>
+        <span style="font-weight:500">Medium</span>
+        <span style="font-weight:600">Semibold</span>
+        <span style="font-weight:700">Bold</span>
+      </div>
+    </div>
+    <div>
+      <div class="lab">Figures</div>
+      <div class="meta">IBM Plex Mono · tabular</div>
+      <div class="mono-spec big-mono">9.8 mi · $1.46</div>
+      <div class="weights mono-spec">
+        <span style="font-weight:400">0123456789</span>
+      </div>
+      <div class="mono-spec" style="margin-top:10px;font-size:14px;color:var(--text-muted)">24 min left · 9:00 PM – close</div>
+    </div>
+  </div>
+</body>
+</html>

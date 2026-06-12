@@ -1,0 +1,40 @@
+<!-- @dsCard group="Brand" viewport="700x300" name="Voice — say it straight" subtitle="Plain, honest, second-person. No hype, no cannabis-culture slang, no emoji" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="../styles.css" />
+<style>
+  body { margin: 0; padding: 24px; background: var(--surface-card); font-family: var(--font-sans); color: var(--text-body); }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+  .col h4 { font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; margin-bottom: 14px; }
+  .do h4 { color: var(--green-700); }
+  .dont h4 { color: var(--gray-500); }
+  .ln { display: flex; gap: 10px; align-items: flex-start; padding: 7px 0; font-size: 14px; line-height: 1.45; }
+  .ln .ic { flex: none; width: 16px; height: 16px; border-radius: 50%; margin-top: 2px; display:flex;align-items:center;justify-content:center; font-size:11px; font-weight:700; }
+  .do .ic { background: var(--green-100); color: var(--green-800); }
+  .dont .ic { background: var(--gray-100); color: var(--gray-400); }
+  .dont .ln { color: var(--text-muted); text-decoration: line-through; text-decoration-color: var(--gray-300); }
+</style>
+</head>
+<body>
+  <div class="cols">
+    <div class="col do">
+      <h4>Say it straight</h4>
+      <div class="ln"><span class="ic">✓</span><span>Is it worth the drive?</span></div>
+      <div class="ln"><span class="ic">✓</span><span>30% off — $1.46 to get there</span></div>
+      <div class="ln"><span class="ic">✓</span><span>You must be 21 or older to view this content.</span></div>
+      <div class="ln"><span class="ic">✓</span><span>2 sources unavailable</span></div>
+      <div class="ln"><span class="ic">✓</span><span>No active deals right now</span></div>
+    </div>
+    <div class="col dont">
+      <h4>Not this</h4>
+      <div class="ln"><span class="ic">✕</span><span>🔥 INSANE blazed deals near you!! 🌿</span></div>
+      <div class="ln"><span class="ic">✕</span><span>You could save up to a whopping 30%!</span></div>
+      <div class="ln"><span class="ic">✕</span><span>Verify your age to unlock the vault</span></div>
+      <div class="ln"><span class="ic">✕</span><span>Oops! Something went wrong 😅</span></div>
+      <div class="ln"><span class="ic">✕</span><span>Bummer — no dank drops in your zone</span></div>
+    </div>
+  </div>
+</body>
+</html>

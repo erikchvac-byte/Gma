@@ -1,0 +1,35 @@
+<!-- @dsCard group="Type" viewport="700x180" name="Figures — the honest math" subtitle="Money, distance & time are always tabular mono so the math reads as fact" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="../styles.css" />
+<style>
+  body { margin: 0; padding: 24px; background: var(--surface-card); font-family: var(--font-sans); color: var(--text-body); }
+  .lead { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; }
+  .display { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+  .pct { font-family: var(--font-sans); font-weight: 700; font-size: 22px; color: var(--text-strong); }
+  .dash { color: var(--gray-300); font-size: 22px; }
+  .fig { font-family: var(--font-mono); font-variant-numeric: tabular-nums slashed-zero; font-weight: 600; font-size: 22px; color: var(--text-strong); }
+  .unit { font-size: 14px; color: var(--text-muted); font-weight: 400; }
+  .strip { display:flex; gap: 28px; margin-top: 22px; }
+  .cell .k { font-size: 11px; letter-spacing:.04em; text-transform:uppercase; color: var(--text-muted); margin-bottom: 4px; }
+  .cell .v { font-family: var(--font-mono); font-variant-numeric: tabular-nums slashed-zero; font-weight: 600; font-size: 18px; color: var(--text-strong); }
+  .v.urgent { color: var(--text-urgent); }
+</style>
+</head>
+<body>
+  <div class="lead">The product is one comparison. It must read as fact, not marketing — so every number is monospaced and tabular.</div>
+  <div class="display">
+    <span class="pct">30% off</span>
+    <span class="dash">—</span>
+    <span class="fig">$1.46 <span class="unit">to get there</span></span>
+  </div>
+  <div class="strip">
+    <div class="cell"><div class="k">Distance</div><div class="v">9.8 mi</div></div>
+    <div class="cell"><div class="k">Gas cost</div><div class="v">$1.46</div></div>
+    <div class="cell"><div class="k">Window</div><div class="v">9:00 PM – close</div></div>
+    <div class="cell"><div class="k">Countdown</div><div class="v urgent">24 min left</div></div>
+  </div>
+</body>
+</html>

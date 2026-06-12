@@ -1,0 +1,55 @@
+/* ============================================================
+   Gma's Helper — Base element styling
+   Minimal, opinionated resets that make raw HTML look "on brand"
+   without any component classes. Kept small on purpose.
+   ============================================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font: var(--font-body);
+  color: var(--text-body);
+  background: var(--surface-page);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4 {
+  margin: 0;
+  color: var(--text-strong);
+  font-family: var(--font-sans);
+  line-height: var(--leading-snug);
+}
+
+h1 { font-size: var(--text-2xl); font-weight: var(--weight-bold); }
+h2 { font-size: var(--text-lg);  font-weight: var(--weight-semibold); }
+h3 { font-size: var(--text-base); font-weight: var(--weight-semibold); }
+
+p { margin: 0; }
+
+a {
+  color: var(--text-link);
+  text-decoration: none;
+}
+a:hover { text-decoration: underline; }
+
+/* Keyboard focus is always visible and on-brand */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: var(--border-thick) solid var(--focus-ring);
+  outline-offset: var(--ring-offset);
+}
+
+/* Numbers that represent money, distance, or time read as figures */
+:where(time, [data-figure]) {
+  font-variant-numeric: tabular-nums slashed-zero;
+}
