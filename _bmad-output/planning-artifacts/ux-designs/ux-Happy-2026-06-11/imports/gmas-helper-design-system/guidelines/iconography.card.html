@@ -1,0 +1,25 @@
+<!-- @dsCard group="Brand" viewport="700x180" name="Iconography" subtitle="Lucide — 2px stroke, rounded caps. Self-hosted in assets/icons" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="../styles.css" />
+<script src="../assets/icons.js"></script>
+<style>
+  body { margin: 0; padding: 24px; background: var(--surface-card); font-family: var(--font-sans); }
+  .grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 8px 4px; }
+  .cell { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 8px 2px; color: var(--text-strong); }
+  .cell .lbl { font-family: var(--font-mono); font-size: 9px; color: var(--text-muted); text-align: center; }
+</style>
+</head>
+<body>
+  <div class="grid" id="grid"></div>
+  <script>
+    const names = ['navigation','map-pin','fuel','clock','percent','badge-percent','car',
+      'settings','sliders-horizontal','search','shield-check','check','x','chevron-down',
+      'chevron-right','arrow-right','info','circle-alert','triangle-alert'];
+    document.getElementById('grid').innerHTML = names.map(n =>
+      `<div class="cell">${gmaIcon(n, 22)}<span class="lbl">${n}</span></div>`).join('');
+  </script>
+</body>
+</html>

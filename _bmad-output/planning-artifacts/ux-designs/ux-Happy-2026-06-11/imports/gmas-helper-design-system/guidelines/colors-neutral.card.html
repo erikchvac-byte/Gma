@@ -1,0 +1,28 @@
+<!-- @dsCard group="Colors" viewport="700x150" name="Neutral ramp" subtitle="The information grid — page, cards, borders, body & muted text" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="../styles.css" />
+<style>
+  body { margin: 0; padding: 20px; background: var(--surface-card); font-family: var(--font-sans); }
+  .row { display: flex; gap: 8px; }
+  .sw { flex: 1; }
+  .chip { height: 56px; border-radius: var(--radius-md); border: 1px solid var(--gray-200); }
+  .name { font-size: 11px; font-weight: 600; color: var(--text-strong); margin-top: 7px; }
+  .hex { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); }
+</style>
+</head>
+<body>
+  <div class="row">
+    <div class="sw"><div class="chip" style="background:var(--gray-50)"></div><div class="name">50 · page</div><div class="hex">#f9fafb</div></div>
+    <div class="sw"><div class="chip" style="background:var(--white)"></div><div class="name">white · card</div><div class="hex">#ffffff</div></div>
+    <div class="sw"><div class="chip" style="background:var(--gray-200)"></div><div class="name">200 · border</div><div class="hex">#e5e7eb</div></div>
+    <div class="sw"><div class="chip" style="background:var(--gray-300)"></div><div class="name">300</div><div class="hex">#d1d5db</div></div>
+    <div class="sw"><div class="chip" style="background:var(--gray-400)"></div><div class="name">400</div><div class="hex">#9ca3af</div></div>
+    <div class="sw"><div class="chip" style="background:var(--gray-500)"></div><div class="name">500 · muted</div><div class="hex">#6b7280</div></div>
+    <div class="sw"><div class="chip" style="background:var(--gray-700)"></div><div class="name">700 · body</div><div class="hex">#374151</div></div>
+    <div class="sw"><div class="chip" style="background:var(--gray-900)"></div><div class="name">900 · strong</div><div class="hex">#111827</div></div>
+  </div>
+</body>
+</html>

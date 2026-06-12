@@ -1,0 +1,48 @@
+/* ============================================================
+   Gma's Helper — Spacing, radius, sizing tokens
+   A 4px base grid (the Tailwind heritage of the codebase).
+   Tight, efficient density — the feed is a scannable list,
+   not a roomy marketing page.
+   ============================================================ */
+
+:root {
+  /* Spacing scale (4px base) */
+  --space-0:  0;
+  --space-1:  0.25rem;  /*  4px */
+  --space-2:  0.5rem;   /*  8px */
+  --space-3:  0.75rem;  /* 12px — card padding (DealCard) */
+  --space-4:  1rem;     /* 16px — page gutter, section padding */
+  --space-5:  1.25rem;  /* 20px */
+  --space-6:  1.5rem;   /* 24px */
+  --space-8:  2rem;     /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+
+  /* Common semantic spacing */
+  --gutter-page:    var(--space-4); /* px-4 in the app */
+  --gap-feed:       var(--space-3); /* space-y-3 between deal cards */
+  --pad-card:       var(--space-3);
+  --pad-control:    var(--space-3);
+
+  /* Radius — Tailwind rounded-lg heritage (8px) is the house corner */
+  --radius-sm:   4px;
+  --radius-md:   6px;
+  --radius-lg:   8px;   /* cards, buttons, inputs — the default */
+  --radius-xl:   12px;
+  --radius-2xl:  16px;
+  --radius-full: 9999px;
+
+  /* Border widths */
+  --border-hairline: 1px;
+  --border-thick:    2px; /* focus / age-gate emphasis */
+
+  /* Hit targets — mobile-first, 44px minimum (WCAG / car-key context) */
+  --control-height:    44px;
+  --control-height-sm: 36px;
+  --tap-min:           44px;
+
+  /* Layout */
+  --content-max:   640px;  /* the feed is a single readable column */
+  --content-wide:  1120px; /* marketing / desktop shell */
+}

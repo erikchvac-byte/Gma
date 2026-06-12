@@ -1,0 +1,99 @@
+/* ============================================================
+   Gma's Helper — Color tokens
+   A disciplined, trustworthy palette: a single confident green
+   for action, a full neutral gray ramp for the honest grid of
+   information, and a warm amber reserved strictly for urgency
+   (happy-hour countdowns / time-sensitive deals).
+   NOT stoner-branded. NOT youth-marketed. A clean utility.
+   ============================================================ */
+
+:root {
+  /* ---- Brand green (primary action) ---- */
+  --green-50:  #f0fdf4;
+  --green-100: #dcfce7;
+  --green-200: #bbf7d0;
+  --green-300: #86efac;
+  --green-500: #22c55e;
+  --green-600: #16a34a;
+  --green-700: #15803d; /* primary — the confirm/go color from the app */
+  --green-800: #166534; /* primary hover */
+  --green-900: #14532d;
+
+  /* ---- Neutral gray ramp (the information grid) ---- */
+  --gray-50:  #f9fafb; /* page background */
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb; /* default hairline border */
+  --gray-300: #d1d5db; /* control track / strong border */
+  --gray-400: #9ca3af; /* slider thumb / disabled fg */
+  --gray-500: #6b7280; /* muted / secondary text */
+  --gray-600: #4b5563;
+  --gray-700: #374151; /* body text */
+  --gray-800: #1f2937;
+  --gray-900: #111827; /* headings, inverse surfaces (age gate) */
+  --white:    #ffffff;
+
+  /* ---- Amber (urgency only — time-limited deals, countdowns) ---- */
+  --amber-50:  #fffbeb;
+  --amber-100: #fef3c7;
+  --amber-200: #fde68a;
+  --amber-600: #d97706;
+  --amber-700: #b45309;
+
+  /* ---- Red (errors / destructive) ---- */
+  --red-50:  #fef2f2;
+  --red-200: #fecaca;
+  --red-600: #dc2626;
+  --red-700: #b91c1c;
+
+  /* ============================================================
+     Semantic aliases — reference these in components, not raw ramps
+     ============================================================ */
+
+  /* Surfaces */
+  --surface-page:     var(--gray-50);
+  --surface-card:     var(--white);
+  --surface-sunken:   var(--gray-100);
+  --surface-inverse:  var(--gray-900); /* full-screen takeovers: age gate */
+  --surface-urgent:   var(--amber-50);
+  --surface-error:    var(--red-50);
+
+  /* Text */
+  --text-strong:      var(--gray-900); /* dispensary names, headings */
+  --text-body:        var(--gray-700); /* deal descriptions, prose */
+  --text-muted:       var(--gray-500); /* distance, window, footnotes */
+  --text-on-primary:  var(--white);
+  --text-on-inverse:  var(--white);
+  --text-urgent:      var(--amber-700);
+  --text-error:       var(--red-700);
+  --text-link:        var(--green-700);
+
+  /* Action — primary (the single "go" affordance) */
+  --action-primary-bg:        var(--green-700);
+  --action-primary-bg-hover:  var(--green-800);
+  --action-primary-bg-active: var(--green-900);
+  --action-primary-fg:        var(--white);
+
+  /* Action — secondary (neutral, outlined) */
+  --action-secondary-bg:        var(--white);
+  --action-secondary-bg-hover:  var(--gray-50);
+  --action-secondary-border:    var(--gray-300);
+  --action-secondary-fg:        var(--gray-700);
+
+  /* Action — ghost / quiet */
+  --action-ghost-bg-hover:      var(--gray-100);
+  --action-ghost-fg:            var(--gray-700);
+
+  /* Borders */
+  --border-default:   var(--gray-200); /* card hairline */
+  --border-strong:    var(--gray-300);
+  --border-focus:     var(--green-700);
+
+  /* Status accents */
+  --status-fresh:     var(--green-600);
+  --status-stale:     var(--gray-400); /* muted, non-intrusive (ADR-026) */
+  --status-urgent:    var(--amber-600);
+  --status-error:     var(--red-600);
+
+  /* Focus ring (WCAG-visible keyboard outline) */
+  --focus-ring:       var(--green-700);
+}

@@ -1,0 +1,58 @@
+/* ============================================================
+   Gma's Helper — Typography tokens
+   Public Sans for everything readable; IBM Plex Mono for the
+   numbers that have to be trusted (miles, dollars, countdowns).
+   Mobile-first scale — the primary surface is a phone in a
+   driveway, deciding whether to turn the key.
+   ============================================================ */
+
+:root {
+  /* Families */
+  --font-sans: 'Public Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
+
+  /* Weights */
+  --weight-regular:  400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+
+  /* Type scale (rem; 1rem = 16px) */
+  --text-xs:   0.75rem;   /* 12px — micro labels, ticks */
+  --text-sm:   0.875rem;  /* 14px — distance, window, footnotes */
+  --text-base: 1rem;      /* 16px — deal descriptions, body */
+  --text-lg:   1.125rem;  /* 18px — age-gate prompt, lead */
+  --text-xl:   1.25rem;   /* 20px */
+  --text-2xl:  1.5rem;    /* 24px — page title "Gma's Helper" */
+  --text-3xl:  1.875rem;  /* 30px — marketing headings */
+  --text-4xl:  2.25rem;   /* 36px */
+  --text-5xl:  3rem;      /* 48px — hero */
+
+  /* Line heights */
+  --leading-tight:   1.2;
+  --leading-snug:    1.35;
+  --leading-normal:  1.5;
+  --leading-relaxed: 1.65;
+
+  /* Letter spacing */
+  --tracking-tight:  -0.02em; /* large display */
+  --tracking-normal: 0;
+  --tracking-wide:   0.04em;  /* small caps / overline labels */
+
+  /* Semantic roles */
+  --font-display:  var(--weight-bold)     var(--text-2xl)/var(--leading-tight) var(--font-sans);
+  --font-heading:  var(--weight-semibold) var(--text-lg)/var(--leading-snug)   var(--font-sans);
+  --font-body:     var(--weight-regular)  var(--text-base)/var(--leading-normal) var(--font-sans);
+  --font-label:    var(--weight-medium)   var(--text-sm)/var(--leading-snug)   var(--font-sans);
+  --font-caption:  var(--weight-regular)  var(--text-sm)/var(--leading-snug)   var(--font-sans);
+  /* tabular figures — always for money / distance / time */
+  --font-figure:   var(--weight-medium)   var(--text-base)/var(--leading-snug) var(--font-mono);
+}
+
+/* Tabular, slashed-zero numerals wherever money & distance appear */
+.gma-figure,
+[data-figure] {
+  font-family: var(--font-mono);
+  font-feature-settings: 'tnum' 1, 'zero' 1;
+  font-variant-numeric: tabular-nums slashed-zero;
+}

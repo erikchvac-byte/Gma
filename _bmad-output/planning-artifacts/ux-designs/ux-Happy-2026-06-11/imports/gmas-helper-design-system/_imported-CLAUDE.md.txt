@@ -1,0 +1,260 @@
+# Gma's Helper — Design System
+
+This folder is the **Gma's Helper Design System** — a standalone CSS + React component library for the *Happy* app (is this cannabis happy-hour deal worth the drive?). Drop this folder anywhere in the project, point `styles.css` and `_ds_bundle.js` at it, and build.
+
+---
+
+## What this is
+
+A small, disciplined design system reverse-engineered from the Happy codebase and elevated into named tokens and reusable components. The original app used raw Tailwind utility classes (gray-50 page, white cards, green-700 buttons). This system codifies that into a proper token + component layer.
+
+**Not a stoner brand.** Plain, flat, utilitarian. Think public-utility or finance app. The audience is budget-aware adults. Never use emoji, cannabis-culture slang, or gradient washes.
+
+---
+
+## Folder structure
+
+```
+design-system/
+├── CLAUDE.md                  ← you are here
+├── styles.css                 ← single entry point — link THIS
+├── _ds_bundle.js              ← compiled component bundle
+├── tokens/
+│   ├── colors.css             ← all color custom properties
+│   ├── typography.css         ← type scale + font-family vars
+│   ├── spacing.css            ← spacing scale (4px base grid)
+│   ├── elevation.css          ← shadow tokens
+│   ├── fonts.css              ← @font-face for Public Sans + IBM Plex Mono
+│   └── base.css               ← element resets + base styles
+├── components/
+│   ├── components.css         ← class-based styles for all components
+│   ├── core/
+│   │   ├── Button.jsx / .d.ts
+│   │   ├── IconButton.jsx / .d.ts
+│   │   ├── Badge.jsx / .d.ts
+│   │   └── Card.jsx / .d.ts
+│   ├── forms/
+│   │   ├── RangeSlider.jsx / .d.ts   ← the distance filter
+│   │   ├── TextField.jsx / .d.ts
+│   │   └── Select.jsx / .d.ts
+│   └── feedback/
+│       ├── Skeleton.jsx / .d.ts      ← SkeletonFeed also exported
+│       └── Notice.jsx / .d.ts
+├── assets/
+│   ├── fonts/                 ← self-hosted woff2 (Public Sans + IBM Plex Mono)
+│   ├── icons/                 ← self-hosted Lucide SVGs (v0.460.0, ISC)
+│   └── icons.js               ← window.GMA_ICONS, gmaIcon(), <Icon> component
+├── ui_kits/app/
+│   ├── index.html             ← interactive app demo (age gate → feed → settings)
+│   ├── feed.jsx               ← deal feed surface
+│   ├── settings.jsx           ← vehicle settings sheet
+│   └── data.js                ← sample deal data
+└── guidelines/                ← specimen cards (colors, type, spacing, etc.)
+```
+
+---
+
+## How to use in the app
+
+```html
+<!-- 1. Load styles (adjust path as needed) -->
+<link rel="stylesheet" href="./design-system/styles.css" />
+
+<!-- 2. Load compiled components -->
+<script src="./design-system/_ds_bundle.js"></script>
+
+<!-- 3. Destructure what you need -->
+<script>
+  const {
+    Button, IconButton, Badge, Card,
+    RangeSlider, TextField, Select,
+    Skeleton, SkeletonFeed, Notice
+  } = window.GmaSHelperDesignSystem_45dd11;
+</script>
+```
+
+In a React/Vite project, you can also import CSS directly:
+```js
+import './design-system/styles.css';
+```
+And use the JSX source files directly if preferred (they use plain React, no special deps):
+```js
+import { Button } from './design-system/components/core/Button.jsx';
+```
+
+---
+
+## Design tokens (key values)
+
+All tokens are CSS custom properties. Never hardcode hex values — always use the token.
+
+### Colors
+```css
+/* Action — the ONLY action color */
+--green-700: #15803d;   /* primary buttons, links, focus rings */
+--green-800: #166534;   /* button hover */
+--green-900: #14532d;   /* button active/press */
+
+/* Urgency — reserved strictly for expiring deals / countdowns */
+--amber-600: #d97706;
+
+/* Errors only */
+--red-600: #dc2626;
+
+/* Neutral ramp (the whole structural palette) */
+--gray-50:  #f9fafb;   /* page background */
+--gray-100: #f3f4f6;   /* subtle fills */
+--gray-200: #e5e7eb;   /* card hairlines, dividers */
+--gray-300: #d1d5db;   /* stronger control outlines */
+--gray-500: #6b7280;   /* muted / secondary text */
+--gray-700: #374151;   /* body text */
+--gray-900: #111827;   /* headings */
+--white:    #ffffff;   /* card surface */
+```
+
+### Typography
+```css
+--font-sans: 'Public Sans', system-ui, sans-serif;   /* all readable text */
+--font-mono: 'IBM Plex Mono', ui-monospace, monospace; /* ALL numbers/figures */
+```
+- Every dollar, mile, and minute → `font-family: var(--font-mono); font-variant-numeric: tabular-nums;`
+- Nothing on a primary surface below 14px
+- Sentence case everywhere except UPPERCASE overline labels (badges, micro-labels)
+- Never title case for UI copy
+
+### Spacing (4px base grid)
+```css
+--space-1: 4px   --space-2: 8px    --space-3: 12px
+--space-4: 16px  --space-5: 20px   --space-6: 24px
+--space-8: 32px  --space-10: 40px  --space-12: 48px
+```
+Card padding: 12px. Between cards: 12px. Page gutter: 16px. Max column: ~640px.
+
+### Border radius
+```css
+--radius-sm:   4px    /* tight controls */
+--radius-md:   8px    /* house corner — buttons, cards, inputs */
+--radius-lg:   12px   /* larger surfaces */
+--radius-xl:   16px   /* bottom sheet top radius */
+--radius-full: 9999px /* pills, badges, slider thumb */
+```
+
+### Elevation
+```css
+--shadow-sm: 0 1px 2px rgba(0,0,0,0.05);   /* interactive card hover */
+--shadow-md: 0 4px 6px rgba(0,0,0,0.07);   /* settings sheet */
+--shadow-lg: 0 10px 15px rgba(0,0,0,0.10); /* overlays */
+```
+Cards are defined by a **1px gray-200 hairline**, NOT shadows. Shadows only on genuinely floating UI.
+
+---
+
+## Components
+
+### Button
+Props: `variant` (`primary` | `secondary` | `ghost` | `danger`), `size` (`sm` | `md` | `lg`), `disabled`, `loading`, `fullWidth`, `leftIcon`, `rightIcon`, `onClick`, `children`
+- Primary: green-700 fill, white text. The "go" button.
+- Secondary: white fill, gray-700 text, gray-200 border.
+- Ghost: transparent, gray-700 text.
+- Danger: red-600 fill, white text. Destructive only.
+- Min hit target: 44px height.
+
+### IconButton
+Props: `icon` (SVG string or element), `label` (required, aria-label), `variant`, `size`, `disabled`
+
+### Badge
+Props: `variant` (`default` | `success` | `warning` | `error` | `neutral`), `size` (`sm` | `md`), `children`
+- Warning (amber) = time-sensitive / expiring. Success (green) = active deal.
+
+### Card
+Props: `interactive` (bool — adds hover shadow + cursor), `selected` (bool — green border), `padding`, `onClick`, `children`
+- Always hairline border (gray-200), white fill, 8px radius.
+
+### RangeSlider
+Props: `min`, `max`, `step`, `value`, `onChange`, `label`, `unit` (e.g. `"mi"`)
+- The distance filter. Thumb is pill-shaped, green-700.
+
+### TextField
+Props: `label`, `value`, `onChange`, `placeholder`, `error`, `hint`, `disabled`, `leftIcon`, `rightIcon`
+
+### Select
+Props: `label`, `value`, `onChange`, `options` (array of `{value, label}`), `error`, `hint`, `disabled`
+
+### Skeleton / SkeletonFeed
+Props: `width`, `height`, `variant` (`text` | `rect` | `circle`). SkeletonFeed renders a full deal-card loading state. Soft opacity pulse animation.
+
+### Notice
+Props: `variant` (`info` | `success` | `warning` | `error`), `title`, `children`, `dismissible`, `onDismiss`
+
+---
+
+## Icons
+
+Self-hosted Lucide set. Load `assets/icons.js` then:
+
+```js
+// SVG string for plain HTML
+const svg = gmaIcon('clock', 16);  // name, size (default 16), strokeWidth (default 2)
+
+// React component
+<Icon name="clock" size={16} />
+
+// Raw inner SVG map
+const path = window.GMA_ICONS['clock'];
+```
+
+Available icons: `navigation, map-pin, fuel, clock, percent, badge-percent, car, settings, sliders-horizontal, search, shield-check, check, x, chevron-down, chevron-right, chevron-left, arrow-right, info, circle-alert, triangle-alert`
+
+---
+
+## Voice rules (copy guide)
+
+| Instead of… | Say |
+|---|---|
+| 🔥 INSANE deals near you!! | Is it worth the drive? |
+| You could save up to 30%! | 30% off — $1.46 to get there |
+| Verify your age to unlock | You must be 21 or older to view this content. |
+| Oops! Something went wrong 😅 | Couldn't load deals. Please try again later. |
+| No nearby deals found 😔 | No active deals right now. |
+
+- **Plain and literal.** No cleverness. No emoji. No cannabis-culture slang.
+- **Second person, present tense.** "Is it worth the drive?" not "Find your deals."
+- **Honest over flattering.** Show gas cost *next to* discount — never collapse into "you save $X" (ADR-009).
+- **Sentence case** everywhere except UPPERCASE overline micro-labels.
+- **Numbers are facts.** Always tabular monospace: `9.8 mi · $1.46 · 24 min left`
+- **Errors stay calm.** "Couldn't load deals. Please try again later." — never raw errors, never "Oops!"
+
+---
+
+## Key architecture decisions (from ADR.md)
+
+- **ADR-009** — Never show a net-savings figure without knowing basket size. Show discount + gas cost separately, always.
+- **ADR-021** — Full keyboard accessibility. 44px minimum hit targets. WCAG-AA contrast on green.
+- **ADR-026** — Stale/unavailable source indicators are a single muted line. Inform without nagging.
+- **Age gate** — Dialog semantics + focus trap. Copy: "You must be 21 or older to view this content." No clever alternatives.
+
+---
+
+## What NOT to do
+
+- ❌ Hardcode hex values — use CSS custom properties
+- ❌ Use amber for anything except time-sensitive/expiring deals
+- ❌ Use shadows on cards (hairline only — shadows are for floating UI)
+- ❌ Use emoji in UI copy
+- ❌ Use cannabis-culture language or imagery
+- ❌ Use title case for UI strings
+- ❌ Show a net-savings number without the gas cost alongside it
+- ❌ Use fonts other than Public Sans (text) and IBM Plex Mono (numbers)
+- ❌ Add decorative backgrounds, gradients, or tinted washes
+- ❌ Go below 14px for any primary-surface text
+- ❌ Use a second action color — green is the only one
+
+---
+
+## See also
+
+- `readme.md` — full narrative design documentation
+- `ui_kits/app/index.html` — live interactive app demo
+- `guidelines/` — visual specimen cards (open any `.card.html` in a browser)
+- Source repo: https://github.com/erikchvac-byte/Gma
+- `Happy/ADR.md` — 26 architecture decisions (the product source of truth)

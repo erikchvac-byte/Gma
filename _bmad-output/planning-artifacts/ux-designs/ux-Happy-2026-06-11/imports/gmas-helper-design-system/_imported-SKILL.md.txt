@@ -1,0 +1,24 @@
+---
+name: gmas-helper-design
+description: Use this skill to generate well-branded interfaces and assets for Gma's Helper (a cannabis happy-hour deals web app — "is it worth the drive?"), either for production or throwaway prototypes/mocks/etc. Contains essential design guidelines, colors, type, fonts, assets, and UI kit components for prototyping.
+user-invocable: true
+---
+
+Read the `readme.md` file within this skill, and explore the other available files.
+
+If creating visual artifacts (slides, mocks, throwaway prototypes, etc), copy assets out and create static HTML files for the user to view. If working on production code, you can copy assets and read the rules here to become an expert in designing with this brand.
+
+If the user invokes this skill without any other guidance, ask them what they want to build or design, ask some questions, and act as an expert designer who outputs HTML artifacts _or_ production code, depending on the need.
+
+## Fast orientation
+- **What it is:** a single-purpose tool that answers "is this happy-hour deal worth the drive, right now?" — honest gas-cost-vs-savings math, a 21+ age gate, a distance slider. Budget-aware adults; **not** a stoner brand.
+- **Foundations:** link `styles.css` (the only entry point). Tokens live in `tokens/`. Self-hosted fonts (Public Sans + IBM Plex Mono) in `assets/fonts/`; self-hosted Lucide icons + helpers in `assets/icons/` and `assets/icons.js`.
+- **Components:** load `_ds_bundle.js`, then read primitives off `window.GmaSHelperDesignSystem_45dd11` (Button, IconButton, Badge, Card, RangeSlider, TextField, Select, Skeleton/SkeletonFeed, Notice). See each component's `.prompt.md`.
+- **Full app recreation:** `ui_kits/app/` is a clickable reference build.
+
+## Non-negotiables (read `readme.md` for the full rules)
+- One action color: green-700. Amber = urgency/expiring only. Red = errors.
+- Cards are a 1px gray-200 hairline on white — **flat, not shadowed**.
+- Money / distance / time are always tabular IBM Plex Mono.
+- Voice: say it straight. Sentence case. No hype, no cannabis slang, **no emoji**.
+- 8px corners, 4px spacing grid, 44px hit targets, always-visible focus rings.

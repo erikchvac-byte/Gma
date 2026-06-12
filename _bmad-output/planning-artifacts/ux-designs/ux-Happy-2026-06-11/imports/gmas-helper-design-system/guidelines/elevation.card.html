@@ -1,0 +1,26 @@
+<!-- @dsCard group="Spacing" viewport="700x190" name="Elevation" subtitle="The brand is flat: cards are hairline-on-white. Shadows float only true overlays" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="../styles.css" />
+<style>
+  body { margin: 0; padding: 28px 24px; background: var(--surface-page); font-family: var(--font-sans); }
+  .row { display: flex; gap: 20px; }
+  .item { flex: 1; text-align: center; }
+  .box { height: 56px; background: var(--white); border-radius: var(--radius-lg); display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--text-muted); }
+  .border { border: 1px solid var(--border-default); }
+  .name { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); margin-top: 10px; }
+  .note { font-size: 11px; color: var(--gray-400); }
+  .star { color: var(--green-700); font-weight: 700; }
+</style>
+</head>
+<body>
+  <div class="row">
+    <div class="item"><div class="box border">card</div><div class="name star">hairline · default</div><div class="note">feed lives here</div></div>
+    <div class="item"><div class="box border" style="box-shadow:var(--shadow-sm)">hover</div><div class="name">shadow-sm</div><div class="note">interactive lift</div></div>
+    <div class="item"><div class="box" style="box-shadow:var(--shadow-md)">sheet</div><div class="name">shadow-md</div><div class="note">settings sheet</div></div>
+    <div class="item"><div class="box" style="box-shadow:var(--shadow-lg)">overlay</div><div class="name">shadow-lg</div><div class="note">popover / dialog</div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!-- @dsCard group="Colors" viewport="700x150" name="Brand green" subtitle="The single confident action color — green-700 is the one 'go'" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="../styles.css" />
+<style>
+  body { margin: 0; padding: 20px; background: var(--surface-card); font-family: var(--font-sans); }
+  .row { display: flex; gap: 10px; }
+  .sw { flex: 1; }
+  .chip { height: 60px; border-radius: var(--radius-md); border: 1px solid rgba(0,0,0,0.06); }
+  .name { font-size: 12px; font-weight: 600; color: var(--text-strong); margin-top: 8px; }
+  .hex { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); }
+  .tag { display:inline-block; margin-top: 4px; font-size: 10px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color: var(--green-800); }
+</style>
+</head>
+<body>
+  <div class="row">
+    <div class="sw"><div class="chip" style="background:var(--green-50)"></div><div class="name">50</div><div class="hex">#f0fdf4</div></div>
+    <div class="sw"><div class="chip" style="background:var(--green-100)"></div><div class="name">100</div><div class="hex">#dcfce7</div></div>
+    <div class="sw"><div class="chip" style="background:var(--green-600)"></div><div class="name">600</div><div class="hex">#16a34a</div></div>
+    <div class="sw"><div class="chip" style="background:var(--green-700)"></div><div class="name">700 · primary</div><div class="hex">#15803d</div><span class="tag">go</span></div>
+    <div class="sw"><div class="chip" style="background:var(--green-800)"></div><div class="name">800 · hover</div><div class="hex">#166534</div></div>
+    <div class="sw"><div class="chip" style="background:var(--green-900)"></div><div class="name">900</div><div class="hex">#14532d</div></div>
+  </div>
+</body>
+</html>

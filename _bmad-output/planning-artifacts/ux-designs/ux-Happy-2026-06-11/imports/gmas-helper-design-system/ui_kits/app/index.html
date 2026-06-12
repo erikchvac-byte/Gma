@@ -1,0 +1,79 @@
+<!-- @dsCard group="App" viewport="430x720" -->
+<!-- @startingPoint section="App" subtitle="The full Gma's Helper app — age gate, deal feed, distance filter, vehicle settings" viewport="430x720" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Gma's Helper</title>
+<link rel="stylesheet" href="../../styles.css" />
+<style>
+  html, body { height: 100%; }
+  body { margin: 0; background: var(--gray-200); display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+  /* phone frame — the primary surface is a phone in a driveway */
+  .phone {
+    position: relative;
+    width: 430px; height: 720px;
+    background: var(--surface-page);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+  }
+  .phone__scroll { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  @media (max-width: 470px) {
+    body { background: var(--surface-page); }
+    .phone { width: 100vw; height: 100vh; box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="phone"><div id="root"></div></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <script src="../../assets/icons.js"></script>
+  <script src="../../_ds_bundle.js"></script>
+  <script src="./data.js"></script>
+  <script type="text/babel" src="./feed.jsx"></script>
+  <script type="text/babel" src="./settings.jsx"></script>
+  <script type="text/babel">
+    function App() {
+      const [ageConfirmed, setAgeConfirmed] = React.useState(false);
+      const [maxDistance, setMaxDistance] = React.useState(25);
+      const [settingsOpen, setSettingsOpen] = React.useState(false);
+      const [vehicle, setVehicle] = React.useState({ year: '', make: '', model: '', mpg: null });
+      const [loading, setLoading] = React.useState(false);
+
+      const data = window.GMA_DATA;
+      const mpg = vehicle.mpg && vehicle.mpg > 0 ? vehicle.mpg : data.meta.nationalMpg;
+
+      // small loading flash when entering the feed, like the real fetch
+      const confirmAge = () => { setAgeConfirmed(true); setLoading(true); setTimeout(() => setLoading(false), 900); };
+
+      return (
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column' }}>
+          <Header onOpenSettings={() => setSettingsOpen(true)} />
+          <div className="phone__scroll">
+            <DealFeed
+              data={data}
+              maxDistance={maxDistance}
+              setMaxDistance={setMaxDistance}
+              mpg={mpg}
+              loading={loading}
+            />
+          </div>
+          <SettingsSheet
+            open={settingsOpen}
+            onClose={() => setSettingsOpen(false)}
+            vehicle={vehicle}
+            setVehicle={setVehicle}
+            nationalMpg={data.meta.nationalMpg}
+          />
+          {!ageConfirmed && <AgeGate onConfirm={confirmAge} />}
+        </div>
+      );
+    }
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
