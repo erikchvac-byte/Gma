@@ -1,7 +1,7 @@
 export interface Deal {
   type: 'happy_hour' | 'daily'
   description: string
-  discountPct: number
+  discountPct: number | null
   startTime: string | null
   endTime: string | null
   daysValid: string[]

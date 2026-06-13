@@ -107,6 +107,40 @@ describe('DealCard', () => {
     expect(container.textContent).not.toContain('—')
   })
 
+  it('renders gas cost alone (no "null% off") when discountPct is null', () => {
+    const { container } = render(
+      <DealCard
+        dispensary={makeDispensary({})}
+        deal={makeDeal({ type: 'daily', description: 'Mystery deal', discountPct: null, startTime: null, endTime: null })}
+        windowText="Active today"
+        countdown={null}
+        gasCostText="$1.80"
+      />,
+    )
+
+    expect(screen.getByText('Mystery deal')).toBeInTheDocument()
+    expect(screen.getByText('$1.80 to get there')).toBeInTheDocument()
+    expect(container.textContent).not.toContain('null')
+    expect(container.textContent).not.toContain('% off')
+  })
+
+  it('omits the discount line entirely when both discountPct and gasCostText are null', () => {
+    const { container } = render(
+      <DealCard
+        dispensary={makeDispensary({})}
+        deal={makeDeal({ type: 'daily', description: 'Mystery deal', discountPct: null, startTime: null, endTime: null })}
+        windowText="Active today"
+        countdown={null}
+        gasCostText={null}
+      />,
+    )
+
+    expect(screen.getByText('Mystery deal')).toBeInTheDocument()
+    expect(container.textContent).not.toContain('null')
+    expect(container.textContent).not.toContain('% off')
+    expect(container.textContent).not.toContain('to get there')
+  })
+
   it('formats whole-number distances with one decimal', () => {
     render(
       <DealCard

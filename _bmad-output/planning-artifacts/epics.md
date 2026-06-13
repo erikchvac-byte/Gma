@@ -586,7 +586,7 @@ So that deal data stays fresh and I can identify and fix broken parsers.
 
 ---
 
-### Story 4.2: First Dispensary HTML Parsers
+### Story 4.2: Plain-HTML Dispensary Parsers
 
 As a **cannabis deal seeker**,
 I want deal data to come from real dispensary websites (plain HTML sources),
@@ -596,7 +596,9 @@ So that the deals shown in the feed are live and verified against the actual sou
 
 **Given** the initial R&D dispensary set (seeded in Story 1.2),
 **When** `runScrapers.ts` executes,
-**Then** at least four plain HTML scrapers successfully fetch and parse real deals from live dispensary websites.
+**Then** **every plain-HTML dispensary in the seed** has a working scraper in `server/scrapers/<store-slug>.ts` that fetches and parses real deals from its live website. As of 2026-06-13 the only plain-HTML source in the seed is `remedy-tulalip` (one parser). The count is intentionally left open: as plain-HTML dispensaries are added to the seed, each gets its own parser (a separate, additive increment — `runScrapers` is registry-driven and needs no engine change), and this AC is satisfied per-source.
+
+> **Scope note (resolved 2026-06-13):** Live HTML inspection found only `remedy-tulalip` exposes deal data as plain HTML. The other three seeded stores all serve menus via **Dutchie** — `kush21-everett-evergreen` (`everettshop.kush21.com`), `the-joint-everett` (embedded-menu store ID `689cd028ea84b6a605458416`), and `jet-cannabis-everett` (Wix HTML-component → Dutchie; entity "THC Connection"). All three are delivered in Story 4.3 (Dutchie path). The epic's "live sources" milestone is met across 4.2 (plain HTML) + 4.3 (Dutchie). No new dispensaries were seeded to inflate the 4.2 count.
 
 **Given** a parsed deal with an explicit time window,
 **When** stored in `data.json`,
@@ -625,6 +627,8 @@ So that the deals shown in the feed are live and verified against the actual sou
 As a **developer**,
 I want dispensaries that serve menus via Dutchie iFrame to be scrapeable via the Python Scraper microservice,
 So that the Coverage Zone can include Dutchie-powered dispensaries without requiring JavaScript rendering in the main scraper.
+
+> **Scope note (updated 2026-06-13):** Live inspection (during Story 4.2) found **three** of the four seeded dispensaries are Dutchie-powered, so 4.3 covers all three: `kush21-everett-evergreen`, `the-joint-everett` (Dutchie embedded-menu store ID `689cd028ea84b6a605458416`), and `jet-cannabis-everett` (Wix HTML-component embed → Dutchie; licensed entity "THC Connection"). This is a larger lift than the original single-dispensary framing — expect per-store Dutchie store-IDs and the Python Scraper service.
 
 **Acceptance Criteria:**
 

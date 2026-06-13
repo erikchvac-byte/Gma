@@ -16,7 +16,8 @@ function sortKey(deal: Deal, now: Date): [number, number] {
     if (!hasValidTimedWindow(deal)) return [1, 0]
     return [0, minutesUntilEnd(deal.endTime as string, now)]
   }
-  return [2, -deal.discountPct]
+  // null discount (not parseable from source text) sorts last among dailies
+  return [2, -(deal.discountPct ?? 0)]
 }
 
 export function sortDeals(dispensaries: Dispensary[], now: Date): DealRow[] {

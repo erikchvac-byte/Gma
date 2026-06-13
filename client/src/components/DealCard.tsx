@@ -20,12 +20,18 @@ export default function DealCard({ dispensary, deal, windowText, countdown, gasC
         <span className="text-sm text-gray-500">{dispensary.distanceMiles.toFixed(1)} miles</span>
       </div>
       <p className="text-gray-700">{deal.description}</p>
-      {/* side-by-side Discount Display (ADR-009): one line, em dash */}
-      <p className="font-medium">
-        {gasCostText !== null
-          ? `${deal.discountPct}% off — ${gasCostText} to get there`
-          : `${deal.discountPct}% off`}
-      </p>
+      {/* side-by-side Discount Display (ADR-009): one line, em dash.
+          discountPct may be null (source text had no parseable percent) —
+          then the line shows gas cost alone, or is omitted entirely. */}
+      {(deal.discountPct !== null || gasCostText !== null) && (
+        <p className="font-medium">
+          {deal.discountPct !== null && gasCostText !== null
+            ? `${deal.discountPct}% off — ${gasCostText} to get there`
+            : deal.discountPct !== null
+              ? `${deal.discountPct}% off`
+              : `${gasCostText} to get there`}
+        </p>
+      )}
       {windowText !== null && <p className="text-sm text-gray-500">{windowText}</p>}
       {countdown !== null && <p className="text-sm font-medium">{countdown} left</p>}
     </article>
