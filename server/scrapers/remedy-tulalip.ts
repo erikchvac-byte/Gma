@@ -80,7 +80,10 @@ export default async function scrape(): Promise<Deal[]> {
       headers: { 'User-Agent': 'Mozilla/5.0 (compatible; GmaHelper/1.0)' },
     })
     return parse(data)
-  } catch {
-    return [] // runScrapers marks the source stale
+  } catch (err) {
+    // Log for operator monitoring (FR-12) — matches _template.ts; runScrapers
+    // still marks the source stale on the returned [].
+    console.error('[scraper:remedy-tulalip]', err)
+    return []
   }
 }

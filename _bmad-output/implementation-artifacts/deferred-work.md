@@ -5,6 +5,12 @@
 - **`loadMakes`/`loadModels` flash empty options on every cascade step** — the stale-response-invalidation fix now clears `makes`/`models` synchronously before each fetch, so even fast successful requests briefly blank the downstream dropdown. Same bucket as the existing "no loading indicator" deferral below — needs Erik's call on the affordance.
 - **`toMenuValues` dedupes by `value` only** — entries with the same `value` but different `text` (e.g. "2020" vs "2020 (alt)") collapse to one option, discarding the display-text distinction. Pre-existing information loss (the function already dropped `text`), not introduced by the patch pass; revisit only if fueleconomy.gov data shows this matters in practice.
 
+## Deferred from: code review of 4-2-first-dispensary-html-parsers (2026-06-13)
+
+- **`parseWindow` infers start meridiem from the end time** (`server/scrapers/remedy-tulalip.ts`) — correct for "7-8am" (both am) but wrong for a cross-meridiem window like "11-1am" (would yield 11:00–01:00 instead of 23:00–01:00). No current trigger: Remedy's only timed deal is the 7–8am early bird, and this parser is Remedy-specific. Revisit if Remedy adds a window that straddles am/pm.
+- **Page-wide `li.el-item` selection + loose `/off/i` filter can over-capture** (`server/scrapers/remedy-tulalip.ts`) — any `el-item` carrying a "%" and "off" anywhere on `/promos/` is treated as a deal. The fixture test pins the count at 9, so a structural change is caught against the fixture, but live template drift (a new promo slider/banner) could silently inject junk deals. Tighten the selector scope if Remedy's template changes cause noise.
+- **Four Dutchie-evidence HTML fixtures live in `server/scrapers/__fixtures__/`** (the-joint-everett, jet-cannabis-everett, joint-everett-menu, jet-menu-420; ~2.4k lines) but aren't used by any Story 4.2 test — they were committed as investigation evidence for Story 4.3. Relocate to a 4.3 fixtures dir or docs when 4.3 begins.
+
 ## PRE-LAUNCH GATE — verify-with-counsel register (from UX Reviewer Gate, 2026-06-12)
 
 **These three items MUST be cleared with counsel before public launch** (source: `_bmad-output/planning-artifacts/ux-designs/ux-Happy-2026-06-11/{.decision-log.md, review-regulated-content.md}`):

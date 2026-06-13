@@ -5,7 +5,7 @@ context: []
 
 # Story 4.2: Plain-HTML Dispensary Parsers
 
-Status: review (re-scoped 2026-06-13 to plain-HTML sources only = `remedy-tulalip`; The Joint + Jet + Kush21 → Story 4.3)
+Status: done (re-scoped 2026-06-13 to plain-HTML sources only = `remedy-tulalip`; The Joint + Jet + Kush21 → Story 4.3; code review passed, 1 patch applied)
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -40,6 +40,18 @@ So that the deals shown in the feed are live and verified against the actual sou
   - [x] `server/scrapers/remedy-tulalip.test.ts` asserts `parse(fixture)` against `__fixtures__/remedy-tulalip.html`: happy_hour 07:00–08:00, daily/null windows, all 7 weekdays, numeric `discountPct`, full-name `daysValid`, and empty/malformed/deal-free HTML → `[]` (AC6). Added 2 `DealCard.test.tsx` cases for the null-discount render branches. Fixtures only — no live calls in tests.
 - [x] Task 6: End-to-end sanity (AC: 1, 6)
   - [x] Ran a real scrape into a temp copy of `data.json`/`logs.json` (live Remedy fetch): `remedy-tulalip` → `stale: false`, 9 deals, `ok`; the three Dutchie stores → `stale: true`, `error: no scraper registered`; `meta.lastScraperRun` updated. Committed seed untouched.
+
+### Review Findings
+
+_Code review 2026-06-13 (BMad adversarial layers, run inline). Diff: `260d975..8dbdae1`._
+
+- [x] [Review][Decision] Group-restricted discount surfaced as a general daily deal — Remedy's "10% Off Everyday for the Following Customer Groups (with Proof of Valid ID)" (military / tribal / 50+) is stored as a normal `daily` everyday 10% deal. It is labeled in the `description`, but it will appear and sort in the general feed like an unconditional deal. **RESOLVED 2026-06-13 — keep as-is (labeled in description); reversible — revert to filtering group-conditional discounts later if it confuses users.** [server/scrapers/remedy-tulalip.ts]
+- [x] [Review][Patch] `scrape()` swallows fetch/parse errors with no logging [server/scrapers/remedy-tulalip.ts:~80] — bare `catch { return [] }` diverged from `_template.ts`, which `console.error`s the error. On a live Remedy outage there was zero diagnostic output and `logs.json` recorded only "scraper returned no deals" (not the real cause), undermining FR-12 operator monitoring. **FIXED 2026-06-13 — added `console.error('[scraper:remedy-tulalip]', err)` in the catch.**
+- [x] [Review][Defer] `parseWindow` infers start meridiem from end [server/scrapers/remedy-tulalip.ts:~15] — wrong for cross-meridiem windows (e.g. "11-1am" → 11:00–01:00 instead of 23:00–01:00). No current trigger: Remedy's only window is "7-8am". Deferred — latent, source-specific.
+- [x] [Review][Defer] Page-wide `li.el-item` + loose `/off/i` filter can over-capture [server/scrapers/remedy-tulalip.ts:~42] — if Remedy adds other "% off" elements (slider/banner) they'd parse as deals. The fixture test pins the count at 9 but won't catch live template drift. Deferred — robustness.
+- [x] [Review][Defer] Four Dutchie-evidence HTML fixtures (~2.4k lines) sit in `server/scrapers/__fixtures__/` [server/scrapers/__fixtures__/] but aren't used by any 4.2 test — relocate to a 4.3 location/docs when 4.3 starts. Deferred — cleanliness.
+
+Dismissed as noise (3): no explicit negative assertion for 12-hour format (24-hour values are asserted — adequate); `discountPct === 0` would render "0% off" (no realistic trigger — `parseDiscount` only returns 0 if the source literally says "0%"); `parseDays` substring match (title-only, short titles — safe for this source).
 
 ## Dev Notes
 
