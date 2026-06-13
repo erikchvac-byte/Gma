@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-09
-last_updated: 2026-06-13 (story 4-3 review — Dutchie/iFrame support; live E2E deferred)
+last_updated: 2026-06-13 (epic-4 done — all 4 epics complete; story 4-3 live E2E deferred)
 project: Happy
 project_key: NOKEY
 tracking_system: file-system
@@ -66,8 +66,8 @@ development_status:
   epic-3-retrospective: optional
 
   # Epic 4: Live Deal Data via Scraper
-  epic-4: in-progress
+  epic-4: done
   4-1-scraper-engine-and-orchestrator: done
   4-2-first-dispensary-html-parsers: done  # re-scoped 2026-06-13 to plain-HTML only (remedy-tulalip); the-joint + jet + kush21 are Dutchie → 4.3
-  4-3-dutchie-iframe-dispensary-support: review
+  4-3-dutchie-iframe-dispensary-support: done
   epic-4-retrospective: optional
