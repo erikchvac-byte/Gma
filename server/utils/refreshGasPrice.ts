@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import { atomicWriteJson } from './atomicWrite.js'
+import { withDataLock } from './dataStore.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const DEFAULT_DATA_PATH = path.join(__dirname, '../data/data.json')
@@ -48,10 +49,12 @@ export async function refreshGasPrice(dataPath: string = DEFAULT_DATA_PATH): Pro
       return
     }
 
-    const file = JSON.parse(readFileSync(dataPath, 'utf-8'))
-    file.meta.gasPrice = price
-    file.meta.gasPriceUpdatedAt = new Date().toISOString()
-    atomicWriteJson(dataPath, file)
+    await withDataLock(() => {
+      const file = JSON.parse(readFileSync(dataPath, 'utf-8'))
+      file.meta.gasPrice = price
+      file.meta.gasPriceUpdatedAt = new Date().toISOString()
+      atomicWriteJson(dataPath, file)
+    })
     console.log(`[refreshGasPrice] meta.gasPrice updated to ${price}`)
   } catch (err) {
     // message only — never serialize the request config (it carries the key)

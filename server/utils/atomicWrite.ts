@@ -5,8 +5,9 @@ import path from 'node:path'
 // rename over the target so readers (dataRoute's per-request readFileSync)
 // never observe a partial file — and a crash mid-write can't publish a
 // truncated data.json. Reused by Epic 4's scraper engine — keep it
-// schema-agnostic. NOTE: single-writer only; serialize callers before adding
-// a second writer process (see deferred-work).
+// schema-agnostic. NOTE: the tmp filename is deterministic, so concurrent
+// callers writing the same path must serialize via withDataLock
+// (dataStore.ts), which all data.json writers now do.
 export function atomicWriteJson(targetPath: string, value: unknown): void {
   const dir = path.dirname(targetPath)
   const base = path.basename(targetPath, '.json')
