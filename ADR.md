@@ -4,7 +4,7 @@
 
 Gma's Helper (working title; BMad project name: "Happy") is a single-page web app that shows active cannabis happy-hour deals within a user-set road-distance radius from the user's location. Each listing shows miles to the shop and a gas-cost-vs-savings calculation. No browsing, no discovery — just "is this deal worth the drive, right now?"
 
-**Status:** Implementation in progress. Epic 1 (Foundation & Data Layer): stories 1.1–1.3 implemented. Epic 2 (Core Deal Experience): 2.1 Age Gate, 2.2 Deal Feed, 2.3 Deal Cards, 2.4 Gas Cost done (2026-06-10); next: Story 2.5 Distance Filter.
+**Status:** Implementation code-complete (2026-06-13). All four epics done and Epic 4 retrospective complete — Epic 1 (Foundation & Data Layer, 1.1–1.3), Epic 2 (Core Deal Experience, 2.1–2.6), Epic 3 (Gas Cost Accuracy, 3.1–3.2), Epic 4 (Live Deal Data via Scraper, 4.1–4.3). Caveat: the app is code-complete but **data-complete for only 1 of 4 dispensary sources** today — `remedy-tulalip` (plain HTML) is live; the three Dutchie sources (`the-joint-everett`, `jet-cannabis-everett`, `kush21-everett-evergreen`) stay Stale until the 4.3 live pass runs the Python Scraper service and resolves the `jet`/`kush21` embed ids. R&D validation begins after that pass + a real `EIA_API_KEY`.
 **Owner:** Erik (solo founder), Marysville WA area.
 
 ---
@@ -302,6 +302,9 @@ Gma's Helper (working title; BMad project name: "Happy") is a single-page web ap
 - Discount Display (side-by-side % + gas cost) may be insufficient as a go/no-go signal — validated by SM-3 in R&D (see ADR-009)
 - fueleconomy.gov API response format: must send `Accept: application/json` — default is XML
 - Initial data.json requires a one-time manual setup (dispensary list + distanceMiles) before first scraper run
+- **Dutchie sources not yet live (4.3 live pass pending):** `jet-cannabis-everett` and `kush21-everett-evergreen` ship with an unresolved embed id (`STORE_ID=''`) and report Stale until discovered live; the Dutchie `GetSpecialMenuCards`→`Deal[]` transform is validated only against a synthesized fixture and must be reconciled against a real capture (discount unit fraction-vs-percent, time-window field path). Requires the Python Scraper service (`C:\Users\erikc\Dev\Scraper`, :8000) running. See `epic-4-retro-2026-06-13.md` and `deferred-work.md`.
+- **Scraped-data boundary hardening not done:** `useDeals`/ingestion validation of dispensary shape (null/NaN `distanceMiles`, null array elements can crash `DealCard`) and zero-length-window normalization were deferred to "Epic 4" by 2.3/2.5/2.6 reviews but not implemented — promoted to a follow-up story in the Epic 4 retrospective.
+- **No real `EIA_API_KEY` in `.env`:** the server warns and keeps the seed gas price until the key is added.
 
 ---
 
@@ -356,3 +359,4 @@ Gma's Helper (working title; BMad project name: "Happy") is a single-page web ap
 | 2026-06-11 | Story 3.1 (EIA Gas Price Refresh) implemented and reviewed — Epic 3 started. ADR-027 added (WA weekly EIA series SWA/EPMR, fail-safe refresh contract with key-safe logging, fsync'd `atomicWriteJson` with single-writer constraint flagged for Story 4.1). Deferred: writer serialization before Epic 4, `copyData.mjs` seed-reversion, price plausibility bounds. 37 server + 131 client tests passing. |
 | 2026-06-11 | Story 3.2 (Vehicle Precision Mode) implemented, committed/pushed (`b34689b`), and 3-layer reviewed. ADR-028 added (hook-only fueleconomy.gov access with JSON header + menuItem normalization, first-trim policy, controlled `VehicleSelector`, pair-stored `gma_vehicle_mpg`/`gma_vehicle_label`, panel-only failure UX). Review: 5/5 ACs, 0 violations, 7 patch action items left in the story file (2 major: async stale-response races) — story stays in-progress. Deferred: loading/timeout affordance, cascade retry path, empty-menu messaging. 174 client + 37 server tests passing. |
 | 2026-06-13 | Story 4.3 (Dutchie/iFrame Dispensary Support) implemented and 3-layer reviewed (inline). ADR-029 added (thin `scraperClient.ts` HTTP boundary to the Python service, shared store-agnostic `_dutchie.ts` transform, fixture-as-contract, graceful deferred-id degradation for jet/kush21). Live E2E deferred by Erik. Deferred: resolve jet/kush21 embed ids + reconcile fixture vs live GraphQL capture; relocate 4.2 Dutchie evidence fixtures. 73 server tests passing (+20). |
+| 2026-06-13 | Epic 4 complete + first project retrospective (`epic-4-retro-2026-06-13.md`); `epic-4` and `epic-4-retrospective` → done — all four epics done. Status/Known-Issues synced: code-complete but data-complete for only 1 of 4 sources until the 4.3 live pass; scraped-data boundary hardening promoted to a follow-up story. No new ADRs. |
