@@ -1,0 +1,38 @@
+{
+  "request_url": "https://dutchie.com/embedded-menu/689cd028ea84b6a605458416",
+  "tier_used": "browser+stealth",
+  "success": true,
+  "duration_ms": 9800,
+  "intercepted": [
+    {
+      "url": "https://dutchie.com/graphql?operationName=ConsumerDispensaries",
+      "status": 200,
+      "data": { "data": { "dispensaries": [{ "name": "The Joint - Everett" }] } }
+    },
+    {
+      "url": "https://dutchie.com/graphql?operationName=GetSpecialMenuCards",
+      "status": 200,
+      "data": {
+        "data": {
+          "specialMenuCards": {
+            "specials": [
+              { "title": "20% Off All Edibles", "discountPercent": 20, "days": ["Monday", "Tuesday"], "window": null },
+              { "title": "Early Bird Happy Hour", "discountPercent": 15, "days": null, "window": { "start": "07:00", "end": "09:00" } },
+              { "title": "$5 Off Pre-Rolls", "discountPercent": null, "days": null, "window": null },
+              { "name": "Wax Wednesday - 30% off concentrates", "days": ["Wednesday"] },
+              { "window": { "start": "bad", "end": "09:00" } }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "url": "https://dutchie.com/graphql?operationName=FilteredProducts",
+      "status": 200,
+      "data": { "data": { "filteredProducts": { "products": [] } } }
+    }
+  ],
+  "raw_html": null,
+  "error": null,
+  "timestamp": "2026-06-13T12:00:00.000Z"
+}

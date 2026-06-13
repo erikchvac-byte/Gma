@@ -1,5 +1,14 @@
 # Deferred Work
 
+## Deferred from: 4-3-dutchie-iframe-dispensary-support (live pass, 2026-06-13)
+
+Story 4.3 shipped the TypeScript Dutchie integration fixture-tested; live end-to-end verification was deferred by Erik. These must be cleared in the live pass (Python service running on :8000 + live Dutchie access):
+
+- **Resolve embed store ids for `jet-cannabis-everett` and `kush21-everett-evergreen`** — both ship with `STORE_ID = ''` and a guard that returns `[]` (→ stale) until resolved. Discover via the service `/discover` endpoint or a host-page lookup (`everettshop.kush21.com`; `dutchie.com/dispensary/thc-connection`), then drop the id into the respective `server/scrapers/*.ts`. `the-joint-everett` already has its confirmed id (`689cd028ea84b6a605458416`).
+- **Reconcile `__fixtures__/dutchie-specials.json` against a real `GetSpecialMenuCards` capture** — the fixture's shape is synthesized from the documented schema. Verify the live JSON path (`data.specialMenuCards.specials`), the **discount unit** (`transformSpecials` assumes a whole-number percent like `20`; if live data is a fraction `0.2` the value is stored wrong), and how/whether time-of-day windows appear (the `happy_hour` vs `daily` split depends on a `window:{start,end}` that may be named differently live). Adjust `server/scrapers/_dutchie.ts` to the real shape; the defensive access means a delta degrades to skipped cards / `[]`, not a crash.
+
+- **(carried from 4.2) Relocate the four Dutchie-evidence HTML fixtures** — `the-joint-everett.html`, `jet-cannabis-everett.html`, `joint-everett-menu.html`, `jet-menu-420.html` in `server/scrapers/__fixtures__/` are investigation evidence (now partly cited in 4.3 code comments), not used by any test. Move to a 4.3 evidence/docs location or trim once the live ids are resolved. (Requires Erik's OK per the no-delete safety rule.)
+
 ## Deferred from: code review of spec-3-2-vehicle-precision-mode, pass 2 (2026-06-12)
 
 - **`loadMakes`/`loadModels` flash empty options on every cascade step** — the stale-response-invalidation fix now clears `makes`/`models` synchronously before each fetch, so even fast successful requests briefly blank the downstream dropdown. Same bucket as the existing "no loading indicator" deferral below — needs Erik's call on the affordance.
