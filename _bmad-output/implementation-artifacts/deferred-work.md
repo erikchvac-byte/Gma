@@ -1,5 +1,10 @@
 # Deferred Work
 
+## Deferred from: code review of spec-3-2-vehicle-precision-mode, pass 2 (2026-06-12)
+
+- **`loadMakes`/`loadModels` flash empty options on every cascade step** — the stale-response-invalidation fix now clears `makes`/`models` synchronously before each fetch, so even fast successful requests briefly blank the downstream dropdown. Same bucket as the existing "no loading indicator" deferral below — needs Erik's call on the affordance.
+- **`toMenuValues` dedupes by `value` only** — entries with the same `value` but different `text` (e.g. "2020" vs "2020 (alt)") collapse to one option, discarding the display-text distinction. Pre-existing information loss (the function already dropped `text`), not introduced by the patch pass; revisit only if fueleconomy.gov data shows this matters in practice.
+
 ## PRE-LAUNCH GATE — verify-with-counsel register (from UX Reviewer Gate, 2026-06-12)
 
 **These three items MUST be cleared with counsel before public launch** (source: `_bmad-output/planning-artifacts/ux-designs/ux-Happy-2026-06-11/{.decision-log.md, review-regulated-content.md}`):

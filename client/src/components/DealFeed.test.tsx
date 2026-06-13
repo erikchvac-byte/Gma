@@ -326,7 +326,9 @@ describe('DealFeed', () => {
   })
 
   it('uses a valid gma_vehicle_mpg from localStorage instead of nationalMpg', () => {
+    // label must accompany mpg — the pair is validated atomically
     localStorage.setItem('gma_vehicle_mpg', '20')
+    localStorage.setItem('gma_vehicle_label', '"2019 Toyota Camry"')
     mockUseDeals.mockReturnValue({
       data: withData([
         makeDispensary('a', 'Alpha Greens', [makeDeal({ discountPct: 30 })]),

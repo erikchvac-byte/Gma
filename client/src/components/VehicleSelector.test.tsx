@@ -101,11 +101,108 @@ describe('VehicleSelector', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Vehicle settings' }))
 
-    expect(await screen.findByRole('alert')).toHaveTextContent(
-      "Couldn't load vehicle data. Gas costs will use the national average.",
-    )
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent('network down')
+    expect(alert).toHaveTextContent('Gas costs will use the national average.')
     expect(screen.getByLabelText('Year')).toBeInTheDocument()
     expect(onMpgChange).not.toHaveBeenCalled()
+  })
+
+  it('surfaces the specific lookup error and notes the saved vehicle stays in effect', async () => {
+    routeFuelEconomy(fetchMock, 'abc')
+    render(
+      <VehicleSelector mpg={32} label="2019 Toyota Camry" onMpgChange={vi.fn()} />,
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Vehicle settings' }))
+    await screen.findByRole('option', { name: '2019' })
+    fireEvent.change(screen.getByLabelText('Year'), { target: { value: '2019' } })
+    await screen.findByRole('option', { name: 'Toyota' })
+    fireEvent.change(screen.getByLabelText('Make'), { target: { value: 'Toyota' } })
+    await screen.findByRole('option', { name: 'Camry' })
+
+    fireEvent.change(screen.getByLabelText('Model'), { target: { value: 'Camry' } })
+
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent('No MPG available for this vehicle')
+    expect(alert).toHaveTextContent('Gas costs will keep using your saved vehicle.')
+    expect(alert).not.toHaveTextContent('national average')
+  })
+
+  it('clears a stale error when the panel is reopened with years already loaded', async () => {
+    // years load fine, but the make menu fails — error must not survive reopen
+    fetchMock.mockImplementation((input: RequestInfo | URL) => {
+      const url = String(input)
+      if (url.includes('/menu/year')) return Promise.resolve(menu('2019', '2018'))
+      return Promise.reject(new Error('network down'))
+    })
+    render(<VehicleSelector mpg={null} label={null} onMpgChange={vi.fn()} />)
+
+    const gear = screen.getByRole('button', { name: 'Vehicle settings' })
+    fireEvent.click(gear)
+    await screen.findByRole('option', { name: '2019' })
+    fireEvent.change(screen.getByLabelText('Year'), { target: { value: '2019' } })
+    expect(await screen.findByRole('alert')).toBeInTheDocument()
+
+    fireEvent.click(gear) // close
+    fireEvent.click(gear) // reopen — years are populated, loadYears is skipped
+
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  })
+
+  it('never reports a resolved MPG after the selection has moved on', async () => {
+    let releaseOptions!: (value: Response) => void
+    fetchMock.mockImplementation((input: RequestInfo | URL) => {
+      const url = String(input)
+      if (url.includes('/menu/year')) return Promise.resolve(menu('2019', '2018'))
+      if (url.includes('/menu/make?')) return Promise.resolve(menu('Toyota', 'Honda'))
+      if (url.includes('/menu/model?')) return Promise.resolve(menu('Camry', 'Corolla'))
+      if (url.includes('/menu/options?')) {
+        return new Promise<Response>((resolve) => {
+          releaseOptions = resolve
+        })
+      }
+      return Promise.resolve(jsonResponse({ comb08: 32 }))
+    })
+    const onMpgChange = vi.fn()
+    render(<VehicleSelector mpg={null} label={null} onMpgChange={onMpgChange} />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Vehicle settings' }))
+    await screen.findByRole('option', { name: '2019' })
+    fireEvent.change(screen.getByLabelText('Year'), { target: { value: '2019' } })
+    await screen.findByRole('option', { name: 'Toyota' })
+    fireEvent.change(screen.getByLabelText('Make'), { target: { value: 'Toyota' } })
+    await screen.findByRole('option', { name: 'Camry' })
+    fireEvent.change(screen.getByLabelText('Model'), { target: { value: 'Camry' } })
+
+    // lookup still in flight — user abandons it by switching the year
+    fireEvent.change(screen.getByLabelText('Year'), { target: { value: '2018' } })
+    await screen.findByRole('option', { name: 'Toyota' })
+
+    releaseOptions(menu('41234'))
+    // let the abandoned lookup's promise chain fully settle
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    expect(onMpgChange).not.toHaveBeenCalled()
+    expect(screen.getByLabelText('Year')).toBeInTheDocument() // panel stayed open
+  })
+
+  it('hides the gear glyph from assistive tech and links the button to the panel', async () => {
+    routeFuelEconomy(fetchMock)
+    render(<VehicleSelector mpg={null} label={null} onMpgChange={vi.fn()} />)
+
+    const gear = screen.getByRole('button', { name: 'Vehicle settings' })
+    expect(screen.getByText('⚙️')).toHaveAttribute('aria-hidden', 'true')
+
+    fireEvent.click(gear)
+    await screen.findByRole('option', { name: '2019' })
+
+    const panelId = gear.getAttribute('aria-controls')
+    expect(panelId).toBeTruthy()
+    expect(document.getElementById(panelId as string)).toContainElement(
+      screen.getByLabelText('Year'),
+    )
   })
 
   it('keeps the panel open without persisting when the MPG lookup fails', async () => {

@@ -50,4 +50,45 @@ describe('useVehicleMpg', () => {
     const { result } = renderHook(() => useVehicleMpg())
     expect(result.current.label).toBeNull()
   })
+
+  describe('atomic pair validation', () => {
+    it('returns null for both when mpg is valid but the label is corrupt', () => {
+      localStorage.setItem(VEHICLE_MPG_KEY, '32')
+      localStorage.setItem(VEHICLE_LABEL_KEY, '42')
+
+      const { result } = renderHook(() => useVehicleMpg())
+
+      expect(result.current.mpg).toBeNull()
+      expect(result.current.label).toBeNull()
+    })
+
+    it('returns null for both when mpg is valid but the label is missing', () => {
+      localStorage.setItem(VEHICLE_MPG_KEY, '32')
+
+      const { result } = renderHook(() => useVehicleMpg())
+
+      expect(result.current.mpg).toBeNull()
+      expect(result.current.label).toBeNull()
+    })
+
+    it('returns null for both when the label is valid but mpg is corrupt', () => {
+      localStorage.setItem(VEHICLE_MPG_KEY, '"abc"')
+      localStorage.setItem(VEHICLE_LABEL_KEY, '"2019 Toyota Camry"')
+
+      const { result } = renderHook(() => useVehicleMpg())
+
+      expect(result.current.mpg).toBeNull()
+      expect(result.current.label).toBeNull()
+    })
+
+    it('returns null for both when both mpg and label are corrupt', () => {
+      localStorage.setItem(VEHICLE_MPG_KEY, '"abc"')
+      localStorage.setItem(VEHICLE_LABEL_KEY, '42')
+
+      const { result } = renderHook(() => useVehicleMpg())
+
+      expect(result.current.mpg).toBeNull()
+      expect(result.current.label).toBeNull()
+    })
+  })
 })

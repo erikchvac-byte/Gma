@@ -1,4 +1,4 @@
-import { useId, useState } from 'react'
+import { useId, useRef, useState } from 'react'
 import { useFuelEconomy } from '../hooks/useFuelEconomy'
 
 interface VehicleSelectorProps {
@@ -14,20 +14,29 @@ export default function VehicleSelector({ mpg, label, onMpgChange }: VehicleSele
   const yearId = useId()
   const makeId = useId()
   const modelId = useId()
+  const panelId = useId()
   const [isOpen, setIsOpen] = useState(false)
   const [year, setYear] = useState('')
   const [make, setMake] = useState('')
   const [model, setModel] = useState('')
-  const { years, makes, models, error, loadYears, loadMakes, loadModels, resolveMpg } =
+  // bumped on every Year/Make/Model change — an MPG lookup that finishes
+  // after the selection moved on must never report its result
+  const selectionRef = useRef(0)
+  const { years, makes, models, error, loadYears, loadMakes, loadModels, resolveMpg, clearError } =
     useFuelEconomy()
 
   const togglePanel = () => {
     const opening = !isOpen
     setIsOpen(opening)
-    if (opening && years.length === 0) void loadYears()
+    if (opening) {
+      // an error from the previous visit must not greet the reopen
+      clearError()
+      if (years.length === 0) void loadYears()
+    }
   }
 
   const handleYearChange = (nextYear: string) => {
+    selectionRef.current += 1
     setYear(nextYear)
     setMake('')
     setModel('')
@@ -35,17 +44,20 @@ export default function VehicleSelector({ mpg, label, onMpgChange }: VehicleSele
   }
 
   const handleMakeChange = (nextMake: string) => {
+    selectionRef.current += 1
     setMake(nextMake)
     setModel('')
     if (nextMake !== '') void loadModels(year, nextMake)
   }
 
   const handleModelChange = async (nextModel: string) => {
+    const selection = ++selectionRef.current
     setModel(nextModel)
     if (nextModel === '') return
     const resolved = await resolveMpg(year, make, nextModel)
-    // a failed lookup keeps the panel open with the error on display
-    if (resolved !== null) {
+    // a failed lookup keeps the panel open with the error on display;
+    // an abandoned one (selection changed while in flight) is dropped
+    if (resolved !== null && selection === selectionRef.current) {
       onMpgChange(resolved, `${year} ${make} ${nextModel}`)
       setIsOpen(false)
     }
@@ -58,10 +70,11 @@ export default function VehicleSelector({ mpg, label, onMpgChange }: VehicleSele
           type="button"
           aria-label="Vehicle settings"
           aria-expanded={isOpen}
+          aria-controls={isOpen ? panelId : undefined}
           onClick={togglePanel}
           className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-lg leading-none"
         >
-          ⚙️
+          <span aria-hidden="true">⚙️</span>
         </button>
         {mpg !== null && label !== null && (
           <span className="text-sm text-gray-700">
@@ -70,10 +83,15 @@ export default function VehicleSelector({ mpg, label, onMpgChange }: VehicleSele
         )}
       </div>
       {isOpen && (
-        <div className="mt-2 space-y-3 rounded-lg border border-gray-200 bg-white p-3">
+        <div id={panelId} className="mt-2 space-y-3 rounded-lg border border-gray-200 bg-white p-3">
           {error !== null && (
             <p role="alert" className="text-sm text-red-700">
-              Couldn&apos;t load vehicle data. Gas costs will use the national average.
+              <span className="block">{error}</span>
+              <span className="block">
+                {mpg !== null
+                  ? 'Gas costs will keep using your saved vehicle.'
+                  : 'Gas costs will use the national average.'}
+              </span>
             </p>
           )}
           <div>

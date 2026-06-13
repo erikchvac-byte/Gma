@@ -12,8 +12,9 @@ export interface UseVehicleMpgResult {
 }
 
 // Single home for the vehicle localStorage pair. Stored JSON can hold any
-// shape, so both values are validated here — consumers only ever see a
-// usable MPG (finite > 0) and a non-empty label, or null
+// shape, so both values are validated here — atomically: a usable MPG with a
+// corrupt or missing label (or vice versa) returns null for both, so callers
+// never see one valid half of the pair without the other
 export function useVehicleMpg(): UseVehicleMpgResult {
   const [storedMpg, setStoredMpg] = useLocalStorage<number | null>(VEHICLE_MPG_KEY, null)
   const [storedLabel, setStoredLabel] = useLocalStorage<string | null>(VEHICLE_LABEL_KEY, null)
@@ -26,8 +27,13 @@ export function useVehicleMpg(): UseVehicleMpgResult {
     [setStoredMpg, setStoredLabel],
   )
 
-  const mpg = typeof storedMpg === 'number' && isPositiveFinite(storedMpg) ? storedMpg : null
-  const label = typeof storedLabel === 'string' && storedLabel !== '' ? storedLabel : null
+  const validMpg = typeof storedMpg === 'number' && isPositiveFinite(storedMpg) ? storedMpg : null
+  const validLabel = typeof storedLabel === 'string' && storedLabel !== '' ? storedLabel : null
+  const hasVehicle = validMpg !== null && validLabel !== null
 
-  return { mpg, label, setVehicle }
+  return {
+    mpg: hasVehicle ? validMpg : null,
+    label: hasVehicle ? validLabel : null,
+    setVehicle,
+  }
 }
