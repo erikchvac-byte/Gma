@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-09
-last_updated: 2026-06-12 (story 3-2 review pass 2 complete — 3 patch items resolved, done)
+last_updated: 2026-06-13 (reconciled stale review statuses against shipped commits — 1-1, 1-2, 2-2..2-6, 3-1 marked done)
 project: Happy
 project_key: NOKEY
 tracking_system: file-system
@@ -43,25 +43,25 @@ story_location: _bmad-output/implementation-artifacts
 
 development_status:
   # Epic 1: Project Foundation & Data Layer
-  epic-1: in-progress
-  1-1-project-scaffold: review
-  1-2-seed-dispensary-data: review
+  epic-1: done
+  1-1-project-scaffold: done
+  1-2-seed-dispensary-data: done
   1-3-get-api-data-endpoint-with-active-deal-filtering: done
   epic-1-retrospective: optional
 
   # Epic 2: Core Deal Experience
-  epic-2: in-progress
+  epic-2: done
   2-1-age-gate: done
-  2-2-deal-feed-with-active-deals-and-empty-state: review
-  2-3-deal-cards: review
-  2-4-gas-cost-calculation: review
-  2-5-distance-filter: review
-  2-6-stale-source-indicator: review
+  2-2-deal-feed-with-active-deals-and-empty-state: done
+  2-3-deal-cards: done
+  2-4-gas-cost-calculation: done
+  2-5-distance-filter: done
+  2-6-stale-source-indicator: done
   epic-2-retrospective: optional
 
   # Epic 3: Gas Cost Accuracy & Personalization
-  epic-3: in-progress
-  3-1-eia-gas-price-refresh: review
+  epic-3: done
+  3-1-eia-gas-price-refresh: done
   3-2-vehicle-precision-mode: done
   epic-3-retrospective: optional
 
