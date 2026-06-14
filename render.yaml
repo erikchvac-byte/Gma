@@ -1,0 +1,23 @@
+# Render Blueprint — one Node web service serves both the React client and the
+# Express API. Render auto-detects this file on "New > Blueprint" (or when you
+# create a Web Service from the repo) and fills in the fields below.
+services:
+  - type: web
+    name: gmaslist
+    runtime: node
+    plan: free
+    # --include=dev forces vite/tsc (devDependencies) to install even though
+    # NODE_ENV=production would otherwise skip them, which would break the build.
+    buildCommand: >-
+      npm install --include=dev &&
+      npm install --prefix client --include=dev &&
+      npm install --prefix server --include=dev &&
+      npm run build --prefix client &&
+      npm run build --prefix server
+    startCommand: npm start
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: "22"
