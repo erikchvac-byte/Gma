@@ -4,9 +4,13 @@ import { type Intercepted, type ScrapeRequest } from '../utils/scraperClient.js'
 // Shared, store-agnostic Dutchie logic. Every Dutchie store serves the identical
 // GraphQL shape, so the transform lives here once; the per-store files only supply
 // their embed id. The `_` prefix marks this a non-store helper (like `_template.ts`).
+//
+// SHAPE RECONCILED against live captures 2026-06-13 (the-joint / jet / kush21 — see
+// _bmad-output/specs/spec-4-3-live-pass/live-findings-2026-06-13.md). The earlier
+// synthesized assumptions (specialMenuCards.specials, discountPercent, days[],
+// window) were wrong on every field; this is the real GetSpecialMenuCards shape.
 
 const WEEKDAYS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
-const HHMM = /^([01]\d|2[0-3]):[0-5]\d$/
 
 // Dutchie embed iframe URL for a store id (ADR-017 / Scraper HANDOFF). Navigate the
 // embed URL directly — NOT the dispensary's own site (the host embed is lazy/flaky).
@@ -15,85 +19,97 @@ export function dutchieEmbedUrl(storeId: string): string {
 }
 
 // Request preset: browser tier + GraphQL network interception for a Dutchie menu.
+// Wait specifically for the GetSpecialMenuCards op — not just any GraphQL call.
+// Large menus (e.g. kush21, 150+ specials) emit it late in the load; waiting on the
+// first generic `dutchie.com/graphql` ends collection before the specials arrive,
+// silently yielding zero deals. Confirmed in the live pass 2026-06-13.
 export function dutchieRequest(storeId: string): ScrapeRequest {
   return {
     url: dutchieEmbedUrl(storeId),
     intercept_pattern: 'dutchie\\.com.*(graphql|api-0)',
-    wait_for_pattern: 'dutchie\\.com/graphql',
+    wait_for_pattern: 'GetSpecialMenuCards',
     tier: 'browser',
     headless: true,
     timeout: 45000,
   }
 }
 
-// --- Assumed GetSpecialMenuCards shape -------------------------------------
-// Synthesized from the documented Dutchie schema (Scraper HANDOFF). No real
-// capture exists until the deferred live pass; the fixture is the single
-// reconciliation point. Field access stays defensive so a live shape delta
-// degrades to skipped cards / [], never a throw. See the 4.3 spec Design Notes.
+// --- Real GetSpecialMenuCards shape ----------------------------------------
+// Live operation field is `getSpecialMenuCards.menuCards`. Each card carries free
+// display text only — there is NO numeric discount field and NO structured day or
+// time-window field. Percent and weekday restrictions are parsed out of the text.
+// Field access stays defensive so a live shape drift degrades to skipped cards / [],
+// never a throw.
 interface DutchieSpecialCard {
-  title?: string
-  name?: string
-  discountPercent?: number | null
-  days?: string[] | null
-  window?: { start?: string; end?: string } | null
+  menuDisplayName?: string
+  menuDisplayDescription?: string
+  specialType?: string
+  // recurringSchedule holds time-of-day / recurrence when a special is timed, but
+  // it was null on every live card sampled (no live timed special exists yet), so
+  // its shape is unverified. happy_hour support is deferred until a real sample
+  // appears — see deferred-work.md. Until then every Dutchie special maps to daily.
+  recurringSchedule?: unknown | null
 }
 
-// Locate the GetSpecialMenuCards intercept and return its special cards (or []).
+// Locate the GetSpecialMenuCards intercept and return its menu cards (or []).
 export function pickSpecials(intercepted: Intercepted[]): DutchieSpecialCard[] {
   const entry = intercepted.find((i) => /GetSpecialMenuCards/i.test(i.url))
   if (!entry) return []
-  const data = entry.data as { data?: { specialMenuCards?: { specials?: unknown } } } | undefined
-  const specials = data?.data?.specialMenuCards?.specials
-  return Array.isArray(specials) ? (specials as DutchieSpecialCard[]) : []
+  const data = entry.data as { data?: { getSpecialMenuCards?: { menuCards?: unknown } } } | undefined
+  const cards = data?.data?.getSpecialMenuCards?.menuCards
+  return Array.isArray(cards) ? (cards as DutchieSpecialCard[]) : []
 }
 
-// Full lowercase day names (or 'everyday') — the vocabulary filterActiveDeals
-// matches. Accepts full names or abbreviations, any case.
-function normalizeDays(days: string[] | null | undefined): string[] {
-  if (!Array.isArray(days) || days.length === 0) return ['everyday']
-  const mapped = days
-    .map((d) => (typeof d === 'string' ? d.toLowerCase().trim() : ''))
-    .map((d) => (d ? WEEKDAYS.find((w) => w.startsWith(d) || d.startsWith(w)) : undefined))
-    .filter((d): d is string => Boolean(d))
-  return mapped.length > 0 ? Array.from(new Set(mapped)) : ['everyday']
+// Day restrictions live only in free display text (e.g. "Storewide - Monday & Friday").
+// Parse full weekday names (and unambiguous 3-letter forms) when present; otherwise
+// the special is everyday. Returns full lowercase names in canonical week order —
+// the only vocabulary filterActiveDeals.ts matches.
+const DAY_ALIASES: Record<string, string> = {
+  sunday: 'sunday', sun: 'sunday',
+  monday: 'monday', mon: 'monday',
+  tuesday: 'tuesday', tue: 'tuesday', tues: 'tuesday',
+  wednesday: 'wednesday', wed: 'wednesday',
+  thursday: 'thursday', thu: 'thursday', thurs: 'thursday',
+  friday: 'friday', fri: 'friday',
+  saturday: 'saturday', sat: 'saturday',
 }
-
-function parsePercent(card: DutchieSpecialCard, name: string): number | null {
-  if (typeof card.discountPercent === 'number' && Number.isFinite(card.discountPercent)) {
-    return card.discountPercent
+function parseDays(text: string): string[] {
+  const found = new Set<string>()
+  const re = /\b(sunday|monday|tuesday|wednesday|thursday|friday|saturday|sun|mon|tues?|wed|thurs?|fri|sat)\b/gi
+  let m: RegExpExecArray | null
+  while ((m = re.exec(text)) !== null) {
+    const full = DAY_ALIASES[m[1].toLowerCase()]
+    if (full) found.add(full)
   }
-  const m = name.match(/(\d+)\s*%/)
+  return WEEKDAYS.filter((d) => found.has(d))
+}
+
+// First whole-number percent in the text (e.g. "40% OFF" → 40), else null. Live
+// discounts are always expressed as a whole-number percent in the display text.
+function parsePercent(text: string): number | null {
+  const m = text.match(/(\d+)\s*%/)
   return m ? parseInt(m[1], 10) : null
 }
 
-// GetSpecialMenuCards → Deal[]. A recurring time-of-day window → happy_hour with
-// 24h strings; otherwise daily (the common case — Dutchie specials are mostly
-// all-day, and calendar start/end DATES are sale validity, not time windows).
+// GetSpecialMenuCards → Deal[]. Every live special is all-day → daily (times null).
+// description ← menuDisplayName; discountPct + daysValid are parsed from the combined
+// name + description text. Cards with no usable name are skipped (never throw).
 export function transformSpecials(intercepted: Intercepted[]): Deal[] {
   const deals: Deal[] = []
   for (const card of pickSpecials(intercepted)) {
-    const name = (card?.title ?? card?.name ?? '').toString().replace(/\s+/g, ' ').trim()
+    const name = (card?.menuDisplayName ?? '').toString().replace(/\s+/g, ' ').trim()
     if (!name) continue // skip nameless / malformed cards
+    const description = (card?.menuDisplayDescription ?? '').toString().replace(/\s+/g, ' ').trim()
+    const text = `${name} ${description}`
 
-    const start = card?.window?.start
-    const end = card?.window?.end
-    let type: Deal['type'] = 'daily'
-    let startTime: string | null = null
-    let endTime: string | null = null
-    if (typeof start === 'string' && typeof end === 'string' && HHMM.test(start) && HHMM.test(end)) {
-      type = 'happy_hour'
-      startTime = start
-      endTime = end
-    }
-
+    const days = parseDays(text)
     deals.push({
-      type,
+      type: 'daily',
       description: name,
-      discountPct: parsePercent(card, name),
-      startTime,
-      endTime,
-      daysValid: normalizeDays(card?.days),
+      discountPct: parsePercent(text),
+      startTime: null,
+      endTime: null,
+      daysValid: days.length > 0 ? days : ['everyday'],
     })
   }
   return deals

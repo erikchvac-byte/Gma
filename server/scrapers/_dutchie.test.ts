@@ -26,12 +26,13 @@ describe('dutchieEmbedUrl / dutchieRequest', () => {
     expect(req.headless).toBe(true)
     expect(req.url).toContain('abc123')
     expect(req.intercept_pattern).toMatch(/graphql/)
-    expect(req.wait_for_pattern).toMatch(/graphql/)
+    // waits for the specials op specifically — large menus emit it late
+    expect(req.wait_for_pattern).toBe('GetSpecialMenuCards')
   })
 })
 
 describe('pickSpecials', () => {
-  it('finds the GetSpecialMenuCards intercept and returns its cards', () => {
+  it('finds the GetSpecialMenuCards intercept and returns its menu cards', () => {
     expect(pickSpecials(fixture.intercepted)).toHaveLength(5)
   })
 
@@ -46,11 +47,22 @@ describe('pickSpecials', () => {
     expect(pickSpecials([])).toEqual([])
   })
 
-  it('returns [] when the specials path is missing/wrong-shaped', () => {
+  it('returns [] when the menuCards path is missing/wrong-shaped', () => {
     const bad: Intercepted[] = [
       { url: 'graphql?operationName=GetSpecialMenuCards', status: 200, data: { data: {} } },
     ]
     expect(pickSpecials(bad)).toEqual([])
+  })
+
+  it('returns [] against the old (pre-reconciliation) specialMenuCards path', () => {
+    const old: Intercepted[] = [
+      {
+        url: 'graphql?operationName=GetSpecialMenuCards',
+        status: 200,
+        data: { data: { specialMenuCards: { specials: [{ title: 'x' }] } } },
+      },
+    ]
+    expect(pickSpecials(old)).toEqual([])
   })
 })
 
@@ -61,38 +73,33 @@ describe('transformSpecials', () => {
     expect(deals).toHaveLength(4)
   })
 
-  it('maps a percent daily special with named weekdays', () => {
-    const d = deals.find((x) => x.description === '20% Off All Edibles')!
+  it('parses percent from the name and weekday restrictions from free text', () => {
+    const d = deals.find((x) => x.description === '50% off Storewide - Monday & Friday')!
     expect(d).toMatchObject({
       type: 'daily',
-      discountPct: 20,
+      discountPct: 50,
       startTime: null,
       endTime: null,
-      daysValid: ['monday', 'tuesday'],
+      daysValid: ['monday', 'friday'],
     })
   })
 
-  it('maps a timed special to happy_hour with 24h strings and everyday', () => {
-    const d = deals.find((x) => x.description === 'Early Bird Happy Hour')!
-    expect(d).toMatchObject({
-      type: 'happy_hour',
-      discountPct: 15,
-      startTime: '07:00',
-      endTime: '09:00',
-      daysValid: ['everyday'],
-    })
+  it('maps an all-day percent special with no day text to everyday/daily', () => {
+    const d = deals.find((x) => x.description === '40% OFF Your Entire Order!')!
+    expect(d).toMatchObject({ type: 'daily', discountPct: 40, daysValid: ['everyday'] })
+  })
+
+  it('reads the percent from menuDisplayDescription when the name has none', () => {
+    const d = deals.find((x) => x.description === 'Join the Joint: Savings for Everyone!')!
+    expect(d.discountPct).toBe(20)
+    expect(d.daysValid).toEqual(['everyday'])
+    expect(d.type).toBe('daily')
   })
 
   it('yields discountPct null for a non-percent (dollar-off) special', () => {
     const d = deals.find((x) => x.description === '$5 Off Pre-Rolls')!
     expect(d.discountPct).toBeNull()
     expect(d.type).toBe('daily')
-  })
-
-  it('parses the percent from the name when no discount field is present', () => {
-    const d = deals.find((x) => x.description.startsWith('Wax Wednesday'))!
-    expect(d.discountPct).toBe(30)
-    expect(d.daysValid).toEqual(['wednesday'])
   })
 
   it('emits only daysValid the active-deal filter understands', () => {

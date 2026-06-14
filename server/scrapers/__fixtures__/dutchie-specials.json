@@ -2,32 +2,68 @@
   "request_url": "https://dutchie.com/embedded-menu/689cd028ea84b6a605458416",
   "tier_used": "browser+stealth",
   "success": true,
-  "duration_ms": 9800,
+  "duration_ms": 5693,
   "intercepted": [
     {
       "url": "https://dutchie.com/graphql?operationName=ConsumerDispensaries",
       "status": 200,
-      "data": { "data": { "dispensaries": [{ "name": "The Joint - Everett" }] } }
+      "data": { "data": { "filteredDispensaries": [{ "name": "The Joint - Everett", "cName": "the-joint" }] } }
     },
     {
-      "url": "https://dutchie.com/graphql?operationName=GetSpecialMenuCards",
+      "url": "https://dutchie.com/api-4/graphql?operationName=GetSpecialMenuCards",
       "status": 200,
       "data": {
         "data": {
-          "specialMenuCards": {
-            "specials": [
-              { "title": "20% Off All Edibles", "discountPercent": 20, "days": ["Monday", "Tuesday"], "window": null },
-              { "title": "Early Bird Happy Hour", "discountPercent": 15, "days": null, "window": { "start": "07:00", "end": "09:00" } },
-              { "title": "$5 Off Pre-Rolls", "discountPercent": null, "days": null, "window": null },
-              { "name": "Wax Wednesday - 30% off concentrates", "days": ["Wednesday"] },
-              { "window": { "start": "bad", "end": "09:00" } }
-            ]
+          "getSpecialMenuCards": {
+            "menuCards": [
+              {
+                "_id": "6965e55dca3f9f0076adb980",
+                "menuDisplayName": "50% off Storewide - Monday & Friday",
+                "menuDisplayDescription": "",
+                "specialType": "sale",
+                "recurringSchedule": null,
+                "startStamp": null,
+                "endStamp": null,
+                "__typename": "SpecialMenuCard"
+              },
+              {
+                "_id": "66e198a81415df0094153287",
+                "menuDisplayName": "40% OFF Your Entire Order!",
+                "menuDisplayDescription": "",
+                "specialType": "sale",
+                "recurringSchedule": null,
+                "__typename": "SpecialMenuCard"
+              },
+              {
+                "_id": "68f6a950a4d69800884d8e33",
+                "menuDisplayName": "Join the Joint: Savings for Everyone!  ",
+                "menuDisplayDescription": "20% OFF ALL ONLINE ORDERS",
+                "specialType": "sale",
+                "recurringSchedule": null,
+                "__typename": "SpecialMenuCard"
+              },
+              {
+                "_id": "0000000000000000repr5off",
+                "menuDisplayName": "$5 Off Pre-Rolls",
+                "menuDisplayDescription": "",
+                "specialType": "sale",
+                "recurringSchedule": null,
+                "__typename": "SpecialMenuCard"
+              },
+              {
+                "_id": "0000000000000000nameless",
+                "menuDisplayName": "",
+                "specialType": "sale",
+                "__typename": "SpecialMenuCard"
+              }
+            ],
+            "__typename": "SpecialMenuCardResponse"
           }
         }
       }
     },
     {
-      "url": "https://dutchie.com/graphql?operationName=FilteredProducts",
+      "url": "https://dutchie.com/api-4/graphql?operationName=FilteredProducts",
       "status": 200,
       "data": { "data": { "filteredProducts": { "products": [] } } }
     }

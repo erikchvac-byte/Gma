@@ -138,3 +138,16 @@ postScrape({
   [`_dutchie.test.ts:60`](../../server/scrapers/_dutchie.test.ts#L60)
 - Client failure matrix — down / non-200 / success:false / timeout / malformed → `[]`.
   [`scraperClient.test.ts:30`](../../server/utils/scraperClient.test.ts#L30)
+
+## Live Pass — Spec Reference (added 2026-06-13)
+
+The deferred live pass is now formalized as a spec: **`_bmad-output/specs/spec-4-3-live-pass/`** (`SPEC.md` + `live-pass-runbook.md`). Erik's shaping decisions: done bar = **all three stores live** (an unresolvable embed ID BLOCKS + escalates, not silently re-deferred); on any material live-vs-fixture shape delta, **surface and stop** (this frozen contract is not silently reworked); evidence-fixture relocation stays out of scope; executor = a dev agent.
+
+**Assumptions the spec proceeds under:**
+- Python service runs locally on `:8000` for the pass; production deployment is out of scope.
+- `the-joint-everett`'s committed embed ID (`689cd028ea84b6a605458416`) is still valid; if stale, treated like the two unresolved IDs.
+- All three stores have ≥1 active special during the pass. Confirmed against `runScrapers.ts:42`: an empty/normalized-away return maps to `stale:true` + `error: scraper returned no deals`, so a store with genuinely zero specials is indistinguishable from a scrape failure in `data.json` (only `logs.json` tells them apart) → escalate to Erik, not counted as done.
+
+**Confirmed entrypoint:** `runScrapers` has **no standalone CLI trigger**; it runs on server boot (`server/index.ts:32`) and hourly. The live run is triggered via `cd server && npm run dev` (boot scrape). A one-off `scrape` script is out of scope unless Erik approves.
+
+**Open question:** if an embed ID is undiscoverable via `/discover` or host-page lookup, is a manual browser inspection by Erik an acceptable fallback, or does that store BLOCK the pass? (Spec default: BLOCK + escalate.)
