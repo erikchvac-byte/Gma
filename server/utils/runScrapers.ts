@@ -4,6 +4,7 @@ import path from 'node:path'
 import { atomicWriteJson } from './atomicWrite.js'
 import { withDataLock } from './dataStore.js'
 import { scrapers as defaultRegistry } from '../scrapers/index.js'
+import { normalizeDeals } from './normalizeDeals.js'
 import type { ApiDataResponse, Deal } from '../../client/src/types/index.js'
 import type { LogEntry, LogRun } from '../types/index.js'
 
@@ -34,7 +35,10 @@ export async function runScrapers(
       // throws) degrades to stale=true for that one dispensary instead of
       // rejecting the whole run and skipping every other source's write.
       try {
-        const deals = await scrape()
+        // normalize at the single ingestion chokepoint: drop degenerate /
+        // malformed deals (zero-length or unparseable windows, bad daysValid)
+        // before the count + write, so junk never reaches filterActiveDeals
+        const deals = normalizeDeals(await scrape())
         if (deals.length > 0) {
           results[dispensary.id] = 'ok'
           dispensary.stale = false

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { ApiDataResponse } from '../types'
+import { normalizeDispensaries } from '../utils/normalizeDispensaries'
 
 export interface UseDealsResult {
   data: ApiDataResponse | null
@@ -28,7 +29,9 @@ export function useDeals(): UseDealsResult {
           setError('Malformed API response')
           return
         }
-        setData(json)
+        // drop malformed dispensary records before they reach render — one
+        // validation home so DealFeed/DealCard can trust every element's shape
+        setData({ ...json, dispensaries: normalizeDispensaries(json.dispensaries) })
       } catch (err) {
         // an aborted fetch (unmount) is not an error and must not update state
         if (err instanceof Error && err.name === 'AbortError') return

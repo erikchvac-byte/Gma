@@ -11,7 +11,7 @@ const deal: Deal = {
   discountPct: 20,
   startTime: null,
   endTime: null,
-  daysValid: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
+  daysValid: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'],
 }
 
 const existingDeal: Deal = {
@@ -20,7 +20,7 @@ const existingDeal: Deal = {
   discountPct: 10,
   startTime: '15:00',
   endTime: '18:00',
-  daysValid: ['fri'],
+  daysValid: ['friday'],
 }
 
 const seedData = {
@@ -200,6 +200,38 @@ describe('runScrapers', () => {
     expect(logsFile.runs).toHaveLength(1)
     expect(logsFile.runs[0].results['success-store']).toBe('ok')
     expect(logsFile.runs[0].results['null-store']).toMatch(/^error: /)
+  })
+
+  it('normalizes ingested deals: a degenerate-only scrape result yields stale=true and preserves prior deals', async () => {
+    // success-store returns a single zero-length-window deal (start === end).
+    // normalizeDeals drops it, leaving [], which reuses the empty-deals
+    // contract: stale=true, prior deals/lastFetchedAt untouched — and the junk
+    // deal never reaches data.json (so it can't become always-active).
+    const degenerateDeal: Deal = {
+      type: 'happy_hour',
+      description: 'Zero-length window',
+      discountPct: 15,
+      startTime: '16:00',
+      endTime: '16:00',
+      daysValid: ['friday'],
+    }
+    const customSeed = {
+      ...seedData,
+      dispensaries: [{ ...seedData.dispensaries[0], stale: false, deals: [existingDeal] }],
+    }
+    writeFileSync(dataPath, JSON.stringify(customSeed, null, 2), 'utf-8')
+
+    await runScrapers(dataPath, logsPath, { 'success-store': async () => [degenerateDeal] })
+
+    const file = JSON.parse(readFileSync(dataPath, 'utf-8'))
+    const dispensary = file.dispensaries.find((d: { id: string }) => d.id === 'success-store')
+
+    expect(dispensary.stale).toBe(true)
+    expect(dispensary.deals).toEqual([existingDeal])
+    expect(dispensary.lastFetchedAt).toBe('2026-06-01T00:00:00.000Z')
+
+    const logsFile = JSON.parse(readFileSync(logsPath, 'utf-8'))
+    expect(logsFile.runs[0].results['success-store']).toBe('error: scraper returned no deals')
   })
 
   it('leaves no .tmp.json files behind', async () => {

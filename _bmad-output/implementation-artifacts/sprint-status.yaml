@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-09
-last_updated: 2026-06-13 (epic-4 retrospective done — all 4 epics complete; 4.3 live pass + data-hardening follow-up pending)
+last_updated: 2026-06-13 (data-hardening follow-up story done; 4.3 live pass still pending)
 project: Happy
 project_key: NOKEY
 tracking_system: file-system
@@ -71,3 +71,7 @@ development_status:
   4-2-first-dispensary-html-parsers: done  # re-scoped 2026-06-13 to plain-HTML only (remedy-tulalip); the-joint + jet + kush21 are Dutchie → 4.3
   4-3-dutchie-iframe-dispensary-support: done
   epic-4-retrospective: done
+
+  # Cross-cutting follow-up stories (no parent epic — tracked individually)
+  # Promoted from the Epic 4 retrospective (action item 1, Erik 2026-06-13).
+  data-hardening: done  # spec-data-hardening.md — client useDeals boundary validation + scraper-ingestion deal normalization
