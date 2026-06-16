@@ -29,7 +29,7 @@ Epic 6 phasing (ruled with Erik 2026-06-16):
 
 ## Acceptance Criteria
 
-1. **Self-hosted fonts vendored + declared.** The seven woff2 files (Public Sans 400/500/600/700, IBM Plex Mono 400/500/600) are copied from the import into the client and served locally (no Google Fonts / CDN). `@font-face` rules match the import's `tokens/fonts.css` (`font-display: swap`, correct weights/families), with `src` paths corrected to the client's vendored location. After load, body text renders in **Public Sans** and `[data-figure]`/mono contexts in **IBM Plex Mono**.
+1. **Self-hosted fonts vendored + declared.** The seven woff2 files (Public Sans 400/500/600/700, IBM Plex Mono 400/500/600) are copied from the import into the client and served locally (no Google Fonts / CDN). `@font-face` rules match the import's `tokens/fonts.css` (`font-display: swap`, correct weights/families), with `src` paths corrected to the client's vendored location. After load, body text renders in **Public Sans** and `[data-figure]`/mono contexts in **IBM Plex Mono**. The seven `@font-face` rules cover non-italic weights only; italic variants are intentionally not vendored (see Dev Notes — Italic decision).
 
 2. **Token layer ported as the single source of truth.** All design tokens from the import's six token files — `colors.css`, `typography.css`, `spacing.css`, `elevation.css`, `fonts.css`, `base.css` — are present in the client as authoritative CSS custom properties (`--green-700`, `--surface-page`, `--text-muted`, `--action-primary-bg`, `--space-3`, `--radius-lg`, `--shadow-lg`, `--ring`, `--font-figure`, `--duration-fast`, etc.), values **verbatim** from those files (the token files win over any prose — see Dev Notes). The composite/semantic aliases resolve (e.g. `var(--surface-page)` → `#f9fafb`).
 
@@ -39,7 +39,7 @@ Epic 6 phasing (ruled with Erik 2026-06-16):
 
 5. **Reduced-motion honored at the token level.** The `@media (prefers-reduced-motion: reduce)` block collapses `--duration-fast/normal/slow` to `0ms`, exactly as `elevation.css` specifies.
 
-6. **Dead scaffold removed; no regressions.** The orphaned Vite-scaffold `client/src/App.css` (Vite demo cruft — `.hero`, `.vite`, `#next-steps`; confirmed imported by no module) is removed. The client builds (`tsc -b && vite build`) clean and the **full client test suite passes unchanged** — no component logic touched.
+6. **Dead scaffold removed; no regressions.** The orphaned Vite-scaffold `client/src/App.css` (Vite demo cruft — `.hero`, `.vite`, `#next-steps`) is removed — **only after** Task 4's grep confirms no module imports it. The client builds (`tsc -b && vite build`) clean and the **full client test suite passes unchanged** — no component logic touched.
 
 7. **Scope boundary holds.** No primitive components are built (6-2). No surface is re-skinned and VehicleSelector is **not** reworked (6-3). No new runtime dependencies are added beyond the vendored font/token assets. `App.tsx`'s structure is unchanged except, optionally, removing the now-redundant inline `bg-gray-50`/font utilities that base.css now supplies (cosmetic, no behavior change).
 
@@ -48,6 +48,7 @@ Epic 6 phasing (ruled with Erik 2026-06-16):
 - [ ] **Task 1 — Vendor self-hosted fonts** (AC: 1)
   - [ ] Copy the 7 woff2 files from `…/imports/gmas-helper-design-system/assets/fonts/` into the client (recommended: `client/src/assets/fonts/` so Vite fingerprints them, or `client/public/fonts/` for stable paths — pick one and be consistent in the `@font-face` `src`).
   - [ ] Port `tokens/fonts.css` `@font-face` rules into the client token layer, fixing each `src: url(...)` to the chosen vendored path. Keep `font-display: swap` and the exact family names `'Public Sans'` / `'IBM Plex Mono'` (the typography tokens reference these names).
+  - [ ] Grep `client/src` for `font-style.*italic` — confirm zero occurrences before concluding faux-italic synthesis is safe to accept.
   - [ ] Verify in the browser network tab that woff2 files load locally and body text switches to Public Sans.
 
 - [ ] **Task 2 — Port the token layer** (AC: 2, 3, 5)
@@ -422,6 +423,14 @@ a:hover { text-decoration: underline; }
 - **Strategy:** put utility-backing tokens in `@theme` using the v4 namespace names (e.g. `--color-action-primary-bg`, `--radius-lg`); put the import's raw `--green-700`-style vars + composite shorthands + semantic aliases that 6-2 consumes via `var()` in a plain `:root` (or `@theme inline` if you want both a utility and a var). **Verify the current v4 namespace + `@theme inline` semantics against the official Tailwind v4 docs before finalizing** — this is the one area where the exact syntax must be confirmed, not assumed.
 - Do not add `tailwindcss-animate` or other plugins; motion is handled by the token-level transitions.
 
+### Italic font variants — design decision
+
+The import contains **only non-italic woff2 files** (Public Sans 400/500/600/700, IBM Plex Mono 400/500/600 — all `font-style: normal`). The current client components and `base.css` use zero `font-style: italic` declarations.
+
+**Decision: italic variants are not vendored for 6-1.** Rationale: the design system's base styles do not assign italic to any element; `<em>` / `<i>` in rendered content (if any) will produce browser faux-italic synthesis — acceptable for this app's content domain (deal cards, distances, prices, navigation). If a 6-2 or 6-3 component needs true italic, source the italic woff2 files at that time and add the `@font-face` rules then.
+
+Task 1 grep (above) confirms the zero-usage baseline before implementation begins, so the decision is data-grounded, not assumed.
+
 ### References
 - [Source: _bmad-output/planning-artifacts/ux-designs/ux-Happy-2026-06-11/DESIGN.md] — frontmatter token map; Colors/Typography/Layout/Elevation/Shapes sections; `:288` house-corner ruling; `:276` shadow values
 - [Source: _bmad-output/planning-artifacts/ux-designs/ux-Happy-2026-06-11/EXPERIENCE.md#Foundation] — Tailwind v4 stack (`:21`); Accessibility Floor focus ring (`:128`)
@@ -446,3 +455,4 @@ a:hover { text-decoration: underline; }
 | Date | Description |
 |------|-------------|
 | 2026-06-16 | Story drafted (create-story). Epic 6 split ruled with Erik: foundation (6-1) → primitives (6-2) → surface re-skin + VehicleSelector sheet (6-3). 6-1 scope = token layer + Tailwind v4 `@theme` + self-hosted fonts + base.css; VehicleSelector bottom-sheet ruling (`.decision-log.md:48`) baked into 6-3, not here. |
+| 2026-06-16 | Spec hardening: (1) AC 6 "confirmed" removed — verification is now a Task 4 precondition, not a pre-stated fact; (2) Italic font variants design decision documented in Dev Notes + AC 1 footnote + Task 1 grep sub-task added. |
