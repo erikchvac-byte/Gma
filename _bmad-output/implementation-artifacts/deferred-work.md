@@ -70,6 +70,17 @@ Story 4.3 shipped the TypeScript Dutchie integration fixture-tested; live end-to
 
 - **Upcoming Happy Hours with "Starts at HH:MM" label** (Story 2.2 AC3, epics.md:293-295) — the server (`server/utils/filterActiveDeals.ts`, ADR-015) strips deals that aren't active right now, so later-today Happy Hours never reach the client. Implementing requires extending the server filter to keep `happy_hour` deals starting later today plus client-side active-vs-upcoming labeling. Deferred by Erik 2026-06-10; Story 2.2 ships active-only.
 
+## Deferred from: code review of 6-2-primitive-component-library (2026-06-16)
+
+- **RangeSlider unlabelled slider has no accessible name** — when `label` prop is omitted, the `<input type="range">` has no accessible name (no `aria-label`, no `aria-labelledby`). Currently all 6-3 usages will provide a label, but a future consumer using RangeSlider without a label will fail an accessibility audit. Consider adding an `aria-label` fallback or a dev-mode warning.
+- **Interactive Card not keyboard-accessible** — `interactive=true` adds `cursor: pointer` and hover styles to a `<div>` but no `tabIndex`, `role`, or keyboard handler. Consumers needing a keyboard-reachable interactive card must use `as="a"` (with `href`) or `as="button"`. Document this constraint when Card is consumed in 6-3.
+- **Card `as` accepts void elements** — `as="img"` / `as="br"` with children produces invalid HTML (React dev warning). The type `keyof React.JSX.IntrinsicElements` is broader than the intended set. A narrower union (`'div' | 'article' | 'section' | 'li' | 'a' | 'button'`) would be safer; defer to a future design-system alignment if the as prop is ever documented.
+- **IconButton has no CSS disabled state** — `.gma-btn:disabled` exists in `components.css` but `.gma-iconbtn:disabled` does not. `disabled` on an `<IconButton>` disables the button functionally but renders no visual change (opacity, cursor). The gap is in the design system source; fix by adding `.gma-iconbtn:disabled { opacity: 0.4; cursor: not-allowed; }` to the local `components.css`, or raise with the upstream design system.
+- **SkeletonFeed `rows=0` emits an empty live region** — `role="status" aria-label="Loading deals"` renders with zero children. Screen readers announce "Loading deals" but nothing is visible. Guard with `Math.max(1, rows)` or add a check if a "truly empty" loading state is intentional.
+- **Select duplicate option values cause React key collision** — `key={opt.value}` in the `options` array map will produce duplicate keys if a consumer passes options with repeated `value` strings. React recovers but prints a warning. Low risk (consumer data quality issue); note in consumer docs.
+- **SkeletonFeed index-as-key** — `Array.from({length: rows}).map((_, i) => <Skeleton key={i} />)` is safe for a static count list but unreliable if `rows` changes frequently at runtime (animation state reuse). For the current use case (page load skeleton) this is acceptable.
+- **RangeSlider `min > max` unchecked** — browsers treat `min > max` by locking the slider at a single position; no guard or warning. Consumer responsibility; document as a known caveat in the RangeSlider contract.
+
 ## Deferred from: code review of 2-1-age-gate (2026-06-10)
 
 - No cross-tab/multi-instance localStorage sync in `useLocalStorage` (no `storage` event listener / `useSyncExternalStore`) — two tabs or two consumers of the same key diverge until reload. Out of MVP scope; worst case the age gate stays up in a second tab.
