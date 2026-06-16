@@ -45,31 +45,31 @@ Epic 6 phasing (ruled with Erik 2026-06-16):
 
 ## Pre-conditions
 
-- [ ] **Task 0 — Sprint-status pre-flight (finding 10):** Confirm `_bmad-output/implementation-artifacts/sprint-status.yaml` contains all four Epic 6 keys with the correct statuses: `epic-6: in-progress`, `6-1-design-system-foundation: ready-for-dev`, `6-2-primitive-component-library: backlog`, `6-3-surface-reskin-and-vehicle-sheet: backlog`. These keys were added 2026-06-16; if your workspace predates that commit, add them following the file's existing structure before proceeding.
+- [x] **Task 0 — Sprint-status pre-flight (finding 10):** Confirm `_bmad-output/implementation-artifacts/sprint-status.yaml` contains all four Epic 6 keys with the correct statuses: `epic-6: in-progress`, `6-1-design-system-foundation: ready-for-dev`, `6-2-primitive-component-library: backlog`, `6-3-surface-reskin-and-vehicle-sheet: backlog`. These keys were added 2026-06-16; if your workspace predates that commit, add them following the file's existing structure before proceeding.
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1 — Vendor self-hosted fonts** (AC: 1)
-  - [ ] Copy the 7 woff2 files from `_bmad-output/planning-artifacts/ux-designs/ux-Happy-2026-06-11/imports/gmas-helper-design-system/assets/fonts/` into the client (recommended: `client/src/assets/fonts/` so Vite fingerprints them, or `client/public/fonts/` for stable paths — pick one and be consistent in the `@font-face` `src`). Exact files: `public-sans-400.woff2`, `public-sans-500.woff2`, `public-sans-600.woff2`, `public-sans-700.woff2`, `ibm-plex-mono-400.woff2`, `ibm-plex-mono-500.woff2`, `ibm-plex-mono-600.woff2` — verify all 7 are present at that path before proceeding; if any are missing, HALT.
-  - [ ] Port `tokens/fonts.css` `@font-face` rules into the client token layer, fixing each `src: url(...)` to the chosen vendored path. Keep `font-display: swap` and the exact family names `'Public Sans'` / `'IBM Plex Mono'` (the typography tokens reference these names).
-  - [ ] Grep `client/src` for `font-style.*italic` — confirm zero occurrences before concluding faux-italic synthesis is safe to accept.
+- [x] **Task 1 — Vendor self-hosted fonts** (AC: 1)
+  - [x] Copy the 7 woff2 files from `_bmad-output/planning-artifacts/ux-designs/ux-Happy-2026-06-11/imports/gmas-helper-design-system/assets/fonts/` into the client (recommended: `client/src/assets/fonts/` so Vite fingerprints them, or `client/public/fonts/` for stable paths — pick one and be consistent in the `@font-face` `src`). Exact files: `public-sans-400.woff2`, `public-sans-500.woff2`, `public-sans-600.woff2`, `public-sans-700.woff2`, `ibm-plex-mono-400.woff2`, `ibm-plex-mono-500.woff2`, `ibm-plex-mono-600.woff2` — verify all 7 are present at that path before proceeding; if any are missing, HALT.
+  - [x] Port `tokens/fonts.css` `@font-face` rules into the client token layer, fixing each `src: url(...)` to the chosen vendored path. Keep `font-display: swap` and the exact family names `'Public Sans'` / `'IBM Plex Mono'` (the typography tokens reference these names).
+  - [x] Grep `client/src` for `font-style.*italic` — confirm zero occurrences before concluding faux-italic synthesis is safe to accept.
   - [ ] Verify in the browser network tab that woff2 files load locally and body text switches to Public Sans.
 
-- [ ] **Task 2 — Port the token layer** (AC: 2, 3, 5)
-  - [ ] Bring the contents of `colors.css`, `typography.css`, `spacing.css`, `elevation.css` (and the `fonts.css` `@font-face` from Task 1) into the client's CSS, values **verbatim**. Recommended layout: a `client/src/styles/tokens.css` (or split mirroring the import) imported from `index.css` after `@import "tailwindcss";`.
-  - [ ] Wire Tailwind v4 `@theme`: expose the palette (`--color-green-700: #15803d` …), font families (`--font-sans`, `--font-mono`), spacing (4px grid), and radius so brand utilities generate. Keep semantic aliases (`--action-primary-bg`, `--surface-page`, `--text-muted`…), composite shorthands (`--font-body`/`--font-figure`/`--font-heading`/`--font-display`/`--font-label`/`--font-caption`), shadows (`--shadow-xs…lg`), the `--ring` composition, border widths, control heights, and motion tokens as `:root`/`@theme inline` custom properties for `var()` consumption. **Verify the exact `@theme` namespace rules against current Tailwind v4 docs** (see Latest Tech).
-  - [ ] Include the `@media (prefers-reduced-motion: reduce)` override that zeroes the duration tokens.
-  - [ ] Confirm `rounded-lg` still resolves to 8px and the default Tailwind palette still works (so existing components don't visually regress).
+- [x] **Task 2 — Port the token layer** (AC: 2, 3, 5)
+  - [x] Bring the contents of `colors.css`, `typography.css`, `spacing.css`, `elevation.css` (and the `fonts.css` `@font-face` from Task 1) into the client's CSS, values **verbatim**. Recommended layout: a `client/src/styles/tokens.css` (or split mirroring the import) imported from `index.css` after `@import "tailwindcss";`.
+  - [x] Wire Tailwind v4 `@theme`: expose the palette (`--color-green-700: #15803d` …), font families (`--font-sans`, `--font-mono`), spacing (4px grid), and radius so brand utilities generate. Keep semantic aliases (`--action-primary-bg`, `--surface-page`, `--text-muted`…), composite shorthands (`--font-body`/`--font-figure`/`--font-heading`/`--font-display`/`--font-label`/`--font-caption`), shadows (`--shadow-xs…lg`), the `--ring` composition, border widths, control heights, and motion tokens as `:root`/`@theme inline` custom properties for `var()` consumption. **Verify the exact `@theme` namespace rules against current Tailwind v4 docs** (see Latest Tech).
+  - [x] Include the `@media (prefers-reduced-motion: reduce)` override that zeroes the duration tokens.
+  - [x] Confirm `rounded-lg` still resolves to 8px and the default Tailwind palette still works (so existing components don't visually regress).
 
-- [ ] **Task 3 — Apply base element styles** (AC: 4)
-  - [ ] Port `base.css` verbatim into the token layer (after the `:root` token definitions so its `var()` refs resolve): box-sizing reset, `body` font/color/background, `h1`–`h4` scale, link styling, the `:where(...):focus-visible` ring, and the `:where(time, [data-figure])` tabular-figure rule. Note: `base.css`'s `[data-figure]` rule sets only `font-variant-numeric`; `font-family: var(--font-mono)` on `[data-figure]` is set by `typography.css`'s `.gma-figure, [data-figure]` block (already ported in Task 2).
+- [x] **Task 3 — Apply base element styles** (AC: 4)
+  - [x] Port `base.css` verbatim into the token layer (after the `:root` token definitions so its `var()` refs resolve): box-sizing reset, `body` font/color/background, `h1`–`h4` scale, link styling, the `:where(...):focus-visible` ring, and the `:where(time, [data-figure])` tabular-figure rule. Note: `base.css`'s `[data-figure]` rule sets only `font-variant-numeric`; `font-family: var(--font-mono)` on `[data-figure]` is set by `typography.css`'s `.gma-figure, [data-figure]` block (already ported in Task 2).
   - [ ] Confirm the focus ring is visible on the existing age-gate button and slider (keyboard-tab), and that `body` background is `--surface-page`.
 
-- [ ] **Task 4 — Remove dead scaffold + verify no regressions** (AC: 6, 7)
-  - [ ] Confirm `client/src/App.css` is imported by **no** module (grep `App.css` across `client/src`), then remove it. (It is Vite demo cruft; `main.tsx` imports only `index.css`.)
-  - [ ] Run `cd client && npm run build` (`tsc -b && vite build`) — clean.
-  - [ ] Run the full client test suite (`npm test` / `vitest run`) — all green, unchanged.
-  - [ ] **Token spot-check (finding 9 mitigation):** Grep the token CSS file for nine sentinel properties — `--green-700`, `--surface-page`, `--text-body`, `--font-sans`, `--font-mono`, `--space-4`, `--radius-lg`, `--shadow-sm`, `--duration-fast` — and confirm each appears at least once. This is a presence check only; token name typos on non-checked properties are not caught here and surface at Task 5 visual smoke or during 6-2/6-3 consumption.
+- [x] **Task 4 — Remove dead scaffold + verify no regressions** (AC: 6, 7)
+  - [x] Confirm `client/src/App.css` is imported by **no** module (grep `App.css` across `client/src`), then remove it. (It is Vite demo cruft; `main.tsx` imports only `index.css`.)
+  - [x] Run `cd client && npm run build` (`tsc -b && vite build`) — clean.
+  - [x] Run the full client test suite (`npm test` / `vitest run`) — all green, unchanged.
+  - [x] **Token spot-check (finding 9 mitigation):** Grep the token CSS file for nine sentinel properties — `--green-700`, `--surface-page`, `--text-body`, `--font-sans`, `--font-mono`, `--space-4`, `--radius-lg`, `--shadow-sm`, `--duration-fast` — and confirm each appears at least once. This is a presence check only; token name typos on non-checked properties are not caught here and surface at Task 5 visual smoke or during 6-2/6-3 consumption.
 
 - [ ] **Task 5 — Visual smoke verification** (AC: 1–5)
   - [ ] Run `npm run dev`, load the app: body is Public Sans on `#f9fafb`, the age-gate button shows the green-700 fill + a visible focus ring on tab, and a quick `<span data-figure>9.8</span>` test (or the existing distance text once 6-3 lands) renders tabular slashed-zero mono. Capture nothing permanent — this is a manual gate, not a committed test.

@@ -1,0 +1,403 @@
+/* ==========================================================================
+   Gma's Helper Design System — Token Layer
+   Source: planning-artifacts/ux-designs/ux-Happy-2026-06-11/imports/
+           gmas-helper-design-system/tokens/{fonts,colors,typography,spacing,elevation,base}.css
+   Values are verbatim from those files. Paths corrected for client/src/assets/fonts/.
+   ========================================================================== */
+
+/* ==========================================================================
+   1. Self-hosted fonts  (fonts.css — paths corrected to vendored location)
+   ========================================================================== */
+
+@font-face {
+  font-family: 'Public Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/public-sans-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Public Sans';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('../assets/fonts/public-sans-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Public Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('../assets/fonts/public-sans-600.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Public Sans';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../assets/fonts/public-sans-700.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/ibm-plex-mono-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('../assets/fonts/ibm-plex-mono-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('../assets/fonts/ibm-plex-mono-600.woff2') format('woff2');
+}
+
+/* ==========================================================================
+   2. Design tokens — native names  (verbatim from source token files)
+      Used by semantic aliases, composite shorthands, and component var() refs.
+   ========================================================================== */
+
+:root {
+  /* -------------------------------------------------------------------------
+     colors.css
+     ------------------------------------------------------------------------- */
+
+  /* Brand green (primary action) */
+  --green-50:  #f0fdf4;
+  --green-100: #dcfce7;
+  --green-200: #bbf7d0;
+  --green-300: #86efac;
+  --green-500: #22c55e;
+  --green-600: #16a34a;
+  --green-700: #15803d; /* primary — the confirm/go color from the app */
+  --green-800: #166534; /* primary hover */
+  --green-900: #14532d;
+
+  /* Neutral gray ramp (the information grid) */
+  --gray-50:  #f9fafb; /* page background */
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb; /* default hairline border */
+  --gray-300: #d1d5db; /* control track / strong border */
+  --gray-400: #9ca3af; /* slider thumb / disabled fg */
+  --gray-500: #6b7280; /* muted / secondary text */
+  --gray-600: #4b5563;
+  --gray-700: #374151; /* body text */
+  --gray-800: #1f2937;
+  --gray-900: #111827; /* headings, inverse surfaces (age gate) */
+  --white:    #ffffff;
+
+  /* Amber (urgency only — time-limited deals, countdowns) */
+  --amber-50:  #fffbeb;
+  --amber-100: #fef3c7;
+  --amber-200: #fde68a;
+  --amber-600: #d97706;
+  --amber-700: #b45309;
+
+  /* Red (errors / destructive) */
+  --red-50:  #fef2f2;
+  --red-200: #fecaca;
+  --red-600: #dc2626;
+  --red-700: #b91c1c;
+
+  /* Surfaces */
+  --surface-page:     var(--gray-50);
+  --surface-card:     var(--white);
+  --surface-sunken:   var(--gray-100);
+  --surface-inverse:  var(--gray-900);
+  --surface-urgent:   var(--amber-50);
+  --surface-error:    var(--red-50);
+
+  /* Text */
+  --text-strong:      var(--gray-900);
+  --text-body:        var(--gray-700);
+  --text-muted:       var(--gray-500);
+  --text-on-primary:  var(--white);
+  --text-on-inverse:  var(--white);
+  --text-urgent:      var(--amber-700);
+  --text-error:       var(--red-700);
+  --text-link:        var(--green-700);
+
+  /* Action — primary */
+  --action-primary-bg:        var(--green-700);
+  --action-primary-bg-hover:  var(--green-800);
+  --action-primary-bg-active: var(--green-900);
+  --action-primary-fg:        var(--white);
+
+  /* Action — secondary */
+  --action-secondary-bg:        var(--white);
+  --action-secondary-bg-hover:  var(--gray-50);
+  --action-secondary-border:    var(--gray-300);
+  --action-secondary-fg:        var(--gray-700);
+
+  /* Action — ghost */
+  --action-ghost-bg-hover:      var(--gray-100);
+  --action-ghost-fg:            var(--gray-700);
+
+  /* Borders */
+  --border-default:   var(--gray-200);
+  --border-strong:    var(--gray-300);
+  --border-focus:     var(--green-700);
+
+  /* Status accents */
+  --status-fresh:     var(--green-600);
+  --status-stale:     var(--gray-400);
+  --status-urgent:    var(--amber-600);
+  --status-error:     var(--red-600);
+
+  /* Focus ring */
+  --focus-ring:       var(--green-700);
+
+  /* -------------------------------------------------------------------------
+     typography.css
+     ------------------------------------------------------------------------- */
+
+  --font-sans: 'Public Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
+
+  --weight-regular:  400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+
+  --text-xs:   0.75rem;
+  --text-sm:   0.875rem;
+  --text-base: 1rem;
+  --text-lg:   1.125rem;
+  --text-xl:   1.25rem;
+  --text-2xl:  1.5rem;
+  --text-3xl:  1.875rem;
+  --text-4xl:  2.25rem;
+  --text-5xl:  3rem;
+
+  --leading-tight:   1.2;
+  --leading-snug:    1.35;
+  --leading-normal:  1.5;
+  --leading-relaxed: 1.65;
+
+  --tracking-tight:  -0.02em;
+  --tracking-normal: 0;
+  --tracking-wide:   0.04em;
+
+  --font-display:  var(--weight-bold)     var(--text-2xl)/var(--leading-tight) var(--font-sans);
+  --font-heading:  var(--weight-semibold) var(--text-lg)/var(--leading-snug)   var(--font-sans);
+  --font-body:     var(--weight-regular)  var(--text-base)/var(--leading-normal) var(--font-sans);
+  --font-label:    var(--weight-medium)   var(--text-sm)/var(--leading-snug)   var(--font-sans);
+  --font-caption:  var(--weight-regular)  var(--text-sm)/var(--leading-snug)   var(--font-sans);
+  --font-figure:   var(--weight-medium)   var(--text-base)/var(--leading-snug) var(--font-mono);
+
+  /* -------------------------------------------------------------------------
+     spacing.css
+     ------------------------------------------------------------------------- */
+
+  --space-0:  0;
+  --space-1:  0.25rem;
+  --space-2:  0.5rem;
+  --space-3:  0.75rem;
+  --space-4:  1rem;
+  --space-5:  1.25rem;
+  --space-6:  1.5rem;
+  --space-8:  2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  --gutter-page:    var(--space-4);
+  --gap-feed:       var(--space-3);
+  --pad-card:       var(--space-3);
+  --pad-control:    var(--space-3);
+
+  --radius-sm:   4px;
+  --radius-md:   6px;
+  --radius-lg:   8px;
+  --radius-xl:   12px;
+  --radius-2xl:  16px;
+  --radius-full: 9999px;
+
+  --border-hairline: 1px;
+  --border-thick:    2px;
+
+  --control-height:    44px;
+  --control-height-sm: 36px;
+  --tap-min:           44px;
+
+  --content-max:   640px;
+  --content-wide:  1120px;
+
+  /* -------------------------------------------------------------------------
+     elevation.css
+     ------------------------------------------------------------------------- */
+
+  --shadow-none: none;
+  --shadow-xs:   0 1px 2px 0 rgba(17, 24, 39, 0.05);
+  --shadow-sm:   0 1px 3px 0 rgba(17, 24, 39, 0.08), 0 1px 2px -1px rgba(17, 24, 39, 0.08);
+  --shadow-md:   0 4px 12px -2px rgba(17, 24, 39, 0.10), 0 2px 6px -2px rgba(17, 24, 39, 0.06);
+  --shadow-lg:   0 12px 28px -6px rgba(17, 24, 39, 0.16), 0 4px 10px -4px rgba(17, 24, 39, 0.08);
+
+  --ring-offset: 2px;
+  --ring-width:  2px;
+  --ring:        0 0 0 var(--ring-offset) var(--surface-card),
+                 0 0 0 calc(var(--ring-offset) + var(--ring-width)) var(--focus-ring);
+
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-out:      cubic-bezier(0, 0, 0.2, 1);
+  --duration-fast:   120ms;
+  --duration-normal: 180ms;
+  --duration-slow:   240ms;
+
+  --transition-control: background-color var(--duration-fast) var(--ease-standard),
+                        border-color var(--duration-fast) var(--ease-standard),
+                        color var(--duration-fast) var(--ease-standard),
+                        box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+/* Reduced-motion — collapses duration tokens to 0ms (elevation.css) */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast:   0ms;
+    --duration-normal: 0ms;
+    --duration-slow:   0ms;
+  }
+}
+
+/* ==========================================================================
+   3. Tailwind v4 @theme — utility-backing tokens
+      Maps to Tailwind's recognized namespaces so brand utilities generate.
+      Palette → --color-* (bg-*, text-*, border-*)
+      Font families → --font-* (font-sans, font-mono)
+      Radius → --radius-* (rounded-*)
+      Spacing → --spacing-* (p-*, m-*, gap-*, w-*, h-*)
+   ========================================================================== */
+
+@theme {
+  /* --- Palette colors --- */
+  --color-green-50:  #f0fdf4;
+  --color-green-100: #dcfce7;
+  --color-green-200: #bbf7d0;
+  --color-green-300: #86efac;
+  --color-green-500: #22c55e;
+  --color-green-600: #16a34a;
+  --color-green-700: #15803d;
+  --color-green-800: #166534;
+  --color-green-900: #14532d;
+
+  --color-gray-50:  #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+  --color-white:    #ffffff;
+
+  --color-amber-50:  #fffbeb;
+  --color-amber-100: #fef3c7;
+  --color-amber-200: #fde68a;
+  --color-amber-600: #d97706;
+  --color-amber-700: #b45309;
+
+  --color-red-50:  #fef2f2;
+  --color-red-200: #fecaca;
+  --color-red-600: #dc2626;
+  --color-red-700: #b91c1c;
+
+  /* --- Font families --- */
+  --font-sans: 'Public Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
+
+  /* --- Border radius --- */
+  --radius-sm:   4px;
+  --radius-md:   6px;
+  --radius-lg:   8px;
+  --radius-xl:   12px;
+  --radius-2xl:  16px;
+  --radius-full: 9999px;
+
+  /* --- Spacing (4px grid) --- */
+  --spacing-1:  0.25rem;
+  --spacing-2:  0.5rem;
+  --spacing-3:  0.75rem;
+  --spacing-4:  1rem;
+  --spacing-5:  1.25rem;
+  --spacing-6:  1.5rem;
+  --spacing-8:  2rem;
+  --spacing-10: 2.5rem;
+  --spacing-12: 3rem;
+  --spacing-16: 4rem;
+}
+
+/* ==========================================================================
+   4. Typography selector rules  (typography.css)
+      Sets font-family + numeric features on figure/mono contexts.
+      Note: base.css's :where(time, [data-figure]) adds font-variant-numeric only;
+      font-family on [data-figure] is authoritative here.
+   ========================================================================== */
+
+.gma-figure,
+[data-figure] {
+  font-family: var(--font-mono);
+  font-feature-settings: 'tnum' 1, 'zero' 1;
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+
+/* ==========================================================================
+   5. Base element styles  (base.css — verbatim)
+      Applied after :root token definitions so var() refs resolve.
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font: var(--font-body);
+  color: var(--text-body);
+  background: var(--surface-page);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4 {
+  margin: 0;
+  color: var(--text-strong);
+  font-family: var(--font-sans);
+  line-height: var(--leading-snug);
+}
+
+h1 { font-size: var(--text-2xl); font-weight: var(--weight-bold); }
+h2 { font-size: var(--text-lg);  font-weight: var(--weight-semibold); }
+h3 { font-size: var(--text-base); font-weight: var(--weight-semibold); }
+
+p { margin: 0; }
+
+a {
+  color: var(--text-link);
+  text-decoration: none;
+}
+a:hover { text-decoration: underline; }
+
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: var(--border-thick) solid var(--focus-ring);
+  outline-offset: var(--ring-offset);
+}
+
+:where(time, [data-figure]) {
+  font-variant-numeric: tabular-nums slashed-zero;
+}
