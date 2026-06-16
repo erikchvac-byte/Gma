@@ -4,7 +4,7 @@ baseline_commit: 67bef9fb85c511ed8cb5db94271c7e864be72e14
 
 # Story 5.1: Scraper Service Deploy-Readiness (env-parametrize + topology ADR, live deploy deferred)
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -152,3 +152,4 @@ claude-opus-4-8 (BMad dev-story workflow)
 | 2026-06-15 | Story drafted (create-story). Scope set by Erik: stay free / defer live; deploy-readiness + ADR only. |
 | 2026-06-16 | Amended per investigate review (`investigations/story-5-1-review-investigation.md`): AC4/Task 3 now reconcile ADR-031/032 + Known-Issues line; ADR-033 ephemeral-disk consequence; runbook `/health` check; default-URL test asserts SCRAPER_URL unset; dotenv/Render env-var note. No scope change. |
 | 2026-06-16 | Implemented (dev-story). All 6 tasks done, 7 ACs satisfied. `SCRAPER_URL` env-parametrized (default unchanged, +2 tests); ADR-033 added + ADR-031/Known-Issues reconciled; runbook + deferred-work park written. 87 server tests pass, tsc clean. No Render spend; `../Scraper` untouched. Status → review. |
+| 2026-06-16 | Review-verified (investigate follow-up): should-fix ADR reconcile confirmed against live `ADR.md` (ADR-033 + `:291`/`:338` lines). All backlog items closed; only Render internal-URL form remains (deferred to go-live). Status → done. |

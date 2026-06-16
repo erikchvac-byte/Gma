@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-09
-last_updated: 2026-06-16 (5-1-deploy-scraper-service → review)
+last_updated: 2026-06-16 (5-1-deploy-scraper-service → done)
 project: Happy
 project_key: NOKEY
 tracking_system: file-system
@@ -76,4 +76,4 @@ development_status:
   # Promoted from the Epic 4 retrospective (action item 1, Erik 2026-06-13).
   data-hardening: done  # spec-data-hardening.md — client useDeals boundary validation + scraper-ingestion deal normalization
   4-3-live-pass: done  # spec-4-3-live-pass — live E2E: 3/3 Dutchie stores flow real deals; transform reconciled to real shape (ADR-030); all 4 sources data-complete
-  5-1-deploy-scraper-service: review  # deploy-READINESS + ADR only (Erik: stay free / defer live 2026-06-15) — env-parametrize SCRAPER_URL + topology ADR-033 + runbook; no Render spend
+  5-1-deploy-scraper-service: done  # deploy-READINESS + ADR only (Erik: stay free / defer live 2026-06-15) — env-parametrize SCRAPER_URL + topology ADR-033 + runbook; no Render spend. Review-verified 2026-06-16 (ADR reconcile confirmed).
