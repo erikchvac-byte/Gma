@@ -82,17 +82,323 @@ Epic 6 phasing (ruled with Erik 2026-06-16):
 ### Source of truth — token files win, prose lies
 **Authoritative:** the six `tokens/*.css` files (read into this story below). **Do NOT** quote `imports/.../_imported-CLAUDE.md.txt` for any value — its radius and shadow numbers are wrong, and its component prop tables are fictional (reconcile §4). Binding ruling (`DESIGN.md:288`, reconcile O1/O3): the house corner is **`--radius-lg: 8px`** (not the prose's "radius-md: 8px"); shadows are the **dual-layer gray-900-based** values in `elevation.css` (not the prose's single-layer black). The token files are internally consistent with `components.css` and the guideline cards.
 
-### Exact token values (verbatim — copy these, do not paraphrase)
+### Exact token values (verbatim source CSS)
 
-**colors.css** — green ramp 50→900 (`--green-700: #15803d`, hover `--green-800: #166534`, active `--green-900: #14532d`), gray ramp 50→900 + white, amber (50/100/200/600/700), red (50/200/600/700). Semantic aliases: surfaces (`--surface-page: var(--gray-50)`, `--surface-card: var(--white)`, `--surface-sunken: var(--gray-100)`, `--surface-inverse: var(--gray-900)`, `--surface-urgent: var(--amber-50)`, `--surface-error: var(--red-50)`); text (`--text-strong: var(--gray-900)`, `--text-body: var(--gray-700)`, `--text-muted: var(--gray-500)`, `--text-on-primary/-inverse: var(--white)`, `--text-urgent: var(--amber-700)`, `--text-error: var(--red-700)`, `--text-link: var(--green-700)`); actions primary/secondary/ghost; borders (`--border-default: var(--gray-200)`, `--border-strong: var(--gray-300)`, `--border-focus: var(--green-700)`); status (`--status-fresh: var(--green-600)`, `--status-stale: var(--gray-400)`, `--status-urgent: var(--amber-600)`, `--status-error: var(--red-600)`); `--focus-ring: var(--green-700)`.
+Copy these declarations directly — no reconstruction needed. The `src` paths in `fonts.css` use the import-relative path `../assets/fonts/`; Task 1 corrects them to the client's vendored location.
 
-**typography.css** — `--font-sans: 'Public Sans', system-ui, -apple-system, 'Segoe UI', sans-serif`; `--font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', 'Menlo', monospace`. Weights 400/500/600/700. Scale `--text-xs:0.75rem` … `--text-2xl:1.5rem` … `--text-5xl:3rem`. Leadings tight/snug/normal/relaxed (1.2/1.35/1.5/1.65). Tracking tight/normal/wide (−0.02em/0/0.04em). Role shorthands: `--font-display`, `--font-heading`, `--font-body`, `--font-label`, `--font-caption`, `--font-figure` (each a `font:` shorthand). Plus the `.gma-figure, [data-figure]` rule (`font-feature-settings:'tnum' 1,'zero' 1`).
+**colors.css**
+```css
+:root {
+  /* ---- Brand green (primary action) ---- */
+  --green-50:  #f0fdf4;
+  --green-100: #dcfce7;
+  --green-200: #bbf7d0;
+  --green-300: #86efac;
+  --green-500: #22c55e;
+  --green-600: #16a34a;
+  --green-700: #15803d; /* primary — the confirm/go color from the app */
+  --green-800: #166534; /* primary hover */
+  --green-900: #14532d;
 
-**spacing.css** — 4px grid `--space-0…16`; semantic `--gutter-page/--gap-feed/--pad-card/--pad-control: var(--space-4/3/3/3)`; radius `--radius-sm:4px / -md:6px / -lg:8px / -xl:12px / -2xl:16px / -full:9999px`; `--border-hairline:1px / --border-thick:2px`; `--control-height:44px / -sm:36px / --tap-min:44px`; `--content-max:640px / --content-wide:1120px`.
+  /* ---- Neutral gray ramp (the information grid) ---- */
+  --gray-50:  #f9fafb; /* page background */
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb; /* default hairline border */
+  --gray-300: #d1d5db; /* control track / strong border */
+  --gray-400: #9ca3af; /* slider thumb / disabled fg */
+  --gray-500: #6b7280; /* muted / secondary text */
+  --gray-600: #4b5563;
+  --gray-700: #374151; /* body text */
+  --gray-800: #1f2937;
+  --gray-900: #111827; /* headings, inverse surfaces (age gate) */
+  --white:    #ffffff;
 
-**elevation.css** — `--shadow-none/xs/sm/md/lg` (xs `0 1px 2px 0 rgba(17,24,39,.05)`; lg `0 12px 28px -6px rgba(17,24,39,.16), 0 4px 10px -4px rgba(17,24,39,.08)`); `--ring-offset:2px / --ring-width:2px`; `--ring` composition; motion `--ease-standard/-out`, `--duration-fast:120ms/-normal:180ms/-slow:240ms`, `--transition-control`; the reduced-motion `@media` block zeroing durations.
+  /* ---- Amber (urgency only — time-limited deals, countdowns) ---- */
+  --amber-50:  #fffbeb;
+  --amber-100: #fef3c7;
+  --amber-200: #fde68a;
+  --amber-600: #d97706;
+  --amber-700: #b45309;
 
-**base.css** — box-sizing reset; `html` text-size-adjust; `body { font: var(--font-body); color: var(--text-body); background: var(--surface-page); }`; `h1`–`h4` (h1 `--text-2xl`/bold, h2 `--text-lg`/semibold, h3 `--text-base`/semibold); link color `--text-link` underline-on-hover; `:where(a,button,input,select,textarea,[tabindex]):focus-visible { outline: var(--border-thick) solid var(--focus-ring); outline-offset: var(--ring-offset); }`; `:where(time,[data-figure]) { font-variant-numeric: tabular-nums slashed-zero; }`.
+  /* ---- Red (errors / destructive) ---- */
+  --red-50:  #fef2f2;
+  --red-200: #fecaca;
+  --red-600: #dc2626;
+  --red-700: #b91c1c;
+
+  /* Surfaces */
+  --surface-page:     var(--gray-50);
+  --surface-card:     var(--white);
+  --surface-sunken:   var(--gray-100);
+  --surface-inverse:  var(--gray-900);
+  --surface-urgent:   var(--amber-50);
+  --surface-error:    var(--red-50);
+
+  /* Text */
+  --text-strong:      var(--gray-900);
+  --text-body:        var(--gray-700);
+  --text-muted:       var(--gray-500);
+  --text-on-primary:  var(--white);
+  --text-on-inverse:  var(--white);
+  --text-urgent:      var(--amber-700);
+  --text-error:       var(--red-700);
+  --text-link:        var(--green-700);
+
+  /* Action — primary */
+  --action-primary-bg:        var(--green-700);
+  --action-primary-bg-hover:  var(--green-800);
+  --action-primary-bg-active: var(--green-900);
+  --action-primary-fg:        var(--white);
+
+  /* Action — secondary */
+  --action-secondary-bg:        var(--white);
+  --action-secondary-bg-hover:  var(--gray-50);
+  --action-secondary-border:    var(--gray-300);
+  --action-secondary-fg:        var(--gray-700);
+
+  /* Action — ghost */
+  --action-ghost-bg-hover:      var(--gray-100);
+  --action-ghost-fg:            var(--gray-700);
+
+  /* Borders */
+  --border-default:   var(--gray-200);
+  --border-strong:    var(--gray-300);
+  --border-focus:     var(--green-700);
+
+  /* Status accents */
+  --status-fresh:     var(--green-600);
+  --status-stale:     var(--gray-400);
+  --status-urgent:    var(--amber-600);
+  --status-error:     var(--red-600);
+
+  /* Focus ring */
+  --focus-ring:       var(--green-700);
+}
+```
+
+**typography.css**
+```css
+:root {
+  --font-sans: 'Public Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
+
+  --weight-regular:  400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+
+  --text-xs:   0.75rem;
+  --text-sm:   0.875rem;
+  --text-base: 1rem;
+  --text-lg:   1.125rem;
+  --text-xl:   1.25rem;
+  --text-2xl:  1.5rem;
+  --text-3xl:  1.875rem;
+  --text-4xl:  2.25rem;
+  --text-5xl:  3rem;
+
+  --leading-tight:   1.2;
+  --leading-snug:    1.35;
+  --leading-normal:  1.5;
+  --leading-relaxed: 1.65;
+
+  --tracking-tight:  -0.02em;
+  --tracking-normal: 0;
+  --tracking-wide:   0.04em;
+
+  --font-display:  var(--weight-bold)     var(--text-2xl)/var(--leading-tight) var(--font-sans);
+  --font-heading:  var(--weight-semibold) var(--text-lg)/var(--leading-snug)   var(--font-sans);
+  --font-body:     var(--weight-regular)  var(--text-base)/var(--leading-normal) var(--font-sans);
+  --font-label:    var(--weight-medium)   var(--text-sm)/var(--leading-snug)   var(--font-sans);
+  --font-caption:  var(--weight-regular)  var(--text-sm)/var(--leading-snug)   var(--font-sans);
+  --font-figure:   var(--weight-medium)   var(--text-base)/var(--leading-snug) var(--font-mono);
+}
+
+.gma-figure,
+[data-figure] {
+  font-family: var(--font-mono);
+  font-feature-settings: 'tnum' 1, 'zero' 1;
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+```
+
+**spacing.css**
+```css
+:root {
+  --space-0:  0;
+  --space-1:  0.25rem;
+  --space-2:  0.5rem;
+  --space-3:  0.75rem;
+  --space-4:  1rem;
+  --space-5:  1.25rem;
+  --space-6:  1.5rem;
+  --space-8:  2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  --gutter-page:    var(--space-4);
+  --gap-feed:       var(--space-3);
+  --pad-card:       var(--space-3);
+  --pad-control:    var(--space-3);
+
+  --radius-sm:   4px;
+  --radius-md:   6px;
+  --radius-lg:   8px;
+  --radius-xl:   12px;
+  --radius-2xl:  16px;
+  --radius-full: 9999px;
+
+  --border-hairline: 1px;
+  --border-thick:    2px;
+
+  --control-height:    44px;
+  --control-height-sm: 36px;
+  --tap-min:           44px;
+
+  --content-max:   640px;
+  --content-wide:  1120px;
+}
+```
+
+**elevation.css**
+```css
+:root {
+  --shadow-none: none;
+  --shadow-xs:   0 1px 2px 0 rgba(17, 24, 39, 0.05);
+  --shadow-sm:   0 1px 3px 0 rgba(17, 24, 39, 0.08), 0 1px 2px -1px rgba(17, 24, 39, 0.08);
+  --shadow-md:   0 4px 12px -2px rgba(17, 24, 39, 0.10), 0 2px 6px -2px rgba(17, 24, 39, 0.06);
+  --shadow-lg:   0 12px 28px -6px rgba(17, 24, 39, 0.16), 0 4px 10px -4px rgba(17, 24, 39, 0.08);
+
+  --ring-offset: 2px;
+  --ring-width:  2px;
+  --ring:        0 0 0 var(--ring-offset) var(--surface-card),
+                 0 0 0 calc(var(--ring-offset) + var(--ring-width)) var(--focus-ring);
+
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-out:      cubic-bezier(0, 0, 0.2, 1);
+  --duration-fast:   120ms;
+  --duration-normal: 180ms;
+  --duration-slow:   240ms;
+
+  --transition-control: background-color var(--duration-fast) var(--ease-standard),
+                        border-color var(--duration-fast) var(--ease-standard),
+                        color var(--duration-fast) var(--ease-standard),
+                        box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast:   0ms;
+    --duration-normal: 0ms;
+    --duration-slow:   0ms;
+  }
+}
+```
+
+**fonts.css** (fix `src` paths to match the client's vendored location — see Task 1)
+```css
+@font-face {
+  font-family: 'Public Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/public-sans-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Public Sans';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('../assets/fonts/public-sans-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Public Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('../assets/fonts/public-sans-600.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Public Sans';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../assets/fonts/public-sans-700.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/ibm-plex-mono-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('../assets/fonts/ibm-plex-mono-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('../assets/fonts/ibm-plex-mono-600.woff2') format('woff2');
+}
+```
+
+**base.css**
+```css
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font: var(--font-body);
+  color: var(--text-body);
+  background: var(--surface-page);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4 {
+  margin: 0;
+  color: var(--text-strong);
+  font-family: var(--font-sans);
+  line-height: var(--leading-snug);
+}
+
+h1 { font-size: var(--text-2xl); font-weight: var(--weight-bold); }
+h2 { font-size: var(--text-lg);  font-weight: var(--weight-semibold); }
+h3 { font-size: var(--text-base); font-weight: var(--weight-semibold); }
+
+p { margin: 0; }
+
+a {
+  color: var(--text-link);
+  text-decoration: none;
+}
+a:hover { text-decoration: underline; }
+
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: var(--border-thick) solid var(--focus-ring);
+  outline-offset: var(--ring-offset);
+}
+
+:where(time, [data-figure]) {
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+```
 
 ### Current client state (read these before starting)
 - `client/src/index.css:1` — `@import "tailwindcss";` (only line). Tailwind v4 via `@tailwindcss/vite` (`client/package.json:19,32`, `tailwindcss ^4.3.0`), React 19, Vitest 4, TS ~6.0.
