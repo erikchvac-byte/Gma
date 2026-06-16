@@ -4,3 +4,8 @@ node_modules/
 .env
 client/dist/
 server/dist/
+
+# TLS cert/key bundles — contain private keys, never commit
+*-ssl-bundle/
+*.pem
+*.key
