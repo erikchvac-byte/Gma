@@ -35,18 +35,18 @@ Epic 6 phasing (ruled with Erik 2026-06-16):
 
 3. **Tailwind v4 `@theme` wiring.** Tokens that back utility classes (palette, font families, spacing, radius) are exposed through Tailwind v4's `@theme` so brand utilities resolve to token values; tokens consumed only as `var()` in later component CSS (composite shorthands like `--font-body`, `--shadow-*`, `--ring`, motion tokens, semantic aliases) are available as `:root` custom properties. The house corner `rounded-lg` resolves to **8px** (Tailwind default already 8px — keep it; do not let any override drift it). `@import "tailwindcss";` is preserved.
 
-4. **Base element styles applied.** The import's `base.css` resets are active app-wide: `box-sizing: border-box` universally; `body` uses `--font-body` on `--surface-page` with `--text-body` color; `h1`–`h4` map to the figure scale + weights; `:focus-visible` draws the 2px `--focus-ring` outline at `--ring-offset` on all interactive elements (never `outline: none` without replacement); `time, [data-figure]` get `font-variant-numeric: tabular-nums slashed-zero`.
+4. **Base element styles applied.** The import's `base.css` resets are active app-wide: `box-sizing: border-box` universally; `body` uses `--font-body` on `--surface-page` with `--text-body` color; `h1`–`h4` map to the figure scale + weights; `:focus-visible` draws the 2px `--focus-ring` outline at `--ring-offset` on all interactive elements (never `outline: none` without replacement); `time, [data-figure]` get `font-variant-numeric: tabular-nums slashed-zero`. (Note: `[data-figure]`'s `font-family: var(--font-mono)` is set by `typography.css`'s `.gma-figure, [data-figure]` selector rule — covered by Task 2; `base.css`'s `:where(time, [data-figure])` block adds only `font-variant-numeric`. Both together satisfy AC 1's IBM Plex Mono guarantee.)
 
 5. **Reduced-motion honored at the token level.** The `@media (prefers-reduced-motion: reduce)` block collapses `--duration-fast/normal/slow` to `0ms`, exactly as `elevation.css` specifies.
 
 6. **Dead scaffold removed; no regressions.** The orphaned Vite-scaffold `client/src/App.css` (Vite demo cruft — `.hero`, `.vite`, `#next-steps`) is removed — **only after** Task 4's grep confirms no module imports it. The client builds (`tsc -b && vite build`) clean and the **full client test suite passes unchanged** — no component logic touched.
 
-7. **Scope boundary holds.** No primitive components are built (6-2). No surface is re-skinned and VehicleSelector is **not** reworked (6-3). No new runtime dependencies are added beyond the vendored font/token assets. `App.tsx`'s structure is unchanged except, optionally, removing the now-redundant inline `bg-gray-50`/font utilities that base.css now supplies (cosmetic, no behavior change).
+7. **Scope boundary holds.** No primitive components are built (6-2). No surface is re-skinned and VehicleSelector is **not** reworked (6-3). No new runtime dependencies are added beyond the vendored font/token assets. `App.tsx` is not modified in this story — the existing Tailwind utilities remain in place.
 
 ## Tasks / Subtasks
 
 - [ ] **Task 1 — Vendor self-hosted fonts** (AC: 1)
-  - [ ] Copy the 7 woff2 files from `…/imports/gmas-helper-design-system/assets/fonts/` into the client (recommended: `client/src/assets/fonts/` so Vite fingerprints them, or `client/public/fonts/` for stable paths — pick one and be consistent in the `@font-face` `src`).
+  - [ ] Copy the 7 woff2 files from `_bmad-output/planning-artifacts/ux-designs/ux-Happy-2026-06-11/imports/gmas-helper-design-system/assets/fonts/` into the client (recommended: `client/src/assets/fonts/` so Vite fingerprints them, or `client/public/fonts/` for stable paths — pick one and be consistent in the `@font-face` `src`). Exact files: `public-sans-400.woff2`, `public-sans-500.woff2`, `public-sans-600.woff2`, `public-sans-700.woff2`, `ibm-plex-mono-400.woff2`, `ibm-plex-mono-500.woff2`, `ibm-plex-mono-600.woff2` — verify all 7 are present at that path before proceeding; if any are missing, HALT.
   - [ ] Port `tokens/fonts.css` `@font-face` rules into the client token layer, fixing each `src: url(...)` to the chosen vendored path. Keep `font-display: swap` and the exact family names `'Public Sans'` / `'IBM Plex Mono'` (the typography tokens reference these names).
   - [ ] Grep `client/src` for `font-style.*italic` — confirm zero occurrences before concluding faux-italic synthesis is safe to accept.
   - [ ] Verify in the browser network tab that woff2 files load locally and body text switches to Public Sans.
@@ -58,12 +58,11 @@ Epic 6 phasing (ruled with Erik 2026-06-16):
   - [ ] Confirm `rounded-lg` still resolves to 8px and the default Tailwind palette still works (so existing components don't visually regress).
 
 - [ ] **Task 3 — Apply base element styles** (AC: 4)
-  - [ ] Port `base.css` verbatim into the token layer (after the `:root` token definitions so its `var()` refs resolve): box-sizing reset, `body` font/color/background, `h1`–`h4` scale, link styling, the `:where(...):focus-visible` ring, and the `:where(time, [data-figure])` tabular-figure rule.
+  - [ ] Port `base.css` verbatim into the token layer (after the `:root` token definitions so its `var()` refs resolve): box-sizing reset, `body` font/color/background, `h1`–`h4` scale, link styling, the `:where(...):focus-visible` ring, and the `:where(time, [data-figure])` tabular-figure rule. Note: `base.css`'s `[data-figure]` rule sets only `font-variant-numeric`; `font-family: var(--font-mono)` on `[data-figure]` is set by `typography.css`'s `.gma-figure, [data-figure]` block (already ported in Task 2).
   - [ ] Confirm the focus ring is visible on the existing age-gate button and slider (keyboard-tab), and that `body` background is `--surface-page`.
 
 - [ ] **Task 4 — Remove dead scaffold + verify no regressions** (AC: 6, 7)
   - [ ] Confirm `client/src/App.css` is imported by **no** module (grep `App.css` across `client/src`), then remove it. (It is Vite demo cruft; `main.tsx` imports only `index.css`.)
-  - [ ] Optionally simplify `App.tsx`'s placeholder `bg-gray-50` / font utilities now that base.css supplies them — cosmetic only, keep `AgeGate`/`DealFeed` structure intact.
   - [ ] Run `cd client && npm run build` (`tsc -b && vite build`) — clean.
   - [ ] Run the full client test suite (`npm test` / `vitest run`) — all green, unchanged.
 
@@ -78,7 +77,7 @@ Epic 6 phasing (ruled with Erik 2026-06-16):
 - `client/src/styles/tokens.css` (or equivalent) — **NEW** (the ported token layer + `@font-face` + base.css)
 - `client/src/assets/fonts/*.woff2` (or `client/public/fonts/`) — **NEW** (7 vendored woff2 files)
 - `client/src/App.css` — **DELETE** (orphaned Vite scaffold; confirm unreferenced first)
-- `client/src/App.tsx` — **OPTIONAL TRIM** (placeholder utilities base.css now covers; no behavior change)
+- `client/src/App.tsx` — **DO NOT MODIFY** (existing utilities stay; no trim in this story)
 
 ### Source of truth — token files win, prose lies
 **Authoritative:** the six `tokens/*.css` files (read into this story below). **Do NOT** quote `imports/.../_imported-CLAUDE.md.txt` for any value — its radius and shadow numbers are wrong, and its component prop tables are fictional (reconcile §4). Binding ruling (`DESIGN.md:288`, reconcile O1/O3): the house corner is **`--radius-lg: 8px`** (not the prose's "radius-md: 8px"); shadows are the **dual-layer gray-900-based** values in `elevation.css` (not the prose's single-layer black). The token files are internally consistent with `components.css` and the guideline cards.
@@ -456,3 +455,4 @@ Task 1 grep (above) confirms the zero-usage baseline before implementation begin
 |------|-------------|
 | 2026-06-16 | Story drafted (create-story). Epic 6 split ruled with Erik: foundation (6-1) → primitives (6-2) → surface re-skin + VehicleSelector sheet (6-3). 6-1 scope = token layer + Tailwind v4 `@theme` + self-hosted fonts + base.css; VehicleSelector bottom-sheet ruling (`.decision-log.md:48`) baked into 6-3, not here. |
 | 2026-06-16 | Spec hardening: (1) AC 6 "confirmed" removed — verification is now a Task 4 precondition, not a pre-stated fact; (2) Italic font variants design decision documented in Dev Notes + AC 1 footnote + Task 1 grep sub-task added. |
+| 2026-06-16 | Spec hardening pass 2 (edge-case review items 6–8): (6) AC 4 + Task 3 now explicitly note that `[data-figure]`'s `font-family` comes from `typography.css`'s selector rule (Task 2 scope), not `base.css` — closes the AC 1 ↔ AC 4 gap; (7) optional App.tsx trim removed entirely — App.tsx is DO NOT MODIFY this story, eliminating the undefined "done" state and snapshot-break risk; (8) Task 1 ellipsis path replaced with full verified project-root-relative path + explicit 7-file list with HALT condition. |
