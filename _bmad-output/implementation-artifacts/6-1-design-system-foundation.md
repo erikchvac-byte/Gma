@@ -25,7 +25,7 @@ Epic 6 phasing (ruled with Erik 2026-06-16):
 
 **Why foundation-first:** the tokens are the single source of truth every later story references (`DESIGN.md → Components` says "Build from tokens — reference semantic aliases; never hardcode a hex"). Landing them first means 6-2/6-3 are pure consumption with nothing to invent.
 
-**Behavior-preservation guarantee:** this story adds a styling layer only. It must not change any component logic or break the existing client test suite. Because the design system's ramp hexes are **identical to Tailwind's default palette** (e.g. `green-700` = `#15803d`, `gray-500` = `#6b7280`), the existing components' default utilities keep rendering; the base `body` background (`surface-page` = `gray-50`) already matches `App.tsx`'s current `bg-gray-50`. The visible deltas are additive: brand fonts, always-visible focus rings, tabular figures.
+**Behavior-preservation guarantee:** this story adds a styling layer only. It must not change any component logic or break the existing client test suite. The `@theme` block makes our design tokens **authoritative** — it replaces Tailwind v4's built-in defaults for every namespace key we define. Utilities like `bg-green-700` will resolve to `--color-green-700: #15803d` (our token). If Tailwind v4's current built-in default for any defined color name differs from our token hex, there will be a minor visual delta — this is **expected and intentional** (the design tokens win over Tailwind defaults; see Dev Notes "finding 11"). The no-regression guarantee covers component logic and layout only: no test failures, no layout breaks, and utilities that reference names we leave undefined (e.g. `min-h-screen`) are undisturbed. The visible additive deltas are: brand fonts, always-visible focus rings, tabular figures.
 
 ## Acceptance Criteria
 
@@ -42,6 +42,10 @@ Epic 6 phasing (ruled with Erik 2026-06-16):
 6. **Dead scaffold removed; no regressions.** The orphaned Vite-scaffold `client/src/App.css` (Vite demo cruft — `.hero`, `.vite`, `#next-steps`) is removed — **only after** Task 4's grep confirms no module imports it. The client builds (`tsc -b && vite build`) clean and the **full client test suite passes unchanged** — no component logic touched.
 
 7. **Scope boundary holds.** No primitive components are built (6-2). No surface is re-skinned and VehicleSelector is **not** reworked (6-3). No new runtime dependencies are added beyond the vendored font/token assets. `App.tsx` is not modified in this story — the existing Tailwind utilities remain in place.
+
+## Pre-conditions
+
+- [ ] **Task 0 — Sprint-status pre-flight (finding 10):** Confirm `_bmad-output/implementation-artifacts/sprint-status.yaml` contains all four Epic 6 keys with the correct statuses: `epic-6: in-progress`, `6-1-design-system-foundation: ready-for-dev`, `6-2-primitive-component-library: backlog`, `6-3-surface-reskin-and-vehicle-sheet: backlog`. These keys were added 2026-06-16; if your workspace predates that commit, add them following the file's existing structure before proceeding.
 
 ## Tasks / Subtasks
 
@@ -65,6 +69,7 @@ Epic 6 phasing (ruled with Erik 2026-06-16):
   - [ ] Confirm `client/src/App.css` is imported by **no** module (grep `App.css` across `client/src`), then remove it. (It is Vite demo cruft; `main.tsx` imports only `index.css`.)
   - [ ] Run `cd client && npm run build` (`tsc -b && vite build`) — clean.
   - [ ] Run the full client test suite (`npm test` / `vitest run`) — all green, unchanged.
+  - [ ] **Token spot-check (finding 9 mitigation):** Grep the token CSS file for nine sentinel properties — `--green-700`, `--surface-page`, `--text-body`, `--font-sans`, `--font-mono`, `--space-4`, `--radius-lg`, `--shadow-sm`, `--duration-fast` — and confirm each appears at least once. This is a presence check only; token name typos on non-checked properties are not caught here and surface at Task 5 visual smoke or during 6-2/6-3 consumption.
 
 - [ ] **Task 5 — Visual smoke verification** (AC: 1–5)
   - [ ] Run `npm run dev`, load the app: body is Public Sans on `#f9fafb`, the age-gate button shows the green-700 fill + a visible focus ring on tab, and a quick `<span data-figure>9.8</span>` test (or the existing distance text once 6-3 lands) renders tabular slashed-zero mono. Capture nothing permanent — this is a manual gate, not a committed test.
@@ -411,6 +416,7 @@ a:hover { text-decoration: underline; }
 - Framework: **Vitest** + React Testing Library (`client/`), TS strict (CLAUDE.md). Tests colocate `*.test.tsx`.
 - This story is CSS/asset-only — no new unit tests are required for tokens themselves, but the **existing suite must stay green** (proves no regression). If you trim `App.tsx`, ensure any snapshot/render assertions still pass.
 - Verification of tokens/fonts/base is a **manual visual smoke** (Task 5) — do not fabricate a passing automated test for visual rendering.
+- **Token name correctness (finding 9):** CSS custom property name typos (e.g. `--grreen-700`) are **not** caught by `tsc -b` or `vite build`. Mitigation: copy all declarations verbatim from the "Exact token values" source CSS in Dev Notes — do not reconstruct from memory. The Task 4 spot-check grep provides a minimal presence check for critical properties; typos on non-checked names surface only at Task 5 visual smoke or during 6-2/6-3 consumption.
 
 ### Project Structure Notes
 - Epic 6 has no PRD/epics.md entry — it's a cross-cutting design-application epic created 2026-06-16 (same individually-tracked pattern as `5-1-deploy-scraper-service`, `data-hardening`). Tracked under new keys `epic-6` + `6-1/6-2/6-3` in `sprint-status.yaml`.
@@ -421,6 +427,8 @@ a:hover { text-decoration: underline; }
 - The client is on Tailwind **v4** (CSS-first config: no `tailwind.config.js`; `@import "tailwindcss";` + `@tailwindcss/vite`). In v4, design tokens live in an `@theme { … }` block and are emitted as `:root` custom properties **and** drive utility generation, but only for recognized namespaces (`--color-*`, `--font-*`, `--spacing-*`, `--radius-*`, `--shadow-*`, `--text-*`, etc.).
 - **Strategy:** put utility-backing tokens in `@theme` using the v4 namespace names (e.g. `--color-action-primary-bg`, `--radius-lg`); put the import's raw `--green-700`-style vars + composite shorthands + semantic aliases that 6-2 consumes via `var()` in a plain `:root` (or `@theme inline` if you want both a utility and a var). **Verify the current v4 namespace + `@theme inline` semantics against the official Tailwind v4 docs before finalizing** — this is the one area where the exact syntax must be confirmed, not assumed.
 - Do not add `tailwindcss-animate` or other plugins; motion is handled by the token-level transitions.
+
+**`@theme` replaces Tailwind defaults (finding 11):** Every namespace key you define in `@theme` (e.g. `--color-green-700`) overrides Tailwind v4's built-in default for that name. `bg-green-700` will resolve to our `#15803d` token rather than any Tailwind v4 built-in value. If Tailwind v4's built-in `green-700` was already `#15803d`, there is no visual change; if it differs, there is a minor color delta. Either outcome is acceptable — the design tokens are the authority. The no-regression guarantee in Context & Scope covers component logic and layout, not pixel-identical preservation of Tailwind's defaults.
 
 ### Italic font variants — design decision
 
@@ -456,3 +464,4 @@ Task 1 grep (above) confirms the zero-usage baseline before implementation begin
 | 2026-06-16 | Story drafted (create-story). Epic 6 split ruled with Erik: foundation (6-1) → primitives (6-2) → surface re-skin + VehicleSelector sheet (6-3). 6-1 scope = token layer + Tailwind v4 `@theme` + self-hosted fonts + base.css; VehicleSelector bottom-sheet ruling (`.decision-log.md:48`) baked into 6-3, not here. |
 | 2026-06-16 | Spec hardening: (1) AC 6 "confirmed" removed — verification is now a Task 4 precondition, not a pre-stated fact; (2) Italic font variants design decision documented in Dev Notes + AC 1 footnote + Task 1 grep sub-task added. |
 | 2026-06-16 | Spec hardening pass 2 (edge-case review items 6–8): (6) AC 4 + Task 3 now explicitly note that `[data-figure]`'s `font-family` comes from `typography.css`'s selector rule (Task 2 scope), not `base.css` — closes the AC 1 ↔ AC 4 gap; (7) optional App.tsx trim removed entirely — App.tsx is DO NOT MODIFY this story, eliminating the undefined "done" state and snapshot-break risk; (8) Task 1 ellipsis path replaced with full verified project-root-relative path + explicit 7-file list with HALT condition. |
+| 2026-06-16 | Spec hardening pass 3 (edge-case review items 9–11): (9) Token name correctness: explicit risk acceptance added to Testing standards (tsc/vite won't catch misspelled custom properties) + Task 4 spot-check grep for nine sentinel properties; (10) Sprint-status tracking: parenthetical assertion converted to explicit Task 0 pre-flight check with verification step; (11) Behavior-preservation guarantee reframed — `@theme` replaces Tailwind v4 defaults by design, minor color deltas are expected/intentional, the guarantee covers component logic + layout only. |
