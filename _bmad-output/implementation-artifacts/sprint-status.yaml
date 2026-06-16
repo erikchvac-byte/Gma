@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-09
-last_updated: 2026-06-16 (5-1-deploy-scraper-service → done)
+last_updated: 2026-06-16 (Epic 6 created: 6-1 → ready-for-dev)
 project: Happy
 project_key: NOKEY
 tracking_system: file-system
@@ -77,3 +77,11 @@ development_status:
   data-hardening: done  # spec-data-hardening.md — client useDeals boundary validation + scraper-ingestion deal normalization
   4-3-live-pass: done  # spec-4-3-live-pass — live E2E: 3/3 Dutchie stores flow real deals; transform reconciled to real shape (ADR-030); all 4 sources data-complete
   5-1-deploy-scraper-service: done  # deploy-READINESS + ADR only (Erik: stay free / defer live 2026-06-15) — env-parametrize SCRAPER_URL + topology ADR-033 + runbook; no Render spend. Review-verified 2026-06-16 (ADR reconcile confirmed).
+
+  # Epic 6: Apply Gma's Helper Design System to the client
+  # Split ruled with Erik 2026-06-16: foundation → primitives → surface re-skin.
+  # Source of truth: planning-artifacts/ux-designs/ux-Happy-2026-06-11/{DESIGN.md,EXPERIENCE.md} + imports/gmas-helper-design-system.
+  epic-6: in-progress
+  6-1-design-system-foundation: ready-for-dev  # token layer + Tailwind v4 @theme + self-hosted fonts + base.css; no component/surface changes
+  6-2-primitive-component-library: backlog  # 10 primitives to .d.ts contracts + Lucide icon vendoring/component + tests
+  6-3-surface-reskin-and-vehicle-sheet: backlog  # re-skin 6 surfaces + VehicleSelector inline→bottom-sheet (ruled .decision-log.md:48): dialog semantics, focus trap, Esc, focus-return, Lucide gear
