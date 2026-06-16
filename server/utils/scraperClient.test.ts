@@ -24,6 +24,7 @@ describe('postScrape', () => {
   })
   afterEach(() => {
     vi.restoreAllMocks()
+    vi.unstubAllEnvs()
   })
 
   it('returns intercepted[] on a successful scrape', async () => {
@@ -58,11 +59,24 @@ describe('postScrape', () => {
     await expect(postScrape(req)).resolves.toEqual([])
   })
 
-  it('POSTs to the Python service /scrape endpoint with the request body', async () => {
+  it('POSTs to the default localhost:8000/scrape endpoint when SCRAPER_URL is unset', async () => {
+    // Empty is falsy → default applies. Stub explicitly so a stray ambient env value can't break it.
+    vi.stubEnv('SCRAPER_URL', '')
     mockedPost.mockResolvedValueOnce({ data: { success: true, intercepted } })
     await postScrape(req)
     expect(mockedPost).toHaveBeenCalledWith(
       'http://localhost:8000/scrape',
+      req,
+      expect.objectContaining({ timeout: expect.any(Number) }),
+    )
+  })
+
+  it('POSTs to SCRAPER_URL when set', async () => {
+    vi.stubEnv('SCRAPER_URL', 'http://scraper.internal:8000/scrape')
+    mockedPost.mockResolvedValueOnce({ data: { success: true, intercepted } })
+    await postScrape(req)
+    expect(mockedPost).toHaveBeenCalledWith(
+      'http://scraper.internal:8000/scrape',
       req,
       expect.objectContaining({ timeout: expect.any(Number) }),
     )

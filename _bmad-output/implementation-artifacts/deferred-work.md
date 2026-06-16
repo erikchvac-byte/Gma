@@ -1,5 +1,13 @@
 # Deferred Work
 
+## PARKED — Live scraping on Render (from 5-1-deploy-scraper-service, 2026-06-16)
+
+**Live Dutchie scraping is parked pending an approved hosting budget (~$14/mo).** Erik's call (2026-06-15): stay free / defer live. The code is go-live-ready — `server/utils/scraperClient.ts` now reads `SCRAPER_URL` (default `http://localhost:8000/scrape`, behavior unchanged) — so what remains is purely a hosting decision, not code.
+
+- **Why deferred:** truly-free live scraping isn't viable on Render — the free web tier spins down after ~15 min idle (so the in-process hourly `setInterval` scrape doesn't reliably run), and Playwright+Chromium needs ~2GB shared memory vs. free tier's 512MB.
+- **To go live:** follow [`docs/deploy-scraper-runbook.md`](../../docs/deploy-scraper-runbook.md) — deploy `../Scraper` as a Render **private** Docker service, set `SCRAPER_URL` on the Happy service to its internal hostname, and upgrade Happy off free tier.
+- **Recommended topology + cost + alternative:** see **ADR-033** (cross-links ADR-031/032).
+
 ## Deferred from: 4-3-dutchie-iframe-dispensary-support (live pass, 2026-06-13)
 
 > **✅ LIVE PASS COMPLETE 2026-06-14 (`_bmad-output/specs/spec-4-3-live-pass/`, see `live-findings-2026-06-13.md`).** All 5 capabilities verified live; all 3 Dutchie stores flow real deals. The two items below are CLEARED; the evidence-fixture relocation (third bullet) remains an open housekeeping item (was explicitly out of live-pass scope).
