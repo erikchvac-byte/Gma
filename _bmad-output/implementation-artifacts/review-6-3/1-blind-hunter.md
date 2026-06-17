@@ -1,5 +1,7 @@
 # Review Role 1 — Blind Hunter (diff only)
 
+> **Status: REVIEWED — 2026-06-16 (Erik).** Completed; no findings submitted for loopback processing.
+
 Run this in a **fresh session**, ideally a **different LLM** than the one that wrote the code. Invoke the `bmad-review-adversarial-general` skill.
 
 ## What you get

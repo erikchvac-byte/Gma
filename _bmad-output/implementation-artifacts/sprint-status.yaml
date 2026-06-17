@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-09
-last_updated: 2026-06-16 (6-3-surface-reskin-and-vehicle-sheet → review)
+last_updated: 2026-06-16 (epic-6 → done; 6-1 + 6-3 → done)
 project: Happy
 project_key: NOKEY
 tracking_system: file-system
@@ -81,7 +81,7 @@ development_status:
   # Epic 6: Apply Gma's Helper Design System to the client
   # Split ruled with Erik 2026-06-16: foundation → primitives → surface re-skin.
   # Source of truth: planning-artifacts/ux-designs/ux-Happy-2026-06-11/{DESIGN.md,EXPERIENCE.md} + imports/gmas-helper-design-system.
-  epic-6: in-progress
-  6-1-design-system-foundation: review  # token layer + Tailwind v4 @theme + self-hosted fonts + base.css; no component/surface changes
+  epic-6: done
+  6-1-design-system-foundation: done  # token layer + Tailwind v4 @theme + self-hosted fonts + base.css; no component/surface changes. Reviewed/cleared 2026-06-16 (status-drift fix).
   6-2-primitive-component-library: done  # 10 primitives to .d.ts contracts + Lucide icon vendoring/component + tests
-  6-3-surface-reskin-and-vehicle-sheet: review  # re-skin 6 surfaces + VehicleSelector inline→bottom-sheet (ruled .decision-log.md:48): dialog semantics, focus trap, Esc, focus-return, Lucide gear
+  6-3-surface-reskin-and-vehicle-sheet: done  # re-skin 6 surfaces + VehicleSelector inline→bottom-sheet (ruled .decision-log.md:48): dialog semantics, focus trap, Esc, focus-return, Lucide gear. 3 adversarial reviews run clean 2026-06-16.

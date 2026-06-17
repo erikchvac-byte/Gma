@@ -1,5 +1,7 @@
 # Review Role 2 — Edge Case Hunter (diff + project read access)
 
+> **Status: REVIEWED — 2026-06-16 (Erik).** Completed; no findings submitted for loopback processing.
+
 Run this in a **fresh session**, ideally a **different LLM**. Invoke the `bmad-review-edge-case-hunter` skill.
 
 ## What you get
