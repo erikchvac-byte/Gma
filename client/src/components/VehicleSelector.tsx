@@ -1,37 +1,74 @@
-import { useId, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import type { KeyboardEvent as ReactKeyboardEvent } from 'react'
 import { useFuelEconomy } from '../hooks/useFuelEconomy'
+import { Icon, IconButton, Notice, Select } from './ui'
 
 interface VehicleSelectorProps {
+  open: boolean
+  onClose: () => void
   mpg: number | null
   label: string | null
   onMpgChange: (mpg: number, label: string) => void
 }
 
-// Gear icon + cascading Year → Make → Model panel (fueleconomy.gov).
-// Controlled: the persisted vehicle arrives via props; a completed selection
-// is reported through onMpgChange — this component never touches storage
-export default function VehicleSelector({ mpg, label, onMpgChange }: VehicleSelectorProps) {
-  const yearId = useId()
-  const makeId = useId()
-  const modelId = useId()
-  const panelId = useId()
-  const [isOpen, setIsOpen] = useState(false)
+const FOCUSABLE =
+  'button:not([disabled]), select:not([disabled]), a[href], input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+
+// Vehicle precision mode (FR-8) as a bottom sheet (ruled .decision-log.md:48).
+// The cascading Year → Make → Model selection and its auto-resolve-on-Model
+// behavior are unchanged from the inline panel — only the presentation and the
+// dialog/focus contract are new. The gear trigger now lives in the Header; this
+// sheet is opened/closed by App via the `open`/`onClose` props.
+export default function VehicleSelector({ open, onClose, mpg, label, onMpgChange }: VehicleSelectorProps) {
   const [year, setYear] = useState('')
   const [make, setMake] = useState('')
   const [model, setModel] = useState('')
   // bumped on every Year/Make/Model change — an MPG lookup that finishes
   // after the selection moved on must never report its result
   const selectionRef = useRef(0)
+  const dialogRef = useRef<HTMLDivElement>(null)
   const { years, makes, models, error, loadYears, loadMakes, loadModels, resolveMpg, clearError } =
     useFuelEconomy()
 
-  const togglePanel = () => {
-    const opening = !isOpen
-    setIsOpen(opening)
-    if (opening) {
-      // an error from the previous visit must not greet the reopen
-      clearError()
-      if (years.length === 0) void loadYears()
+  // On open: drop any stale error, lazy-load the Year list, lock body scroll,
+  // and move focus into the sheet. On close (cleanup): restore scroll and return
+  // focus to whatever opened the sheet (the Header gear).
+  useEffect(() => {
+    if (!open) return
+    const previouslyFocused = document.activeElement as HTMLElement | null
+    clearError()
+    if (years.length === 0) void loadYears()
+
+    const { body } = document
+    const prevOverflow = body.style.overflow
+    body.style.overflow = 'hidden'
+    dialogRef.current?.querySelector<HTMLElement>('select, ' + FOCUSABLE)?.focus()
+
+    return () => {
+      body.style.overflow = prevOverflow
+      previouslyFocused?.focus()
+    }
+    // run only on the open/close transition; cascade state is read fresh inside
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open])
+
+  const handleKeyDown = (event: ReactKeyboardEvent) => {
+    if (event.key === 'Escape') {
+      event.stopPropagation()
+      onClose()
+      return
+    }
+    if (event.key !== 'Tab') return
+    const focusables = dialogRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE)
+    if (!focusables || focusables.length === 0) return
+    const first = focusables[0]
+    const last = focusables[focusables.length - 1]
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault()
+      last.focus()
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault()
+      first.focus()
     }
   }
 
@@ -55,103 +92,100 @@ export default function VehicleSelector({ mpg, label, onMpgChange }: VehicleSele
     setModel(nextModel)
     if (nextModel === '') return
     const resolved = await resolveMpg(year, make, nextModel)
-    // a failed lookup keeps the panel open with the error on display;
+    // a failed lookup keeps the sheet open with the error on display;
     // an abandoned one (selection changed while in flight) is dropped
     if (resolved !== null && selection === selectionRef.current) {
       onMpgChange(resolved, `${year} ${make} ${nextModel}`)
-      setIsOpen(false)
+      onClose()
     }
   }
 
+  if (!open) return null
+
   return (
-    <div className="mb-4">
-      <div className="flex items-center gap-2">
-        <button
-          type="button"
-          aria-label="Vehicle settings"
-          aria-expanded={isOpen}
-          aria-controls={isOpen ? panelId : undefined}
-          onClick={togglePanel}
-          className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-lg leading-none"
-        >
-          <span aria-hidden="true">⚙️</span>
-        </button>
-        {mpg !== null && label !== null && (
-          <span className="text-sm text-gray-700">
-            {label} · {mpg} MPG
-          </span>
-        )}
-      </div>
-      {isOpen && (
-        <div id={panelId} className="mt-2 space-y-3 rounded-lg border border-gray-200 bg-white p-3">
-          {error !== null && (
-            <p role="alert" className="text-sm text-red-700">
-              <span className="block">{error}</span>
-              <span className="block">
-                {mpg !== null
-                  ? 'Gas costs will keep using your saved vehicle.'
-                  : 'Gas costs will use the national average.'}
-              </span>
-            </p>
-          )}
-          <div>
-            <label htmlFor={yearId} className="block text-sm text-gray-700">
-              Year
-            </label>
-            <select
-              id={yearId}
-              value={year}
-              onChange={(event) => handleYearChange(event.target.value)}
-              className="w-full rounded border border-gray-300 p-2"
-            >
-              <option value="">Select year</option>
-              {years.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 40 }} onKeyDown={handleKeyDown}>
+      <div
+        aria-hidden="true"
+        onClick={onClose}
+        style={{ position: 'absolute', inset: 0, background: 'rgba(17, 24, 39, 0.45)' }}
+      />
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Vehicle settings"
+        style={{
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          bottom: 0,
+          maxWidth: 640,
+          margin: '0 auto',
+          background: 'var(--surface-card)',
+          borderTopLeftRadius: 'var(--radius-2xl)',
+          borderTopRightRadius: 'var(--radius-2xl)',
+          boxShadow: 'var(--shadow-lg)',
+          padding: 'var(--space-5)',
+          display: 'grid',
+          gap: 'var(--space-4)',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+            <span aria-hidden="true" style={{ color: 'var(--green-700)' }}>
+              <Icon name="car" size={20} />
+            </span>
+            <h2 style={{ fontSize: 'var(--text-lg)', fontWeight: 'var(--weight-semibold)', margin: 0 }}>
+              Your vehicle
+            </h2>
           </div>
-          <div>
-            <label htmlFor={makeId} className="block text-sm text-gray-700">
-              Make
-            </label>
-            <select
-              id={makeId}
-              value={make}
-              onChange={(event) => handleMakeChange(event.target.value)}
-              disabled={year === ''}
-              className="w-full rounded border border-gray-300 p-2 disabled:bg-gray-100"
-            >
-              <option value="">Select make</option>
-              {makes.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label htmlFor={modelId} className="block text-sm text-gray-700">
-              Model
-            </label>
-            <select
-              id={modelId}
-              value={model}
-              onChange={(event) => void handleModelChange(event.target.value)}
-              disabled={make === ''}
-              className="w-full rounded border border-gray-300 p-2 disabled:bg-gray-100"
-            >
-              <option value="">Select model</option>
-              {models.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          </div>
+          <IconButton aria-label="Close" size="sm" onClick={onClose}>
+            <Icon name="x" size={18} />
+          </IconButton>
         </div>
-      )}
+        <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-muted)', margin: 0 }}>
+          Set it once for exact gas math. Skip it and we use the national average.
+        </p>
+        {mpg !== null && label !== null && (
+          <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-body)', margin: 0 }}>
+            Currently using{' '}
+            <strong style={{ fontWeight: 'var(--weight-semibold)' }}>
+              {label} · {mpg} MPG
+            </strong>
+          </p>
+        )}
+        {error !== null && (
+          <Notice variant="error" role="alert" icon={<Icon name="triangle-alert" size={16} />}>
+            {error}{' '}
+            {mpg !== null
+              ? 'Gas costs will keep using your saved vehicle.'
+              : 'Gas costs will use the national average.'}
+          </Notice>
+        )}
+        <Select
+          label="Year"
+          value={year}
+          placeholder="Select year"
+          options={years.map((option) => ({ value: option, label: option }))}
+          onChange={(event) => handleYearChange(event.target.value)}
+        />
+        <Select
+          label="Make"
+          value={make}
+          placeholder="Select make"
+          disabled={year === ''}
+          options={makes.map((option) => ({ value: option, label: option }))}
+          onChange={(event) => handleMakeChange(event.target.value)}
+        />
+        <Select
+          label="Model"
+          value={model}
+          placeholder="Select model"
+          disabled={make === ''}
+          options={models.map((option) => ({ value: option, label: option }))}
+          onChange={(event) => void handleModelChange(event.target.value)}
+        />
+      </div>
     </div>
   )
 }

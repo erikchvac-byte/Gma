@@ -1,3 +1,5 @@
+import { Notice } from './ui'
+
 interface StaleIndicatorProps {
   count: number
 }
@@ -9,8 +11,8 @@ export default function StaleIndicator({ count }: StaleIndicatorProps) {
   // must be unrenderable no matter what a future caller passes
   if (!Number.isInteger(count) || count <= 0) return null
   return (
-    <p role="status" className="mt-1 text-sm text-gray-500">
+    <Notice variant="muted" role="status">
       {count} {count === 1 ? 'source' : 'sources'} unavailable
-    </p>
+    </Notice>
   )
 }

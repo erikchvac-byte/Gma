@@ -4,17 +4,23 @@ import DistanceFilter, {
   MAX_DISTANCE_MILES,
   MIN_DISTANCE_MILES,
 } from './DistanceFilter'
-import VehicleSelector from './VehicleSelector'
 import { useDeals } from '../hooks/useDeals'
 import { useLocalStorage } from '../hooks/useLocalStorage'
 import { useNow } from '../hooks/useNow'
-import { useVehicleMpg } from '../hooks/useVehicleMpg'
 import { hasValidTimedWindow, isDealActive, minutesUntilEnd } from '../utils/dealTime'
 import { sortDeals } from '../utils/sortDeals'
 import { formatCountdown, formatLastUpdated, formatTimeOfDay } from '../utils/formatTime'
 import { formatGasCost, isPositiveFinite, roundTripGasCost } from '../utils/gasCost'
 import StaleIndicator from './StaleIndicator'
+import { Notice, SkeletonFeed } from './ui'
 import type { Deal, Dispensary } from '../types'
+
+interface DealFeedProps {
+  // resolved vehicle MPG from App (already validated); null → national average
+  mpg?: number | null
+}
+
+const feedStyle = { padding: 'var(--space-4)', display: 'grid', gap: 'var(--space-4)' } as const
 
 // Window line per spec matrix: '9:00 PM – 11:30 PM' / '9:00 PM – close' /
 // 'Active today'. Any present-but-unparseable time → no window text at all.
@@ -38,12 +44,9 @@ function countdownText(deal: Deal, now: Date): string | null {
   return formatCountdown(minutesUntilEnd(deal.endTime as string, now))
 }
 
-export default function DealFeed() {
+export default function DealFeed({ mpg = null }: DealFeedProps) {
   const { data, isLoading, error } = useDeals()
   const now = useNow()
-  // hook validates the stored pair (garbage → null); selection re-renders
-  // this component, so every card recalculates without a reload
-  const { mpg: vehicleMpg, label: vehicleLabel, setVehicle } = useVehicleMpg()
   const [storedDistance, setStoredDistance] = useLocalStorage<number>(
     'gma_distance_miles',
     DEFAULT_DISTANCE_MILES,
@@ -60,21 +63,19 @@ export default function DealFeed() {
 
   if (isLoading) {
     return (
-      <div role="status" aria-label="Loading deals" className="px-4">
-        <div className="animate-pulse space-y-3">
-          <div className="h-16 rounded-lg bg-gray-200" />
-          <div className="h-16 rounded-lg bg-gray-200" />
-          <div className="h-16 rounded-lg bg-gray-200" />
-        </div>
+      <div style={{ padding: 'var(--space-4)' }}>
+        <SkeletonFeed rows={3} />
       </div>
     )
   }
 
   if (error !== null || data === null) {
     return (
-      <p role="alert" className="px-4 text-gray-700">
-        Couldn&apos;t load deals. Please try again later.
-      </p>
+      <div style={{ padding: 'var(--space-4)' }}>
+        <Notice variant="error" role="alert">
+          Couldn&apos;t load deals. Please try again later.
+        </Notice>
+      </div>
     )
   }
 
@@ -99,24 +100,23 @@ export default function DealFeed() {
   const lastUpdated = formatLastUpdated(data.meta.lastScraperRun)
 
   // stored vehicle MPG wins only when it's a finite number > 0; anything else
-  // (absent, null, garbage string, ≤ 0) silently falls back to nationalMpg
+  // (absent, null, garbage) silently falls back to nationalMpg
   const effectiveMpg =
-    typeof vehicleMpg === 'number' && isPositiveFinite(vehicleMpg)
-      ? vehicleMpg
-      : data.meta.nationalMpg
+    typeof mpg === 'number' && isPositiveFinite(mpg) ? mpg : data.meta.nationalMpg
   const gasCostText = (distanceMiles: number): string | null => {
     const cost = roundTripGasCost(distanceMiles, data.meta.gasPrice, effectiveMpg)
     return cost === null ? null : formatGasCost(cost)
   }
 
   return (
-    <section aria-label="Deal feed" className="px-4">
-      <VehicleSelector mpg={vehicleMpg} label={vehicleLabel} onMpgChange={setVehicle} />
+    <section aria-label="Deal feed" style={feedStyle}>
       <DistanceFilter value={maxDistance} onChange={setStoredDistance} />
       {rows.length === 0 ? (
-        <p aria-live="polite" className="text-gray-700">No active deals right now</p>
+        <Notice variant="muted" role="status" aria-live="polite">
+          No active deals right now
+        </Notice>
       ) : (
-        <ul className="space-y-3">
+        <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 'var(--gap-feed)' }}>
           {rows.map(({ dispensary, deal }) => (
             <li key={`${dispensary.id}|${deal.type}|${deal.description}|${deal.startTime ?? ''}|${deal.endTime ?? ''}`}>
               <DealCard
@@ -131,7 +131,9 @@ export default function DealFeed() {
         </ul>
       )}
       {lastUpdated !== '' && (
-        <footer className="mt-4 text-sm text-gray-500">Last updated {lastUpdated}</footer>
+        <Notice variant="muted" role="status">
+          Last updated {lastUpdated}
+        </Notice>
       )}
       <StaleIndicator count={staleCount} />
     </section>

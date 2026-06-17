@@ -1,4 +1,4 @@
-import { render, screen, within, act, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, within, act, fireEvent } from '@testing-library/react'
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import DealFeed from './DealFeed'
 import { useDeals } from '../hooks/useDeals'
@@ -7,6 +7,12 @@ import type { ApiDataResponse, Deal, Dispensary } from '../types'
 vi.mock('../hooks/useDeals')
 
 const mockUseDeals = vi.mocked(useDeals)
+
+// Figures and the discount now render in their own styled <span>s, so a line's
+// text spans multiple nodes. getByText sees only an element's direct text
+// nodes, so match on full (nested) textContent for those lines.
+const hasText = (text: string) => (_content: string, node: Element | null) =>
+  node?.textContent?.replace(/\s+/g, ' ').trim() === text
 
 const meta = {
   lastScraperRun: '2026-06-10T07:45:00',
@@ -131,13 +137,13 @@ describe('DealFeed', () => {
     // (5 mi × 2 × 4.1/28 = $1.46), 12-hour window, countdown
     expect(within(items[0]).getByText('Bravo Buds')).toBeInTheDocument()
     expect(within(items[0]).getByText('5.0 miles')).toBeInTheDocument()
-    expect(within(items[0]).getByText('30% off — $1.46 to get there')).toBeInTheDocument()
+    expect(within(items[0]).getByText(hasText('30% off — $1.46 to get there'))).toBeInTheDocument()
     expect(within(items[0]).getByText('8:00 PM – 11:30 PM')).toBeInTheDocument()
-    expect(within(items[0]).getByText('0:30 left')).toBeInTheDocument()
+    expect(within(items[0]).getByText(hasText('0:30 left'))).toBeInTheDocument()
 
     // overnight HH at 23:00: active, countdown 3:00
     expect(within(items[1]).getByText('10:00 PM – 2:00 AM')).toBeInTheDocument()
-    expect(within(items[1]).getByText('3:00 left')).toBeInTheDocument()
+    expect(within(items[1]).getByText(hasText('3:00 left'))).toBeInTheDocument()
 
     // all-day HH and daily deals: "Active today", no countdown
     expect(within(items[2]).getByText('Active today')).toBeInTheDocument()
@@ -160,12 +166,11 @@ describe('DealFeed', () => {
     mockUseDeals.mockReturnValue({ data: withData([near, far]), isLoading: false, error: null })
     render(<DealFeed />)
 
-    expect(screen.getByText('30% off — $3.63 to get there')).toBeInTheDocument()
-    expect(screen.getByText('20% off — $1.46 to get there')).toBeInTheDocument()
+    expect(screen.getByText(hasText('30% off — $3.63 to get there'))).toBeInTheDocument()
+    expect(screen.getByText(hasText('20% off — $1.46 to get there'))).toBeInTheDocument()
   })
 
-  it('falls back to nationalMpg when gma_vehicle_mpg holds a JSON string like "20"', () => {
-    localStorage.setItem('gma_vehicle_mpg', '"20"') // string, not number — contract is a number
+  it('uses the national average for gas cost when no vehicle mpg is provided', () => {
     mockUseDeals.mockReturnValue({
       data: withData([
         makeDispensary('a', 'Alpha Greens', [makeDeal({ type: 'daily', description: 'a deal', discountPct: 10 })]),
@@ -175,7 +180,22 @@ describe('DealFeed', () => {
     })
     render(<DealFeed />)
 
-    expect(screen.getByText('10% off — $1.46 to get there')).toBeInTheDocument()
+    // 5 mi × 2 × 4.1/28 = $1.46
+    expect(screen.getByText(hasText('10% off — $1.46 to get there'))).toBeInTheDocument()
+  })
+
+  it('uses the provided vehicle mpg for gas cost', () => {
+    mockUseDeals.mockReturnValue({
+      data: withData([
+        makeDispensary('a', 'Alpha Greens', [makeDeal({ description: 'a deal', discountPct: 30 })]),
+      ]),
+      isLoading: false,
+      error: null,
+    })
+    render(<DealFeed mpg={20} />)
+
+    // 5 mi × 2 × 4.1/20 = $2.05
+    expect(screen.getByText(hasText('30% off — $2.05 to get there'))).toBeInTheDocument()
   })
 
   it('drops deals that ended earlier today (startTime-aware expiry)', () => {
@@ -273,7 +293,7 @@ describe('DealFeed', () => {
 
     const item = screen.getByRole('listitem')
     expect(within(item).getByText('malformed HH')).toBeInTheDocument()
-    expect(within(item).getByText('10% off — $1.46 to get there')).toBeInTheDocument()
+    expect(within(item).getByText(hasText('10% off — $1.46 to get there'))).toBeInTheDocument()
     expect(within(item).queryByText(/left/)).not.toBeInTheDocument()
     expect(within(item).queryByText(/AM|PM|close|Active today/)).not.toBeInTheDocument()
     expect(item.textContent).not.toContain('NaN')
@@ -291,14 +311,14 @@ describe('DealFeed', () => {
     })
     render(<DealFeed />)
 
-    expect(screen.getByText('0:30 left')).toBeInTheDocument()
+    expect(screen.getByText(hasText('0:30 left'))).toBeInTheDocument()
 
     act(() => {
       vi.advanceTimersByTime(60000)
     })
 
-    expect(screen.getByText('0:29 left')).toBeInTheDocument()
-    expect(screen.queryByText('0:30 left')).not.toBeInTheDocument()
+    expect(screen.getByText(hasText('0:29 left'))).toBeInTheDocument()
+    expect(screen.queryByText(hasText('0:30 left'))).not.toBeInTheDocument()
   })
 
   it('removes an expired deal on tick and shows the empty state with the timestamp', () => {
@@ -325,51 +345,6 @@ describe('DealFeed', () => {
     expect(screen.getByText('Last updated Jun 10, 7:45 AM')).toBeInTheDocument()
   })
 
-  it('uses a valid gma_vehicle_mpg from localStorage instead of nationalMpg', () => {
-    // label must accompany mpg — the pair is validated atomically
-    localStorage.setItem('gma_vehicle_mpg', '20')
-    localStorage.setItem('gma_vehicle_label', '"2019 Toyota Camry"')
-    mockUseDeals.mockReturnValue({
-      data: withData([
-        makeDispensary('a', 'Alpha Greens', [makeDeal({ discountPct: 30 })]),
-      ]),
-      isLoading: false,
-      error: null,
-    })
-    render(<DealFeed />)
-
-    // 5 mi × 2 × 4.1/20 = $2.05
-    expect(screen.getByText('30% off — $2.05 to get there')).toBeInTheDocument()
-  })
-
-  it('silently falls back to nationalMpg when gma_vehicle_mpg is garbage', () => {
-    localStorage.setItem('gma_vehicle_mpg', 'abc')
-    mockUseDeals.mockReturnValue({
-      data: withData([
-        makeDispensary('a', 'Alpha Greens', [makeDeal({ discountPct: 30 })]),
-      ]),
-      isLoading: false,
-      error: null,
-    })
-    render(<DealFeed />)
-
-    expect(screen.getByText('30% off — $1.46 to get there')).toBeInTheDocument()
-  })
-
-  it('falls back to nationalMpg when gma_vehicle_mpg is non-positive', () => {
-    localStorage.setItem('gma_vehicle_mpg', '0')
-    mockUseDeals.mockReturnValue({
-      data: withData([
-        makeDispensary('a', 'Alpha Greens', [makeDeal({ discountPct: 30 })]),
-      ]),
-      isLoading: false,
-      error: null,
-    })
-    render(<DealFeed />)
-
-    expect(screen.getByText('30% off — $1.46 to get there')).toBeInTheDocument()
-  })
-
   it('shows the discount alone when gasPrice is invalid', () => {
     mockUseDeals.mockReturnValue({
       data: {
@@ -382,7 +357,7 @@ describe('DealFeed', () => {
     render(<DealFeed />)
 
     const item = screen.getByRole('listitem')
-    expect(within(item).getByText('35% off')).toBeInTheDocument()
+    expect(within(item).getByText('35% off', { selector: 'span' })).toBeInTheDocument()
     expect(item.textContent).not.toContain('to get there')
   })
 
@@ -405,7 +380,9 @@ describe('DealFeed', () => {
       mockUseDeals.mockReturnValue({ data: fourDispensaries(), isLoading: false, error: null })
       render(<DealFeed />)
 
-      expect(screen.getByRole('slider', { name: 'Within 25 miles' })).toHaveValue('25')
+      const slider = screen.getByRole('slider', { name: 'Within' })
+      expect(slider).toHaveValue('25')
+      expect(slider).toHaveAttribute('aria-valuetext', '25 miles')
       expect(screen.getAllByRole('listitem')).toHaveLength(4)
     })
 
@@ -458,7 +435,7 @@ describe('DealFeed', () => {
       })
       render(<DealFeed />)
 
-      expect(screen.getByRole('slider', { name: 'Within 30 miles' })).toHaveValue('30')
+      expect(screen.getByRole('slider', { name: 'Within' })).toHaveValue('30')
       expect(screen.getByText('Far deal')).toBeInTheDocument()
       expect(screen.queryByText('Out of range deal')).not.toBeInTheDocument()
     })
@@ -474,21 +451,23 @@ describe('DealFeed', () => {
         })
         render(<DealFeed />)
 
-        expect(screen.getByRole('slider', { name: 'Within 25 miles' })).toHaveValue('25')
+        expect(screen.getByRole('slider', { name: 'Within' })).toHaveValue('25')
         expect(screen.getByText('Far deal')).toBeInTheDocument()
         expect(screen.queryByText('Out of range deal')).not.toBeInTheDocument()
       },
     )
 
     it.each([
-      ['1', 'Within 1 mile'],
-      ['50', 'Within 50 miles'],
-    ])('accepts the persisted boundary value %s', (stored, label) => {
+      ['1', '1 mile'],
+      ['50', '50 miles'],
+    ])('accepts the persisted boundary value %s', (stored, valueText) => {
       localStorage.setItem('gma_distance_miles', stored)
       mockUseDeals.mockReturnValue({ data: fourDispensaries(), isLoading: false, error: null })
       render(<DealFeed />)
 
-      expect(screen.getByRole('slider', { name: label })).toHaveValue(stored)
+      const slider = screen.getByRole('slider', { name: 'Within' })
+      expect(slider).toHaveValue(stored)
+      expect(slider).toHaveAttribute('aria-valuetext', valueText)
     })
 
     it('keeps the slider visible and usable when filtering empties the feed', () => {
@@ -501,7 +480,7 @@ describe('DealFeed', () => {
       render(<DealFeed />)
 
       expect(screen.getByText('No active deals right now')).toBeInTheDocument()
-      const slider = screen.getByRole('slider', { name: 'Within 1 mile' })
+      const slider = screen.getByRole('slider', { name: 'Within' })
 
       fireEvent.change(slider, { target: { value: '25' } })
 
@@ -639,104 +618,5 @@ describe('DealFeed', () => {
         expect(screen.queryByText(/unavailable/)).not.toBeInTheDocument()
       },
     )
-  })
-
-  describe('vehicle precision mode', () => {
-    const jsonResponse = (body: unknown): Response =>
-      ({ ok: true, status: 200, json: async () => body }) as unknown as Response
-
-    const menu = (...values: string[]) =>
-      jsonResponse({ menuItem: values.map((value) => ({ text: value, value })) })
-
-    const stubFuelEconomy = (comb08: number) => {
-      const fetchMock = vi.fn((input: RequestInfo | URL) => {
-        const url = String(input)
-        if (url.includes('/menu/year')) return Promise.resolve(menu('2019'))
-        if (url.includes('/menu/make?')) return Promise.resolve(menu('Toyota'))
-        if (url.includes('/menu/model?')) return Promise.resolve(menu('Camry'))
-        if (url.includes('/menu/options?')) return Promise.resolve(menu('41234'))
-        return Promise.resolve(jsonResponse({ comb08 }))
-      })
-      vi.stubGlobal('fetch', fetchMock)
-      return fetchMock
-    }
-
-    afterEach(() => {
-      vi.unstubAllGlobals()
-    })
-
-    it('shows the gear icon and uses nationalMpg when no vehicle is set', () => {
-      mockUseDeals.mockReturnValue({
-        data: withData([makeDispensary('a', 'Alpha Greens', [makeDeal({ discountPct: 30 })])]),
-        isLoading: false,
-        error: null,
-      })
-      render(<DealFeed />)
-
-      expect(screen.getByRole('button', { name: 'Vehicle settings' })).toBeInTheDocument()
-      expect(screen.queryByText(/· \d+ MPG/)).not.toBeInTheDocument()
-      expect(screen.getByText('30% off — $1.46 to get there')).toBeInTheDocument()
-    })
-
-    it('recalculates every visible gas cost immediately on vehicle selection and persists it', async () => {
-      // async fueleconomy cascade needs real timers (deal has no timed window)
-      vi.useRealTimers()
-      stubFuelEconomy(20)
-      mockUseDeals.mockReturnValue({
-        data: withData([
-          makeDispensary('a', 'Alpha Greens', [makeDeal({ description: 'a deal', discountPct: 30 })]),
-          { ...makeDispensary('b', 'Bravo Buds', [makeDeal({ description: 'b deal', discountPct: 10 })]), distanceMiles: 12.4 },
-        ]),
-        isLoading: false,
-        error: null,
-      })
-      render(<DealFeed />)
-      expect(screen.getByText('30% off — $1.46 to get there')).toBeInTheDocument()
-
-      fireEvent.click(screen.getByRole('button', { name: 'Vehicle settings' }))
-      await screen.findByRole('option', { name: '2019' })
-      fireEvent.change(screen.getByLabelText('Year'), { target: { value: '2019' } })
-      await screen.findByRole('option', { name: 'Toyota' })
-      fireEvent.change(screen.getByLabelText('Make'), { target: { value: 'Toyota' } })
-      await screen.findByRole('option', { name: 'Camry' })
-      fireEvent.change(screen.getByLabelText('Model'), { target: { value: 'Camry' } })
-
-      // 5 mi × 2 × 4.1/20 = $2.05 and 12.4 mi × 2 × 4.1/20 = $5.08 — no reload
-      await waitFor(() => {
-        expect(screen.getByText('30% off — $2.05 to get there')).toBeInTheDocument()
-      })
-      expect(screen.getByText('10% off — $5.08 to get there')).toBeInTheDocument()
-      expect(screen.getByText('2019 Toyota Camry · 20 MPG')).toBeInTheDocument()
-      expect(localStorage.getItem('gma_vehicle_mpg')).toBe('20')
-      expect(localStorage.getItem('gma_vehicle_label')).toBe('"2019 Toyota Camry"')
-    })
-
-    it('restores the saved vehicle label and MPG on load', () => {
-      localStorage.setItem('gma_vehicle_mpg', '20')
-      localStorage.setItem('gma_vehicle_label', '"2019 Toyota Camry"')
-      mockUseDeals.mockReturnValue({
-        data: withData([makeDispensary('a', 'Alpha Greens', [makeDeal({ discountPct: 30 })])]),
-        isLoading: false,
-        error: null,
-      })
-      render(<DealFeed />)
-
-      expect(screen.getByText('2019 Toyota Camry · 20 MPG')).toBeInTheDocument()
-      expect(screen.getByText('30% off — $2.05 to get there')).toBeInTheDocument()
-    })
-
-    it('treats corrupt stored mpg as no vehicle: no summary, costs use nationalMpg', () => {
-      localStorage.setItem('gma_vehicle_mpg', 'abc')
-      localStorage.setItem('gma_vehicle_label', '"2019 Toyota Camry"')
-      mockUseDeals.mockReturnValue({
-        data: withData([makeDispensary('a', 'Alpha Greens', [makeDeal({ discountPct: 30 })])]),
-        isLoading: false,
-        error: null,
-      })
-      render(<DealFeed />)
-
-      expect(screen.queryByText(/· \d+ MPG/)).not.toBeInTheDocument()
-      expect(screen.getByText('30% off — $1.46 to get there')).toBeInTheDocument()
-    })
   })
 })

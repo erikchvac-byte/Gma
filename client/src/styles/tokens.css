@@ -143,6 +143,7 @@
   /* Borders */
   --border-default:   var(--gray-200);
   --border-strong:    var(--gray-300);
+  --border-field:     var(--gray-500); /* #6b7280 — higher-contrast form-field boundary (Reviewer-Gate a11y fix, 6-3) */
   --border-focus:     var(--green-700);
 
   /* Status accents */

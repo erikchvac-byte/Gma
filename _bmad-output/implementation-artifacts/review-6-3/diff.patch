@@ -1,0 +1,1806 @@
+# Story 6-3 diff vs baseline bbbc529 — surface re-skin + VehicleSelector bottom sheet
+
+## Tracked changes (git diff bbbc529 -- client/)
+```diff
+diff --git a/client/index.html b/client/index.html
+index 3269aca..0d8488f 100644
+--- a/client/index.html
++++ b/client/index.html
+@@ -4,7 +4,7 @@
+     <meta charset="UTF-8" />
+     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+-    <title>client</title>
++    <title>Gma's Helper — cannabis deals worth the drive</title>
+   </head>
+   <body>
+     <div id="root"></div>
+diff --git a/client/src/App.test.tsx b/client/src/App.test.tsx
+index 2f6701c..e016979 100644
+--- a/client/src/App.test.tsx
++++ b/client/src/App.test.tsx
+@@ -1,30 +1,61 @@
+-import { render, screen } from '@testing-library/react'
++import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+ import App from './App'
+ import type { ApiDataResponse } from './types'
+ 
+-const emptyPayload: ApiDataResponse = {
+-  meta: {
+-    lastScraperRun: '2026-06-10T07:45:00',
+-    gasPrice: 4.1,
+-    nationalMpg: 28,
+-    gasPriceUpdatedAt: '2026-06-10T07:00:00',
+-  },
+-  dispensaries: [],
++const meta = {
++  lastScraperRun: '2026-06-10T07:45:00',
++  gasPrice: 4.1,
++  nationalMpg: 28,
++  gasPriceUpdatedAt: '2026-06-10T07:00:00',
+ }
+ 
++const emptyPayload: ApiDataResponse = { meta, dispensaries: [] }
++
++const oneDispensary: ApiDataResponse = {
++  meta,
++  dispensaries: [
++    {
++      id: 'a',
++      name: 'Alpha Greens',
++      url: 'https://example.com/a',
++      distanceMiles: 5,
++      stale: false,
++      lastFetchedAt: '2026-06-10T07:00:00',
++      deals: [
++        { type: 'daily', description: 'a deal', discountPct: 30, startTime: null, endTime: null, daysValid: ['everyday'] },
++      ],
++    },
++  ],
++}
++
++const jsonResponse = (body: unknown): Response =>
++  ({ ok: true, status: 200, json: async () => body }) as unknown as Response
++
++const menu = (...values: string[]) =>
++  jsonResponse({ menuItem: values.map((value) => ({ text: value, value })) })
++
++// figures/discount render across styled spans — match on full textContent
++const hasText = (text: string) => (_content: string, node: Element | null) =>
++  node?.textContent?.replace(/\s+/g, ' ').trim() === text
++
++// /api/data → deals payload; fueleconomy.gov → the vehicle cascade
++const routeFetch = (dealsPayload: ApiDataResponse, comb08: unknown = 20) =>
++  vi.fn((input: RequestInfo | URL) => {
++    const url = String(input)
++    if (url.includes('fueleconomy')) {
++      if (url.includes('/menu/year')) return Promise.resolve(menu('2019'))
++      if (url.includes('/menu/make?')) return Promise.resolve(menu('Toyota'))
++      if (url.includes('/menu/model?')) return Promise.resolve(menu('Camry'))
++      if (url.includes('/menu/options?')) return Promise.resolve(menu('41234'))
++      return Promise.resolve(jsonResponse({ comb08 }))
++    }
++    return Promise.resolve(jsonResponse(dealsPayload))
++  })
++
+ describe('App', () => {
+   beforeEach(() => {
+     localStorage.clear()
+-    // stub fetch so DealFeed never hits a real network in tests
+-    vi.stubGlobal(
+-      'fetch',
+-      vi.fn().mockResolvedValue({
+-        ok: true,
+-        status: 200,
+-        json: async () => emptyPayload,
+-      } as Response),
+-    )
+   })
+ 
+   afterEach(() => {
+@@ -32,21 +63,70 @@ describe('App', () => {
+   })
+ 
+   it('shows the age gate and hides content on first visit', () => {
++    vi.stubGlobal('fetch', routeFetch(emptyPayload))
+     render(<App />)
++
+     expect(screen.getByText('I am 21 or older')).toBeInTheDocument()
+     expect(screen.queryByText("Gma's Helper")).not.toBeInTheDocument()
+   })
+ 
+-  it('renders content once age is confirmed', () => {
++  it('renders the header wordmark and feed region once age is confirmed', async () => {
+     localStorage.setItem('gma_age_confirmed', 'true')
++    vi.stubGlobal('fetch', routeFetch(emptyPayload))
+     render(<App />)
+-    expect(screen.getByText("Gma's Helper")).toBeInTheDocument()
++
++    expect(screen.getByRole('banner')).toBeInTheDocument()
++    expect(screen.getByRole('heading', { level: 1, name: "Gma's Helper" })).toBeInTheDocument()
++    expect(await screen.findByRole('region', { name: 'Deal feed' })).toBeInTheDocument()
++    expect(screen.getByText('No active deals right now')).toBeInTheDocument()
+   })
+ 
+-  it('shows the deal feed region below the header once age is confirmed', async () => {
++  it('opens the settings sheet from the header gear and returns focus to it on close', async () => {
+     localStorage.setItem('gma_age_confirmed', 'true')
++    vi.stubGlobal('fetch', routeFetch(emptyPayload))
+     render(<App />)
+-    expect(await screen.findByRole('region', { name: 'Deal feed' })).toBeInTheDocument()
+-    expect(screen.getByText('No active deals right now')).toBeInTheDocument()
++
++    const gear = screen.getByRole('button', { name: 'Vehicle & settings' })
++    gear.focus() // browsers focus a button on click; jsdom does not, so do it explicitly
++    fireEvent.click(gear)
++
++    expect(await screen.findByRole('dialog', { name: 'Vehicle settings' })).toBeInTheDocument()
++
++    fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' })
++
++    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
++    expect(gear).toHaveFocus()
++  })
++
++  it('recalculates every gas cost across the feed when a vehicle is selected', async () => {
++    localStorage.setItem('gma_age_confirmed', 'true')
++    vi.stubGlobal('fetch', routeFetch(oneDispensary, 20))
++    render(<App />)
++
++    // national average first: 5 mi × 2 × 4.1/28 = $1.46
++    expect(await screen.findByText(hasText('30% off — $1.46 to get there'))).toBeInTheDocument()
++
++    fireEvent.click(screen.getByRole('button', { name: 'Vehicle & settings' }))
++    await screen.findByRole('option', { name: '2019' })
++    fireEvent.change(screen.getByLabelText('Year'), { target: { value: '2019' } })
++    await screen.findByRole('option', { name: 'Toyota' })
++    fireEvent.change(screen.getByLabelText('Make'), { target: { value: 'Toyota' } })
++    await screen.findByRole('option', { name: 'Camry' })
++    fireEvent.change(screen.getByLabelText('Model'), { target: { value: 'Camry' } })
++
++    // 5 mi × 2 × 4.1/20 = $2.05; selection persists and the sheet closes
++    expect(await screen.findByText(hasText('30% off — $2.05 to get there'))).toBeInTheDocument()
++    expect(localStorage.getItem('gma_vehicle_mpg')).toBe('20')
++    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
++  })
++
++  it('uses a saved vehicle from localStorage to drive gas costs', async () => {
++    localStorage.setItem('gma_age_confirmed', 'true')
++    localStorage.setItem('gma_vehicle_mpg', '20')
++    localStorage.setItem('gma_vehicle_label', '"2019 Toyota Camry"')
++    vi.stubGlobal('fetch', routeFetch(oneDispensary))
++    render(<App />)
++
++    expect(await screen.findByText(hasText('30% off — $2.05 to get there'))).toBeInTheDocument()
+   })
+ })
+diff --git a/client/src/App.tsx b/client/src/App.tsx
+index 3069426..b8fe34e 100644
+--- a/client/src/App.tsx
++++ b/client/src/App.tsx
+@@ -1,13 +1,32 @@
++import { useState } from 'react'
+ import AgeGate from './components/AgeGate'
++import Header from './components/Header'
+ import DealFeed from './components/DealFeed'
++import VehicleSelector from './components/VehicleSelector'
++import { useVehicleMpg } from './hooks/useVehicleMpg'
+ 
+ function App() {
++  // Vehicle state and the settings-sheet toggle live here so the persistent
++  // Header gear (above DealFeed's loading/error early-returns) and the bottom
++  // sheet can share them; DealFeed consumes the resolved MPG as a prop.
++  const { mpg, label, setVehicle } = useVehicleMpg()
++  const [settingsOpen, setSettingsOpen] = useState(false)
++
+   return (
+     <AgeGate>
+-      <div className="min-h-screen bg-gray-50">
+-        <h1 className="text-2xl font-bold p-4">Gma&apos;s Helper</h1>
+-        <DealFeed />
++      <div style={{ minHeight: '100vh', background: 'var(--surface-page)' }}>
++        <Header onOpenSettings={() => setSettingsOpen(true)} />
++        <main>
++          <DealFeed mpg={mpg} />
++        </main>
+       </div>
++      <VehicleSelector
++        open={settingsOpen}
++        onClose={() => setSettingsOpen(false)}
++        mpg={mpg}
++        label={label}
++        onMpgChange={setVehicle}
++      />
+     </AgeGate>
+   )
+ }
+diff --git a/client/src/components/AgeGate.tsx b/client/src/components/AgeGate.tsx
+index 07c6417..28a9d15 100644
+--- a/client/src/components/AgeGate.tsx
++++ b/client/src/components/AgeGate.tsx
+@@ -1,6 +1,7 @@
+ import { useEffect, useRef } from 'react'
+ import type { ReactNode } from 'react'
+ import { useLocalStorage } from '../hooks/useLocalStorage'
++import { Button, Icon } from './ui'
+ 
+ interface AgeGateProps {
+   children: ReactNode
+@@ -8,32 +9,56 @@ interface AgeGateProps {
+ 
+ export default function AgeGate({ children }: AgeGateProps) {
+   const [ageConfirmed, setAgeConfirmed] = useLocalStorage('gma_age_confirmed', false)
+-  const confirmButtonRef = useRef<HTMLButtonElement>(null)
++  const dialogRef = useRef<HTMLDivElement>(null)
+ 
+   useEffect(() => {
+-    confirmButtonRef.current?.focus()
++    // move focus to the confirm button on mount — the gate's single focusable,
++    // so focus is trivially trapped until confirmation
++    dialogRef.current?.querySelector('button')?.focus()
+   }, [])
+ 
+   // strict check: a corrupted or hand-edited localStorage value must not open the gate
+   if (ageConfirmed !== true) {
+     return (
+       <div
++        ref={dialogRef}
+         role="alertdialog"
+         aria-modal="true"
+         aria-labelledby="age-gate-heading"
+-        className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-6 bg-gray-900 p-4 text-center text-white"
++        style={{
++          position: 'fixed',
++          inset: 0,
++          zIndex: 50,
++          display: 'flex',
++          flexDirection: 'column',
++          alignItems: 'center',
++          justifyContent: 'center',
++          gap: 'var(--space-6)',
++          padding: 'var(--space-6)',
++          textAlign: 'center',
++          background: 'var(--surface-inverse)',
++          color: 'var(--text-on-inverse)',
++        }}
+       >
+-        <h1 id="age-gate-heading" className="text-lg font-normal">
++        <span aria-hidden="true" style={{ color: 'var(--green-300)' }}>
++          <Icon name="shield-check" size={36} />
++        </span>
++        <h1
++          id="age-gate-heading"
++          style={{
++            color: 'var(--white)',
++            fontWeight: 'var(--weight-regular)',
++            fontSize: 'var(--text-lg)',
++            lineHeight: 'var(--leading-snug)',
++            maxWidth: 320,
++            margin: 0,
++          }}
++        >
+           You must be 21 or older to view this content.
+         </h1>
+-        <button
+-          ref={confirmButtonRef}
+-          type="button"
+-          onClick={() => setAgeConfirmed(true)}
+-          className="rounded-lg bg-green-700 px-6 py-3 text-lg font-semibold hover:bg-green-800"
+-        >
++        <Button variant="primary" onClick={() => setAgeConfirmed(true)}>
+           I am 21 or older
+-        </button>
++        </Button>
+       </div>
+     )
+   }
+diff --git a/client/src/components/DealCard.test.tsx b/client/src/components/DealCard.test.tsx
+index 6f683b7..9373d01 100644
+--- a/client/src/components/DealCard.test.tsx
++++ b/client/src/components/DealCard.test.tsx
+@@ -24,6 +24,15 @@ const makeDispensary = (overrides: Partial<Dispensary>): Dispensary => ({
+   ...overrides,
+ })
+ 
++// Figures (gas, countdown) and the discount now render in their own styled
++// <span>s, so a line's text spans multiple nodes. getByText sees only an
++// element's direct text nodes, so match on full (nested) textContent instead.
++const byFullText = (text: string) =>
++  screen.getByText(
++    (_content: string, node: Element | null) =>
++      node?.textContent?.replace(/\s+/g, ' ').trim() === text,
++  )
++
+ describe('DealCard', () => {
+   it('renders a timed happy hour with window, countdown, and the side-by-side Discount Display', () => {
+     render(
+@@ -39,9 +48,39 @@ describe('DealCard', () => {
+     expect(screen.getByText('Alpha Greens')).toBeInTheDocument()
+     expect(screen.getByText('12.4 miles')).toBeInTheDocument()
+     expect(screen.getByText('Happy hour special')).toBeInTheDocument()
+-    expect(screen.getByText('25% off — $3.63 to get there')).toBeInTheDocument()
++    expect(byFullText('25% off — $3.63 to get there')).toBeInTheDocument()
+     expect(screen.getByText('9:00 PM – 11:30 PM')).toBeInTheDocument()
+-    expect(screen.getByText('0:30 left')).toBeInTheDocument()
++    expect(byFullText('0:30 left')).toBeInTheDocument()
++  })
++
++  it('shows an urgent "Happy hour" badge for happy-hour deals', () => {
++    render(
++      <DealCard
++        dispensary={makeDispensary({})}
++        deal={makeDeal({})}
++        windowText="9:00 PM – 11:30 PM"
++        countdown="0:30"
++        gasCostText="$3.63"
++      />,
++    )
++
++    expect(screen.getByText('Happy hour')).toBeInTheDocument()
++    expect(screen.queryByText('Daily deal')).not.toBeInTheDocument()
++  })
++
++  it('shows a neutral "Daily deal" badge for daily deals', () => {
++    render(
++      <DealCard
++        dispensary={makeDispensary({})}
++        deal={makeDeal({ type: 'daily', startTime: null, endTime: null })}
++        windowText="Active today"
++        countdown={null}
++        gasCostText="$1.80"
++      />,
++    )
++
++    expect(screen.getByText('Daily deal')).toBeInTheDocument()
++    expect(screen.queryByText('Happy hour')).not.toBeInTheDocument()
+   })
+ 
+   it('renders an until-close happy hour without a countdown', () => {
+@@ -86,7 +125,7 @@ describe('DealCard', () => {
+     )
+ 
+     expect(screen.getByText('Daily special')).toBeInTheDocument()
+-    expect(screen.getByText('35% off — $1.80 to get there')).toBeInTheDocument()
++    expect(byFullText('35% off — $1.80 to get there')).toBeInTheDocument()
+     expect(screen.getByText('Active today')).toBeInTheDocument()
+     expect(screen.queryByText(/left/)).not.toBeInTheDocument()
+   })
+@@ -102,7 +141,7 @@ describe('DealCard', () => {
+       />,
+     )
+ 
+-    expect(screen.getByText('35% off')).toBeInTheDocument()
++    expect(screen.getByText('35% off', { selector: 'span' })).toBeInTheDocument()
+     expect(container.textContent).not.toContain('to get there')
+     expect(container.textContent).not.toContain('—')
+   })
+@@ -119,7 +158,7 @@ describe('DealCard', () => {
+     )
+ 
+     expect(screen.getByText('Mystery deal')).toBeInTheDocument()
+-    expect(screen.getByText('$1.80 to get there')).toBeInTheDocument()
++    expect(byFullText('$1.80 to get there')).toBeInTheDocument()
+     expect(container.textContent).not.toContain('null')
+     expect(container.textContent).not.toContain('% off')
+   })
+@@ -167,7 +206,7 @@ describe('DealCard', () => {
+     )
+ 
+     expect(screen.getByText('Alpha Greens')).toBeInTheDocument()
+-    expect(screen.getByText('25% off — $3.63 to get there')).toBeInTheDocument()
++    expect(byFullText('25% off — $3.63 to get there')).toBeInTheDocument()
+     expect(screen.queryByText(/left/)).not.toBeInTheDocument()
+     expect(screen.queryByText(/AM|PM|close|Active today/)).not.toBeInTheDocument()
+     expect(container.textContent).not.toContain('NaN')
+diff --git a/client/src/components/DealCard.tsx b/client/src/components/DealCard.tsx
+index a3bd4c3..f725c39 100644
+--- a/client/src/components/DealCard.tsx
++++ b/client/src/components/DealCard.tsx
+@@ -1,4 +1,6 @@
++import type { CSSProperties } from 'react'
+ import type { Deal, Dispensary } from '../types'
++import { Badge, Card, Icon } from './ui'
+ 
+ export interface DealCardProps {
+   dispensary: Dispensary
+@@ -10,30 +12,70 @@ export interface DealCardProps {
+   gasCostText: string | null
+ }
+ 
++const figure: CSSProperties = {
++  fontFamily: 'var(--font-mono)',
++  fontVariantNumeric: 'tabular-nums slashed-zero',
++}
++
+ // Purely presentational: receives data and computed values as props.
+ // No fetching, no intervals, no hooks.
+ export default function DealCard({ dispensary, deal, windowText, countdown, gasCostText }: DealCardProps) {
++  const isHappyHour = deal.type === 'happy_hour'
+   return (
+-    <article className="rounded-lg border border-gray-200 bg-white p-3">
+-      <div className="flex items-baseline justify-between gap-2">
+-        <h2 className="font-semibold">{dispensary.name}</h2>
+-        <span className="text-sm text-gray-500">{dispensary.distanceMiles.toFixed(1)} miles</span>
++    <Card as="article" urgent={isHappyHour} style={{ display: 'grid', gap: 'var(--space-1)' }}>
++      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 'var(--space-2)' }}>
++        <h2 style={{ fontSize: 'var(--text-base)', fontWeight: 'var(--weight-semibold)' }}>{dispensary.name}</h2>
++        <span style={{ ...figure, fontSize: 'var(--text-sm)', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
++          {dispensary.distanceMiles.toFixed(1)} miles
++        </span>
+       </div>
+-      <p className="text-gray-700">{deal.description}</p>
+-      {/* side-by-side Discount Display (ADR-009): one line, em dash.
+-          discountPct may be null (source text had no parseable percent) —
+-          then the line shows gas cost alone, or is omitted entirely. */}
++      <div>
++        {isHappyHour ? (
++          <Badge variant="urgent"><Icon name="clock" size={12} /> Happy hour</Badge>
++        ) : (
++          <Badge variant="neutral">Daily deal</Badge>
++        )}
++      </div>
++      <p style={{ color: 'var(--text-body)' }}>{deal.description}</p>
++      {/* side-by-side Discount Display (ADR-009): discount in green, gas figure in mono,
++          joined by an em dash. Either half may be null — render only what's present. */}
+       {(deal.discountPct !== null || gasCostText !== null) && (
+-        <p className="font-medium">
+-          {deal.discountPct !== null && gasCostText !== null
+-            ? `${deal.discountPct}% off — ${gasCostText} to get there`
+-            : deal.discountPct !== null
+-              ? `${deal.discountPct}% off`
+-              : `${gasCostText} to get there`}
++        <p style={{ fontWeight: 'var(--weight-medium)', color: 'var(--text-strong)' }}>
++          {deal.discountPct !== null && (
++            <span style={{ color: 'var(--green-700)', fontWeight: 'var(--weight-semibold)' }}>
++              {deal.discountPct}% off
++            </span>
++          )}
++          {deal.discountPct !== null && gasCostText !== null && ' — '}
++          {gasCostText !== null && (
++            <>
++              <span style={figure}>{gasCostText}</span> to get there
++            </>
++          )}
+         </p>
+       )}
+-      {windowText !== null && <p className="text-sm text-gray-500">{windowText}</p>}
+-      {countdown !== null && <p className="text-sm font-medium">{countdown} left</p>}
+-    </article>
++      {(windowText !== null || countdown !== null) && (
++        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--space-2)' }}>
++          {windowText !== null && (
++            <span style={{ ...figure, fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}>{windowText}</span>
++          )}
++          {countdown !== null && (
++            <span
++              style={{
++                display: 'inline-flex',
++                alignItems: 'center',
++                gap: 6,
++                fontSize: 'var(--text-sm)',
++                fontWeight: 'var(--weight-semibold)',
++                color: 'var(--text-urgent)',
++              }}
++            >
++              <Icon name="clock" size={14} />
++              <span style={figure}>{countdown}</span> left
++            </span>
++          )}
++        </div>
++      )}
++    </Card>
+   )
+ }
+diff --git a/client/src/components/DealFeed.test.tsx b/client/src/components/DealFeed.test.tsx
+index 2fcf706..9066225 100644
+--- a/client/src/components/DealFeed.test.tsx
++++ b/client/src/components/DealFeed.test.tsx
+@@ -1,4 +1,4 @@
+-import { render, screen, within, act, fireEvent, waitFor } from '@testing-library/react'
++import { render, screen, within, act, fireEvent } from '@testing-library/react'
+ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+ import DealFeed from './DealFeed'
+ import { useDeals } from '../hooks/useDeals'
+@@ -8,6 +8,12 @@ vi.mock('../hooks/useDeals')
+ 
+ const mockUseDeals = vi.mocked(useDeals)
+ 
++// Figures and the discount now render in their own styled <span>s, so a line's
++// text spans multiple nodes. getByText sees only an element's direct text
++// nodes, so match on full (nested) textContent for those lines.
++const hasText = (text: string) => (_content: string, node: Element | null) =>
++  node?.textContent?.replace(/\s+/g, ' ').trim() === text
++
+ const meta = {
+   lastScraperRun: '2026-06-10T07:45:00',
+   gasPrice: 4.1,
+@@ -131,13 +137,13 @@ describe('DealFeed', () => {
+     // (5 mi × 2 × 4.1/28 = $1.46), 12-hour window, countdown
+     expect(within(items[0]).getByText('Bravo Buds')).toBeInTheDocument()
+     expect(within(items[0]).getByText('5.0 miles')).toBeInTheDocument()
+-    expect(within(items[0]).getByText('30% off — $1.46 to get there')).toBeInTheDocument()
++    expect(within(items[0]).getByText(hasText('30% off — $1.46 to get there'))).toBeInTheDocument()
+     expect(within(items[0]).getByText('8:00 PM – 11:30 PM')).toBeInTheDocument()
+-    expect(within(items[0]).getByText('0:30 left')).toBeInTheDocument()
++    expect(within(items[0]).getByText(hasText('0:30 left'))).toBeInTheDocument()
+ 
+     // overnight HH at 23:00: active, countdown 3:00
+     expect(within(items[1]).getByText('10:00 PM – 2:00 AM')).toBeInTheDocument()
+-    expect(within(items[1]).getByText('3:00 left')).toBeInTheDocument()
++    expect(within(items[1]).getByText(hasText('3:00 left'))).toBeInTheDocument()
+ 
+     // all-day HH and daily deals: "Active today", no countdown
+     expect(within(items[2]).getByText('Active today')).toBeInTheDocument()
+@@ -160,12 +166,11 @@ describe('DealFeed', () => {
+     mockUseDeals.mockReturnValue({ data: withData([near, far]), isLoading: false, error: null })
+     render(<DealFeed />)
+ 
+-    expect(screen.getByText('30% off — $3.63 to get there')).toBeInTheDocument()
+-    expect(screen.getByText('20% off — $1.46 to get there')).toBeInTheDocument()
++    expect(screen.getByText(hasText('30% off — $3.63 to get there'))).toBeInTheDocument()
++    expect(screen.getByText(hasText('20% off — $1.46 to get there'))).toBeInTheDocument()
+   })
+ 
+-  it('falls back to nationalMpg when gma_vehicle_mpg holds a JSON string like "20"', () => {
+-    localStorage.setItem('gma_vehicle_mpg', '"20"') // string, not number — contract is a number
++  it('uses the national average for gas cost when no vehicle mpg is provided', () => {
+     mockUseDeals.mockReturnValue({
+       data: withData([
+         makeDispensary('a', 'Alpha Greens', [makeDeal({ type: 'daily', description: 'a deal', discountPct: 10 })]),
+@@ -175,7 +180,22 @@ describe('DealFeed', () => {
+     })
+     render(<DealFeed />)
+ 
+-    expect(screen.getByText('10% off — $1.46 to get there')).toBeInTheDocument()
++    // 5 mi × 2 × 4.1/28 = $1.46
++    expect(screen.getByText(hasText('10% off — $1.46 to get there'))).toBeInTheDocument()
++  })
++
++  it('uses the provided vehicle mpg for gas cost', () => {
++    mockUseDeals.mockReturnValue({
++      data: withData([
++        makeDispensary('a', 'Alpha Greens', [makeDeal({ description: 'a deal', discountPct: 30 })]),
++      ]),
++      isLoading: false,
++      error: null,
++    })
++    render(<DealFeed mpg={20} />)
++
++    // 5 mi × 2 × 4.1/20 = $2.05
++    expect(screen.getByText(hasText('30% off — $2.05 to get there'))).toBeInTheDocument()
+   })
+ 
+   it('drops deals that ended earlier today (startTime-aware expiry)', () => {
+@@ -273,7 +293,7 @@ describe('DealFeed', () => {
+ 
+     const item = screen.getByRole('listitem')
+     expect(within(item).getByText('malformed HH')).toBeInTheDocument()
+-    expect(within(item).getByText('10% off — $1.46 to get there')).toBeInTheDocument()
++    expect(within(item).getByText(hasText('10% off — $1.46 to get there'))).toBeInTheDocument()
+     expect(within(item).queryByText(/left/)).not.toBeInTheDocument()
+     expect(within(item).queryByText(/AM|PM|close|Active today/)).not.toBeInTheDocument()
+     expect(item.textContent).not.toContain('NaN')
+@@ -291,14 +311,14 @@ describe('DealFeed', () => {
+     })
+     render(<DealFeed />)
+ 
+-    expect(screen.getByText('0:30 left')).toBeInTheDocument()
++    expect(screen.getByText(hasText('0:30 left'))).toBeInTheDocument()
+ 
+     act(() => {
+       vi.advanceTimersByTime(60000)
+     })
+ 
+-    expect(screen.getByText('0:29 left')).toBeInTheDocument()
+-    expect(screen.queryByText('0:30 left')).not.toBeInTheDocument()
++    expect(screen.getByText(hasText('0:29 left'))).toBeInTheDocument()
++    expect(screen.queryByText(hasText('0:30 left'))).not.toBeInTheDocument()
+   })
+ 
+   it('removes an expired deal on tick and shows the empty state with the timestamp', () => {
+@@ -325,51 +345,6 @@ describe('DealFeed', () => {
+     expect(screen.getByText('Last updated Jun 10, 7:45 AM')).toBeInTheDocument()
+   })
+ 
+-  it('uses a valid gma_vehicle_mpg from localStorage instead of nationalMpg', () => {
+-    // label must accompany mpg — the pair is validated atomically
+-    localStorage.setItem('gma_vehicle_mpg', '20')
+-    localStorage.setItem('gma_vehicle_label', '"2019 Toyota Camry"')
+-    mockUseDeals.mockReturnValue({
+-      data: withData([
+-        makeDispensary('a', 'Alpha Greens', [makeDeal({ discountPct: 30 })]),
+-      ]),
+-      isLoading: false,
+-      error: null,
+-    })
+-    render(<DealFeed />)
+-
+-    // 5 mi × 2 × 4.1/20 = $2.05
+-    expect(screen.getByText('30% off — $2.05 to get there')).toBeInTheDocument()
+-  })
+-
+-  it('silently falls back to nationalMpg when gma_vehicle_mpg is garbage', () => {
+-    localStorage.setItem('gma_vehicle_mpg', 'abc')
+-    mockUseDeals.mockReturnValue({
+-      data: withData([
+-        makeDispensary('a', 'Alpha Greens', [makeDeal({ discountPct: 30 })]),
+-      ]),
+-      isLoading: false,
+-      error: null,
+-    })
+-    render(<DealFeed />)
+-
+-    expect(screen.getByText('30% off — $1.46 to get there')).toBeInTheDocument()
+-  })
+-
+-  it('falls back to nationalMpg when gma_vehicle_mpg is non-positive', () => {
+-    localStorage.setItem('gma_vehicle_mpg', '0')
+-    mockUseDeals.mockReturnValue({
+-      data: withData([
+-        makeDispensary('a', 'Alpha Greens', [makeDeal({ discountPct: 30 })]),
+-      ]),
+-      isLoading: false,
+-      error: null,
+-    })
+-    render(<DealFeed />)
+-
+-    expect(screen.getByText('30% off — $1.46 to get there')).toBeInTheDocument()
+-  })
+-
+   it('shows the discount alone when gasPrice is invalid', () => {
+     mockUseDeals.mockReturnValue({
+       data: {
+@@ -382,7 +357,7 @@ describe('DealFeed', () => {
+     render(<DealFeed />)
+ 
+     const item = screen.getByRole('listitem')
+-    expect(within(item).getByText('35% off')).toBeInTheDocument()
++    expect(within(item).getByText('35% off', { selector: 'span' })).toBeInTheDocument()
+     expect(item.textContent).not.toContain('to get there')
+   })
+ 
+@@ -405,7 +380,9 @@ describe('DealFeed', () => {
+       mockUseDeals.mockReturnValue({ data: fourDispensaries(), isLoading: false, error: null })
+       render(<DealFeed />)
+ 
+-      expect(screen.getByRole('slider', { name: 'Within 25 miles' })).toHaveValue('25')
++      const slider = screen.getByRole('slider', { name: 'Within' })
++      expect(slider).toHaveValue('25')
++      expect(slider).toHaveAttribute('aria-valuetext', '25 miles')
+       expect(screen.getAllByRole('listitem')).toHaveLength(4)
+     })
+ 
+@@ -458,7 +435,7 @@ describe('DealFeed', () => {
+       })
+       render(<DealFeed />)
+ 
+-      expect(screen.getByRole('slider', { name: 'Within 30 miles' })).toHaveValue('30')
++      expect(screen.getByRole('slider', { name: 'Within' })).toHaveValue('30')
+       expect(screen.getByText('Far deal')).toBeInTheDocument()
+       expect(screen.queryByText('Out of range deal')).not.toBeInTheDocument()
+     })
+@@ -474,21 +451,23 @@ describe('DealFeed', () => {
+         })
+         render(<DealFeed />)
+ 
+-        expect(screen.getByRole('slider', { name: 'Within 25 miles' })).toHaveValue('25')
++        expect(screen.getByRole('slider', { name: 'Within' })).toHaveValue('25')
+         expect(screen.getByText('Far deal')).toBeInTheDocument()
+         expect(screen.queryByText('Out of range deal')).not.toBeInTheDocument()
+       },
+     )
+ 
+     it.each([
+-      ['1', 'Within 1 mile'],
+-      ['50', 'Within 50 miles'],
+-    ])('accepts the persisted boundary value %s', (stored, label) => {
++      ['1', '1 mile'],
++      ['50', '50 miles'],
++    ])('accepts the persisted boundary value %s', (stored, valueText) => {
+       localStorage.setItem('gma_distance_miles', stored)
+       mockUseDeals.mockReturnValue({ data: fourDispensaries(), isLoading: false, error: null })
+       render(<DealFeed />)
+ 
+-      expect(screen.getByRole('slider', { name: label })).toHaveValue(stored)
++      const slider = screen.getByRole('slider', { name: 'Within' })
++      expect(slider).toHaveValue(stored)
++      expect(slider).toHaveAttribute('aria-valuetext', valueText)
+     })
+ 
+     it('keeps the slider visible and usable when filtering empties the feed', () => {
+@@ -501,7 +480,7 @@ describe('DealFeed', () => {
+       render(<DealFeed />)
+ 
+       expect(screen.getByText('No active deals right now')).toBeInTheDocument()
+-      const slider = screen.getByRole('slider', { name: 'Within 1 mile' })
++      const slider = screen.getByRole('slider', { name: 'Within' })
+ 
+       fireEvent.change(slider, { target: { value: '25' } })
+ 
+@@ -640,103 +619,4 @@ describe('DealFeed', () => {
+       },
+     )
+   })
+-
+-  describe('vehicle precision mode', () => {
+-    const jsonResponse = (body: unknown): Response =>
+-      ({ ok: true, status: 200, json: async () => body }) as unknown as Response
+-
+-    const menu = (...values: string[]) =>
+-      jsonResponse({ menuItem: values.map((value) => ({ text: value, value })) })
+-
+-    const stubFuelEconomy = (comb08: number) => {
+-      const fetchMock = vi.fn((input: RequestInfo | URL) => {
+-        const url = String(input)
+-        if (url.includes('/menu/year')) return Promise.resolve(menu('2019'))
+-        if (url.includes('/menu/make?')) return Promise.resolve(menu('Toyota'))
+-        if (url.includes('/menu/model?')) return Promise.resolve(menu('Camry'))
+-        if (url.includes('/menu/options?')) return Promise.resolve(menu('41234'))
+-        return Promise.resolve(jsonResponse({ comb08 }))
+-      })
+-      vi.stubGlobal('fetch', fetchMock)
+-      return fetchMock
+-    }
+-
+-    afterEach(() => {
+-      vi.unstubAllGlobals()
+-    })
+-
+-    it('shows the gear icon and uses nationalMpg when no vehicle is set', () => {
+-      mockUseDeals.mockReturnValue({
+-        data: withData([makeDispensary('a', 'Alpha Greens', [makeDeal({ discountPct: 30 })])]),
+-        isLoading: false,
+-        error: null,
+-      })
+-      render(<DealFeed />)
+-
+-      expect(screen.getByRole('button', { name: 'Vehicle settings' })).toBeInTheDocument()
+-      expect(screen.queryByText(/· \d+ MPG/)).not.toBeInTheDocument()
+-      expect(screen.getByText('30% off — $1.46 to get there')).toBeInTheDocument()
+-    })
+-
+-    it('recalculates every visible gas cost immediately on vehicle selection and persists it', async () => {
+-      // async fueleconomy cascade needs real timers (deal has no timed window)
+-      vi.useRealTimers()
+-      stubFuelEconomy(20)
+-      mockUseDeals.mockReturnValue({
+-        data: withData([
+-          makeDispensary('a', 'Alpha Greens', [makeDeal({ description: 'a deal', discountPct: 30 })]),
+-          { ...makeDispensary('b', 'Bravo Buds', [makeDeal({ description: 'b deal', discountPct: 10 })]), distanceMiles: 12.4 },
+-        ]),
+-        isLoading: false,
+-        error: null,
+-      })
+-      render(<DealFeed />)
+-      expect(screen.getByText('30% off — $1.46 to get there')).toBeInTheDocument()
+-
+-      fireEvent.click(screen.getByRole('button', { name: 'Vehicle settings' }))
+-      await screen.findByRole('option', { name: '2019' })
+-      fireEvent.change(screen.getByLabelText('Year'), { target: { value: '2019' } })
+-      await screen.findByRole('option', { name: 'Toyota' })
+-      fireEvent.change(screen.getByLabelText('Make'), { target: { value: 'Toyota' } })
+-      await screen.findByRole('option', { name: 'Camry' })
+-      fireEvent.change(screen.getByLabelText('Model'), { target: { value: 'Camry' } })
+-
+-      // 5 mi × 2 × 4.1/20 = $2.05 and 12.4 mi × 2 × 4.1/20 = $5.08 — no reload
+-      await waitFor(() => {
+-        expect(screen.getByText('30% off — $2.05 to get there')).toBeInTheDocument()
+-      })
+-      expect(screen.getByText('10% off — $5.08 to get there')).toBeInTheDocument()
+-      expect(screen.getByText('2019 Toyota Camry · 20 MPG')).toBeInTheDocument()
+-      expect(localStorage.getItem('gma_vehicle_mpg')).toBe('20')
+-      expect(localStorage.getItem('gma_vehicle_label')).toBe('"2019 Toyota Camry"')
+-    })
+-
+-    it('restores the saved vehicle label and MPG on load', () => {
+-      localStorage.setItem('gma_vehicle_mpg', '20')
+-      localStorage.setItem('gma_vehicle_label', '"2019 Toyota Camry"')
+-      mockUseDeals.mockReturnValue({
+-        data: withData([makeDispensary('a', 'Alpha Greens', [makeDeal({ discountPct: 30 })])]),
+-        isLoading: false,
+-        error: null,
+-      })
+-      render(<DealFeed />)
+-
+-      expect(screen.getByText('2019 Toyota Camry · 20 MPG')).toBeInTheDocument()
+-      expect(screen.getByText('30% off — $2.05 to get there')).toBeInTheDocument()
+-    })
+-
+-    it('treats corrupt stored mpg as no vehicle: no summary, costs use nationalMpg', () => {
+-      localStorage.setItem('gma_vehicle_mpg', 'abc')
+-      localStorage.setItem('gma_vehicle_label', '"2019 Toyota Camry"')
+-      mockUseDeals.mockReturnValue({
+-        data: withData([makeDispensary('a', 'Alpha Greens', [makeDeal({ discountPct: 30 })])]),
+-        isLoading: false,
+-        error: null,
+-      })
+-      render(<DealFeed />)
+-
+-      expect(screen.queryByText(/· \d+ MPG/)).not.toBeInTheDocument()
+-      expect(screen.getByText('30% off — $1.46 to get there')).toBeInTheDocument()
+-    })
+-  })
+ })
+diff --git a/client/src/components/DealFeed.tsx b/client/src/components/DealFeed.tsx
+index ab13c5d..9f948c3 100644
+--- a/client/src/components/DealFeed.tsx
++++ b/client/src/components/DealFeed.tsx
+@@ -4,18 +4,24 @@ import DistanceFilter, {
+   MAX_DISTANCE_MILES,
+   MIN_DISTANCE_MILES,
+ } from './DistanceFilter'
+-import VehicleSelector from './VehicleSelector'
+ import { useDeals } from '../hooks/useDeals'
+ import { useLocalStorage } from '../hooks/useLocalStorage'
+ import { useNow } from '../hooks/useNow'
+-import { useVehicleMpg } from '../hooks/useVehicleMpg'
+ import { hasValidTimedWindow, isDealActive, minutesUntilEnd } from '../utils/dealTime'
+ import { sortDeals } from '../utils/sortDeals'
+ import { formatCountdown, formatLastUpdated, formatTimeOfDay } from '../utils/formatTime'
+ import { formatGasCost, isPositiveFinite, roundTripGasCost } from '../utils/gasCost'
+ import StaleIndicator from './StaleIndicator'
++import { Notice, SkeletonFeed } from './ui'
+ import type { Deal, Dispensary } from '../types'
+ 
++interface DealFeedProps {
++  // resolved vehicle MPG from App (already validated); null → national average
++  mpg?: number | null
++}
++
++const feedStyle = { padding: 'var(--space-4)', display: 'grid', gap: 'var(--space-4)' } as const
++
+ // Window line per spec matrix: '9:00 PM – 11:30 PM' / '9:00 PM – close' /
+ // 'Active today'. Any present-but-unparseable time → no window text at all.
+ function windowText(deal: Deal): string | null {
+@@ -38,12 +44,9 @@ function countdownText(deal: Deal, now: Date): string | null {
+   return formatCountdown(minutesUntilEnd(deal.endTime as string, now))
+ }
+ 
+-export default function DealFeed() {
++export default function DealFeed({ mpg = null }: DealFeedProps) {
+   const { data, isLoading, error } = useDeals()
+   const now = useNow()
+-  // hook validates the stored pair (garbage → null); selection re-renders
+-  // this component, so every card recalculates without a reload
+-  const { mpg: vehicleMpg, label: vehicleLabel, setVehicle } = useVehicleMpg()
+   const [storedDistance, setStoredDistance] = useLocalStorage<number>(
+     'gma_distance_miles',
+     DEFAULT_DISTANCE_MILES,
+@@ -60,21 +63,19 @@ export default function DealFeed() {
+ 
+   if (isLoading) {
+     return (
+-      <div role="status" aria-label="Loading deals" className="px-4">
+-        <div className="animate-pulse space-y-3">
+-          <div className="h-16 rounded-lg bg-gray-200" />
+-          <div className="h-16 rounded-lg bg-gray-200" />
+-          <div className="h-16 rounded-lg bg-gray-200" />
+-        </div>
++      <div style={{ padding: 'var(--space-4)' }}>
++        <SkeletonFeed rows={3} />
+       </div>
+     )
+   }
+ 
+   if (error !== null || data === null) {
+     return (
+-      <p role="alert" className="px-4 text-gray-700">
+-        Couldn&apos;t load deals. Please try again later.
+-      </p>
++      <div style={{ padding: 'var(--space-4)' }}>
++        <Notice variant="error" role="alert">
++          Couldn&apos;t load deals. Please try again later.
++        </Notice>
++      </div>
+     )
+   }
+ 
+@@ -99,24 +100,23 @@ export default function DealFeed() {
+   const lastUpdated = formatLastUpdated(data.meta.lastScraperRun)
+ 
+   // stored vehicle MPG wins only when it's a finite number > 0; anything else
+-  // (absent, null, garbage string, ≤ 0) silently falls back to nationalMpg
++  // (absent, null, garbage) silently falls back to nationalMpg
+   const effectiveMpg =
+-    typeof vehicleMpg === 'number' && isPositiveFinite(vehicleMpg)
+-      ? vehicleMpg
+-      : data.meta.nationalMpg
++    typeof mpg === 'number' && isPositiveFinite(mpg) ? mpg : data.meta.nationalMpg
+   const gasCostText = (distanceMiles: number): string | null => {
+     const cost = roundTripGasCost(distanceMiles, data.meta.gasPrice, effectiveMpg)
+     return cost === null ? null : formatGasCost(cost)
+   }
+ 
+   return (
+-    <section aria-label="Deal feed" className="px-4">
+-      <VehicleSelector mpg={vehicleMpg} label={vehicleLabel} onMpgChange={setVehicle} />
++    <section aria-label="Deal feed" style={feedStyle}>
+       <DistanceFilter value={maxDistance} onChange={setStoredDistance} />
+       {rows.length === 0 ? (
+-        <p aria-live="polite" className="text-gray-700">No active deals right now</p>
++        <Notice variant="muted" role="status" aria-live="polite">
++          No active deals right now
++        </Notice>
+       ) : (
+-        <ul className="space-y-3">
++        <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 'var(--gap-feed)' }}>
+           {rows.map(({ dispensary, deal }) => (
+             <li key={`${dispensary.id}|${deal.type}|${deal.description}|${deal.startTime ?? ''}|${deal.endTime ?? ''}`}>
+               <DealCard
+@@ -131,7 +131,9 @@ export default function DealFeed() {
+         </ul>
+       )}
+       {lastUpdated !== '' && (
+-        <footer className="mt-4 text-sm text-gray-500">Last updated {lastUpdated}</footer>
++        <Notice variant="muted" role="status">
++          Last updated {lastUpdated}
++        </Notice>
+       )}
+       <StaleIndicator count={staleCount} />
+     </section>
+diff --git a/client/src/components/DistanceFilter.test.tsx b/client/src/components/DistanceFilter.test.tsx
+index b42e43c..44303f2 100644
+--- a/client/src/components/DistanceFilter.test.tsx
++++ b/client/src/components/DistanceFilter.test.tsx
+@@ -6,23 +6,28 @@ describe('DistanceFilter', () => {
+   it('renders a range input bounded to 1–50 at the given value', () => {
+     render(<DistanceFilter value={25} onChange={() => {}} />)
+ 
+-    const slider = screen.getByRole('slider', { name: 'Within 25 miles' })
++    // accessible name comes from the "Within" label; the value is announced
++    // via aria-valuetext ("25 miles") rather than baked into the name
++    const slider = screen.getByRole('slider', { name: 'Within' })
+     expect(slider).toHaveAttribute('type', 'range')
+     expect(slider).toHaveAttribute('min', '1')
+     expect(slider).toHaveAttribute('max', '50')
+     expect(slider).toHaveValue('25')
++    expect(slider).toHaveAttribute('aria-valuetext', '25 miles')
+   })
+ 
+-  it('shows the current value in the label', () => {
++  it('shows the current value alongside the "Within" label', () => {
+     render(<DistanceFilter value={10} onChange={() => {}} />)
+ 
+-    expect(screen.getByText('Within 10 miles')).toBeInTheDocument()
++    expect(screen.getByText('Within')).toBeInTheDocument()
++    expect(screen.getByText('10 miles')).toBeInTheDocument()
+   })
+ 
+   it('uses the singular "mile" at a value of 1', () => {
+     render(<DistanceFilter value={1} onChange={() => {}} />)
+ 
+-    expect(screen.getByText('Within 1 mile')).toBeInTheDocument()
++    expect(screen.getByText('1 mile')).toBeInTheDocument()
++    expect(screen.getByRole('slider')).toHaveAttribute('aria-valuetext', '1 mile')
+   })
+ 
+   it('fires onChange with the new value as a number', () => {
+diff --git a/client/src/components/DistanceFilter.tsx b/client/src/components/DistanceFilter.tsx
+index be9042e..18d21f5 100644
+--- a/client/src/components/DistanceFilter.tsx
++++ b/client/src/components/DistanceFilter.tsx
+@@ -1,4 +1,4 @@
+-import { useId } from 'react'
++import { RangeSlider } from './ui'
+ 
+ // Single home for the slider's contract — DealFeed's stored-value validation
+ // imports these so the range can't drift between validator and UI
+@@ -11,24 +11,21 @@ interface DistanceFilterProps {
+   onChange: (miles: number) => void
+ }
+ 
+-// Recorded decision: slider, not numeric input — values above 50 are not settable
++// Recorded decision: slider, not numeric input — values above 50 are not settable.
++// The "{n} miles" string drives both the visible value and aria-valuetext.
+ export default function DistanceFilter({ value, onChange }: DistanceFilterProps) {
+-  const id = useId()
+   return (
+-    <div className="mb-4">
+-      <label htmlFor={id} className="block text-sm text-gray-700">
+-        Within {value} {value === 1 ? 'mile' : 'miles'}
+-      </label>
+-      <input
+-        id={id}
+-        type="range"
+-        min={MIN_DISTANCE_MILES}
+-        max={MAX_DISTANCE_MILES}
+-        step="1"
+-        value={value}
+-        onChange={(event) => onChange(Number(event.target.value))}
+-        className="w-full"
+-      />
+-    </div>
++    <RangeSlider
++      label="Within"
++      value={value}
++      onChange={onChange}
++      min={MIN_DISTANCE_MILES}
++      max={MAX_DISTANCE_MILES}
++      step={1}
++      valueText={`${value} ${value === 1 ? 'mile' : 'miles'}`}
++      showTicks
++      minLabel="1 mi"
++      maxLabel="50 mi"
++    />
+   )
+ }
+diff --git a/client/src/components/StaleIndicator.tsx b/client/src/components/StaleIndicator.tsx
+index ddb28cf..70bab6e 100644
+--- a/client/src/components/StaleIndicator.tsx
++++ b/client/src/components/StaleIndicator.tsx
+@@ -1,3 +1,5 @@
++import { Notice } from './ui'
++
+ interface StaleIndicatorProps {
+   count: number
+ }
+@@ -9,8 +11,8 @@ export default function StaleIndicator({ count }: StaleIndicatorProps) {
+   // must be unrenderable no matter what a future caller passes
+   if (!Number.isInteger(count) || count <= 0) return null
+   return (
+-    <p role="status" className="mt-1 text-sm text-gray-500">
++    <Notice variant="muted" role="status">
+       {count} {count === 1 ? 'source' : 'sources'} unavailable
+-    </p>
++    </Notice>
+   )
+ }
+diff --git a/client/src/components/VehicleSelector.test.tsx b/client/src/components/VehicleSelector.test.tsx
+index 3b41edf..2eb1ba2 100644
+--- a/client/src/components/VehicleSelector.test.tsx
++++ b/client/src/components/VehicleSelector.test.tsx
+@@ -1,4 +1,5 @@
+ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
++import { useState } from 'react'
+ import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from 'vitest'
+ import VehicleSelector from './VehicleSelector'
+ 
+@@ -9,8 +10,8 @@ const menu = (...values: string[]) =>
+   jsonResponse({ menuItem: values.map((value) => ({ text: value, value })) })
+ 
+ // route the cascade like the real API: years → makes → models → options → vehicle
+-const routeFuelEconomy = (fetchMock: Mock, comb08: unknown = 20) => {
+-  fetchMock.mockImplementation((input: RequestInfo | URL) => {
++const routeFuelEconomy = (mock: Mock, comb08: unknown = 20) => {
++  mock.mockImplementation((input: RequestInfo | URL) => {
+     const url = String(input)
+     if (url.includes('/menu/year')) return Promise.resolve(menu('2019', '2018'))
+     if (url.includes('/menu/make?')) return Promise.resolve(menu('Toyota', 'Honda'))
+@@ -22,7 +23,38 @@ const routeFuelEconomy = (fetchMock: Mock, comb08: unknown = 20) => {
+ 
+ let fetchMock: Mock
+ 
+-describe('VehicleSelector', () => {
++// stateful harness: starts open, onClose collapses the sheet (as App does)
++function Sheet({
++  mpg = null,
++  label = null,
++  onMpgChange = vi.fn(),
++}: {
++  mpg?: number | null
++  label?: string | null
++  onMpgChange?: (mpg: number, label: string) => void
++}) {
++  const [open, setOpen] = useState(true)
++  return (
++    <VehicleSelector
++      open={open}
++      onClose={() => setOpen(false)}
++      mpg={mpg}
++      label={label}
++      onMpgChange={onMpgChange}
++    />
++  )
++}
++
++const pickCamry = async () => {
++  await screen.findByRole('option', { name: '2019' })
++  fireEvent.change(screen.getByLabelText('Year'), { target: { value: '2019' } })
++  await screen.findByRole('option', { name: 'Toyota' })
++  fireEvent.change(screen.getByLabelText('Make'), { target: { value: 'Toyota' } })
++  await screen.findByRole('option', { name: 'Camry' })
++  fireEvent.change(screen.getByLabelText('Model'), { target: { value: 'Camry' } })
++}
++
++describe('VehicleSelector (bottom sheet)', () => {
+   beforeEach(() => {
+     fetchMock = vi.fn()
+     vi.stubGlobal('fetch', fetchMock)
+@@ -32,39 +64,46 @@ describe('VehicleSelector', () => {
+     vi.unstubAllGlobals()
+   })
+ 
+-  it('renders only the gear button when closed with no saved vehicle', () => {
+-    render(<VehicleSelector mpg={null} label={null} onMpgChange={vi.fn()} />)
++  it('renders nothing and fetches nothing when closed', () => {
++    const { container } = render(
++      <VehicleSelector open={false} onClose={vi.fn()} mpg={null} label={null} onMpgChange={vi.fn()} />,
++    )
+ 
+-    expect(screen.getByRole('button', { name: 'Vehicle settings' })).toBeInTheDocument()
+-    expect(screen.queryByRole('combobox')).not.toBeInTheDocument()
+-    expect(screen.queryByText(/MPG/)).not.toBeInTheDocument()
++    expect(container).toBeEmptyDOMElement()
+     expect(fetchMock).not.toHaveBeenCalled()
+   })
+ 
+-  it('shows the saved vehicle label and MPG next to the gear', () => {
+-    render(<VehicleSelector mpg={32} label="2019 Toyota Camry" onMpgChange={vi.fn()} />)
++  it('exposes dialog semantics and loads the Year list on open', async () => {
++    routeFuelEconomy(fetchMock)
++    render(<Sheet />)
+ 
+-    expect(screen.getByText('2019 Toyota Camry · 32 MPG')).toBeInTheDocument()
++    const dialog = screen.getByRole('dialog', { name: 'Vehicle settings' })
++    expect(dialog).toHaveAttribute('aria-modal', 'true')
++    expect(await screen.findByRole('option', { name: '2019' })).toBeInTheDocument()
++    expect(screen.getByLabelText('Make')).toBeDisabled()
++    expect(screen.getByLabelText('Model')).toBeDisabled()
+   })
+ 
+-  it('opens the panel and populates the Year dropdown', async () => {
++  it('moves focus into the sheet on open', async () => {
+     routeFuelEconomy(fetchMock)
+-    render(<VehicleSelector mpg={null} label={null} onMpgChange={vi.fn()} />)
++    render(<Sheet />)
+ 
+-    fireEvent.click(screen.getByRole('button', { name: 'Vehicle settings' }))
++    const dialog = screen.getByRole('dialog')
++    await waitFor(() => expect(dialog.contains(document.activeElement)).toBe(true))
++  })
+ 
+-    expect(await screen.findByRole('option', { name: '2019' })).toBeInTheDocument()
+-    expect(screen.getByLabelText('Make')).toBeDisabled()
+-    expect(screen.getByLabelText('Model')).toBeDisabled()
++  it('shows the saved vehicle and MPG inside the sheet', async () => {
++    routeFuelEconomy(fetchMock)
++    render(<Sheet mpg={32} label="2019 Toyota Camry" />)
++
++    expect(screen.getByText('2019 Toyota Camry · 32 MPG')).toBeInTheDocument()
+   })
+ 
+   it('cascades: year enables makes, make enables models', async () => {
+     routeFuelEconomy(fetchMock)
+-    render(<VehicleSelector mpg={null} label={null} onMpgChange={vi.fn()} />)
++    render(<Sheet />)
+ 
+-    fireEvent.click(screen.getByRole('button', { name: 'Vehicle settings' }))
+     await screen.findByRole('option', { name: '2019' })
+-
+     fireEvent.change(screen.getByLabelText('Year'), { target: { value: '2019' } })
+     expect(await screen.findByRole('option', { name: 'Toyota' })).toBeInTheDocument()
+     expect(screen.getByLabelText('Make')).toBeEnabled()
+@@ -77,51 +116,77 @@ describe('VehicleSelector', () => {
+   it('reports the resolved MPG and label on model selection, then closes', async () => {
+     routeFuelEconomy(fetchMock, 32)
+     const onMpgChange = vi.fn()
+-    render(<VehicleSelector mpg={null} label={null} onMpgChange={onMpgChange} />)
++    render(<Sheet onMpgChange={onMpgChange} />)
++
++    await pickCamry()
++
++    await waitFor(() => expect(onMpgChange).toHaveBeenCalledWith(32, '2019 Toyota Camry'))
++    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
++  })
++
++  it('closes via the close button', async () => {
++    routeFuelEconomy(fetchMock)
++    render(<Sheet />)
+ 
+-    fireEvent.click(screen.getByRole('button', { name: 'Vehicle settings' }))
+     await screen.findByRole('option', { name: '2019' })
+-    fireEvent.change(screen.getByLabelText('Year'), { target: { value: '2019' } })
+-    await screen.findByRole('option', { name: 'Toyota' })
+-    fireEvent.change(screen.getByLabelText('Make'), { target: { value: 'Toyota' } })
+-    await screen.findByRole('option', { name: 'Camry' })
++    fireEvent.click(screen.getByRole('button', { name: 'Close' }))
+ 
+-    fireEvent.change(screen.getByLabelText('Model'), { target: { value: 'Camry' } })
++    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
++  })
+ 
+-    await waitFor(() => {
+-      expect(onMpgChange).toHaveBeenCalledWith(32, '2019 Toyota Camry')
+-    })
+-    expect(screen.queryByRole('combobox')).not.toBeInTheDocument()
++  it('closes when Escape is pressed', async () => {
++    routeFuelEconomy(fetchMock)
++    render(<Sheet />)
++
++    const dialog = await screen.findByRole('dialog')
++    fireEvent.keyDown(dialog, { key: 'Escape' })
++
++    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
++  })
++
++  it('closes when the scrim is clicked', async () => {
++    routeFuelEconomy(fetchMock)
++    const { container } = render(<Sheet />)
++
++    await screen.findByRole('option', { name: '2019' })
++    // the scrim is the first child of the overlay wrapper, behind the dialog
++    const scrim = container.firstElementChild!.firstElementChild as HTMLElement
++    fireEvent.click(scrim)
++
++    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+   })
+ 
+-  it('shows an error in the panel and keeps it open when the API is unreachable', async () => {
++  it('traps Tab focus within the sheet', async () => {
++    routeFuelEconomy(fetchMock)
++    render(<Sheet />)
++
++    await screen.findByRole('option', { name: '2019' })
++    const closeButton = screen.getByRole('button', { name: 'Close' })
++    const yearSelect = screen.getByLabelText('Year')
++
++    // Make/Model are disabled, so Year is the last focusable; Tab past it wraps
++    yearSelect.focus()
++    fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Tab' })
++    expect(closeButton).toHaveFocus()
++  })
++
++  it('shows an error in the sheet and keeps it open when the API is unreachable', async () => {
+     fetchMock.mockRejectedValue(new Error('network down'))
+     const onMpgChange = vi.fn()
+-    render(<VehicleSelector mpg={null} label={null} onMpgChange={onMpgChange} />)
+-
+-    fireEvent.click(screen.getByRole('button', { name: 'Vehicle settings' }))
++    render(<Sheet onMpgChange={onMpgChange} />)
+ 
+     const alert = await screen.findByRole('alert')
+     expect(alert).toHaveTextContent('network down')
+     expect(alert).toHaveTextContent('Gas costs will use the national average.')
+-    expect(screen.getByLabelText('Year')).toBeInTheDocument()
++    expect(screen.getByRole('dialog')).toBeInTheDocument()
+     expect(onMpgChange).not.toHaveBeenCalled()
+   })
+ 
+   it('surfaces the specific lookup error and notes the saved vehicle stays in effect', async () => {
+     routeFuelEconomy(fetchMock, 'abc')
+-    render(
+-      <VehicleSelector mpg={32} label="2019 Toyota Camry" onMpgChange={vi.fn()} />,
+-    )
++    render(<Sheet mpg={32} label="2019 Toyota Camry" />)
+ 
+-    fireEvent.click(screen.getByRole('button', { name: 'Vehicle settings' }))
+-    await screen.findByRole('option', { name: '2019' })
+-    fireEvent.change(screen.getByLabelText('Year'), { target: { value: '2019' } })
+-    await screen.findByRole('option', { name: 'Toyota' })
+-    fireEvent.change(screen.getByLabelText('Make'), { target: { value: 'Toyota' } })
+-    await screen.findByRole('option', { name: 'Camry' })
+-
+-    fireEvent.change(screen.getByLabelText('Model'), { target: { value: 'Camry' } })
++    await pickCamry()
+ 
+     const alert = await screen.findByRole('alert')
+     expect(alert).toHaveTextContent('No MPG available for this vehicle')
+@@ -129,23 +194,27 @@ describe('VehicleSelector', () => {
+     expect(alert).not.toHaveTextContent('national average')
+   })
+ 
+-  it('clears a stale error when the panel is reopened with years already loaded', async () => {
++  it('clears a stale error when the sheet is reopened', async () => {
+     // years load fine, but the make menu fails — error must not survive reopen
+     fetchMock.mockImplementation((input: RequestInfo | URL) => {
+       const url = String(input)
+       if (url.includes('/menu/year')) return Promise.resolve(menu('2019', '2018'))
+       return Promise.reject(new Error('network down'))
+     })
+-    render(<VehicleSelector mpg={null} label={null} onMpgChange={vi.fn()} />)
++    const { rerender } = render(
++      <VehicleSelector open onClose={vi.fn()} mpg={null} label={null} onMpgChange={vi.fn()} />,
++    )
+ 
+-    const gear = screen.getByRole('button', { name: 'Vehicle settings' })
+-    fireEvent.click(gear)
+     await screen.findByRole('option', { name: '2019' })
+     fireEvent.change(screen.getByLabelText('Year'), { target: { value: '2019' } })
+     expect(await screen.findByRole('alert')).toBeInTheDocument()
+ 
+-    fireEvent.click(gear) // close
+-    fireEvent.click(gear) // reopen — years are populated, loadYears is skipped
++    rerender(
++      <VehicleSelector open={false} onClose={vi.fn()} mpg={null} label={null} onMpgChange={vi.fn()} />,
++    )
++    rerender(
++      <VehicleSelector open onClose={vi.fn()} mpg={null} label={null} onMpgChange={vi.fn()} />,
++    )
+ 
+     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+   })
+@@ -165,70 +234,38 @@ describe('VehicleSelector', () => {
+       return Promise.resolve(jsonResponse({ comb08: 32 }))
+     })
+     const onMpgChange = vi.fn()
+-    render(<VehicleSelector mpg={null} label={null} onMpgChange={onMpgChange} />)
++    render(<Sheet onMpgChange={onMpgChange} />)
+ 
+-    fireEvent.click(screen.getByRole('button', { name: 'Vehicle settings' }))
+-    await screen.findByRole('option', { name: '2019' })
+-    fireEvent.change(screen.getByLabelText('Year'), { target: { value: '2019' } })
+-    await screen.findByRole('option', { name: 'Toyota' })
+-    fireEvent.change(screen.getByLabelText('Make'), { target: { value: 'Toyota' } })
+-    await screen.findByRole('option', { name: 'Camry' })
+-    fireEvent.change(screen.getByLabelText('Model'), { target: { value: 'Camry' } })
++    await pickCamry()
+ 
+     // lookup still in flight — user abandons it by switching the year
+     fireEvent.change(screen.getByLabelText('Year'), { target: { value: '2018' } })
+     await screen.findByRole('option', { name: 'Toyota' })
+ 
+     releaseOptions(menu('41234'))
+-    // let the abandoned lookup's promise chain fully settle
+     await new Promise((resolve) => setTimeout(resolve, 0))
+     await new Promise((resolve) => setTimeout(resolve, 0))
+ 
+     expect(onMpgChange).not.toHaveBeenCalled()
+-    expect(screen.getByLabelText('Year')).toBeInTheDocument() // panel stayed open
++    expect(screen.getByRole('dialog')).toBeInTheDocument() // sheet stayed open
+   })
+ 
+-  it('hides the gear glyph from assistive tech and links the button to the panel', async () => {
+-    routeFuelEconomy(fetchMock)
+-    render(<VehicleSelector mpg={null} label={null} onMpgChange={vi.fn()} />)
+-
+-    const gear = screen.getByRole('button', { name: 'Vehicle settings' })
+-    expect(screen.getByText('⚙️')).toHaveAttribute('aria-hidden', 'true')
+-
+-    fireEvent.click(gear)
+-    await screen.findByRole('option', { name: '2019' })
+-
+-    const panelId = gear.getAttribute('aria-controls')
+-    expect(panelId).toBeTruthy()
+-    expect(document.getElementById(panelId as string)).toContainElement(
+-      screen.getByLabelText('Year'),
+-    )
+-  })
+-
+-  it('keeps the panel open without persisting when the MPG lookup fails', async () => {
++  it('keeps the sheet open without persisting when the MPG lookup fails', async () => {
+     routeFuelEconomy(fetchMock, 'abc')
+     const onMpgChange = vi.fn()
+-    render(<VehicleSelector mpg={null} label={null} onMpgChange={onMpgChange} />)
+-
+-    fireEvent.click(screen.getByRole('button', { name: 'Vehicle settings' }))
+-    await screen.findByRole('option', { name: '2019' })
+-    fireEvent.change(screen.getByLabelText('Year'), { target: { value: '2019' } })
+-    await screen.findByRole('option', { name: 'Toyota' })
+-    fireEvent.change(screen.getByLabelText('Make'), { target: { value: 'Toyota' } })
+-    await screen.findByRole('option', { name: 'Camry' })
++    render(<Sheet onMpgChange={onMpgChange} />)
+ 
+-    fireEvent.change(screen.getByLabelText('Model'), { target: { value: 'Camry' } })
++    await pickCamry()
+ 
+     expect(await screen.findByRole('alert')).toBeInTheDocument()
+     expect(onMpgChange).not.toHaveBeenCalled()
+-    expect(screen.getByLabelText('Year')).toBeInTheDocument()
++    expect(screen.getByRole('dialog')).toBeInTheDocument()
+   })
+ 
+   it('resets make and model when the year changes', async () => {
+     routeFuelEconomy(fetchMock)
+-    render(<VehicleSelector mpg={null} label={null} onMpgChange={vi.fn()} />)
++    render(<Sheet />)
+ 
+-    fireEvent.click(screen.getByRole('button', { name: 'Vehicle settings' }))
+     await screen.findByRole('option', { name: '2019' })
+     fireEvent.change(screen.getByLabelText('Year'), { target: { value: '2019' } })
+     await screen.findByRole('option', { name: 'Toyota' })
+diff --git a/client/src/components/VehicleSelector.tsx b/client/src/components/VehicleSelector.tsx
+index bda739f..ceda13e 100644
+--- a/client/src/components/VehicleSelector.tsx
++++ b/client/src/components/VehicleSelector.tsx
+@@ -1,37 +1,74 @@
+-import { useId, useRef, useState } from 'react'
++import { useEffect, useRef, useState } from 'react'
++import type { KeyboardEvent as ReactKeyboardEvent } from 'react'
+ import { useFuelEconomy } from '../hooks/useFuelEconomy'
++import { Icon, IconButton, Notice, Select } from './ui'
+ 
+ interface VehicleSelectorProps {
++  open: boolean
++  onClose: () => void
+   mpg: number | null
+   label: string | null
+   onMpgChange: (mpg: number, label: string) => void
+ }
+ 
+-// Gear icon + cascading Year → Make → Model panel (fueleconomy.gov).
+-// Controlled: the persisted vehicle arrives via props; a completed selection
+-// is reported through onMpgChange — this component never touches storage
+-export default function VehicleSelector({ mpg, label, onMpgChange }: VehicleSelectorProps) {
+-  const yearId = useId()
+-  const makeId = useId()
+-  const modelId = useId()
+-  const panelId = useId()
+-  const [isOpen, setIsOpen] = useState(false)
++const FOCUSABLE =
++  'button:not([disabled]), select:not([disabled]), a[href], input:not([disabled]), [tabindex]:not([tabindex="-1"])'
++
++// Vehicle precision mode (FR-8) as a bottom sheet (ruled .decision-log.md:48).
++// The cascading Year → Make → Model selection and its auto-resolve-on-Model
++// behavior are unchanged from the inline panel — only the presentation and the
++// dialog/focus contract are new. The gear trigger now lives in the Header; this
++// sheet is opened/closed by App via the `open`/`onClose` props.
++export default function VehicleSelector({ open, onClose, mpg, label, onMpgChange }: VehicleSelectorProps) {
+   const [year, setYear] = useState('')
+   const [make, setMake] = useState('')
+   const [model, setModel] = useState('')
+   // bumped on every Year/Make/Model change — an MPG lookup that finishes
+   // after the selection moved on must never report its result
+   const selectionRef = useRef(0)
++  const dialogRef = useRef<HTMLDivElement>(null)
+   const { years, makes, models, error, loadYears, loadMakes, loadModels, resolveMpg, clearError } =
+     useFuelEconomy()
+ 
+-  const togglePanel = () => {
+-    const opening = !isOpen
+-    setIsOpen(opening)
+-    if (opening) {
+-      // an error from the previous visit must not greet the reopen
+-      clearError()
+-      if (years.length === 0) void loadYears()
++  // On open: drop any stale error, lazy-load the Year list, lock body scroll,
++  // and move focus into the sheet. On close (cleanup): restore scroll and return
++  // focus to whatever opened the sheet (the Header gear).
++  useEffect(() => {
++    if (!open) return
++    const previouslyFocused = document.activeElement as HTMLElement | null
++    clearError()
++    if (years.length === 0) void loadYears()
++
++    const { body } = document
++    const prevOverflow = body.style.overflow
++    body.style.overflow = 'hidden'
++    dialogRef.current?.querySelector<HTMLElement>('select, ' + FOCUSABLE)?.focus()
++
++    return () => {
++      body.style.overflow = prevOverflow
++      previouslyFocused?.focus()
++    }
++    // run only on the open/close transition; cascade state is read fresh inside
++    // eslint-disable-next-line react-hooks/exhaustive-deps
++  }, [open])
++
++  const handleKeyDown = (event: ReactKeyboardEvent) => {
++    if (event.key === 'Escape') {
++      event.stopPropagation()
++      onClose()
++      return
++    }
++    if (event.key !== 'Tab') return
++    const focusables = dialogRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE)
++    if (!focusables || focusables.length === 0) return
++    const first = focusables[0]
++    const last = focusables[focusables.length - 1]
++    if (event.shiftKey && document.activeElement === first) {
++      event.preventDefault()
++      last.focus()
++    } else if (!event.shiftKey && document.activeElement === last) {
++      event.preventDefault()
++      first.focus()
+     }
+   }
+ 
+@@ -55,103 +92,100 @@ export default function VehicleSelector({ mpg, label, onMpgChange }: VehicleSele
+     setModel(nextModel)
+     if (nextModel === '') return
+     const resolved = await resolveMpg(year, make, nextModel)
+-    // a failed lookup keeps the panel open with the error on display;
++    // a failed lookup keeps the sheet open with the error on display;
+     // an abandoned one (selection changed while in flight) is dropped
+     if (resolved !== null && selection === selectionRef.current) {
+       onMpgChange(resolved, `${year} ${make} ${nextModel}`)
+-      setIsOpen(false)
++      onClose()
+     }
+   }
+ 
++  if (!open) return null
++
+   return (
+-    <div className="mb-4">
+-      <div className="flex items-center gap-2">
+-        <button
+-          type="button"
+-          aria-label="Vehicle settings"
+-          aria-expanded={isOpen}
+-          aria-controls={isOpen ? panelId : undefined}
+-          onClick={togglePanel}
+-          className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-lg leading-none"
+-        >
+-          <span aria-hidden="true">⚙️</span>
+-        </button>
++    <div style={{ position: 'fixed', inset: 0, zIndex: 40 }} onKeyDown={handleKeyDown}>
++      <div
++        aria-hidden="true"
++        onClick={onClose}
++        style={{ position: 'absolute', inset: 0, background: 'rgba(17, 24, 39, 0.45)' }}
++      />
++      <div
++        ref={dialogRef}
++        role="dialog"
++        aria-modal="true"
++        aria-label="Vehicle settings"
++        style={{
++          position: 'absolute',
++          left: 0,
++          right: 0,
++          bottom: 0,
++          maxWidth: 640,
++          margin: '0 auto',
++          background: 'var(--surface-card)',
++          borderTopLeftRadius: 'var(--radius-2xl)',
++          borderTopRightRadius: 'var(--radius-2xl)',
++          boxShadow: 'var(--shadow-lg)',
++          padding: 'var(--space-5)',
++          display: 'grid',
++          gap: 'var(--space-4)',
++        }}
++      >
++        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
++          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
++            <span aria-hidden="true" style={{ color: 'var(--green-700)' }}>
++              <Icon name="car" size={20} />
++            </span>
++            <h2 style={{ fontSize: 'var(--text-lg)', fontWeight: 'var(--weight-semibold)', margin: 0 }}>
++              Your vehicle
++            </h2>
++          </div>
++          <IconButton aria-label="Close" size="sm" onClick={onClose}>
++            <Icon name="x" size={18} />
++          </IconButton>
++        </div>
++        <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-muted)', margin: 0 }}>
++          Set it once for exact gas math. Skip it and we use the national average.
++        </p>
+         {mpg !== null && label !== null && (
+-          <span className="text-sm text-gray-700">
+-            {label} · {mpg} MPG
+-          </span>
++          <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-body)', margin: 0 }}>
++            Currently using{' '}
++            <strong style={{ fontWeight: 'var(--weight-semibold)' }}>
++              {label} · {mpg} MPG
++            </strong>
++          </p>
+         )}
++        {error !== null && (
++          <Notice variant="error" role="alert" icon={<Icon name="triangle-alert" size={16} />}>
++            {error}{' '}
++            {mpg !== null
++              ? 'Gas costs will keep using your saved vehicle.'
++              : 'Gas costs will use the national average.'}
++          </Notice>
++        )}
++        <Select
++          label="Year"
++          value={year}
++          placeholder="Select year"
++          options={years.map((option) => ({ value: option, label: option }))}
++          onChange={(event) => handleYearChange(event.target.value)}
++        />
++        <Select
++          label="Make"
++          value={make}
++          placeholder="Select make"
++          disabled={year === ''}
++          options={makes.map((option) => ({ value: option, label: option }))}
++          onChange={(event) => handleMakeChange(event.target.value)}
++        />
++        <Select
++          label="Model"
++          value={model}
++          placeholder="Select model"
++          disabled={make === ''}
++          options={models.map((option) => ({ value: option, label: option }))}
++          onChange={(event) => void handleModelChange(event.target.value)}
++        />
+       </div>
+-      {isOpen && (
+-        <div id={panelId} className="mt-2 space-y-3 rounded-lg border border-gray-200 bg-white p-3">
+-          {error !== null && (
+-            <p role="alert" className="text-sm text-red-700">
+-              <span className="block">{error}</span>
+-              <span className="block">
+-                {mpg !== null
+-                  ? 'Gas costs will keep using your saved vehicle.'
+-                  : 'Gas costs will use the national average.'}
+-              </span>
+-            </p>
+-          )}
+-          <div>
+-            <label htmlFor={yearId} className="block text-sm text-gray-700">
+-              Year
+-            </label>
+-            <select
+-              id={yearId}
+-              value={year}
+-              onChange={(event) => handleYearChange(event.target.value)}
+-              className="w-full rounded border border-gray-300 p-2"
+-            >
+-              <option value="">Select year</option>
+-              {years.map((option) => (
+-                <option key={option} value={option}>
+-                  {option}
+-                </option>
+-              ))}
+-            </select>
+-          </div>
+-          <div>
+-            <label htmlFor={makeId} className="block text-sm text-gray-700">
+-              Make
+-            </label>
+-            <select
+-              id={makeId}
+-              value={make}
+-              onChange={(event) => handleMakeChange(event.target.value)}
+-              disabled={year === ''}
+-              className="w-full rounded border border-gray-300 p-2 disabled:bg-gray-100"
+-            >
+-              <option value="">Select make</option>
+-              {makes.map((option) => (
+-                <option key={option} value={option}>
+-                  {option}
+-                </option>
+-              ))}
+-            </select>
+-          </div>
+-          <div>
+-            <label htmlFor={modelId} className="block text-sm text-gray-700">
+-              Model
+-            </label>
+-            <select
+-              id={modelId}
+-              value={model}
+-              onChange={(event) => void handleModelChange(event.target.value)}
+-              disabled={make === ''}
+-              className="w-full rounded border border-gray-300 p-2 disabled:bg-gray-100"
+-            >
+-              <option value="">Select model</option>
+-              {models.map((option) => (
+-                <option key={option} value={option}>
+-                  {option}
+-                </option>
+-              ))}
+-            </select>
+-          </div>
+-        </div>
+-      )}
+     </div>
+   )
+ }
+diff --git a/client/src/styles/components.css b/client/src/styles/components.css
+index 78f2838..c4d6745 100644
+--- a/client/src/styles/components.css
++++ b/client/src/styles/components.css
+@@ -148,7 +148,7 @@
+   font-size: var(--text-base);
+   color: var(--text-strong);
+   background: var(--white);
+-  border: var(--border-hairline) solid var(--border-strong);
++  border: var(--border-hairline) solid var(--border-field);
+   border-radius: var(--radius-lg);
+   min-height: var(--control-height);
+   padding: 0 var(--space-3);
+@@ -168,7 +168,7 @@
+   font-size: var(--text-base);
+   color: var(--text-strong);
+   background-color: var(--white);
+-  border: var(--border-hairline) solid var(--border-strong);
++  border: var(--border-hairline) solid var(--border-field);
+   border-radius: var(--radius-lg);
+   min-height: var(--control-height);
+   padding: 0 var(--space-8) 0 var(--space-3);
+diff --git a/client/src/styles/tokens.css b/client/src/styles/tokens.css
+index aaa95fa..0fc1319 100644
+--- a/client/src/styles/tokens.css
++++ b/client/src/styles/tokens.css
+@@ -143,6 +143,7 @@
+   /* Borders */
+   --border-default:   var(--gray-200);
+   --border-strong:    var(--gray-300);
++  --border-field:     var(--gray-500); /* #6b7280 — higher-contrast form-field boundary (Reviewer-Gate a11y fix, 6-3) */
+   --border-focus:     var(--green-700);
+ 
+   /* Status accents */
+```
+
+## NEW untracked file: client/src/components/Header.tsx
+```tsx
+import { Icon, IconButton } from './ui'
+
+interface HeaderProps {
+  onOpenSettings: () => void
+}
+
+// Persistent banner: static wordmark + the single entry to vehicle settings.
+// The wordmark text is the page's only <h1> (EXPERIENCE.md document semantics);
+// the nav mark beside it is decorative. Renders above the feed at App level —
+// it must outlive DealFeed's loading/error early-returns, so it lives here.
+export default function Header({ onOpenSettings }: HeaderProps) {
+  return (
+    <header
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 'var(--space-3)',
+        padding: 'var(--space-4)',
+        borderBottom: 'var(--border-hairline) solid var(--border-default)',
+        background: 'var(--surface-card)',
+        position: 'sticky',
+        top: 0,
+        zIndex: 10,
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+        <span
+          aria-hidden="true"
+          style={{
+            width: 32,
+            height: 32,
+            borderRadius: 9,
+            background: 'var(--green-700)',
+            color: 'var(--white)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flex: 'none',
+          }}
+        >
+          <Icon name="navigation" size={18} strokeWidth={2.25} />
+        </span>
+        <h1
+          style={{
+            fontSize: 'var(--text-xl)',
+            fontWeight: 'var(--weight-bold)',
+            letterSpacing: '-0.01em',
+            color: 'var(--text-strong)',
+            margin: 0,
+          }}
+        >
+          Gma&apos;s Helper
+        </h1>
+      </div>
+      <IconButton aria-label="Vehicle & settings" onClick={onOpenSettings}>
+        <Icon name="settings" size={20} />
+      </IconButton>
+    </header>
+  )
+}
+```
+
+## NEW untracked file: client/src/components/Header.test.tsx
+```tsx
+import { render, screen, fireEvent } from '@testing-library/react'
+import { describe, it, expect, vi } from 'vitest'
+import Header from './Header'
+
+describe('Header', () => {
+  it('renders a banner with the wordmark as the page h1', () => {
+    render(<Header onOpenSettings={vi.fn()} />)
+
+    expect(screen.getByRole('banner')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: "Gma's Helper" })).toBeInTheDocument()
+  })
+
+  it('exposes the settings gear with an accessible label', () => {
+    render(<Header onOpenSettings={vi.fn()} />)
+
+    expect(screen.getByRole('button', { name: 'Vehicle & settings' })).toBeInTheDocument()
+  })
+
+  it('calls onOpenSettings when the gear is activated', () => {
+    const onOpenSettings = vi.fn()
+    render(<Header onOpenSettings={onOpenSettings} />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Vehicle & settings' }))
+
+    expect(onOpenSettings).toHaveBeenCalledTimes(1)
+  })
+})
+```

@@ -1,4 +1,6 @@
+import type { CSSProperties } from 'react'
 import type { Deal, Dispensary } from '../types'
+import { Badge, Card, Icon } from './ui'
 
 export interface DealCardProps {
   dispensary: Dispensary
@@ -10,30 +12,70 @@ export interface DealCardProps {
   gasCostText: string | null
 }
 
+const figure: CSSProperties = {
+  fontFamily: 'var(--font-mono)',
+  fontVariantNumeric: 'tabular-nums slashed-zero',
+}
+
 // Purely presentational: receives data and computed values as props.
 // No fetching, no intervals, no hooks.
 export default function DealCard({ dispensary, deal, windowText, countdown, gasCostText }: DealCardProps) {
+  const isHappyHour = deal.type === 'happy_hour'
   return (
-    <article className="rounded-lg border border-gray-200 bg-white p-3">
-      <div className="flex items-baseline justify-between gap-2">
-        <h2 className="font-semibold">{dispensary.name}</h2>
-        <span className="text-sm text-gray-500">{dispensary.distanceMiles.toFixed(1)} miles</span>
+    <Card as="article" urgent={isHappyHour} style={{ display: 'grid', gap: 'var(--space-1)' }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 'var(--space-2)' }}>
+        <h2 style={{ fontSize: 'var(--text-base)', fontWeight: 'var(--weight-semibold)' }}>{dispensary.name}</h2>
+        <span style={{ ...figure, fontSize: 'var(--text-sm)', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+          {dispensary.distanceMiles.toFixed(1)} miles
+        </span>
       </div>
-      <p className="text-gray-700">{deal.description}</p>
-      {/* side-by-side Discount Display (ADR-009): one line, em dash.
-          discountPct may be null (source text had no parseable percent) —
-          then the line shows gas cost alone, or is omitted entirely. */}
+      <div>
+        {isHappyHour ? (
+          <Badge variant="urgent"><Icon name="clock" size={12} /> Happy hour</Badge>
+        ) : (
+          <Badge variant="neutral">Daily deal</Badge>
+        )}
+      </div>
+      <p style={{ color: 'var(--text-body)' }}>{deal.description}</p>
+      {/* side-by-side Discount Display (ADR-009): discount in green, gas figure in mono,
+          joined by an em dash. Either half may be null — render only what's present. */}
       {(deal.discountPct !== null || gasCostText !== null) && (
-        <p className="font-medium">
-          {deal.discountPct !== null && gasCostText !== null
-            ? `${deal.discountPct}% off — ${gasCostText} to get there`
-            : deal.discountPct !== null
-              ? `${deal.discountPct}% off`
-              : `${gasCostText} to get there`}
+        <p style={{ fontWeight: 'var(--weight-medium)', color: 'var(--text-strong)' }}>
+          {deal.discountPct !== null && (
+            <span style={{ color: 'var(--green-700)', fontWeight: 'var(--weight-semibold)' }}>
+              {deal.discountPct}% off
+            </span>
+          )}
+          {deal.discountPct !== null && gasCostText !== null && ' — '}
+          {gasCostText !== null && (
+            <>
+              <span style={figure}>{gasCostText}</span> to get there
+            </>
+          )}
         </p>
       )}
-      {windowText !== null && <p className="text-sm text-gray-500">{windowText}</p>}
-      {countdown !== null && <p className="text-sm font-medium">{countdown} left</p>}
-    </article>
+      {(windowText !== null || countdown !== null) && (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--space-2)' }}>
+          {windowText !== null && (
+            <span style={{ ...figure, fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}>{windowText}</span>
+          )}
+          {countdown !== null && (
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                fontSize: 'var(--text-sm)',
+                fontWeight: 'var(--weight-semibold)',
+                color: 'var(--text-urgent)',
+              }}
+            >
+              <Icon name="clock" size={14} />
+              <span style={figure}>{countdown}</span> left
+            </span>
+          )}
+        </div>
+      )}
+    </Card>
   )
 }
