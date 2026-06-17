@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-09
-last_updated: 2026-06-16 (epic-6 → done; 6-1 + 6-3 → done)
+last_updated: 2026-06-17 (epic-6 retrospective → done; Epic 6 deployed live to gmaslist.com)
 project: Happy
 project_key: NOKEY
 tracking_system: file-system
@@ -85,3 +85,4 @@ development_status:
   6-1-design-system-foundation: done  # token layer + Tailwind v4 @theme + self-hosted fonts + base.css; no component/surface changes. Reviewed/cleared 2026-06-16 (status-drift fix).
   6-2-primitive-component-library: done  # 10 primitives to .d.ts contracts + Lucide icon vendoring/component + tests
   6-3-surface-reskin-and-vehicle-sheet: done  # re-skin 6 surfaces + VehicleSelector inline→bottom-sheet (ruled .decision-log.md:48): dialog semantics, focus trap, Esc, focus-return, Lucide gear. 3 adversarial reviews run clean 2026-06-16.
+  epic-6-retrospective: done  # epic-6-retro-2026-06-17.md. Epic 6 deployed LIVE to gmaslist.com (deploy dep-d8p1610g4nts73ffkimg, commit ab4dd62). Action item: fix broken Render auto-deploy webhook (service made from public repo URL → no GitHub webhook).
