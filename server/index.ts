@@ -8,12 +8,10 @@ import 'dotenv/config'
 import { dataRoute } from './routes/dataRoute.js'
 import { ingestRoute } from './routes/ingestRoute.js'
 import { refreshGasPrice } from './utils/refreshGasPrice.js'
-import { runScrapers } from './utils/runScrapers.js'
 
 const app = express()
 const PORT = process.env.PORT || 3001
 const REFRESH_INTERVAL_MS = 24 * 60 * 60 * 1000
-const SCRAPE_INTERVAL_MS = 60 * 60 * 1000
 
 app.use(express.json())
 
@@ -24,7 +22,9 @@ if (process.env.NODE_ENV !== 'production') {
 app.get('/api/data', dataRoute)
 
 // Authenticated push-ingest of externally scraped deals (ADR-034 Goal A). The
-// GitHub Actions scraper POSTs here; in-process scraping (below) still runs.
+// GitHub Actions cron scraper POSTs here and is now the SOLE data writer — the
+// in-process setInterval scrape (ADR-010) was retired in Goal C, so this Render
+// service is read-only over data.json/the store and serves last-known-good.
 app.post('/api/ingest', ingestRoute)
 
 // In production this single service also serves the built React client, so
@@ -52,13 +52,6 @@ void refreshGasPrice().catch(console.error)
 setInterval(() => {
   void refreshGasPrice().catch(console.error)
 }, REFRESH_INTERVAL_MS)
-
-// immediate scrape on boot, then hourly — runScrapers never rejects by
-// contract, the .catch is a last line of defense against crashing the server
-void runScrapers().catch(console.error)
-setInterval(() => {
-  void runScrapers().catch(console.error)
-}, SCRAPE_INTERVAL_MS)
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)

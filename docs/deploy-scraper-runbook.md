@@ -72,9 +72,11 @@ Render internal service URLs take the form `http://<service-name>:<port>`. Here 
 
 ## Step 3 — Take Happy off the free tier
 
-Upgrade the Happy web service (`Gma`) to **Starter** (or higher). This is required so the hourly `setInterval` scrape (`server/index.ts:53-56`) fires reliably — free services spin down when idle and may never run a full scrape cycle.
+Upgrade the Happy web service (`Gma`) to **Starter** (or higher).
 
-> **Ephemeral disk caveat (ADR-033):** Render's filesystem is **not** persistent — `data.json` resets to the committed seed on every redeploy. This **self-heals**: the boot-time `runScrapers()` repopulates it on the next cycle. No persistence layer is required for this topology.
+> **Superseded note (ADR-034 Goal C, 2026-06-18):** the in-process boot + hourly `setInterval runScrapers()` was **retired** from `server/index.ts` — Render is now read-only over `data.json` and the GitHub Actions cron → `POST /api/ingest` is the sole data writer. This runbook describes the parked ADR-033 self-host topology; the free-tier-spin-down concern that motivated this upgrade no longer applies (the cron, not Happy, drives scraping).
+
+> **Ephemeral disk caveat:** Render's filesystem is **not** persistent — `data.json` resets to the committed seed on every redeploy. Recovery is **no longer** a boot-time `runScrapers()` (removed in Goal C); the data refreshes on the **next hourly GitHub Actions cron POST** to `/api/ingest`. To shrink the post-redeploy stale window, fire the workflow manually (`gh workflow run scrape-ingest.yml`) after a deploy or keep the committed seed reasonably fresh.
 
 ---
 

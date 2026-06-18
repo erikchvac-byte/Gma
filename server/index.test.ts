@@ -27,4 +27,14 @@ describe('server/index.ts', () => {
     expect(content).toMatch(/setInterval\([\s\S]*?refreshGasPrice\(\)[\s\S]*?REFRESH_INTERVAL_MS\)/)
     expect(content).toContain('const REFRESH_INTERVAL_MS = 24 * 60 * 60 * 1000')
   })
+
+  // ADR-034 Goal C: the in-process setInterval scrape (ADR-010) was retired —
+  // the GitHub Actions cron → POST /api/ingest is now the sole data trigger, so
+  // this entry must not call or schedule runScrapers.
+  it('does not run in-process scraping (ADR-034 Goal C)', () => {
+    const content = readFileSync(join(__dirname, 'index.ts'), 'utf-8')
+
+    expect(content).not.toContain('runScrapers')
+    expect(content).not.toContain('SCRAPE_INTERVAL_MS')
+  })
 })
