@@ -6,6 +6,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import 'dotenv/config'
 import { dataRoute } from './routes/dataRoute.js'
+import { ingestRoute } from './routes/ingestRoute.js'
 import { refreshGasPrice } from './utils/refreshGasPrice.js'
 import { runScrapers } from './utils/runScrapers.js'
 
@@ -21,6 +22,10 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 app.get('/api/data', dataRoute)
+
+// Authenticated push-ingest of externally scraped deals (ADR-034 Goal A). The
+// GitHub Actions scraper POSTs here; in-process scraping (below) still runs.
+app.post('/api/ingest', ingestRoute)
 
 // In production this single service also serves the built React client, so
 // gmaslist.com hits one origin for both the app and its API.
