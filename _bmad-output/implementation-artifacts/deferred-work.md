@@ -1,5 +1,22 @@
 # Deferred Work
 
+## DEFERRED — from review of spec-adr-034-ingest-endpoint (2026-06-18)
+
+Surfaced by the 3-reviewer pass on the ingest endpoint. All pre-existing or low-priority hardening; none block Goal A (which shipped review-clean). Most touch the **shared** `normalizeDeals`/`express.json` layer, so they affect the in-process `runScrapers` path equally and deserve a focused change rather than a drive-by in the ingest story.
+
+- **`normalizeDeals` does not validate scalar Deal fields** (`server/utils/normalizeDeals.ts`) — `isUsableDeal` checks the time window + `daysValid` but not `type` (should be `'happy_hour'|'daily'`), `description` (should be string), or `discountPct` (should be `null` or a finite number). A deal with valid window/days but garbage scalars passes the chokepoint into `data.json`. Pre-existing (same gap for `runScrapers`); the client `useDeals` boundary validator (data-hardening) is the current backstop. The new `/api/ingest` makes this reachable from network JSON, so harden the shared normalizer + add tests + re-verify `runScrapers` when picked up.
+- **Duplicate `dispensaryId` in one `/api/ingest` batch** — last entry silently wins, `accepted`/`mutated` double-count, and the `results` map collapses to one key so the caller can't detect the collision. Our Actions matrix sends unique stores, so low risk; reject-or-dedupe with a distinct result if it ever matters.
+- **No `express.json({ limit })` on the ingest body** (`server/index.ts`) — default ~100kb; an oversized multi-store batch would 413 from body-parser *outside* the route's `{error,code}` envelope. Won't trigger at current few-KB payloads; size the parser if batch sizes grow (note: global limit change is cross-cutting).
+- **`daysValid` is case-sensitive** (`normalizeDeals`) — `"Monday"` is dropped (only lowercase names + `everyday` pass). Pre-existing contract; document in the Goal-D scraper that day names must be lowercased (or lowercase in the normalizer).
+
+## DEFERRED — ADR-034 goals B/C/D (split from ingest-endpoint build, 2026-06-18)
+
+ADR-034 ("Playwright on GitHub Actions cron → authenticated ingest") was sliced for the build. **Goal A — the `POST /api/ingest` endpoint** (shared-secret auth + last-known-good store + per-store timestamps) is being built first (`spec-adr-034-ingest-endpoint`, branch `feat/adr-034-ingest-endpoint`) because it is the load-bearing contract the runner targets and is independently testable inside the Happy repo. The rest are deferred in dependency order **A → D → C** (Erik's call, 2026-06-18):
+
+- **B — Observability fix (Happy/server):** replace `server/utils/scraperClient.ts`'s silent error-swallow with explicit per-store status (`ok|stale|failed`) surfaced in `/api/data`. Folds into A or C depending on sequencing. (ADR-034 Decision §6)
+- **C — Retire in-process scraping (Happy/server):** kill the boot/`setInterval` `runScrapers()` (ADR-010) so Render becomes read-only over `data.json`/store. **Only safe after A + D prove the push path** (else no data source). (ADR-034 Decision §5)
+- **D — Actions cron + store registry + scraper POST (CI infra + `../Scraper` repo, OUT of this project root):** scheduled GitHub Actions workflow running the Playwright scraper across a store matrix, posting to `/api/ingest`; store registry as in-repo config; Actions job-failure alert. Depends on A's contract existing. (ADR-034 Decision §1–4)
+
 ## PARKED — Live scraping on Render (from 5-1-deploy-scraper-service, 2026-06-16)
 
 **Live Dutchie scraping is parked pending an approved hosting budget (~$14/mo).** Erik's call (2026-06-15): stay free / defer live. The code is go-live-ready — `server/utils/scraperClient.ts` now reads `SCRAPER_URL` (default `http://localhost:8000/scrape`, behavior unchanged) — so what remains is purely a hosting decision, not code.
