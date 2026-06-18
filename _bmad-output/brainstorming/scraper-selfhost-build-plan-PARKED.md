@@ -1,8 +1,8 @@
-> ⚠️ **PARKED IDEA — NOT a job, NOT a spec, NOT a source of truth.**
-> This is an exploratory plan from a brainstorming session. Nothing here is decided or committed.
-> Do **not** treat it as a story/task to execute, and do **not** cite it as authoritative project state.
-> Two decision gates (§1) are unresolved. Revisit only if/when Erik chooses to act on it.
-> Origin: `_bmad-output/brainstorming/brainstorming-session-2026-06-17-0700.md` · For real current state, check live sources, not this file.
+> 🚫 **SUPERSEDED 2026-06-18 by ADR-034 — DO NOT BUILD THIS.**
+> The scraper hosting decision was made: **Playwright on a GitHub Actions cron → authenticated `/api/ingest` on Render** (see `ADR.md` ADR-034). That path is $0/mo with **no home hardware**, so this home-box plan is not the chosen route. Kept only as historical record of the exploration.
+>
+> ⚠️ **Original parked-idea banner (now historical):** exploratory plan from a brainstorming session — never a job/spec/source of truth.
+> Origin: `_bmad-output/brainstorming/brainstorming-session-2026-06-17-0700.md` · For real current state, check live sources + ADR-034, not this file.
 
 ---
 
