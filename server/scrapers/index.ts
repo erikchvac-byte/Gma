@@ -13,3 +13,8 @@ export const scrapers: Record<string, () => Promise<Deal[]>> = {
   'jet-cannabis-everett': jetCannabisEverettScrape,
   'kush21-everett-evergreen': kush21EverettEvergreenScrape,
 }
+
+// Single source of truth for the CI scrape matrix (ADR-034 Goal D). The Actions
+// workflow's `prepare` job emits these ids (via scripts/printStores.ts) into a
+// matrix, so adding a store is a one-line diff to the registry above.
+export const storeIds: string[] = Object.keys(scrapers)

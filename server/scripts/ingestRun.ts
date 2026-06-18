@@ -1,0 +1,159 @@
+import { pathToFileURL } from 'node:url'
+import axios from 'axios'
+import { scrapers, storeIds } from '../scrapers/index.js'
+import { normalizeDeals } from '../utils/normalizeDeals.js'
+import type { Deal } from '../../client/src/types/index.js'
+import type { IngestEntry, IngestResult } from '../types/index.js'
+
+// Push counterpart to runScrapers (ADR-034 Goal D). Run by the GitHub Actions cron
+// (one store per matrix job). For each store it runs the SAME pipeline runScrapers
+// uses — scrape() -> normalizeDeals — then POSTs the batch to /api/ingest instead of
+// writing data.json. Exit semantics make a silent failure a RED job (GitHub's
+// scheduled-failure email is the alert, ADR-034 §6): ok only when the POST succeeds
+// and every per-store result is 'ok'. A 'stale' (empty scrape) or 'unknown' result,
+// a scrape throw, or a POST failure all flip ok=false.
+
+export type PostFn = (
+  url: string,
+  body: { stores: IngestEntry[] },
+  secret: string,
+) => Promise<Record<string, IngestResult>>
+
+// Default transport: POST to /api/ingest with the shared-secret header. Throws on
+// non-2xx (axios default) or a response missing `results`, so runIngest marks the
+// run failed rather than silently reporting success.
+export const defaultPostFn: PostFn = async (url, body, secret) => {
+  const res = await axios.post(url, body, {
+    headers: { 'content-type': 'application/json', 'x-ingest-secret': secret },
+    timeout: 60000,
+  })
+  const results = (res.data as { results?: Record<string, IngestResult> })?.results
+  if (!results || typeof results !== 'object' || Array.isArray(results)) {
+    throw new Error(`ingest response missing/invalid results: ${JSON.stringify(res.data)}`)
+  }
+  return results
+}
+
+// Backstop timeout around a single scrape so one hung connection can't pin the CI
+// job until GitHub's 6h runner timeout. Sits above scraperClient's own 50s axios
+// timeout; the timer is cleared on settle so it never keeps the process alive.
+function withTimeout<T>(p: Promise<T>, ms: number, label: string): Promise<T> {
+  let timer: ReturnType<typeof setTimeout>
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`${label}: scrape timed out after ${ms}ms`)), ms)
+  })
+  return Promise.race([p, timeout]).finally(() => clearTimeout(timer))
+}
+
+const SCRAPE_TIMEOUT_MS = 90000
+
+export interface RunIngestOptions {
+  stores: string[]
+  ingestUrl: string
+  secret: string
+  registry?: Record<string, () => Promise<Deal[]>>
+  postFn?: PostFn
+}
+
+export interface RunIngestOutcome {
+  ok: boolean
+  results: Record<string, IngestResult | 'error'>
+}
+
+export async function runIngest(opts: RunIngestOptions): Promise<RunIngestOutcome> {
+  const registry = opts.registry ?? scrapers
+  const postFn = opts.postFn ?? defaultPostFn
+
+  if (opts.stores.length === 0) {
+    console.error('[ingestRun] no stores to scrape')
+    return { ok: false, results: {} }
+  }
+
+  const entries: IngestEntry[] = []
+  const results: Record<string, IngestResult | 'error'> = {}
+  let ok = true
+
+  for (const id of opts.stores) {
+    const scrape = registry[id]
+    if (!scrape) {
+      results[id] = 'error'
+      ok = false
+      console.error(`[ingestRun] ${id}: no scraper registered`)
+      continue
+    }
+    try {
+      // normalize at the same chokepoint runScrapers/applyIngest use. An empty
+      // result is still POSTed: the server flags it stale (keeping good data) and
+      // the non-'ok' result fails the job, surfacing the silent failure.
+      const deals = normalizeDeals(await withTimeout(scrape(), SCRAPE_TIMEOUT_MS, id))
+      entries.push({ dispensaryId: id, deals })
+    } catch (err) {
+      results[id] = 'error'
+      ok = false
+      console.error(`[ingestRun] ${id}: scrape failed`, err)
+    }
+  }
+
+  if (entries.length > 0) {
+    try {
+      const posted = await postFn(opts.ingestUrl, { stores: entries }, opts.secret)
+      for (const entry of entries) {
+        const r = posted[entry.dispensaryId] ?? 'error'
+        results[entry.dispensaryId] = r
+        if (r !== 'ok') ok = false
+      }
+    } catch (err) {
+      ok = false
+      for (const entry of entries) results[entry.dispensaryId] = 'error'
+      console.error('[ingestRun] POST failed', err)
+    }
+  }
+
+  return { ok, results }
+}
+
+// `--store <id>` selects one store (matrix isolation); omitted = all registered.
+export function parseStoreArg(argv: string[]): string | undefined {
+  const i = argv.indexOf('--store')
+  return i >= 0 ? argv[i + 1] : undefined
+}
+
+async function main(): Promise<void> {
+  const ingestUrl = process.env.INGEST_URL
+  const secret = process.env.INGEST_SECRET
+  if (!ingestUrl || !secret) {
+    console.error('[ingestRun] INGEST_URL and INGEST_SECRET must both be set')
+    process.exit(1)
+  }
+
+  const args = process.argv.slice(2)
+  const storeArg = parseStoreArg(args)
+  let stores: string[]
+  if (args.includes('--store')) {
+    // flag present but value missing/empty → error rather than silently run all
+    if (!storeArg) {
+      console.error('[ingestRun] --store requires a store id')
+      process.exit(1)
+    }
+    if (!storeIds.includes(storeArg)) {
+      console.error(`[ingestRun] unknown store "${storeArg}". Valid: ${storeIds.join(', ')}`)
+      process.exit(1)
+    }
+    stores = [storeArg]
+  } else {
+    stores = storeIds
+  }
+
+  const { ok, results } = await runIngest({ stores, ingestUrl, secret })
+  for (const [id, r] of Object.entries(results)) console.log(`[ingestRun] ${id}: ${r}`)
+  process.exit(ok ? 0 : 1)
+}
+
+// Run as a CLI only when executed directly (not when imported by tests).
+const entry = process.argv[1]
+if (entry && import.meta.url === pathToFileURL(entry).href) {
+  main().catch((err) => {
+    console.error('[ingestRun] fatal', err)
+    process.exit(1)
+  })
+}
