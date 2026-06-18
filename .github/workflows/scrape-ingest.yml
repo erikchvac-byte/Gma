@@ -1,0 +1,86 @@
+name: scrape-ingest
+
+# ADR-034 Goal D: hourly cron runs the Node scrape pipeline against a Python
+# stealth-browser scraper booted in-job, POSTing results to /api/ingest. Replaces
+# the in-process setInterval scrape as the data trigger. A failed (red) scheduled
+# run is the alert — GitHub emails the repo owner (ADR-034 §6).
+
+on:
+  schedule:
+    - cron: '0 * * * *' # hourly (UTC)
+  workflow_dispatch: {} # manual trigger for testing
+
+permissions:
+  contents: read
+
+concurrency:
+  group: scrape-ingest
+  cancel-in-progress: false
+
+jobs:
+  # Single source of truth for the store matrix = the scrapers registry. Adding a
+  # store stays a one-line diff in server/scrapers/index.ts.
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      stores: ${{ steps.list.outputs.stores }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install
+        working-directory: server
+      - id: list
+        run: |
+          S=$(npx tsx scripts/printStores.ts)
+          if [ -z "$S" ]; then echo 'printStores produced no output' >&2; exit 1; fi
+          echo "stores=$S" >> "$GITHUB_OUTPUT"
+        working-directory: server
+
+  scrape:
+    needs: prepare
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false # one store's failure must not block the others
+      matrix:
+        store: ${{ fromJSON(needs.prepare.outputs.stores) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install
+        working-directory: server
+
+      # Dutchie stores need the Python stealth-browser scraper; remedy-tulalip is
+      # Axios+Cheerio in-process, so it skips the ~90s Playwright install.
+      - name: Set up Python
+        if: matrix.store != 'remedy-tulalip'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install scraper deps
+        if: matrix.store != 'remedy-tulalip'
+        run: |
+          pip install -r requirements.txt
+          python -m playwright install --with-deps chromium
+        working-directory: scraper-svc
+      - name: Boot scraper service
+        if: matrix.store != 'remedy-tulalip'
+        run: |
+          nohup python -m uvicorn api.server:app --host 127.0.0.1 --port 8000 > uvicorn.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -sf http://127.0.0.1:8000/health >/dev/null; then break; fi
+            sleep 1
+          done
+          curl -sf http://127.0.0.1:8000/health || { echo 'scraper failed to start'; cat uvicorn.log; exit 1; }
+        working-directory: scraper-svc
+
+      - name: Scrape & ingest
+        run: npx tsx scripts/ingestRun.ts --store "${{ matrix.store }}"
+        working-directory: server
+        env:
+          INGEST_URL: https://gmaslist.com/api/ingest
+          INGEST_SECRET: ${{ secrets.INGEST_SECRET }}
+          SCRAPER_URL: http://127.0.0.1:8000/scrape
