@@ -4,7 +4,7 @@ import { RangeSlider } from './ui'
 // imports these so the range can't drift between validator and UI
 export const MIN_DISTANCE_MILES = 1
 export const MAX_DISTANCE_MILES = 50
-export const DEFAULT_DISTANCE_MILES = 25
+export const DEFAULT_DISTANCE_MILES = 50
 
 interface DistanceFilterProps {
   value: number

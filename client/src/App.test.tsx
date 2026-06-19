@@ -103,8 +103,9 @@ describe('App', () => {
     vi.stubGlobal('fetch', routeFetch(oneDispensary, 20))
     render(<App />)
 
-    // national average first: 5 mi × 2 × 4.1/28 = $1.46
-    expect(await screen.findByText(hasText('30% off — $1.46 to get there'))).toBeInTheDocument()
+    // national average first: 5 mi × 2 × 4.1/28 = $1.46 (gas now in the card header)
+    expect(await screen.findByText(hasText('$1.46 to get there'))).toBeInTheDocument()
+    expect(screen.getByText('30% off')).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: 'Vehicle & settings' }))
     await screen.findByRole('option', { name: '2019' })
@@ -115,7 +116,7 @@ describe('App', () => {
     fireEvent.change(screen.getByLabelText('Model'), { target: { value: 'Camry' } })
 
     // 5 mi × 2 × 4.1/20 = $2.05; selection persists and the sheet closes
-    expect(await screen.findByText(hasText('30% off — $2.05 to get there'))).toBeInTheDocument()
+    expect(await screen.findByText(hasText('$2.05 to get there'))).toBeInTheDocument()
     expect(localStorage.getItem('gma_vehicle_mpg')).toBe('20')
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
   })
@@ -127,6 +128,6 @@ describe('App', () => {
     vi.stubGlobal('fetch', routeFetch(oneDispensary))
     render(<App />)
 
-    expect(await screen.findByText(hasText('30% off — $2.05 to get there'))).toBeInTheDocument()
+    expect(await screen.findByText(hasText('$2.05 to get there'))).toBeInTheDocument()
   })
 })

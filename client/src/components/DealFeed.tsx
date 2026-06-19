@@ -8,7 +8,7 @@ import { useDeals } from '../hooks/useDeals'
 import { useLocalStorage } from '../hooks/useLocalStorage'
 import { useNow } from '../hooks/useNow'
 import { hasValidTimedWindow, isDealActive, minutesUntilEnd } from '../utils/dealTime'
-import { sortDeals } from '../utils/sortDeals'
+import { groupDealsByStore } from '../utils/sortDeals'
 import { formatCountdown, formatLastUpdated, formatTimeOfDay } from '../utils/formatTime'
 import { formatGasCost, isPositiveFinite, roundTripGasCost } from '../utils/gasCost'
 import StaleIndicator from './StaleIndicator'
@@ -52,7 +52,8 @@ export default function DealFeed({ mpg = null }: DealFeedProps) {
     DEFAULT_DISTANCE_MILES,
   )
   // same use-site validation pattern as MPG: stored value counts only as a
-  // whole number of miles within the slider's range; anything else means 25
+  // whole number of miles within the slider's range; anything else falls back
+  // to DEFAULT_DISTANCE_MILES (50)
   const maxDistance =
     typeof storedDistance === 'number' &&
     Number.isInteger(storedDistance) &&
@@ -96,7 +97,7 @@ export default function DealFeed({ mpg = null }: DealFeedProps) {
     ...dispensary,
     deals: dispensary.deals.filter((deal) => isDealActive(deal, now)),
   }))
-  const rows = sortDeals(activeDispensaries, now)
+  const storeGroups = groupDealsByStore(activeDispensaries, now)
   const lastUpdated = formatLastUpdated(data.meta.lastScraperRun)
 
   // stored vehicle MPG wins only when it's a finite number > 0; anything else
@@ -111,21 +112,22 @@ export default function DealFeed({ mpg = null }: DealFeedProps) {
   return (
     <section aria-label="Deal feed" style={feedStyle}>
       <DistanceFilter value={maxDistance} onChange={setStoredDistance} />
-      {rows.length === 0 ? (
+      {storeGroups.length === 0 ? (
         <Notice variant="muted" role="status" aria-live="polite">
           No active deals right now
         </Notice>
       ) : (
         <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 'var(--gap-feed)' }}>
-          {rows.map(({ dispensary, deal }, i) => (
-            // index keeps the key unique even when sanitize blanks two same-window/same-type
-            // deals' descriptions to '' (the only differentiating field would otherwise collide)
-            <li key={`${dispensary.id}|${deal.type}|${deal.description}|${deal.startTime ?? ''}|${deal.endTime ?? ''}|${i}`}>
+          {storeGroups.map(({ dispensary, deals }) => (
+            // one listitem per STORE; deals are grouped inside the card
+            <li key={dispensary.id}>
               <DealCard
                 dispensary={dispensary}
-                deal={deal}
-                windowText={windowText(deal)}
-                countdown={countdownText(deal, now)}
+                deals={deals.map((deal) => ({
+                  deal,
+                  windowText: windowText(deal),
+                  countdown: countdownText(deal, now),
+                }))}
                 gasCostText={gasCostText(dispensary.distanceMiles)}
               />
             </li>
