@@ -70,4 +70,15 @@ describe('normalizeDeals', () => {
     const deals = [null, good, 'oops' as unknown] as unknown as Deal[]
     expect(normalizeDeals(deals)).toEqual([good])
   })
+
+  it('sanitizes the description of surviving deals (strips markup)', () => {
+    const [result] = normalizeDeals([valid({ description: 'Top-shelf <b>flower</b> 🔥' })])
+    expect(result.description).toBe('Top-shelf flower')
+  })
+
+  it('suppresses a non-compliant description but KEEPS the deal (never trips stale)', () => {
+    const result = normalizeDeals([valid({ description: 'cures anxiety, kid-approved' })])
+    expect(result).toHaveLength(1) // deal kept — only the copy is blanked
+    expect(result[0].description).toBe('')
+  })
 })

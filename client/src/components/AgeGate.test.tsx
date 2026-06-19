@@ -76,6 +76,49 @@ describe('AgeGate', () => {
     },
   )
 
+  it('offers an "I am under 21" decline action alongside confirm', () => {
+    render(
+      <AgeGate>
+        <p>Deal Content</p>
+      </AgeGate>,
+    )
+
+    expect(confirmButton()).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'I am under 21' })).toBeInTheDocument()
+  })
+
+  it('declining shows a terminal dead-end screen and does NOT confirm or reveal content', () => {
+    render(
+      <AgeGate>
+        <p>Deal Content</p>
+      </AgeGate>,
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'I am under 21' }))
+
+    expect(screen.getByText('This site is for adults 21 and over.')).toBeInTheDocument()
+    expect(screen.queryByText('Deal Content')).not.toBeInTheDocument()
+    // no path back into content from the dead-end
+    expect(queryConfirmButton()).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'I am under 21' })).not.toBeInTheDocument()
+    // confirmation flag must never be set by declining
+    expect(localStorage.getItem('gma_age_confirmed')).not.toBe('true')
+  })
+
+  it('moves focus onto the dead-end alertdialog after declining (a11y)', () => {
+    render(
+      <AgeGate>
+        <p>Deal Content</p>
+      </AgeGate>,
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'I am under 21' }))
+
+    // the terminal screen has no focusable action, so focus must land on the dialog
+    // container itself rather than falling back to <body>
+    expect(screen.getByRole('alertdialog')).toHaveFocus()
+  })
+
   it('reappears after localStorage is cleared', () => {
     localStorage.setItem('gma_age_confirmed', 'true')
     const { unmount } = render(

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import AgeGate from './components/AgeGate'
 import Header from './components/Header'
 import DealFeed from './components/DealFeed'
+import DisclaimerFooter from './components/DisclaimerFooter'
 import VehicleSelector from './components/VehicleSelector'
 import { useVehicleMpg } from './hooks/useVehicleMpg'
 
@@ -19,6 +20,7 @@ function App() {
         <main>
           <DealFeed mpg={mpg} />
         </main>
+        <DisclaimerFooter />
       </div>
       <VehicleSelector
         open={settingsOpen}
