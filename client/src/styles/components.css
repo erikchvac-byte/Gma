@@ -99,7 +99,9 @@
    --------------------------------------------------------------- */
 .gma-card {
   background: var(--surface-card);
-  border: var(--border-hairline) solid var(--border-default);
+  /* card edge uses the crisper --border-strong: --surface sits only ~1.1:1 off
+     --bg on dark, so the hairline carries the card boundary (contrast audit polish) */
+  border: var(--border-hairline) solid var(--border-strong);
   border-radius: var(--radius-lg);
   padding: var(--pad-card);
 }

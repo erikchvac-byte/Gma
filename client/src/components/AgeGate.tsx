@@ -184,7 +184,9 @@ const cardStyle = {
   maxWidth: 404,
   padding: 'var(--space-6)',
   background: 'var(--surface-card)',
-  border: 'var(--border-hairline) solid var(--border-default)',
+  // crisper card edge (--border-strong) — matches .gma-card; --surface sits
+  // only ~1.1:1 off the --bg takeover so the hairline must carry the boundary
+  border: 'var(--border-hairline) solid var(--border-strong)',
   borderRadius: 'var(--radius-2xl)',
 } as const
 

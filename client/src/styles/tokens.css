@@ -20,8 +20,8 @@
   --bg:             #0E1417; /* app background */
   --surface:        #161F23; /* cards, rows */
   --surface-raised: #1F2A30; /* chips, inputs, tiles */
-  --tw-border:      #2C3A41; /* hairlines, card borders */
-  --tw-border-strong: #3C4D55; /* brightened hover border */
+  --tw-border:      #2C3A41; /* subtle hairlines, dividers, secondary-button resting border */
+  --tw-border-strong: #3C4D55; /* crisper card & field edges + hover-brightened border */
 
   /* Text */
   --tw-text:        #E8EFF2; /* primary */
@@ -94,7 +94,6 @@
 
   /* Status accents */
   --status-fresh:     var(--success);
-  --status-stale:     var(--tw-text-faint);
   --status-urgent:    var(--warning);
   --status-error:     var(--danger);
 
