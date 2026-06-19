@@ -110,5 +110,12 @@ Story 4.3 shipped the TypeScript Dutchie integration fixture-tested; live end-to
 
 ## Deferred from: code review of compliance-launch-gate (2026-06-18)
 
-- Affirm-gate `AgeGate` has no real focus trap — `aria-modal="true"` is set but there is no key handler / `inert` on the background, so Tab can leave the dialog. Pre-existing (predates the decline-affordance change; noted in ADR-021 deferred-work). The decline dead-end branch's missing focus is tracked separately as a patch in the story.
+- ~~Affirm-gate `AgeGate` has no real focus trap~~ **RESOLVED 2026-06-19 by ADR-036** — the Tidewater gate added a real `Tab` focus-trap (`handleKeyDown`) on the ask/out states; `aria-modal="true"` is now backed by a trap.
 - `sanitizeDescription` no-space truncation can split a UTF-16 surrogate pair — an 80-char description with no spaces and an astral character on the boundary leaves a lone surrogate, rendered as a replacement char. Negligible real-world likelihood (astral letters in a dispensary deal description landing exactly at the cap).
+
+## Deferred from: code review of GMAS_LIST_BRIEF.md / Tidewater reskin (2026-06-19)
+
+- **Full dark-palette WCAG AA contrast audit** — the new Tidewater palette is unverified against AA (prior pairs were light-mode). Acute instances: gate card `--surface-card #161F23` sits only ~8 lightness points off the overlay `--bg #0E1417` (relies on a 1px hairline); `--text-faint #5E6E76` on dark for struck prices / stale badges. Run the accessibility lens before DESIGN.md goes `status: final`. (The legal small-print instance is being patched now.)
+- **Self-host the web fonts** — fonts now load from Google Fonts CDN (ruled intentional). Resilience downside: the legally-required age gate depends on a third-party CDN; if blocked, `display=swap` falls back to system fonts (text still renders, not invisible). Re-vendor Space Grotesk / Plus Jakarta Sans / Space Mono as woff2 for offline/trust parity with the prior build.
+- **Checkbox visibility on UAs that ignore `accent-color`** — the "Remember me" native checkbox is themed only via `accentColor`; on browsers ignoring it (older Safari) the unchecked box may be near-invisible on `--bg`. Add a bordered/box fallback.
+- **"Remember me" write-failure is silent** — `useLocalStorage` swallows `setItem` failures (pre-existing); in private-browsing/quota-exceeded a user who checked "Remember me" is silently re-gated next visit with no feedback. Consider surfacing a notice.

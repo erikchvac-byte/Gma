@@ -1,124 +1,93 @@
 ---
-name: Gma's Helper
-description: Visual identity for Gma's Helper (Happy) — a flat, honest, phone-first utility answering "is this cannabis deal worth the drive?" Distilled at Finalize from .decision-log.md and imports/gmas-helper-design-system; token values lifted verbatim from the import's tokens/*.css.
-status: final
-updated: 2026-06-12
+name: gmas list
+description: Visual identity for gmas list (Happy) — a precise, dark, finance/transit-energy utility that ranks legal cannabis deals by TRUE cost (sticker + gas to get there). "Tidewater" direction. Distilled 2026-06-18 from imports/GMAS_LIST_BRIEF.md (canonical) and .decision-log.md. Supersedes the Epic-6 light/green identity. Token values lifted verbatim from the brief's §2–§6; derivations are tagged [DERIVED] in prose.
+status: draft
+updated: 2026-06-18
 colors:
-  # ---- Brand green ramp (the single action color) ----
-  green-50: '#f0fdf4'
-  green-100: '#dcfce7'
-  green-200: '#bbf7d0'
-  green-300: '#86efac'
-  green-500: '#22c55e'
-  green-600: '#16a34a'
-  green-700: '#15803d'
-  green-800: '#166534'
-  green-900: '#14532d'
-  # ---- Neutral gray ramp (the information grid) ----
-  gray-50: '#f9fafb'
-  gray-100: '#f3f4f6'
-  gray-200: '#e5e7eb'
-  gray-300: '#d1d5db'
-  gray-400: '#9ca3af'
-  gray-500: '#6b7280'
-  gray-600: '#4b5563'
-  gray-700: '#374151'
-  gray-800: '#1f2937'
-  gray-900: '#111827'
-  white: '#ffffff'
-  # ---- Amber (urgency only — countdowns, time-limited deals) ----
-  # do not lighten amber-700 / darken amber-100 — urgent badge AA margin is 0.01 (4.510:1)
-  amber-50: '#fffbeb'
-  amber-100: '#fef3c7'
-  amber-200: '#fde68a'
-  amber-600: '#d97706'
-  amber-700: '#b45309'
-  # ---- Red (errors / destructive only) ----
-  red-50: '#fef2f2'
-  red-200: '#fecaca'
-  red-600: '#dc2626'
-  red-700: '#b91c1c'
-  # ---- Semantic aliases (resolved hex; ramp source noted in prose) ----
-  surface-page: '#f9fafb'
-  surface-card: '#ffffff'
-  surface-sunken: '#f3f4f6'
-  surface-inverse: '#111827'
-  surface-urgent: '#fffbeb'
-  surface-error: '#fef2f2'
-  text-strong: '#111827'
-  text-body: '#374151'
-  text-muted: '#6b7280'
-  text-on-primary: '#ffffff'
-  text-on-inverse: '#ffffff'
-  text-urgent: '#b45309'
-  text-error: '#b91c1c'
-  text-link: '#15803d'
-  action-primary-bg: '#15803d'
-  action-primary-bg-hover: '#166534'
-  action-primary-bg-active: '#14532d'
-  action-primary-fg: '#ffffff'
-  action-secondary-bg: '#ffffff'
-  action-secondary-bg-hover: '#f9fafb'
-  action-secondary-border: '#d1d5db'
-  action-secondary-fg: '#374151'
-  action-ghost-bg-hover: '#f3f4f6'
-  action-ghost-fg: '#374151'
-  border-default: '#e5e7eb'
-  border-strong: '#d1d5db'
-  border-field: '#6b7280' # form-field boundary — 4.83:1 on white, 3:1 non-text floor
-  border-focus: '#15803d'
-  status-fresh: '#16a34a'
-  status-stale: '#9ca3af'
-  status-urgent: '#d97706'
-  status-error: '#dc2626'
-  focus-ring: '#15803d'
+  # ---- Surfaces (dark is default & primary) ----
+  bg: '#0E1417'              # app background
+  surface: '#161F23'        # cards, rows
+  surface-raised: '#1F2A30' # chips, inputs, tiles
+  border: '#2C3A41'         # hairlines, card borders
+  border-strong: '#3C4D55'  # [DERIVED] brightened hover border (brief §6)
+  # ---- Text ----
+  text: '#E8EFF2'           # primary
+  text-muted: '#9DB0B8'     # secondary / labels
+  text-faint: '#5E6E76'     # metadata, struck prices, captions
+  # ---- Accent (single locked brand color) ----
+  accent: '#4FD1C5'         # teal — primary accent ON DARK
+  accent-hover: '#6FE0D6'   # hover/active state of accent
+  accent-soft: '#14302E'    # low-emphasis teal fill (selected row bg)
+  accent-on-light: '#18A294'# deeper teal for use on LIGHT backgrounds
+  # ---- Ink (light surfaces / print) ----
+  ink: '#14212A'
+  # ---- Semantic (meaning only, never decoration) ----
+  success: '#5BD6A0'        # savings / best total
+  warning: '#E8C36A'        # caution
+  danger: '#E87E6E'         # worst total / error
+  # ---- Focus ----
+  focus-ring: '#4FD1C5'     # [DERIVED] = accent; visible ring on dark
+  scrim: 'rgba(6,10,12,0.62)' # [DERIVED] flat sheet scrim, no blur
 typography:
   display:
-    fontFamily: 'Public Sans'
-    fontSize: 24px
+    fontFamily: 'Space Grotesk'
+    fontSize: 28px
     fontWeight: '700'
-    lineHeight: '1.2'
+    lineHeight: '1.15'
+    letterSpacing: '-0.02em'
   heading:
-    fontFamily: 'Public Sans'
-    fontSize: 18px
-    fontWeight: '600'
-    lineHeight: '1.35'
+    fontFamily: 'Space Grotesk'
+    fontSize: 20px
+    fontWeight: '700'
+    lineHeight: '1.25'
+    letterSpacing: '-0.02em'
+  wordmark:
+    fontFamily: 'Space Grotesk'
+    fontSize: 20px
+    fontWeight: '500'
+    lineHeight: '1'
+    letterSpacing: '-0.01em'
+    note: 'lowercase "gmas list" + teal set-dot. Never capitalize, never add a pictorial icon.'
   body:
-    fontFamily: 'Public Sans'
+    fontFamily: 'Plus Jakarta Sans'
     fontSize: 16px
     fontWeight: '400'
     lineHeight: '1.5'
   label:
-    fontFamily: 'Public Sans'
+    fontFamily: 'Plus Jakarta Sans'
     fontSize: 14px
     fontWeight: '500'
     lineHeight: '1.35'
+  button:
+    fontFamily: 'Plus Jakarta Sans'
+    fontSize: 16px
+    fontWeight: '700'
+    lineHeight: '1'
   caption:
-    fontFamily: 'Public Sans'
+    fontFamily: 'Plus Jakarta Sans'
     fontSize: 14px
     fontWeight: '400'
     lineHeight: '1.35'
+  price-hero:
+    fontFamily: 'Space Grotesk'
+    fontSize: 24px
+    fontWeight: '700'
+    lineHeight: '1.1'
+    note: 'The big sticker price only. Space Mono not required here (brief §5b); the breakdown IS Space Mono.'
   figure:
-    fontFamily: 'IBM Plex Mono'
-    fontSize: 16px
-    fontWeight: '500'
+    fontFamily: 'Space Mono'
+    fontSize: 14px
+    fontWeight: '400'
     lineHeight: '1.35'
-    note: 'ALL money / distance / time figures. Always tabular-nums + slashed-zero (font-feature-settings: tnum 1, zero 1). Renders at 14px (caption size) in card metadata rows.'
-  overline:
-    fontFamily: 'Public Sans'
-    fontSize: 12px
-    fontWeight: '600'
-    lineHeight: '1'
-    letterSpacing: 0.04em
-    note: 'UPPERCASE. Badge pills and slider tick micro-labels only — never running text. The only size below 14px anywhere.'
+    note: 'EVERY compared number — price breakdown, drive cost, true-cost total, distance, miles, countdowns. Always tabular. This is a signature, not optional (brief §3).'
 rounded:
-  sm: 4px
-  md: 6px
-  lg: 8px
-  DEFAULT: 8px
-  xl: 12px
-  2xl: 16px
-  full: 9999px
+  dot: 2px        # the teal set-dot
+  input: 12px     # inputs, selects (brief §6: 12–13)
+  button: 13px    # buttons (brief §5a: radius 13)
+  card: 14px      # deal cards (brief §5b)
+  sheet: 20px     # bottom sheets, gate card (brief §5a/§6)
+  full: 9999px    # pills
+  DEFAULT: 14px   # house corner = card radius
 spacing:
   '0': 0px
   '1': 4px
@@ -126,94 +95,80 @@ spacing:
   '3': 12px
   '4': 16px
   '5': 20px
-  '6': 24px
-  '8': 32px
-  '10': 40px
-  '12': 48px
-  '16': 64px
+  '6': 28px
+  '7': 40px
   gutter-page: 16px
   gap-feed: 12px
-  pad-card: 12px
-  pad-control: 12px
-  control-height: 44px
-  control-height-sm: 36px
+  pad-card: 16px         # [DERIVED] roomier than feed gap; brief implies calm density
   tap-min: 44px
-  content-max: 640px
-  content-wide: 1120px
+  control-height: 44px
+  control-height-cta: 52px  # primary CTA (brief §5a)
+  content-max: 480px        # [DERIVED] phone-first reading column; gate card maxes ~404px
 components:
   button-primary:
-    background: '{colors.action-primary-bg}'
-    background-hover: '{colors.action-primary-bg-hover}'
-    background-active: '{colors.action-primary-bg-active}'
-    foreground: '{colors.action-primary-fg}'
-    radius: '{rounded.lg}'
-    min-height: '{spacing.control-height}'
+    background: '{colors.accent}'
+    background-hover: '{colors.accent-hover}'
+    foreground: '{colors.bg}'        # ALWAYS bg, never white (brief §2/§8)
+    radius: '{rounded.button}'
+    min-height: '{spacing.control-height-cta}'
+    typography: '{typography.button}'
   button-secondary:
-    background: '{colors.action-secondary-bg}'
-    background-hover: '{colors.action-secondary-bg-hover}'
-    border: '{colors.action-secondary-border}'
-    foreground: '{colors.action-secondary-fg}'
-    radius: '{rounded.lg}'
-    min-height: '{spacing.control-height}'
-  button-ghost:
     background: 'transparent'
-    background-hover: '{colors.action-ghost-bg-hover}'
-    foreground: '{colors.action-ghost-fg}'
-    radius: '{rounded.lg}'
+    border: '1px solid {colors.border}'
+    foreground: '{colors.text-muted}'
+    radius: '{rounded.button}'
     min-height: '{spacing.control-height}'
-  button-danger:
-    background: '{colors.red-600}'
-    background-hover: '{colors.red-700}'
-    foreground: '{colors.white}'
-    radius: '{rounded.lg}'
-    min-height: '{spacing.control-height}'
-  icon-button:
-    size: '{spacing.control-height}'
-    size-sm: '{spacing.control-height-sm}'
-    radius: '{rounded.lg}'
-    foreground: '{colors.action-ghost-fg}'
-    background-hover: '{colors.action-ghost-bg-hover}'
+    typography: '{typography.button}'
   card:
-    background: '{colors.surface-card}'
-    border: '1px solid {colors.border-default}'
-    radius: '{rounded.lg}'
+    background: '{colors.surface}'
+    border: '1px solid {colors.border}'
+    radius: '{rounded.card}'
     padding: '{spacing.pad-card}'
     shadow: 'none'
-  badge:
-    typography: '{typography.overline}'
+  card-best:
+    background: '{colors.surface}'
+    border: '1.5px solid {colors.accent}'
+    radius: '{rounded.card}'
+    note: 'lowest true-cost total; carries the "Best true cost" badge'
+  badge-best:
+    background: '{colors.accent}'
+    foreground: '{colors.bg}'
     radius: '{rounded.full}'
-    padding: '4px {spacing.2}'
-  range-slider:
-    track-height: 6px
-    track-color: '{colors.gray-200}'
-    thumb-size: 22px
-    thumb-hit-target: 44px # transparent expanded hit area; painted thumb stays 22px
-    thumb-color: '{colors.action-primary-bg}'
-    thumb-border: '3px solid {colors.white}'
-    value-typography: '{typography.figure}'
+    typography: '{typography.figure}'
   text-field:
-    background: '{colors.white}'
-    border: '1px solid {colors.border-field}'
-    border-focus: '{colors.border-focus}'
-    radius: '{rounded.lg}'
+    background: '{colors.surface-raised}'
+    border: '1px solid {colors.border}'
+    border-focus: '{colors.accent}'
+    foreground: '{colors.text}'
+    radius: '{rounded.input}'
     min-height: '{spacing.control-height}'
   select:
-    background: '{colors.white}'
-    border: '1px solid {colors.border-field}'
-    border-focus: '{colors.border-focus}'
-    radius: '{rounded.lg}'
+    background: '{colors.surface-raised}'
+    border: '1px solid {colors.border}'
+    border-focus: '{colors.accent}'
+    foreground: '{colors.text}'
+    radius: '{rounded.input}'
     min-height: '{spacing.control-height}'
-    chevron-color: '{colors.gray-500}'
-  skeleton:
-    background: '{colors.gray-200}'
-    radius: '{rounded.lg}'
-    animation: 'opacity pulse 1.4s (none under reduced motion)'
-  notice:
-    background: '{colors.surface-sunken}'
-    foreground: '{colors.text-body}'
-    border: '1px solid {colors.border-default}'
-    radius: '{rounded.lg}'
-    typography: '{typography.caption}'
+    chevron-color: '{colors.text-muted}'
+  range-slider:
+    track-height: 6px
+    track-color: '{colors.surface-raised}'
+    fill-color: '{colors.accent}'
+    thumb-size: 22px
+    thumb-hit-target: 44px
+    thumb-color: '{colors.accent}'
+    value-typography: '{typography.figure}'
+  pill:
+    background: '{colors.surface-raised}'
+    foreground: '{colors.text-muted}'
+    border: '1px solid {colors.border}'
+    radius: '{rounded.full}'
+    note: 'location pill, chips'
+  sheet:
+    background: '{colors.surface}'
+    radius-top: '{rounded.sheet}'
+    scrim: '{colors.scrim}'
+    max-width: 480px
   focus-ring:
     color: '{colors.focus-ring}'
     width: 2px
@@ -222,108 +177,98 @@ components:
 
 ## Brand & Style
 
-Gma's Helper is a clean, flat, utilitarian tool — closer in posture to a trustworthy public-utility or finance app than to anything in the cannabis aesthetic. It is deliberately **not** stoner-branded and not youth-marketed: the audience is budget-aware adults (the returning buyer, the careful regular, the newcomer) deciding whether a deal is worth the gas to reach it. The whole product is a single honest comparison, so the design language is plain, flat, and honest to match.
+gmas list is a **precise utility tool** — finance/transit-app energy, not a dispensary. The product sells one insight: the cheapest sticker price is often **not** the cheapest way to actually obtain the product once the drive is included. Everything in the design serves that single honest comparison.
 
-The signature is the figures. Every dollar, mile, and minute is set in tabular, slashed-zero IBM Plex Mono so the numbers align and read as measured fact: `9.8 mi · $1.46 · 24 min left`. Around them, Public Sans (civic, plain, highly legible — a fit for a product built on government data sources like EIA and fueleconomy.gov) carries everything readable. There is essentially no imagery: no photography, no illustration, no cannabis-leaf anything. Surfaces are solid flat fills; the only pictures are 2px-stroke Lucide line icons that support, never decorate.
+The posture is **sober, calm, trustworthy, dark, no-gimmick**. Restraint over decoration: clean data rows, mono numerals, one confident accent. There are **no** gradients-as-decoration, no emoji, and no cannabis-leaf / bud / smoke / neon-green / "420" iconography — the last is also a legal constraint (`EXPERIENCE.md → regulated content`; WA WAC 314-55-155). The teal-dot brand is intentionally abstract; keep it that way.
 
-The system is **light-only on purpose**. Dark mode is a stated future consideration, not a v1 surface. The primary surface is a phone in a driveway, deciding whether to turn the key — everything below is tuned for that moment.
+The signature is the **numbers**. Prices, distances, drive costs, and "true cost" totals carry the UI — any figure a user compares is set in tabular **Space Mono** so the values align and read as measured fact. Around them, **Space Grotesk** (geometric, slightly technical) sets the wordmark and headings; **Plus Jakarta Sans** (humanist, neutral) carries everything readable.
 
-Import gallery references: [brand wordmark](imports/gmas-helper-design-system/guidelines/brand-wordmark.card.html) · [brand voice](imports/gmas-helper-design-system/guidelines/brand-voice.card.html) · [readme](imports/gmas-helper-design-system/readme.md). The wordmark is a {colors.green-700} rounded square holding the Lucide `navigation` icon beside "Gma's Helper" in bold sans.
+The system is **dark by default and primary** (`--bg #0E1417`). Light surfaces are rare; when they occur the accent swaps to `{colors.accent-on-light}` so the teal stays legible.
+
+**Wordmark (locked):** lowercase `gmas list` in {typography.wordmark} (Space Grotesk Medium, ls −0.01em, closed up tight), followed by a **teal square "set-dot"** — the brand signature. The dot ≈ 0.21× cap height, `{rounded.dot}` (2px), sits near the baseline just right of the final "t". On dark: text `{colors.text}`, dot `{colors.accent}`. On light: text `{colors.ink}`, dot `{colors.accent-on-light}`. Monochrome: dot matches text. **Never** capitalize, never add a pictorial icon, never a cannabis leaf. Minimum width 96px; clear space all sides = cap height; below 96px use the app-icon mark. The in-product brand text is **always** `gmas list` lowercase (the spoken "grandma's" is never leaned on, never written out).
+
+**App icon / favicon — "g + dot":** lowercase `g` in Space Grotesk Bold + the teal set-dot, centered in a rounded-square tile (corner ≈ 24% of size). Standard: `{colors.text}` "g" + `{colors.accent}` dot on `{colors.bg}` tile. Alt: `{colors.bg}` "g" + `{colors.bg}` dot on `{colors.accent}` tile. Ship 16/32/56/96 + 180 (apple-touch) + 512.
 
 ## Colors
 
-Token values are lifted verbatim from [tokens/colors.css](imports/gmas-helper-design-system/tokens/colors.css); specimen cards: [brand](imports/gmas-helper-design-system/guidelines/colors-brand.card.html), [neutral](imports/gmas-helper-design-system/guidelines/colors-neutral.card.html), [semantic](imports/gmas-helper-design-system/guidelines/colors-semantic.card.html). Color is used sparingly and always means something:
+"Tidewater" — a dark base with a single teal accent. Tokens are CSS custom properties; dark is the default and primary mode. Color is used sparingly and always means something.
 
-- **Green-700 (`#15803d`)** is the *only* action color — the "go" of the age-gate confirm, the link color, the slider thumb, and the focus ring. Hover darkens one step to {colors.green-800}; press darkens a second step to {colors.green-900}. The green never appears as decoration, tint wash, or background flourish.
-- **The gray ramp** is the information grid: {colors.surface-page} page, {colors.surface-card} cards, {colors.border-default} hairlines, {colors.text-body} body, {colors.text-muted} metadata (distance, windows, footnotes), {colors.text-strong} headings and dispensary names. {colors.surface-inverse} (gray-900) is reserved for full-screen takeovers — in practice, the age gate.
-- **Amber** is reserved *strictly* for urgency — happy-hour countdowns and time-sensitive deals — so it always means "this expires." {colors.status-urgent} for accents, {colors.text-urgent} for countdown text, {colors.surface-urgent} + {colors.amber-200} border for the urgent card tint.
-- **Red** is errors only: {colors.status-error} / {colors.text-error} on {colors.surface-error}. Never used for urgency, emphasis, or discounts.
-- **Status accents**: {colors.status-fresh} (fresh source dot), {colors.status-stale} (muted gray-400 — stale status is deliberately non-intrusive per ADR-026).
+- **Surfaces** layer by lightness: `{colors.bg}` app background, `{colors.surface}` cards and rows, `{colors.surface-raised}` chips/inputs/tiles, `{colors.border}` hairlines and card borders. Depth comes from these steps and from borders — not from shadow (see Elevation & Depth).
+- **Text** runs three steps: `{colors.text}` primary, `{colors.text-muted}` secondary/labels, `{colors.text-faint}` metadata, struck prices, captions.
+- **Accent** `{colors.accent}` `#4FD1C5` is the **locked brand color** — the single teal. Use it sparingly: the best-deal highlight, primary buttons, the logo dot, key totals. Hover/active brightens to `{colors.accent-hover}`. `{colors.accent-soft}` is a low-emphasis teal fill for a selected-row background. On the rare light surface, swap to `{colors.accent-on-light}` `#18A294`. **Text on an accent fill is always `{colors.bg}` `#0E1417`, never white** (brief §2/§8).
+- **Semantic** colors mean state, never decoration: `{colors.success}` savings / best total, `{colors.warning}` caution, `{colors.danger}` worst total / error.
 
-Components reference the semantic aliases (`action-primary-bg`, `border-default`, `text-muted`…), never raw ramp steps — the ramps exist so the aliases resolve, and so downstream code never invents a hex.
+The true-cost total is the one place accent and semantic color carry ranking: the winning total reads `{colors.accent}` (or `{colors.success}`), mid totals `{colors.text-muted}`, and the worst total `{colors.danger}` — color stating fact, not urging.
 
-Load-bearing combinations meet WCAG AA: {colors.text-body} and {colors.text-muted} on white, {colors.text-strong} on {colors.surface-page}, and white on {colors.green-700} (the action pair) all clear 4.5:1. The tint pairs hold too: {colors.text-urgent} on {colors.surface-urgent} (4.84:1), {colors.text-error} on {colors.surface-error} (5.91:1), and the urgent badge's amber-700 on amber-100 (4.510:1 — knife-edge, pinned by the frontmatter comment; never lighten amber-700 or darken amber-100). {colors.status-stale} (gray-400, 2.54:1 on white) must always be paired with text — as it is today in "N sources unavailable" — and never used as a sole indicator.
+**Contrast — [DERIVED, must verify at Finalize].** This palette is brand-new and unverified against WCAG AA; the prior accessibility pairs were all light-mode and do **not** carry over. Load-bearing dark pairs to verify before `status: final`: `{colors.text}` on `{colors.surface}`, `{colors.text-muted}` on `{colors.surface}` and on `{colors.surface-raised}`, `{colors.text-faint}` on `{colors.surface}` (likely a metadata-only pair — must never be a sole indicator if it fails 4.5:1), `{colors.bg}` on `{colors.accent}` (the action pair), and `{colors.accent}` text on `{colors.surface}`. The accessibility lens at Finalize owns this.
 
-Avoid: gradients, tinted brand washes, purple/blue accents, color-coding deal categories, red for anything but errors, amber for anything that doesn't expire.
+Avoid: gradients, tinted brand washes, a second accent, neon green, color-coding deal categories, semantic color used decoratively.
 
 ## Typography
 
-Two families, both self-hosted ([tokens/fonts.css](imports/gmas-helper-design-system/tokens/fonts.css), woff2 latin subset; scale in [tokens/typography.css](imports/gmas-helper-design-system/tokens/typography.css); specimens: [families](imports/gmas-helper-design-system/guidelines/type-families.card.html), [scale](imports/gmas-helper-design-system/guidelines/type-scale.card.html), [figures](imports/gmas-helper-design-system/guidelines/type-figures.card.html)):
+Three families, loaded from Google Fonts (`Space Grotesk` 400–700, `Plus Jakarta Sans` 400–700, `Space Mono` 400/700):
 
-- **Public Sans** (400 / 500 / 600 / 700) — everything readable. Headings are semibold/bold {colors.text-strong}; body is regular {colors.text-body}.
-- **IBM Plex Mono** (400 / 500 / 600) — every money, distance, and time figure, always with `font-variant-numeric: tabular-nums slashed-zero`. This is non-negotiable: numbers are the product, and they must align and read as fact, not marketing.
+- **Space Grotesk** — display, wordmark, UI headings. Headings weight 700, letter-spacing ≈ −0.02em.
+- **Plus Jakarta Sans** — body, labels, buttons. Weights 400–700.
+- **Space Mono** — every number a user compares: price, miles, drive cost, true-cost total, any tabular figure. **This is a signature, not optional** (brief §3).
 
-Roles: {typography.display} (page title), {typography.heading} (age-gate prompt, sheet titles), {typography.body} (deal descriptions), {typography.label} / {typography.caption} (form labels, metadata, footnotes), {typography.figure} (figures — drops to 14px in card metadata rows like distance and windows), {typography.overline} (uppercase badge pills only).
+Roles: {typography.display} (page/section title), {typography.heading} (gate prompt, sheet titles), {typography.wordmark} (the locked logotype), {typography.body} (deal descriptions, running copy), {typography.label} / {typography.caption} (form labels, metadata, footnotes), {typography.button} (button labels), {typography.price-hero} (the big sticker price — Space Grotesk, the one figure exempt from mono), {typography.figure} (all compared numbers — Space Mono, tabular).
 
-The floor: **nothing readable sits below 14px on primary surfaces.** The 12px {typography.overline} size exists solely for uppercase badge micro-labels and slider tick marks. Sentence case everywhere; UPPERCASE only in overline badges; never title case for UI copy. The raw scale (12/14/16/18/20/24/30/36/48px) and tracking tokens (−0.02em display, +0.04em overline) live in the import token file; the larger display sizes are reserved for future marketing surfaces, not the app.
+The readable floor carries over from the prior spine as an accessibility rule: **nothing readable sits below 14px on primary surfaces.** Sentence case everywhere; the wordmark is the only lowercase-locked element; never title case for UI copy.
 
 ## Layout & Spacing
 
-A **4px base grid** ([tokens/spacing.css](imports/gmas-helper-design-system/tokens/spacing.css); specimen: [spacing scale](imports/gmas-helper-design-system/guidelines/spacing-scale.card.html)). The feed is tight and scannable — an information density closer to a ledger than a marketing page: {spacing.pad-card} (12px) card padding, {spacing.gap-feed} (12px) between cards, {spacing.gutter-page} (16px) page gutter.
+Spacing scale (brief §6): **4 / 8 / 12 / 16 / 20 / 28 / 40 px** ({spacing.1}…{spacing.7}), with {spacing.gutter-page} (16px) page gutter, {spacing.gap-feed} (12px) between deal cards, and {spacing.pad-card} (16px) card padding. Tabular figures wherever numbers align — the rows read like a ledger, dense but calm.
 
-The reading column is capped at {spacing.content-max} (**640px**) and never sprawls. The app is **phone-first, single column**; on larger screens the column simply centers on the {colors.surface-page} gray page. The space either side of the column is deliberately unspecced — a future consideration (possibly ads, per the product's non-intrusive-ads-only rule), not a layout. {spacing.content-wide} (1120px) exists in the tokens for a future marketing/desktop shell and is not used by the app.
+The app is **phone-first, single column**; the reading column caps around {spacing.content-max} ([DERIVED] 480px) and the age-gate card maxes ~404px. On larger screens the column simply centers on the `{colors.bg}` page; the surrounding space is deliberately unspecced (a future consideration, not a layout today — and any future ad inventory needs a cannabis-compliant network per `EXPERIENCE.md`).
 
-Hit targets are mobile-first: {spacing.tap-min} (44px) minimum, {spacing.control-height} (44px) standard control height, {spacing.control-height-sm} (36px) only for dense toolbar contexts.
+Hit targets are **≥ {spacing.tap-min}** (44px). Standard control height is 44px; the primary CTA is taller at {spacing.control-height-cta} (52px, brief §5a). Borders are 1px `{colors.border}`; selected/important is 1.5px `{colors.accent}`.
 
 ## Elevation & Depth
 
-The brand is **flat and honest** ([tokens/elevation.css](imports/gmas-helper-design-system/tokens/elevation.css); specimen: [elevation](imports/gmas-helper-design-system/guidelines/elevation.card.html)). Cards are defined by a **1px {colors.border-default} hairline on {colors.surface-card}**, not by drop shadows — the feed is shadowless. Shadows appear only on genuinely floating UI:
+The system is **border-led, not shadow-led** — natural to a dark UI where drop shadows read weakly. Depth comes from the surface ladder (`{colors.bg}` → `{colors.surface}` → `{colors.surface-raised}`) and from borders. Cards are a flat `{colors.surface}` fill with a **1px `{colors.border}` hairline** and **no shadow**; the best card raises its border to **1.5px `{colors.accent}`**, not a shadow.
 
-- `shadow-sm` — the quiet lift on interactive-card hover (the only shadow a card may ever carry, and only while hovered).
-- `shadow-md` / `shadow-lg` — the settings sheet and overlays. The sheet floats; the feed does not.
-- No element ever has both a heavy border *and* a shadow.
+The only genuinely floating layer is the **bottom sheet** (settings/vehicle). It sits over a **flat scrim `{colors.scrim}`** — no glassmorphism, no backdrop blur, anywhere ([DERIVED] scrim value; brief mandates no blur). A soft `shadow-lg` on the sheet edge is permitted to lift it off the feed; nothing else in the app carries a shadow. No element ever has both a heavy border and a shadow.
 
-The token values, restated from [tokens/elevation.css](imports/gmas-helper-design-system/tokens/elevation.css) so this section stands alone: shadow-xs `0 1px 2px 0 rgba(17,24,39,0.05)`; shadow-sm `0 1px 3px 0 rgba(17,24,39,0.08), 0 1px 2px -1px rgba(17,24,39,0.08)`; shadow-md `0 4px 12px -2px rgba(17,24,39,0.10), 0 2px 6px -2px rgba(17,24,39,0.06)`; shadow-lg `0 12px 28px -6px rgba(17,24,39,0.16), 0 4px 10px -4px rgba(17,24,39,0.08)`. Never quote `_imported-CLAUDE.md.txt` for values — its radius/shadow numbers are wrong; the token files are the source.
+**Focus is its own depth cue:** a 2px `{colors.focus-ring}` (teal) outline at 2px offset — always visible, never removed without replacement. On dark this teal ring reads clearly against every surface.
 
-The settings-sheet scrim is a flat `rgba(17,24,39,0.45)` — no glassmorphism, no backdrop blur, anywhere.
-
-Focus is its own depth cue: a 2px {colors.focus-ring} outline with a 2px offset (a white-gap ring on filled controls) — always visible, WCAG AA.
-
-Motion is functional, never decorative or bouncy: quick fades and color transitions at 120–240ms on a standard ease. The slider thumb scales 1.08 on hover; the loading feed uses a soft opacity pulse. No infinite loops on content, and every duration collapses to 0ms under `prefers-reduced-motion`.
+**Hover** = lighten, never shift layout: accent elements brighten to `{colors.accent-hover}`; bordered elements brighten their border toward `{colors.border-strong}` (~#3C4D55). Motion is functional only — quick fades/color transitions, no bounce, no loops on content; every duration collapses to 0ms under `prefers-reduced-motion`.
 
 ## Shapes
 
-**8px is the house corner** — buttons, cards, inputs, selects, and notices all share {rounded.lg} / {rounded.DEFAULT}. Pills (badges, the slider thumb and track) are fully round ({rounded.full}). The settings bottom sheet uses a larger {rounded.2xl} (16px) top radius to read as a distinct floating layer. {rounded.sm} and {rounded.md} exist in the scale for fine-grained needs but no shipping component uses them; {rounded.xl} (12px) is unassigned. Specimen: [radius](imports/gmas-helper-design-system/guidelines/radius.card.html).
-
-**Naming note (binding ruling):** the import's prose claims `--radius-md: 8px` is the house corner, but [tokens/spacing.css](imports/gmas-helper-design-system/tokens/spacing.css) defines `--radius-lg: 8px` as the default and is internally consistent across components.css. **The token files win**: the house corner is `radius-lg: 8px`, mapped here as {rounded.lg} and {rounded.DEFAULT}.
+Corners step by role (brief §6): inputs and selects {rounded.input} (12px), buttons {rounded.button} (13px), **deal cards {rounded.card} (14px) — the house corner ({rounded.DEFAULT})**, bottom sheets and the gate card {rounded.sheet} (20px), and pills/chips/badges {rounded.full}. The app-icon tile is ~24% of its size (relative, not a fixed token). The teal set-dot is {rounded.dot} (2px). Borders are 1px `{colors.border}`; the important/selected boundary is 1.5px `{colors.accent}`.
 
 ## Components
 
-The system is ten primitives plus the composed app surfaces. Visual specs below; behavior lives in `EXPERIENCE.md → Component Patterns`. Consumers link one stylesheet — [styles.css](imports/gmas-helper-design-system/styles.css), the import manifest — which pulls the token files plus [tokens/base.css](imports/gmas-helper-design-system/tokens/base.css) (element resets that make raw HTML on-brand: body on {colors.surface-page}, always-visible focus outlines, tabular figures on `time`/`[data-figure]`). All component states are styled in [components/components.css](imports/gmas-helper-design-system/components/components.css); live specimens: [core](imports/gmas-helper-design-system/components/core/core.card.html), [forms](imports/gmas-helper-design-system/components/forms/forms.card.html), [feedback](imports/gmas-helper-design-system/components/feedback/feedback.card.html). Per-component prompt/type contracts sit beside each `.jsx` (e.g. [Button.d.ts](imports/gmas-helper-design-system/components/core/Button.d.ts)).
+Visual specs below; behavior lives in `EXPERIENCE.md → Component Patterns`. Components reference the semantic tokens above, never raw hex.
 
-- **Button** — Variants: `primary` (the single green "go" affordance — {components.button-primary}), `secondary` (white, {colors.action-secondary-border} outline), `ghost` (transparent, {colors.action-ghost-bg-hover} hover fill), `danger` ({colors.red-600}, errors/destructive only). Sizes `md` (44px) / `sm` (36px); `block` stretches full-width for mobile CTAs. Semibold {typography.body}-size label, {rounded.lg} corner, optional leading/trailing icon. Hover darkens one step, press two; disabled is 50% opacity, no pointer events; focus shows the white-gap ring.
-- **IconButton** — Square 44px (sm: 36px), {rounded.lg}, transparent with {colors.action-ghost-bg-hover} hover; `outlined` adds {colors.action-secondary-border} + white fill. Icon-only — `aria-label` is required. Used for the settings gear and sheet close.
-- **Badge** — Small uppercase pill, {typography.overline} in a {rounded.full} capsule. Variants: `neutral` (gray-100/gray-600 — "Daily deal"), `urgent` (amber-100/amber-700 — "Happy hour"), `fresh` (green-50/green-800, dotted), `stale` (gray-100/{colors.gray-600}, dotted — 6.87:1, matching the neutral badge), `discount` (solid {colors.green-700}/white % chip). The 6px status dot inherits currentColor. Pills size from their content — padding only, never fixed width/height or clipping, so user text-spacing overrides never truncate the label (1.4.12).
-- **Card** — The brand's core surface: {colors.surface-card} with a 1px {colors.border-default} hairline, {rounded.lg}, **no shadow**. Padding `default` (12px) / `flush` / `roomy` (20px). `interactive` darkens the border to {colors.border-strong} and gains `shadow-sm` on hover only. `urgent` tints to {colors.surface-urgent} with an {colors.amber-200} border for happy-hour content.
-- **RangeSlider** — The distance filter: label left in {typography.label}, current value right in semibold {typography.figure} ("25 miles"), a 6px {colors.gray-200} pill track with a 22px {colors.action-primary-bg} thumb ringed by 3px white, optional {typography.overline}-scale tick labels ("1 mi" / "50 mi") in {colors.text-muted}. Thumb scales 1.08 on hover, darkens on press; keyboard focus draws the 2px outline offset from the track.
-- **TextField** — Stacked label ({typography.label}), input (white, 1px {colors.border-field}, {rounded.lg}, 44px), then hint ({colors.text-muted}) or error ({colors.text-error}, with `aria-invalid` red border). `mono` switches to tabular {typography.figure} for numeric entry. Focus swaps the border to {colors.border-focus} plus the ring. The border is the field's only extent indicator, so it uses {colors.border-field} (4.83:1 — clears the 3:1 non-text floor); {colors.border-strong} stays on the secondary button, where the label carries the meaning.
-- **Select** — Native select with brand chrome: same field metrics as TextField, CSS-drawn {colors.gray-500} chevron, disabled state at 50% opacity on {colors.gray-50}. Used as the Year → Make → Model cascade.
-- **Skeleton / SkeletonFeed** — {colors.gray-200} blocks, {rounded.lg}, 1.4s opacity pulse (static under reduced motion). `SkeletonFeed` is the deal feed's exact loading state: stacked card-height rows (default 3).
-- **Notice** — Inline message line in {typography.caption}: `default` ({colors.surface-sunken} box, {colors.text-body} text — 9.4:1; never {colors.text-muted} on sunken), `muted` (bare {colors.text-muted} line — the stale-source and last-updated footnotes), `error` ({colors.surface-error}/{colors.text-error}), `urgent` ({colors.surface-urgent}/{colors.text-urgent}). Optional leading 16px icon.
+- **Button** — `primary`: `{colors.accent}` fill, `{colors.bg}` label (never white), {rounded.button}, 52px CTA height, {typography.button} (weight 700), hover `{colors.accent-hover}`; one primary per surface. `secondary`: transparent, 1px `{colors.border}`, `{colors.text-muted}` label, 44px. Disabled = reduced opacity, no pointer events; focus shows the 2px teal ring.
+- **Deal card** — A Card (`{colors.surface}`, 1px `{colors.border}`, {rounded.card}, no shadow). Holds: dispensary name, "Strain · ⅛ oz" line, the **big sticker price** in {typography.price-hero}, the **struck original price** in `{colors.text-faint}`, and a right-aligned **breakdown** — `+$X drive` in {typography.figure} `{colors.text-faint}` over **`$Y total`** in bold {typography.figure}. The total is colored by rank: `{colors.accent}` on the best, `{colors.text-muted}` mid, `{colors.danger}` when it is the worst total. *(The sticker+drive=total model and ranking behavior are governed by `EXPERIENCE.md` and are pending Erik's product-model ruling — the visual spec here is the brief's, not a behavioral commitment.)*
+- **Best card** — The lowest true-cost total: `card-best` (1.5px `{colors.accent}` border) plus a **"Best true cost" badge** (`{colors.accent}` fill, `{colors.bg}` text, {rounded.full}).
+- **TextField** — Stacked label ({typography.label}), input on `{colors.surface-raised}` with 1px `{colors.border}`, {rounded.input}, 44px, `{colors.text}` value. Focus swaps the border to `{colors.accent}` plus the ring. `mono` switches the value to {typography.figure} for numeric entry.
+- **Select** — Same field metrics as TextField; CSS-drawn `{colors.text-muted}` chevron; disabled at reduced opacity. The Year → Make → Model cascade.
+- **RangeSlider** — The distance filter: label left in {typography.label}, current value right in {typography.figure} ("25 miles"); a 6px `{colors.surface-raised}` track with an `{colors.accent}` fill to the thumb; 22px `{colors.accent}` thumb inside a 44px hit target; tick micro-labels in `{colors.text-muted}`. Keyboard focus draws the 2px teal ring offset from the track.
+- **Pill / location chip** — `{colors.surface-raised}` fill, 1px `{colors.border}`, `{colors.text-muted}` text, {rounded.full}. The header location pill ("Denver, CO" style) and any chips.
+- **Badge** — Small {rounded.full} pill in {typography.figure}/uppercase-as-needed. `best` (`{colors.accent}` fill, `{colors.bg}` text). Other states (neutral, caution) use `{colors.surface-raised}`/`{colors.text-muted}` and the semantic colors for meaning only.
+- **Notice** — Inline message line in {typography.caption}: `default` (`{colors.surface-raised}` box, `{colors.text}` text), `muted` (bare `{colors.text-muted}` line — last-updated, stale-source, disclaimer footnotes), `error` (`{colors.danger}`). Optional leading line icon.
+- **Sheet (vehicle / settings)** — Bottom sheet on `{colors.surface}`, {rounded.sheet} top corners, over the flat `{colors.scrim}`. Title row + close, explainer caption, stacked Selects (one per row), a fuel Notice showing resolved MPG, an action row. *(Full settings/vehicle-sheet spec is [DERIVED] beyond brief §5 — see EXPERIENCE.md reconciliation.)*
+- **21+ Age gate** — Full-bleed `{colors.bg}`, centered card (`{colors.surface}`, 1px `{colors.border}`, {rounded.sheet} 20px, max-width ~404px). Wordmark above the card; a "21" tile; headline **"Are you 21 or older?"**; one line of context; primary Button **"Yes — I'm 21+"** (52px, {rounded.button}, weight 700); secondary **"No, take me back"** (transparent, `{colors.border}`, `{colors.text-muted}`); a "Remember me on this device" checkbox; the mandated warnings as small print below the card. *(The decline path + remember-me + ask/in/out states are behavioral and reverse ADR-021 — pending Erik's ruling. Do NOT drive entry animation from inline `animation:` + `@keyframes` on a re-rendering root — it sticks at opacity 0; use a mount-triggered CSS transition or none.)*
 
-**Composed surfaces** (clickable reference: [ui_kits/app/index.html](imports/gmas-helper-design-system/ui_kits/app/index.html) — age gate → header → feed → settings sheet; sources [feed.jsx](imports/gmas-helper-design-system/ui_kits/app/feed.jsx), [settings.jsx](imports/gmas-helper-design-system/ui_kits/app/settings.jsx), [data.js](imports/gmas-helper-design-system/ui_kits/app/data.js)):
-
-- **Age gate** — Full-screen {colors.surface-inverse} takeover. Centered: `shield-check` icon in {colors.green-300}, the attestation line in white {typography.heading}-scale regular, one primary Button. Nothing else.
-- **Header** — Sticky, {colors.surface-card} with a {colors.border-default} bottom hairline: wordmark left, settings IconButton (gear) right.
-- **Deal card** — A Card (urgent variant for happy hours): dispensary name in semibold 16px {colors.text-strong} with right-aligned distance in 14px {typography.figure} {colors.text-muted}; a Badge ("Happy hour" urgent / "Daily deal" neutral); the description in {typography.body}; the Discount Display line — discount % in semibold {colors.green-700}, then "— $X.XX to get there" with the figure in mono; footer row with the window in 14px mono {colors.text-muted} and, when timed, an amber countdown ("24 min left", clock icon, semibold {colors.text-urgent}).
-- **Settings sheet** — Bottom sheet on {colors.surface-card}, {rounded.2xl} top corners, `shadow-lg`, over the flat scrim. Title row ("Your vehicle" + car icon in {colors.green-700}, close IconButton), explainer caption, three stacked Selects (one per row — see EXPERIENCE.md for the reflow rationale), a fuel-icon Notice showing the resolved MPG, and an action row.
-
-Iconography throughout is **Lucide** (2px stroke, rounded caps), self-hosted ([assets/icons.js](imports/gmas-helper-design-system/assets/icons.js), [iconography specimen](imports/gmas-helper-design-system/guidelines/iconography.card.html)), sized 12–22px, recolored via currentColor. Icons support, never decorate: `clock` countdowns, `navigation` brand/distance, `fuel`/`car` gas math, `settings` gear, `shield-check` age gate, `triangle-alert`/`info` notices.
+Iconography is **line icons only** (2px stroke), sized 12–22px, recolored via currentColor — `clock` countdowns, `fuel`/`car` gas math, `settings` gear, `map-pin` location, `shield`/`check` age gate. Never a cannabis leaf, bud, smoke, or any product depiction (legal, WAC 314-55-155). Icons support data, never decorate.
 
 ## Do's and Don'ts
 
 | Do | Don't |
 |---|---|
-| One action color: {colors.green-700}, darkening on hover/press | Use green decoratively, or introduce a second accent |
-| Amber strictly for "this expires" (countdowns, happy hours) | Use amber for emphasis, warnings-in-general, or branding |
-| Red for errors only | Color-code categories, sentiment, or deal quality |
-| Cards = 1px {colors.border-default} hairline on white, flat | Drop shadows on cards (shadows belong to floating UI only) |
-| Every money/distance/time figure in tabular slashed-zero IBM Plex Mono | Set figures in the sans, or let numbers wiggle as they tick |
-| Show discount and gas cost side by side ("30% off — $1.46 to get there") | Collapse them into an invented "you save $X" (ADR-009) |
-| Sentence case; plain literal copy; no emoji | Title case, exclamation marks, cannabis-culture slang, 🔥 anything |
-| ≥14px for all readable text; 12px only in uppercase badges | Shrink body or metadata below 14px to fit more in |
-| Muted text on white or {colors.surface-page} only | Set {colors.text-muted} on {colors.surface-sunken} or gray-100 (4.39:1 — fails AA) |
-| Solid flat fills; one flat scrim | Gradients, glassmorphism, backdrop blur, tinted washes |
-| Quick functional motion (120–240ms), honoring reduced-motion | Bouncy, looping, or decorative animation |
-| Build from tokens — reference semantic aliases | Hardcode a hex or restyle a primitive ad hoc |
-| Lucide line icons that support the data | Emoji-as-icon, filled icon sets, cannabis-leaf imagery |
+| One accent: teal `{colors.accent}`, brightening on hover | Introduce a second accent, or use teal decoratively |
+| Dark-first surfaces stepped by lightness + borders | Use neon green, gradients, glassmorphism, or backdrop blur |
+| Every compared number in tabular Space Mono | Set figures in the sans, or let numbers wiggle as they tick |
+| `{colors.bg}` text on the teal accent | White text on the teal accent (brief §8) |
+| Cards = 1px `{colors.border}` hairline on `{colors.surface}`, flat; best = 1.5px accent | Drop shadows on cards (only the sheet floats) |
+| Semantic color for meaning only (savings / caution / worst-cost) | Color-code categories or use semantic color as decoration |
+| Lowercase `gmas list` wordmark + teal set-dot | Capitalize the wordmark, or add a pictorial/leaf icon to it |
+| Abstract teal-dot brand; line icons that support data | Cannabis leaves, buds, smoke, "420", emoji, mascots/cartoons |
+| ≥14px for all readable text | Shrink body or metadata below 14px to fit more in |
+| Sentence case; plain literal copy | Title case, exclamation marks, urgency theater |
+| Build from tokens — reference semantic names | Hardcode a hex or invent colors/fonts outside §2–§3 |
+| Quick functional motion, honoring reduced-motion | Bouncy, looping, or decorative animation |

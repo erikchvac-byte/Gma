@@ -1,166 +1,114 @@
 /* ==========================================================================
-   Gma's Helper Design System — Token Layer
-   Source: planning-artifacts/ux-designs/ux-Happy-2026-06-11/imports/
-           gmas-helper-design-system/tokens/{fonts,colors,typography,spacing,elevation,base}.css
-   Values are verbatim from those files. Paths corrected for client/src/assets/fonts/.
+   gmas list — Token Layer  ("Tidewater" direction)
+   Source: planning-artifacts/ux-designs/ux-Happy-2026-06-11/DESIGN.md
+           (distilled from imports/GMAS_LIST_BRIEF.md — canonical).
+   Dark is the default and primary mode. Token NAMES are preserved from the
+   prior (light/green) system so the component layer is a pure value swap;
+   values are Tidewater. Fonts load from Google Fonts via index.html.
    ========================================================================== */
 
 /* ==========================================================================
-   1. Self-hosted fonts  (fonts.css — paths corrected to vendored location)
-   ========================================================================== */
-
-@font-face {
-  font-family: 'Public Sans';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url('../assets/fonts/public-sans-400.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Public Sans';
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url('../assets/fonts/public-sans-500.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Public Sans';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url('../assets/fonts/public-sans-600.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Public Sans';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url('../assets/fonts/public-sans-700.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'IBM Plex Mono';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url('../assets/fonts/ibm-plex-mono-400.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'IBM Plex Mono';
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url('../assets/fonts/ibm-plex-mono-500.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'IBM Plex Mono';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url('../assets/fonts/ibm-plex-mono-600.woff2') format('woff2');
-}
-
-/* ==========================================================================
-   2. Design tokens — native names  (verbatim from source token files)
-      Used by semantic aliases, composite shorthands, and component var() refs.
+   1. Design tokens — semantic + palette
    ========================================================================== */
 
 :root {
   /* -------------------------------------------------------------------------
-     colors.css
+     Tidewater palette (brief §2). Dark base, single teal accent.
      ------------------------------------------------------------------------- */
 
-  /* Brand green (primary action) */
-  --green-50:  #f0fdf4;
-  --green-100: #dcfce7;
-  --green-200: #bbf7d0;
-  --green-300: #86efac;
-  --green-500: #22c55e;
-  --green-600: #16a34a;
-  --green-700: #15803d; /* primary — the confirm/go color from the app */
-  --green-800: #166534; /* primary hover */
-  --green-900: #14532d;
-
-  /* Neutral gray ramp (the information grid) */
-  --gray-50:  #f9fafb; /* page background */
-  --gray-100: #f3f4f6;
-  --gray-200: #e5e7eb; /* default hairline border */
-  --gray-300: #d1d5db; /* control track / strong border */
-  --gray-400: #9ca3af; /* slider thumb / disabled fg */
-  --gray-500: #6b7280; /* muted / secondary text */
-  --gray-600: #4b5563;
-  --gray-700: #374151; /* body text */
-  --gray-800: #1f2937;
-  --gray-900: #111827; /* headings, inverse surfaces (age gate) */
-  --white:    #ffffff;
-
-  /* Amber (urgency only — time-limited deals, countdowns) */
-  --amber-50:  #fffbeb;
-  --amber-100: #fef3c7;
-  --amber-200: #fde68a;
-  --amber-600: #d97706;
-  --amber-700: #b45309;
-
-  /* Red (errors / destructive) */
-  --red-50:  #fef2f2;
-  --red-200: #fecaca;
-  --red-600: #dc2626;
-  --red-700: #b91c1c;
-
-  /* Surfaces */
-  --surface-page:     var(--gray-50);
-  --surface-card:     var(--white);
-  --surface-sunken:   var(--gray-100);
-  --surface-inverse:  var(--gray-900);
-  --surface-urgent:   var(--amber-50);
-  --surface-error:    var(--red-50);
+  /* Surfaces (stepped by lightness — depth comes from these + borders) */
+  --bg:             #0E1417; /* app background */
+  --surface:        #161F23; /* cards, rows */
+  --surface-raised: #1F2A30; /* chips, inputs, tiles */
+  --tw-border:      #2C3A41; /* hairlines, card borders */
+  --tw-border-strong: #3C4D55; /* brightened hover border */
 
   /* Text */
-  --text-strong:      var(--gray-900);
-  --text-body:        var(--gray-700);
-  --text-muted:       var(--gray-500);
-  --text-on-primary:  var(--white);
-  --text-on-inverse:  var(--white);
-  --text-urgent:      var(--amber-700);
-  --text-error:       var(--red-700);
-  --text-link:        var(--green-700);
+  --tw-text:        #E8EFF2; /* primary */
+  --tw-text-muted:  #9DB0B8; /* secondary / labels */
+  --tw-text-faint:  #5E6E76; /* metadata, struck prices, captions */
 
-  /* Action — primary */
-  --action-primary-bg:        var(--green-700);
-  --action-primary-bg-hover:  var(--green-800);
-  --action-primary-bg-active: var(--green-900);
-  --action-primary-fg:        var(--white);
+  /* Accent (single locked brand color) */
+  --accent:         #4FD1C5;
+  --accent-hover:   #6FE0D6;
+  --accent-active:  #18A294;
+  --accent-soft:    #14302E; /* low-emphasis teal fill */
+  --accent-on-light:#18A294;
 
-  /* Action — secondary */
-  --action-secondary-bg:        var(--white);
-  --action-secondary-bg-hover:  var(--gray-50);
-  --action-secondary-border:    var(--gray-300);
-  --action-secondary-fg:        var(--gray-700);
+  /* Semantic (meaning only) */
+  --success:        #5BD6A0;
+  --warning:        #E8C36A;
+  --danger:         #E87E6E;
 
-  /* Action — ghost */
-  --action-ghost-bg-hover:      var(--gray-100);
-  --action-ghost-fg:            var(--gray-700);
+  /* Derived dark tints for warning/error surfaces */
+  --surface-urgent-dark: #221C0E;
+  --surface-error-dark:  #241413;
 
-  /* Borders */
-  --border-default:   var(--gray-200);
-  --border-strong:    var(--gray-300);
-  --border-field:     var(--gray-500); /* #6b7280 — higher-contrast form-field boundary (Reviewer-Gate a11y fix, 6-3) */
-  --border-focus:     var(--green-700);
-
-  /* Status accents */
-  --status-fresh:     var(--green-600);
-  --status-stale:     var(--gray-400);
-  --status-urgent:    var(--amber-600);
-  --status-error:     var(--red-600);
-
-  /* Focus ring */
-  --focus-ring:       var(--green-700);
+  --scrim: rgba(6, 10, 12, 0.62); /* flat sheet scrim — no blur */
 
   /* -------------------------------------------------------------------------
-     typography.css
+     Semantic aliases — preserved names, Tidewater values.
+     Components reference these; never raw palette.
      ------------------------------------------------------------------------- */
 
-  --font-sans: 'Public Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
+  /* Surfaces */
+  --surface-page:     var(--bg);
+  --surface-card:     var(--surface);
+  --surface-sunken:   var(--surface-raised);
+  --surface-inverse:  var(--bg);            /* age-gate full-bleed */
+  --surface-urgent:   var(--surface-urgent-dark);
+  --surface-error:    var(--surface-error-dark);
+
+  /* Text */
+  --text-strong:      var(--tw-text);
+  --text-body:        var(--tw-text);
+  --text-muted:       var(--tw-text-muted);
+  --text-faint:       var(--tw-text-faint);
+  --text-on-primary:  var(--bg);            /* on the teal accent — NEVER white */
+  --text-on-inverse:  var(--tw-text);
+  --text-urgent:      var(--warning);
+  --text-error:       var(--danger);
+  --text-link:        var(--accent);
+
+  /* Action — primary (the single teal "go") */
+  --action-primary-bg:        var(--accent);
+  --action-primary-bg-hover:  var(--accent-hover);
+  --action-primary-bg-active: var(--accent-active);
+  --action-primary-fg:        var(--bg);
+
+  /* Action — secondary (transparent, bordered) */
+  --action-secondary-bg:        transparent;
+  --action-secondary-bg-hover:  var(--surface-raised);
+  --action-secondary-border:    var(--tw-border);
+  --action-secondary-fg:        var(--tw-text-muted);
+
+  /* Action — ghost */
+  --action-ghost-bg-hover:      var(--surface-raised);
+  --action-ghost-fg:            var(--tw-text-muted);
+
+  /* Borders */
+  --border-default:   var(--tw-border);
+  --border-strong:    var(--tw-border-strong);
+  --border-field:     var(--tw-border-strong);
+  --border-focus:     var(--accent);
+
+  /* Status accents */
+  --status-fresh:     var(--success);
+  --status-stale:     var(--tw-text-faint);
+  --status-urgent:    var(--warning);
+  --status-error:     var(--danger);
+
+  /* Focus ring */
+  --focus-ring:       var(--accent);
+
+  /* -------------------------------------------------------------------------
+     Typography (brief §3): Space Grotesk (display/headings) ·
+     Plus Jakarta Sans (body/labels/buttons) · Space Mono (figures).
+     ------------------------------------------------------------------------- */
+
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-head: 'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
 
   --weight-regular:  400;
   --weight-medium:   500;
@@ -177,7 +125,7 @@
   --text-4xl:  2.25rem;
   --text-5xl:  3rem;
 
-  --leading-tight:   1.2;
+  --leading-tight:   1.15;
   --leading-snug:    1.35;
   --leading-normal:  1.5;
   --leading-relaxed: 1.65;
@@ -186,60 +134,65 @@
   --tracking-normal: 0;
   --tracking-wide:   0.04em;
 
-  --font-display:  var(--weight-bold)     var(--text-2xl)/var(--leading-tight) var(--font-sans);
-  --font-heading:  var(--weight-semibold) var(--text-lg)/var(--leading-snug)   var(--font-sans);
+  --font-display:  var(--weight-bold)     var(--text-2xl)/var(--leading-tight) var(--font-head);
+  --font-heading:  var(--weight-semibold) var(--text-lg)/var(--leading-snug)   var(--font-head);
   --font-body:     var(--weight-regular)  var(--text-base)/var(--leading-normal) var(--font-sans);
   --font-label:    var(--weight-medium)   var(--text-sm)/var(--leading-snug)   var(--font-sans);
   --font-caption:  var(--weight-regular)  var(--text-sm)/var(--leading-snug)   var(--font-sans);
-  --font-figure:   var(--weight-medium)   var(--text-base)/var(--leading-snug) var(--font-mono);
+  --font-figure:   var(--weight-regular)  var(--text-base)/var(--leading-snug) var(--font-mono);
 
   /* -------------------------------------------------------------------------
-     spacing.css
+     Spacing (brief §6): 4 / 8 / 12 / 16 / 20 / 28 / 40
      ------------------------------------------------------------------------- */
 
   --space-0:  0;
-  --space-1:  0.25rem;
-  --space-2:  0.5rem;
-  --space-3:  0.75rem;
-  --space-4:  1rem;
-  --space-5:  1.25rem;
-  --space-6:  1.5rem;
-  --space-8:  2rem;
-  --space-10: 2.5rem;
+  --space-1:  0.25rem;  /* 4 */
+  --space-2:  0.5rem;   /* 8 */
+  --space-3:  0.75rem;  /* 12 */
+  --space-4:  1rem;     /* 16 */
+  --space-5:  1.25rem;  /* 20 */
+  --space-6:  1.75rem;  /* 28 */
+  --space-8:  2.5rem;   /* 40 */
+  --space-10: 2.75rem; /* distinct from --space-8 (2.5rem); scale stays monotonic */
   --space-12: 3rem;
   --space-16: 4rem;
 
   --gutter-page:    var(--space-4);
   --gap-feed:       var(--space-3);
-  --pad-card:       var(--space-3);
+  --pad-card:       var(--space-4);
   --pad-control:    var(--space-3);
 
-  --radius-sm:   4px;
-  --radius-md:   6px;
-  --radius-lg:   8px;
-  --radius-xl:   12px;
-  --radius-2xl:  16px;
-  --radius-full: 9999px;
+  /* Radius (brief §6): inputs 12, buttons 13, cards 14 (house), sheets 20 */
+  --radius-sm:    4px;
+  --radius-md:    6px;
+  --radius-input: 12px;
+  --radius-btn:   13px;
+  --radius-lg:    14px;  /* house corner — cards */
+  --radius-xl:    18px;  /* between lg (14) and 2xl (20) — keeps scale monotonic */
+  --radius-2xl:   20px;  /* bottom sheets, gate card */
+  --radius-full:  9999px;
+  --radius-dot:   2px;   /* the teal set-dot */
 
   --border-hairline: 1px;
   --border-thick:    2px;
 
   --control-height:    44px;
   --control-height-sm: 36px;
+  --control-height-lg: 52px; /* primary CTA (brief §5a) */
   --tap-min:           44px;
 
-  --content-max:   640px;
+  --content-max:   480px;
   --content-wide:  1120px;
 
   /* -------------------------------------------------------------------------
-     elevation.css
+     Elevation — border-led on dark. Only the sheet floats.
      ------------------------------------------------------------------------- */
 
   --shadow-none: none;
-  --shadow-xs:   0 1px 2px 0 rgba(17, 24, 39, 0.05);
-  --shadow-sm:   0 1px 3px 0 rgba(17, 24, 39, 0.08), 0 1px 2px -1px rgba(17, 24, 39, 0.08);
-  --shadow-md:   0 4px 12px -2px rgba(17, 24, 39, 0.10), 0 2px 6px -2px rgba(17, 24, 39, 0.06);
-  --shadow-lg:   0 12px 28px -6px rgba(17, 24, 39, 0.16), 0 4px 10px -4px rgba(17, 24, 39, 0.08);
+  --shadow-xs:   0 1px 2px 0 rgba(0, 0, 0, 0.30);
+  --shadow-sm:   0 1px 3px 0 rgba(0, 0, 0, 0.40), 0 1px 2px -1px rgba(0, 0, 0, 0.40);
+  --shadow-md:   0 4px 12px -2px rgba(0, 0, 0, 0.45), 0 2px 6px -2px rgba(0, 0, 0, 0.35);
+  --shadow-lg:   0 12px 28px -6px rgba(0, 0, 0, 0.55), 0 4px 10px -4px rgba(0, 0, 0, 0.40);
 
   --ring-offset: 2px;
   --ring-width:  2px;
@@ -256,9 +209,11 @@
                         border-color var(--duration-fast) var(--ease-standard),
                         color var(--duration-fast) var(--ease-standard),
                         box-shadow var(--duration-fast) var(--ease-standard);
+
+  color-scheme: dark;
 }
 
-/* Reduced-motion — collapses duration tokens to 0ms (elevation.css) */
+/* Reduced-motion — collapses duration tokens to 0ms */
 @media (prefers-reduced-motion: reduce) {
   :root {
     --duration-fast:   0ms;
@@ -268,79 +223,51 @@
 }
 
 /* ==========================================================================
-   3. Tailwind v4 @theme — utility-backing tokens
-      Maps to Tailwind's recognized namespaces so brand utilities generate.
-      Palette → --color-* (bg-*, text-*, border-*)
-      Font families → --font-* (font-sans, font-mono)
-      Radius → --radius-* (rounded-*)
-      Spacing → --spacing-* (p-*, m-*, gap-*, w-*, h-*)
+   2. Tailwind v4 @theme — utility-backing tokens
    ========================================================================== */
 
 @theme {
-  /* --- Palette colors --- */
-  --color-green-50:  #f0fdf4;
-  --color-green-100: #dcfce7;
-  --color-green-200: #bbf7d0;
-  --color-green-300: #86efac;
-  --color-green-500: #22c55e;
-  --color-green-600: #16a34a;
-  --color-green-700: #15803d;
-  --color-green-800: #166534;
-  --color-green-900: #14532d;
-
-  --color-gray-50:  #f9fafb;
-  --color-gray-100: #f3f4f6;
-  --color-gray-200: #e5e7eb;
-  --color-gray-300: #d1d5db;
-  --color-gray-400: #9ca3af;
-  --color-gray-500: #6b7280;
-  --color-gray-600: #4b5563;
-  --color-gray-700: #374151;
-  --color-gray-800: #1f2937;
-  --color-gray-900: #111827;
-  --color-white:    #ffffff;
-
-  --color-amber-50:  #fffbeb;
-  --color-amber-100: #fef3c7;
-  --color-amber-200: #fde68a;
-  --color-amber-600: #d97706;
-  --color-amber-700: #b45309;
-
-  --color-red-50:  #fef2f2;
-  --color-red-200: #fecaca;
-  --color-red-600: #dc2626;
-  --color-red-700: #b91c1c;
+  /* --- Accent / surfaces (utilities, if used) --- */
+  --color-accent:        #4FD1C5;
+  --color-accent-hover:  #6FE0D6;
+  --color-bg:            #0E1417;
+  --color-surface:       #161F23;
+  --color-surface-raised:#1F2A30;
+  --color-ink:           #E8EFF2;
+  --color-ink-muted:     #9DB0B8;
+  --color-ink-faint:     #5E6E76;
+  --color-success:       #5BD6A0;
+  --color-warning:       #E8C36A;
+  --color-danger:        #E87E6E;
 
   /* --- Font families --- */
-  --font-sans: 'Public Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-head: 'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
 
   /* --- Border radius --- */
   --radius-sm:   4px;
   --radius-md:   6px;
-  --radius-lg:   8px;
-  --radius-xl:   12px;
-  --radius-2xl:  16px;
+  --radius-lg:   14px;
+  --radius-xl:   18px;
+  --radius-2xl:  20px;
   --radius-full: 9999px;
 
-  /* --- Spacing (4px grid) --- */
+  /* --- Spacing (brief §6 scale) --- */
   --spacing-1:  0.25rem;
   --spacing-2:  0.5rem;
   --spacing-3:  0.75rem;
   --spacing-4:  1rem;
   --spacing-5:  1.25rem;
-  --spacing-6:  1.5rem;
-  --spacing-8:  2rem;
-  --spacing-10: 2.5rem;
+  --spacing-6:  1.75rem;
+  --spacing-8:  2.5rem;
+  --spacing-10: 2.75rem;
   --spacing-12: 3rem;
   --spacing-16: 4rem;
 }
 
 /* ==========================================================================
-   4. Typography selector rules  (typography.css)
-      Sets font-family + numeric features on figure/mono contexts.
-      Note: base.css's :where(time, [data-figure]) adds font-variant-numeric only;
-      font-family on [data-figure] is authoritative here.
+   3. Figure (mono) contexts — every compared number is tabular Space Mono
    ========================================================================== */
 
 .gma-figure,
@@ -351,8 +278,7 @@
 }
 
 /* ==========================================================================
-   5. Base element styles  (base.css — verbatim)
-      Applied after :root token definitions so var() refs resolve.
+   4. Base element styles
    ========================================================================== */
 
 *,
@@ -378,13 +304,13 @@ body {
 h1, h2, h3, h4 {
   margin: 0;
   color: var(--text-strong);
-  font-family: var(--font-sans);
+  font-family: var(--font-head);
   line-height: var(--leading-snug);
 }
 
-h1 { font-size: var(--text-2xl); font-weight: var(--weight-bold); }
-h2 { font-size: var(--text-lg);  font-weight: var(--weight-semibold); }
-h3 { font-size: var(--text-base); font-weight: var(--weight-semibold); }
+h1 { font-size: var(--text-2xl); font-weight: var(--weight-bold); letter-spacing: var(--tracking-tight); }
+h2 { font-size: var(--text-lg);  font-weight: var(--weight-semibold); letter-spacing: var(--tracking-tight); }
+h3 { font-size: var(--text-base); font-weight: var(--weight-semibold); letter-spacing: var(--tracking-tight); }
 
 p { margin: 0; }
 

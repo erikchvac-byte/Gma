@@ -48,7 +48,7 @@ export default function DealCard({ dispensary, deal, windowText, countdown, gasC
       {(deal.discountPct !== null || gasCostText !== null) && (
         <p style={{ fontWeight: 'var(--weight-medium)', color: 'var(--text-strong)' }}>
           {deal.discountPct !== null && (
-            <span style={{ color: 'var(--green-700)', fontWeight: 'var(--weight-semibold)' }}>
+            <span style={{ color: 'var(--accent)', fontWeight: 'var(--weight-semibold)' }}>
               {deal.discountPct}% off
             </span>
           )}

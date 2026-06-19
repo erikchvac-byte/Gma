@@ -24,35 +24,35 @@ export default function Header({ onOpenSettings }: HeaderProps) {
         zIndex: 10,
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+      {/* Locked wordmark: lowercase "gmas list" in Space Grotesk Medium + the
+          teal "set-dot" brand signature. Never capitalized, never a pictorial
+          icon (DESIGN.md → Brand & Style; legal: no cannabis imagery). */}
+      <h1
+        style={{
+          display: 'inline-flex',
+          alignItems: 'flex-end',
+          fontFamily: 'var(--font-head)',
+          fontSize: 'var(--text-xl)',
+          fontWeight: 'var(--weight-medium)',
+          letterSpacing: '-0.01em',
+          color: 'var(--text-strong)',
+          margin: 0,
+        }}
+      >
+        gmas list
         <span
           aria-hidden="true"
           style={{
-            width: 32,
-            height: 32,
-            borderRadius: 9,
-            background: 'var(--green-700)',
-            color: 'var(--white)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            width: '0.21em',
+            height: '0.21em',
+            borderRadius: 'var(--radius-dot)',
+            background: 'var(--accent)',
+            marginLeft: '0.14em',
+            marginBottom: '0.16em',
             flex: 'none',
           }}
-        >
-          <Icon name="navigation" size={18} strokeWidth={2.25} />
-        </span>
-        <h1
-          style={{
-            fontSize: 'var(--text-xl)',
-            fontWeight: 'var(--weight-bold)',
-            letterSpacing: '-0.01em',
-            color: 'var(--text-strong)',
-            margin: 0,
-          }}
-        >
-          Gma&apos;s Helper
-        </h1>
-      </div>
+        />
+      </h1>
       <IconButton aria-label="Vehicle & settings" onClick={onOpenSettings}>
         <Icon name="settings" size={20} />
       </IconButton>
