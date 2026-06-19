@@ -117,8 +117,10 @@ export default function DealFeed({ mpg = null }: DealFeedProps) {
         </Notice>
       ) : (
         <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 'var(--gap-feed)' }}>
-          {rows.map(({ dispensary, deal }) => (
-            <li key={`${dispensary.id}|${deal.type}|${deal.description}|${deal.startTime ?? ''}|${deal.endTime ?? ''}`}>
+          {rows.map(({ dispensary, deal }, i) => (
+            // index keeps the key unique even when sanitize blanks two same-window/same-type
+            // deals' descriptions to '' (the only differentiating field would otherwise collide)
+            <li key={`${dispensary.id}|${deal.type}|${deal.description}|${deal.startTime ?? ''}|${deal.endTime ?? ''}|${i}`}>
               <DealCard
                 dispensary={dispensary}
                 deal={deal}

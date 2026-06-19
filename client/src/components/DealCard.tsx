@@ -36,7 +36,13 @@ export default function DealCard({ dispensary, deal, windowText, countdown, gasC
           <Badge variant="neutral">Daily deal</Badge>
         )}
       </div>
-      <p style={{ color: 'var(--text-body)' }}>{deal.description}</p>
+      {/* description may be '' when ingest suppressed non-compliant retailer copy
+          (see server sanitizeDescription) — render nothing rather than an empty <p>.
+          Trim-guard also covers whitespace-only / undefined copy from any path that
+          bypasses the ingest sanitizer (e.g. legacy seed data). */}
+      {deal.description && deal.description.trim() !== '' && (
+        <p style={{ color: 'var(--text-body)' }}>{deal.description}</p>
+      )}
       {/* side-by-side Discount Display (ADR-009): discount in green, gas figure in mono,
           joined by an em dash. Either half may be null — render only what's present. */}
       {(deal.discountPct !== null || gasCostText !== null) && (

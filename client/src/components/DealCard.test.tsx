@@ -194,6 +194,22 @@ describe('DealCard', () => {
     expect(screen.getByText('12.0 miles')).toBeInTheDocument()
   })
 
+  it('renders no description paragraph when the description was suppressed ("")', () => {
+    const { container } = render(
+      <DealCard
+        dispensary={makeDispensary({})}
+        deal={makeDeal({ description: '', discountPct: 30 })}
+        windowText="Active today"
+        countdown={null}
+        gasCostText="$1.80"
+      />,
+    )
+
+    // deal still renders with badge + discount + window, just no empty <p>
+    expect(byFullText('30% off — $1.80 to get there')).toBeInTheDocument()
+    expect(container.querySelectorAll('p').length).toBe(1) // only the discount line
+  })
+
   it('renders malformed-time deals without window, countdown, or NaN text', () => {
     const { container } = render(
       <DealCard

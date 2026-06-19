@@ -1,4 +1,5 @@
 import type { Deal } from '../../client/src/types/index.js'
+import { sanitizeDescription } from './sanitizeDescription.js'
 
 const DAY_NAMES = [
   'sunday',
@@ -49,10 +50,15 @@ function isUsableDeal(item: unknown): item is Deal {
   return hasUsableWindow(deal) && hasUsableDays(deal)
 }
 
-// Reject malformed/degenerate deals at the scraper-ingestion chokepoint
-// (runScrapers) so junk data never reaches data.json or filterActiveDeals.
-// Valid deals pass through unchanged; if every deal is rejected the caller's
-// empty-deals contract takes over (stale=true, prior deals untouched).
+// Reject malformed/degenerate deals at the push-ingestion chokepoint
+// (applyIngest <- POST /api/ingest; ADR-034 retired the in-process scraper) so
+// junk data never reaches data.json or filterActiveDeals. Surviving deals also
+// have their third-party description sanitized for compliance (markup/emoji/length
+// stripped, therapeutic-claim & youth-appeal copy suppressed) -- see
+// sanitizeDescription. A suppressed description blanks only that field; the deal is
+// kept, so this never falsely trips the caller's empty-deals (stale) contract.
 export function normalizeDeals(deals: Deal[]): Deal[] {
-  return deals.filter(isUsableDeal)
+  return deals
+    .filter(isUsableDeal)
+    .map((deal) => ({ ...deal, description: sanitizeDescription(deal.description) }))
 }

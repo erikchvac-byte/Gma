@@ -107,3 +107,8 @@ Story 4.3 shipped the TypeScript Dutchie integration fixture-tested; live end-to
 - No cross-tab/multi-instance localStorage sync in `useLocalStorage` (no `storage` event listener / `useSyncExternalStore`) — two tabs or two consumers of the same key diverge until reload. Out of MVP scope; worst case the age gate stays up in a second tab.
 - `setValue` lacks a functional-update form (`setValue(prev => ...)`), so future read-modify-write consumers risk stale closures; `T` including `undefined` serializes to the literal string `"undefined"`. No current consumer affected.
 - `useLocalStorage` ignores `key` prop changes after mount (value read once in the lazy initializer). No consumer changes keys today.
+
+## Deferred from: code review of compliance-launch-gate (2026-06-18)
+
+- Affirm-gate `AgeGate` has no real focus trap — `aria-modal="true"` is set but there is no key handler / `inert` on the background, so Tab can leave the dialog. Pre-existing (predates the decline-affordance change; noted in ADR-021 deferred-work). The decline dead-end branch's missing focus is tracked separately as a patch in the story.
+- `sanitizeDescription` no-space truncation can split a UTF-16 surrogate pair — an 80-char description with no spaces and an astral character on the boundary leaves a lone surrogate, rendered as a replacement char. Negligible real-world likelihood (astral letters in a dispensary deal description landing exactly at the cap).
