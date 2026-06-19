@@ -1,8 +1,8 @@
 ---
 name: gmas list
 description: Visual identity for gmas list (Happy) — a precise, dark, finance/transit-energy utility that ranks legal cannabis deals by TRUE cost (sticker + gas to get there). "Tidewater" direction. Distilled 2026-06-18 from imports/GMAS_LIST_BRIEF.md (canonical) and .decision-log.md. Supersedes the Epic-6 light/green identity. Token values lifted verbatim from the brief's §2–§6; derivations are tagged [DERIVED] in prose.
-status: draft
-updated: 2026-06-18
+status: final
+updated: 2026-06-19
 colors:
   # ---- Surfaces (dark is default & primary) ----
   bg: '#0E1417'              # app background
@@ -200,7 +200,19 @@ The system is **dark by default and primary** (`--bg #0E1417`). Light surfaces a
 
 The true-cost total is the one place accent and semantic color carry ranking: the winning total reads `{colors.accent}` (or `{colors.success}`), mid totals `{colors.text-muted}`, and the worst total `{colors.danger}` — color stating fact, not urging.
 
-**Contrast — [DERIVED, must verify at Finalize].** This palette is brand-new and unverified against WCAG AA; the prior accessibility pairs were all light-mode and do **not** carry over. Load-bearing dark pairs to verify before `status: final`: `{colors.text}` on `{colors.surface}`, `{colors.text-muted}` on `{colors.surface}` and on `{colors.surface-raised}`, `{colors.text-faint}` on `{colors.surface}` (likely a metadata-only pair — must never be a sole indicator if it fails 4.5:1), `{colors.bg}` on `{colors.accent}` (the action pair), and `{colors.accent}` text on `{colors.surface}`. The accessibility lens at Finalize owns this.
+**Contrast — VERIFIED against WCAG 2.2 AA (2026-06-19).** Audit of the load-bearing dark pairs (computed sRGB ratios):
+
+| Pair | Ratio | Verdict |
+|---|---|---|
+| `{colors.text}` on `{colors.surface}` / `{colors.bg}` | 14.4 / 16.0 | AA ✓ (primary text) |
+| `{colors.text-muted}` on `{colors.surface}` / `{colors.surface-raised}` / `{colors.bg}` | 7.4 / 6.5 / 8.3 | AA ✓ (labels, gate context, **legal small print**, stale-source line) |
+| `{colors.bg}` on `{colors.accent}` / `{colors.accent-hover}` | 9.95 / 11.8 | AA ✓ (the action pair — button label) |
+| `{colors.accent}` on `{colors.surface}` / `{colors.bg}` / `{colors.accent-soft}` | 9.0 / 9.95 / 7.6 | AA ✓ (accent totals, focus ring, selected row) |
+| `{colors.success}` / `{colors.warning}` / `{colors.danger}` on `{colors.surface}` | 9.2 / 9.9 / 6.1 | AA ✓ (semantic totals) |
+| `{colors.text-faint}` on `{colors.surface}` / `{colors.bg}` | 3.16 / 3.51 | **Below 4.5:1** — permitted *only* in non-essential roles |
+| `{colors.border}` / `{colors.border-strong}` vs adjacent surfaces | 1.4–2.1 | **Below 1.4.11's 3:1** — decorative boundary only |
+
+**Resolutions.** `{colors.text-faint}` is confined to incidental/non-essential text (input placeholder, struck original price [a deferred feature], unrendered badge specimens) where it is never the sole indicator (WCAG 1.4.3 incidental). It must **never** carry essential readable content — the stale-source line correctly uses `{colors.text-muted}` (Notice `muted`), not faint. Card and resting field **borders** fall below 1.4.11's 3:1, but cards/dividers are not controls and the required focus *state* is carried by the teal focus ring (`{colors.accent}` on `{colors.bg}` = 9.95:1 ✓); the surface ladder + labels identify fields. Two visual-polish follow-ups (raise hairline to `{colors.border-strong}` for crisper card edges; bump `text-faint` toward AA if it is ever promoted to readable copy) are logged in `deferred-work.md`, not blockers.
 
 Avoid: gradients, tinted brand washes, a second accent, neon green, color-coding deal categories, semantic color used decoratively.
 
@@ -252,7 +264,7 @@ Visual specs below; behavior lives in `EXPERIENCE.md → Component Patterns`. Co
 - **Badge** — Small {rounded.full} pill in {typography.figure}/uppercase-as-needed. `best` (`{colors.accent}` fill, `{colors.bg}` text). Other states (neutral, caution) use `{colors.surface-raised}`/`{colors.text-muted}` and the semantic colors for meaning only.
 - **Notice** — Inline message line in {typography.caption}: `default` (`{colors.surface-raised}` box, `{colors.text}` text), `muted` (bare `{colors.text-muted}` line — last-updated, stale-source, disclaimer footnotes), `error` (`{colors.danger}`). Optional leading line icon.
 - **Sheet (vehicle / settings)** — Bottom sheet on `{colors.surface}`, {rounded.sheet} top corners, over the flat `{colors.scrim}`. Title row + close, explainer caption, stacked Selects (one per row), a fuel Notice showing resolved MPG, an action row. *(Full settings/vehicle-sheet spec is [DERIVED] beyond brief §5 — see EXPERIENCE.md reconciliation.)*
-- **21+ Age gate** — Full-bleed `{colors.bg}`, centered card (`{colors.surface}`, 1px `{colors.border}`, {rounded.sheet} 20px, max-width ~404px). Wordmark above the card; a "21" tile; headline **"Are you 21 or older?"**; one line of context; primary Button **"Yes — I'm 21+"** (52px, {rounded.button}, weight 700); secondary **"No, take me back"** (transparent, `{colors.border}`, `{colors.text-muted}`); a "Remember me on this device" checkbox; the mandated warnings as small print below the card. *(The decline path + remember-me + ask/in/out states are behavioral and reverse ADR-021 — pending Erik's ruling. Do NOT drive entry animation from inline `animation:` + `@keyframes` on a re-rendering root — it sticks at opacity 0; use a mount-triggered CSS transition or none.)*
+- **21+ Age gate** — Full-bleed `{colors.bg}`, centered card (`{colors.surface}`, 1px `{colors.border}`, {rounded.sheet} 20px, max-width ~404px). Wordmark above the card; a "21" tile; headline **"Are you 21 or older?"**; one line of context; primary Button **"Yes — I'm 21+"** (52px, {rounded.button}, weight 700); secondary **"No, take me back"** (transparent, `{colors.border}`, `{colors.text-muted}`); a "Remember me on this device" checkbox; the mandated warnings as small print below the card. The decline path routes to a **returnable** out-state ("Come back at 21" → "Go back"), and "Remember me" (default on) controls persistence — ruled by Erik 2026-06-19, codified in **ADR-036** (builds on ADR-035's decline; supersedes ADR-021); behavior lives in `EXPERIENCE.md → Component Patterns`. *(Do NOT drive entry animation from inline `animation:` + `@keyframes` on a re-rendering root — it sticks at opacity 0; use a mount-triggered CSS transition or none.)*
 
 Iconography is **line icons only** (2px stroke), sized 12–22px, recolored via currentColor — `clock` countdowns, `fuel`/`car` gas math, `settings` gear, `map-pin` location, `shield`/`check` age gate. Never a cannabis leaf, bud, smoke, or any product depiction (legal, WAC 314-55-155). Icons support data, never decorate.
 

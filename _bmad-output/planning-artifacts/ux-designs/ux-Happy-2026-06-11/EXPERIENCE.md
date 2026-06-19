@@ -2,7 +2,7 @@
 name: Gma's Helper
 description: Experience contract for Gma's Helper (Happy) — IA, behavior, states, interactions, accessibility, journeys. Distilled at Finalize from .decision-log.md and imports/gmas-helper-design-system.
 status: final
-updated: 2026-06-12
+updated: 2026-06-19
 sources:
   - _bmad-output/planning-artifacts/briefs/brief-Happy-2026-06-08/brief.md
   - _bmad-output/planning-artifacts/briefs/brief-Happy-2026-06-08/addendum.md
@@ -15,6 +15,8 @@ sources:
 # Gma's Helper — Experience Spine
 
 > Paired with `DESIGN.md` (visual identity; token references below use `{path.to.token}` against its frontmatter). Upstream requirements (UJ-1/2/3, FR-1…FR-13, ADRs) are inherited by reference from `sources` — not restated here. **The spines win on conflict with any mock, the import, or the UI kit.** Composition reference throughout: [imports/gmas-helper-design-system/ui_kits/app/index.html](imports/gmas-helper-design-system/ui_kits/app/index.html) (clickable age gate → feed → settings sheet).
+>
+> **Visual identity is the dark "Tidewater" reskin (ADR-037, 2026-06-19):** the behavioral contract below is unchanged, but the surface is dark-only with a single teal accent and the lowercase `gmas list` wordmark. "Gma's Helper" remains the internal product/project name; `gmas list` is the user-facing wordmark. Where rows below still read "Gma's Helper" as displayed copy, the shipped legal disclaimer text still uses that name pending an Erik/counsel rename decision.
 
 ## Foundation
 
@@ -28,8 +30,8 @@ The product answers one question — "is this deal worth the drive, right now?" 
 
 | Surface | Reached from | Purpose |
 |---|---|---|
-| Age gate | First load (no `gma_age_confirmed`) | 21+ attestation; blocks all deal content (FR-13) |
-| Header | Persistent after the gate | Wordmark + entry to vehicle settings (gear) |
+| Age gate | First load (no `gma_age_confirmed`) | 21+ attestation with confirm + returnable decline; blocks all deal content (FR-13) |
+| Header | Persistent after the gate | `gmas list` wordmark (page `h1`) + entry to vehicle settings (gear) |
 | Deal feed | Default surface after the gate | Distance filter + sorted Active Deal cards + footnote lines (FR-1…FR-6) |
 | Vehicle settings sheet | Header gear icon | Optional Year → Make → Model precision mode (FR-8) |
 
@@ -43,8 +45,12 @@ Microcopy only — brand voice and aesthetic posture live in `DESIGN.md`. Plain,
 
 | Context | Exact copy | Never |
 |---|---|---|
-| Age gate heading | "You must be 21 or older to view this content." | "Verify your age to unlock" |
-| Age gate button | "I am 21 or older" | "Enter" / "Let's go" |
+| Age gate heading (ask) | "Are you 21 or older?" | "Verify your age to unlock" |
+| Age gate sub (ask) | "Cannabis deals are for adults 21 and over only." | — |
+| Age gate confirm | "Yes — I'm 21+" | "Enter" / "Let's go" |
+| Age gate decline | "No, take me back" | "Exit" / scare copy |
+| Age gate remember | "Remember me on this device" (checkbox, default on) | — |
+| Age gate out-state (declined) | Heading "Come back at 21" + "You must be 21 or older to view cannabis deals." + "Go back" | A terminal dead-end with no way back |
 | Empty feed | "No active deals right now" | "Oops, nothing here!" |
 | Load error | "Couldn't load deals. Please try again later." | Raw error text, status codes, "Oops!" |
 | Stale sources | "2 sources unavailable" / "1 source unavailable" | Warning banners, icons, alarm color |
@@ -73,8 +79,8 @@ Behavioral. Visual specs live in `DESIGN.md → Components`.
 | Skeleton / SkeletonFeed | Feed cold load | 3 card-height rows in the feed's exact geometry. Pulse stops under reduced motion. Never used as a spinner replacement elsewhere. |
 | Notice | Footnotes, errors, sheet info | `muted` = the quiet lines: "Last updated …" (a `<time datetime="…">` element; visible format unchanged, ADR-022), the stale-source count, and the standing disclaimer footer. The dynamic footnotes form one ordered status region — last-updated/empty first, stale count second; the disclaimer is static text, never announced. `error` = calm fixed copy only — raw errors never render (ADR-022). `default` + fuel icon = the sheet's resolved-MPG line, `role="status"` so the confirmation is heard the moment sighted users see it. |
 | Stale source line (Notice muted) | Below the feed | Count derives from the **full API array, radius-independent** (a stale source 40 miles out still counts at any slider setting); strict `stale === true` predicate drives both omission and count so they can't disagree; renders nothing at 0 or non-integer (ADR-026). |
-| Header | Persistent | Sticky at top. Wordmark is static (no home navigation — there is nowhere else to go). The scroll container sets `scroll-padding-top` (header height + 8px) so backward tabbing never hides a focused element under the sticky header (2.4.11). |
-| Age gate | First load | Single button, no decline path (ADR-021). Strict `=== true` storage check; corrupted values re-show the gate. Confirmation never expires. |
+| Header | Persistent | Sticky at top. The lowercase `gmas list` wordmark (Space Grotesk + teal set-dot) is the page's only `h1` and is static (no home navigation — there is nowhere else to go). The scroll container sets `scroll-padding-top` (header height + 8px) so backward tabbing never hides a focused element under the sticky header (2.4.11). |
+| Age gate | First load | Two-option gate (ADR-036, builds on ADR-035's decline; supersedes ADR-021): confirm + **returnable** decline ("No, take me back" → "Come back at 21" out-state with a "Go back" return to ask). A "Remember me on this device" checkbox (default on) controls persistence — checked persists `gma_age_confirmed`, unchecked grants a session-only pass. Decline is session-only, never persisted. Strict `=== true` storage check; corrupted values re-show the gate. A real `Tab` focus-trap holds focus inside the gate. |
 | Settings sheet | Gear | Bottom sheet over the flat scrim. Focus moves to the sheet title (or first Select) on open and is trapped within the sheet while open; closes via close IconButton, scrim tap, or Esc; on close, focus returns to the gear. Skipping (closing without a vehicle) is always allowed — the default path needs zero setup. A "use national average" action clears the stored vehicle. Per FR-8, a completed Year→Make→Model selection applies immediately — there is no mandatory Save step (the import mock's explicit "Save vehicle" button is superseded by this spine). |
 
 Deal feed assembly order (fixed): omit stale → distance filter → client expiry (only fully-valid timed windows expire client-side; every degenerate time shape mirrors the server and stays) → sort. Sort tiers (ADR-022): **timed happy hours by countdown ascending → untimed happy hours (stable input order) → daily deals by discount descending.** Countdown ticks on a single 60s clock; expired timed deals drop off as their window closes. If the focused element sits inside a card removed by expiry or filtering, focus moves to the next card — or to the slider when none remain — never silently to `<body>`.
@@ -120,9 +126,9 @@ The product-specific contract — what makes the page trustworthy. (ADR-009, ADR
 
 Behavioral; contrast and focus-ring visuals live in `DESIGN.md`. Consumer stakes — this floor is non-negotiable.
 
-- **WCAG 2.2 AA** across the surface; {colors.green-700} verified AA on white for the action color.
-- **Document semantics**: `<html lang="en">`; page title "Gma's Helper — cannabis deals worth the drive" (sentence case); landmarks `banner` (header) and `main` (feed); a visually-hidden `h1` "Gma's Helper"; dispensary names are `h2` headings so screen-reader users jump card-to-card.
-- **Age gate** (ADR-021): `role="alertdialog"`, `aria-modal="true"`, labelled heading; focus moves to the confirm button on mount and is trapped within the gate until confirmation. The feed is unreachable — visually and in the accessibility tree — until confirmed.
+- **WCAG 2.2 AA** across the dark Tidewater surface; the teal accent ({colors.accent}) and text tokens are verified AA against the dark base (see DESIGN.md contrast audit). The old light-mode green pairs do not carry over.
+- **Document semantics**: `<html lang="en">`; page title "gmas list — cannabis deals worth the drive" (sentence case); landmarks `banner` (header) and `main` (feed); the visible lowercase `gmas list` wordmark is the page's only `h1` (Header); dispensary names are `h2` headings so screen-reader users jump card-to-card.
+- **Age gate** (ADR-036): `role="alertdialog"`, `aria-modal="true"`, labelled heading; focus moves into the gate on mount and on return from the out-state, and a real `Tab` focus-trap (`handleKeyDown`, no Escape by design) keeps it there. The feed is unreachable — visually and in the accessibility tree — until confirmed.
 - **Settings sheet**: `role="dialog"`, `aria-modal`, labelled; focus enters on open, Esc closes, focus returns to the gear.
 - **Targets ≥ {spacing.tap-min}** (44px) for every interactive element; the 36px `sm` size never appears as the only way to reach an action.
 - **Visible focus always**: the 2px {colors.focus-ring} ring, offset, on every focusable element — never `outline: none` without the ring replacement.
@@ -138,7 +144,7 @@ Behavioral; contrast and focus-ring visuals live in `DESIGN.md`. Consumer stakes
 | Tablet / desktop | The same single column, centered on the {colors.surface-page} gray page. No layout reflow, no sidebar, no breakpoint variants. |
 | Surrounding desktop space | **Deliberately unspecced** — future consideration (possibly ads; if so, banner/sidebar only, never competing with deal information, per ADR-005). Not a layout today. Note: mainstream ad networks prohibit cannabis-content placement; any future inventory requires a cannabis-compliant network and re-review under WA advertising rules. |
 | Platform | Web only — no native app, no app-store presence (NFR-8). Mobile-first because the primary moment is a phone before getting in the car (NFR-5). |
-| Color scheme | Light-only by decision; dark mode is a stated future consideration. |
+| Color scheme | **Dark-only** — the "Tidewater" identity (ADR-037): dark base ({colors.bg} `#0E1417`), single locked teal accent ({colors.accent} `#4FD1C5`), numbers-as-hero. `<meta name="theme-color" content="#0E1417">`. Light mode is not offered; a light variant would be a future consideration. |
 
 ## Inspiration & Anti-patterns
 
@@ -176,8 +182,8 @@ Failure path: fueleconomy.gov is unreachable → an error appears inside the pan
 
 ### Flow 3 — First contact (Marco, newcomer, new in town, phone — realizes UJ-3 + FR-13)
 
-1. Marco opens the link a coworker sent. A dark full-screen takeover, one sentence: "You must be 21 or older to view this content." One button. Focus is already on it.
-2. He taps "I am 21 or older." The gate never appears for him again.
+1. Marco opens the link a coworker sent. A dark full-screen takeover on the Tidewater base, the `gmas list` wordmark above a card: a "21" tile, "Are you 21 or older?", and two stacked buttons — "Yes — I'm 21+" and "No, take me back" — with "Remember me on this device" checked by default. Focus is already inside the card. (Had he tapped decline, he'd hit the returnable "Come back at 21" screen with a "Go back" button — no dead-end.)
+2. He taps "Yes — I'm 21+." Because "Remember me" is checked, the pass persists and the gate never appears for him again. (Unchecked, it would re-gate next visit — the shared-device default.)
 3. The feed loads on the default 25 miles — zero setup. Five dispensaries he's never heard of, each with distance, discount, and gas cost already computed from the national average.
 4. **Climax:** without knowing a single store name, Marco compares two cards — closer-but-smaller discount vs. farther-but-bigger — purely on the numbers, and picks. The app handed a stranger a working mental map of the local market in one screen.
 
