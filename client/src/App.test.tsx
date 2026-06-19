@@ -66,8 +66,8 @@ describe('App', () => {
     vi.stubGlobal('fetch', routeFetch(emptyPayload))
     render(<App />)
 
-    expect(screen.getByText('I am 21 or older')).toBeInTheDocument()
-    expect(screen.queryByText("Gma's Helper")).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /i'm 21\+/i })).toBeInTheDocument()
+    expect(screen.queryByRole('banner')).not.toBeInTheDocument()
   })
 
   it('renders the header wordmark and feed region once age is confirmed', async () => {
@@ -76,7 +76,7 @@ describe('App', () => {
     render(<App />)
 
     expect(screen.getByRole('banner')).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 1, name: "Gma's Helper" })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: 'gmas list' })).toBeInTheDocument()
     expect(await screen.findByRole('region', { name: 'Deal feed' })).toBeInTheDocument()
     expect(screen.getByText('No active deals right now')).toBeInTheDocument()
   })

@@ -1,10 +1,163 @@
 import { useEffect, useRef, useState } from 'react'
-import type { ReactNode } from 'react'
+import type { KeyboardEvent as ReactKeyboardEvent, ReactNode } from 'react'
 import { useLocalStorage } from '../hooks/useLocalStorage'
-import { Button, Icon } from './ui'
+import { AGE_GATE_WARNINGS } from '../constants/legal'
+import { Button } from './ui'
 
 interface AgeGateProps {
   children: ReactNode
+}
+
+const FOCUSABLE = 'button, input, select, textarea, a[href], [tabindex]:not([tabindex="-1"])'
+
+/**
+ * 21+ age gate (two-option, brief §5a — supersedes ADR-021's no-decline gate;
+ * builds on the compliance decline path from ADR-035 per ADR-036). States:
+ * ask → in / out. Decline is returnable ("Go back") and session-only, never
+ * persisted. "Remember me" persists the pass to localStorage; unchecked confirms
+ * for the session only.
+ */
+export default function AgeGate({ children }: AgeGateProps) {
+  const [ageConfirmed, setAgeConfirmed] = useLocalStorage('gma_age_confirmed', false)
+  const [sessionConfirmed, setSessionConfirmed] = useState(false)
+  const [declined, setDeclined] = useState(false)
+  const [remember, setRemember] = useState(true)
+  const dialogRef = useRef<HTMLDivElement>(null)
+
+  // strict check: a corrupted or hand-edited localStorage value must not open the gate
+  const isIn = ageConfirmed === true || sessionConfirmed
+
+  useEffect(() => {
+    if (isIn) return
+    // move focus into the gate on mount / when returning to the ask state
+    const target = dialogRef.current?.querySelector<HTMLElement>('button, [href]')
+    target?.focus()
+  }, [isIn, declined])
+
+  if (isIn) return <>{children}</>
+
+  const confirm = () => {
+    if (remember) setAgeConfirmed(true)
+    else setSessionConfirmed(true)
+  }
+
+  // Trap Tab within the gate so an `aria-modal` dialog can't leak focus to the
+  // browser chrome. No Escape handler by design — an age gate is not dismissable.
+  const handleKeyDown = (event: ReactKeyboardEvent) => {
+    if (event.key !== 'Tab') return
+    const focusables = dialogRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE)
+    if (!focusables || focusables.length === 0) return
+    const first = focusables[0]
+    const last = focusables[focusables.length - 1]
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault()
+      last.focus()
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault()
+      first.focus()
+    }
+  }
+
+  // ----- "out" state: declined -----
+  if (declined) {
+    return (
+      <div
+        ref={dialogRef}
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="age-gate-out-heading"
+        onKeyDown={handleKeyDown}
+        style={overlayStyle}
+      >
+        <Wordmark />
+        <div style={cardStyle}>
+          <h1 id="age-gate-out-heading" style={headingStyle}>
+            Come back at 21
+          </h1>
+          <p style={contextStyle}>You must be 21 or older to view cannabis deals.</p>
+          <Button variant="secondary" block onClick={() => setDeclined(false)}>
+            Go back
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
+  // ----- "ask" state -----
+  return (
+    <div
+      ref={dialogRef}
+      role="alertdialog"
+      aria-modal="true"
+      aria-labelledby="age-gate-heading"
+      onKeyDown={handleKeyDown}
+      style={overlayStyle}
+    >
+      <Wordmark />
+      <div style={cardStyle}>
+        <span aria-hidden="true" style={tileStyle}>
+          21
+        </span>
+        <h1 id="age-gate-heading" style={headingStyle}>
+          Are you 21 or older?
+        </h1>
+        <p style={contextStyle}>
+          Cannabis deals are for adults 21 and over only.
+        </p>
+        <div style={{ display: 'grid', gap: 'var(--space-2)', width: '100%' }}>
+          <Button variant="primary" block className="gma-btn--lg" onClick={confirm}>
+            Yes — I&apos;m 21+
+          </Button>
+          <Button variant="secondary" block onClick={() => setDeclined(true)}>
+            No, take me back
+          </Button>
+        </div>
+        <label style={rememberStyle}>
+          <input
+            type="checkbox"
+            checked={remember}
+            onChange={(e) => setRemember(e.target.checked)}
+            style={{ accentColor: 'var(--accent)', width: 18, height: 18 }}
+          />
+          Remember me on this device
+        </label>
+      </div>
+      <div style={smallPrintStyle}>
+        {AGE_GATE_WARNINGS.map((w) => (
+          <p key={w}>{w}</p>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function Wordmark() {
+  return (
+    <span
+      style={{
+        display: 'inline-flex',
+        alignItems: 'flex-end',
+        fontFamily: 'var(--font-head)',
+        fontSize: 'var(--text-2xl)',
+        fontWeight: 'var(--weight-medium)',
+        letterSpacing: '-0.01em',
+        color: 'var(--text-strong)',
+      }}
+    >
+      gmas list
+      <span
+        aria-hidden="true"
+        style={{
+          width: '0.21em',
+          height: '0.21em',
+          borderRadius: 'var(--radius-dot)',
+          background: 'var(--accent)',
+          marginLeft: '0.14em',
+          marginBottom: '0.16em',
+        }}
+      />
+    </span>
+  )
 }
 
 const overlayStyle = {
@@ -15,92 +168,71 @@ const overlayStyle = {
   flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'center',
-  gap: 'var(--space-6)',
+  gap: 'var(--space-5)',
   padding: 'var(--space-6)',
   textAlign: 'center',
   background: 'var(--surface-inverse)',
   color: 'var(--text-on-inverse)',
 } as const
 
+const cardStyle = {
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  gap: 'var(--space-4)',
+  width: '100%',
+  maxWidth: 404,
+  padding: 'var(--space-6)',
+  background: 'var(--surface-card)',
+  border: 'var(--border-hairline) solid var(--border-default)',
+  borderRadius: 'var(--radius-2xl)',
+} as const
+
+const tileStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: 56,
+  height: 56,
+  borderRadius: 'var(--radius-lg)',
+  background: 'var(--accent-soft)',
+  color: 'var(--accent)',
+  fontFamily: 'var(--font-head)',
+  fontWeight: 'var(--weight-bold)',
+  fontSize: 'var(--text-2xl)',
+} as const
+
 const headingStyle = {
-  color: 'var(--white)',
-  fontWeight: 'var(--weight-regular)',
-  fontSize: 'var(--text-lg)',
+  color: 'var(--text-strong)',
+  fontFamily: 'var(--font-head)',
+  fontWeight: 'var(--weight-bold)',
+  fontSize: 'var(--text-xl)',
   lineHeight: 'var(--leading-snug)',
-  maxWidth: 320,
   margin: 0,
 } as const
 
-export default function AgeGate({ children }: AgeGateProps) {
-  const [ageConfirmed, setAgeConfirmed] = useLocalStorage('gma_age_confirmed', false)
-  // Decline is deliberately session-only state, NOT persisted: a reload re-shows the
-  // normal gate (we never want to lock someone out permanently from a shared browser).
-  const [declined, setDeclined] = useState(false)
-  const dialogRef = useRef<HTMLDivElement>(null)
+const contextStyle = {
+  color: 'var(--text-muted)',
+  font: 'var(--font-body)',
+  margin: 0,
+} as const
 
-  useEffect(() => {
-    // move focus to the first action (Confirm) on mount; both gate buttons live
-    // inside the dialog so focus stays trapped until the user acts
-    dialogRef.current?.querySelector('button')?.focus()
-  }, [])
+const rememberStyle = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: 'var(--space-2)',
+  font: 'var(--font-caption)',
+  color: 'var(--text-muted)',
+  cursor: 'pointer',
+} as const
 
-  useEffect(() => {
-    // the dead-end screen has no focusable action (it's terminal), so on the decline
-    // transition move focus onto the alertdialog container itself — otherwise focus is
-    // left on the now-unmounted decline button and falls back to <body>, leaving the
-    // takeover unannounced to screen readers (code review 2026-06-18).
-    if (declined) dialogRef.current?.focus()
-  }, [declined])
-
-  // Terminal dead-end for under-21 visitors. No path back into content and the
-  // confirmation flag is never set — re-entry only via a fresh load (re-gate).
-  if (declined) {
-    return (
-      <div
-        ref={dialogRef}
-        role="alertdialog"
-        aria-modal="true"
-        aria-labelledby="age-gate-heading"
-        tabIndex={-1}
-        style={overlayStyle}
-      >
-        <span aria-hidden="true" style={{ color: 'var(--text-muted)' }}>
-          <Icon name="shield-check" size={36} />
-        </span>
-        <h1 id="age-gate-heading" style={headingStyle}>
-          This site is for adults 21 and over.
-        </h1>
-      </div>
-    )
-  }
-
-  // strict check: a corrupted or hand-edited localStorage value must not open the gate
-  if (ageConfirmed !== true) {
-    return (
-      <div
-        ref={dialogRef}
-        role="alertdialog"
-        aria-modal="true"
-        aria-labelledby="age-gate-heading"
-        style={overlayStyle}
-      >
-        <span aria-hidden="true" style={{ color: 'var(--green-300)' }}>
-          <Icon name="shield-check" size={36} />
-        </span>
-        <h1 id="age-gate-heading" style={headingStyle}>
-          You must be 21 or older to view this content.
-        </h1>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-          <Button variant="primary" onClick={() => setAgeConfirmed(true)}>
-            I am 21 or older
-          </Button>
-          <Button variant="ghost" onClick={() => setDeclined(true)}>
-            I am under 21
-          </Button>
-        </div>
-      </div>
-    )
-  }
-
-  return <>{children}</>
-}
+const smallPrintStyle = {
+  display: 'grid',
+  gap: 'var(--space-1)',
+  maxWidth: 404,
+  // legally-mandated warnings: hold the 14px readable floor and a muted (not
+  // faint) color so they clear WCAG AA on the dark card (review patch).
+  font: 'var(--font-caption)',
+  fontSize: 'var(--text-sm)',
+  color: 'var(--text-muted)',
+} as const

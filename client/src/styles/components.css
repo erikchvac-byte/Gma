@@ -1,5 +1,5 @@
 /* ============================================================
-   Gma's Helper — Component styles
+   gmas list — Component styles ("Tidewater")
    Class-based styling for the reusable primitives. Every value
    references a token. Hover / active / focus / disabled states
    live here so the JSX stays declarative.
@@ -14,12 +14,12 @@
   justify-content: center;
   gap: var(--space-2);
   font-family: var(--font-sans);
-  font-weight: var(--weight-semibold);
+  font-weight: var(--weight-bold);
   font-size: var(--text-base);
   line-height: 1;
   white-space: nowrap;
   border: var(--border-hairline) solid transparent;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-btn);
   padding: 0 var(--space-5);
   min-height: var(--control-height);
   cursor: pointer;
@@ -39,9 +39,10 @@
 }
 
 .gma-btn--sm { min-height: var(--control-height-sm); padding: 0 var(--space-4); font-size: var(--text-sm); }
+.gma-btn--lg { min-height: var(--control-height-lg); }
 .gma-btn--block { width: 100%; }
 
-/* primary — the single "go" affordance */
+/* primary — the single teal "go" affordance (fg is always --bg, never white) */
 .gma-btn--primary {
   background: var(--action-primary-bg);
   color: var(--action-primary-fg);
@@ -49,13 +50,13 @@
 .gma-btn--primary:hover { background: var(--action-primary-bg-hover); }
 .gma-btn--primary:active { background: var(--action-primary-bg-active); }
 
-/* secondary — neutral outline */
+/* secondary — transparent, bordered */
 .gma-btn--secondary {
   background: var(--action-secondary-bg);
   color: var(--action-secondary-fg);
   border-color: var(--action-secondary-border);
 }
-.gma-btn--secondary:hover { background: var(--action-secondary-bg-hover); }
+.gma-btn--secondary:hover { background: var(--action-secondary-bg-hover); border-color: var(--border-strong); }
 
 /* ghost — quiet */
 .gma-btn--ghost {
@@ -64,12 +65,12 @@
 }
 .gma-btn--ghost:hover { background: var(--action-ghost-bg-hover); }
 
-/* danger */
+/* danger (reserved — no destructive actions in v1) */
 .gma-btn--danger {
-  background: var(--red-600);
-  color: var(--white);
+  background: var(--danger);
+  color: var(--bg);
 }
-.gma-btn--danger:hover { background: var(--red-700); }
+.gma-btn--danger:hover { filter: brightness(1.08); }
 
 /* ---------------------------------------------------------------
    IconButton — square, for gear / close / chevrons
@@ -81,20 +82,20 @@
   width: var(--control-height);
   height: var(--control-height);
   border: var(--border-hairline) solid transparent;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-input);
   background: transparent;
   color: var(--action-ghost-fg);
   cursor: pointer;
   transition: var(--transition-control);
 }
-.gma-iconbtn:hover { background: var(--action-ghost-bg-hover); }
+.gma-iconbtn:hover { background: var(--action-ghost-bg-hover); color: var(--text-strong); }
 .gma-iconbtn:focus-visible { outline: none; box-shadow: var(--ring); }
 .gma-iconbtn--sm { width: var(--control-height-sm); height: var(--control-height-sm); }
-.gma-iconbtn--outlined { border-color: var(--action-secondary-border); background: var(--white); }
-.gma-iconbtn--outlined:hover { background: var(--gray-50); }
+.gma-iconbtn--outlined { border-color: var(--action-secondary-border); background: var(--surface-raised); }
+.gma-iconbtn--outlined:hover { background: var(--surface-card); }
 
 /* ---------------------------------------------------------------
-   Card — hairline on white. The brand is flat, not shadowed.
+   Card — hairline on a dark surface. Flat, never shadowed.
    --------------------------------------------------------------- */
 .gma-card {
   background: var(--surface-card);
@@ -107,7 +108,7 @@
 /* interactive cards get a quiet lift only on hover */
 .gma-card--interactive { cursor: pointer; transition: var(--transition-control); }
 .gma-card--interactive:hover { border-color: var(--border-strong); box-shadow: var(--shadow-sm); }
-.gma-card--urgent { border-color: var(--amber-200); background: var(--surface-urgent); }
+.gma-card--urgent { border-color: var(--status-urgent); background: var(--surface-urgent); }
 
 /* ---------------------------------------------------------------
    Badge — small status / category pill
@@ -117,7 +118,7 @@
   align-items: center;
   gap: var(--space-1);
   font-family: var(--font-sans);
-  font-weight: var(--weight-semibold);
+  font-weight: var(--weight-bold);
   font-size: var(--text-xs);
   line-height: 1;
   letter-spacing: var(--tracking-wide);
@@ -127,11 +128,11 @@
   border: var(--border-hairline) solid transparent;
   white-space: nowrap;
 }
-.gma-badge--neutral { background: var(--gray-100); color: var(--gray-600); }
-.gma-badge--fresh   { background: var(--green-50); color: var(--green-800); border-color: var(--green-200); }
-.gma-badge--urgent  { background: var(--amber-100); color: var(--amber-700); border-color: var(--amber-200); }
-.gma-badge--stale   { background: var(--gray-100); color: var(--gray-500); }
-.gma-badge--discount{ background: var(--green-700); color: var(--white); }
+.gma-badge--neutral { background: var(--surface-raised); color: var(--text-muted); }
+.gma-badge--fresh   { background: var(--accent-soft); color: var(--accent); }
+.gma-badge--urgent  { background: var(--surface-urgent); color: var(--text-urgent); border-color: var(--status-urgent); }
+.gma-badge--stale   { background: var(--surface-raised); color: var(--text-faint); }
+.gma-badge--discount{ background: var(--accent); color: var(--bg); }
 
 /* solid-dot indicator inside fresh/stale badges */
 .gma-badge__dot { width: 6px; height: 6px; border-radius: var(--radius-full); background: currentColor; }
@@ -140,22 +141,22 @@
    Text field
    --------------------------------------------------------------- */
 .gma-field { display: flex; flex-direction: column; gap: var(--space-1); }
-.gma-field__label { font: var(--font-label); color: var(--text-body); }
+.gma-field__label { font: var(--font-label); color: var(--text-muted); }
 .gma-field__hint  { font: var(--font-caption); color: var(--text-muted); }
 .gma-field__error { font: var(--font-caption); color: var(--text-error); }
 .gma-input {
   font-family: var(--font-sans);
   font-size: var(--text-base);
   color: var(--text-strong);
-  background: var(--white);
+  background: var(--surface-raised);
   border: var(--border-hairline) solid var(--border-field);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-input);
   min-height: var(--control-height);
   padding: 0 var(--space-3);
   transition: var(--transition-control);
   width: 100%;
 }
-.gma-input::placeholder { color: var(--gray-400); }
+.gma-input::placeholder { color: var(--text-faint); }
 .gma-input:focus-visible { outline: none; border-color: var(--border-focus); box-shadow: var(--ring); }
 .gma-input[aria-invalid="true"] { border-color: var(--status-error); }
 .gma-input--mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums slashed-zero; }
@@ -167,9 +168,9 @@
   font-family: var(--font-sans);
   font-size: var(--text-base);
   color: var(--text-strong);
-  background-color: var(--white);
+  background-color: var(--surface-raised);
   border: var(--border-hairline) solid var(--border-field);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-input);
   min-height: var(--control-height);
   padding: 0 var(--space-8) 0 var(--space-3);
   width: 100%;
@@ -177,8 +178,8 @@
   appearance: none;
   /* chevron drawn with a gradient pair (no asset needed) */
   background-image:
-    linear-gradient(45deg, transparent 50%, var(--gray-500) 50%),
-    linear-gradient(135deg, var(--gray-500) 50%, transparent 50%);
+    linear-gradient(45deg, transparent 50%, var(--text-muted) 50%),
+    linear-gradient(135deg, var(--text-muted) 50%, transparent 50%);
   background-position:
     calc(100% - 18px) calc(50% - 2px),
     calc(100% - 13px) calc(50% - 2px);
@@ -187,22 +188,22 @@
   transition: var(--transition-control);
 }
 .gma-select:focus-visible { outline: none; border-color: var(--border-focus); box-shadow: var(--ring); }
-.gma-select:disabled { opacity: 0.5; cursor: not-allowed; background-color: var(--gray-50); }
+.gma-select:disabled { opacity: 0.5; cursor: not-allowed; background-color: var(--surface-card); }
 
 /* ---------------------------------------------------------------
    Range slider — the distance filter
    --------------------------------------------------------------- */
 .gma-range { display: flex; flex-direction: column; gap: var(--space-2); }
 .gma-range__top { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-2); }
-.gma-range__label { font: var(--font-label); color: var(--text-body); }
-.gma-range__value { font-family: var(--font-mono); font-weight: var(--weight-semibold); font-size: var(--text-base); color: var(--text-strong); font-variant-numeric: tabular-nums slashed-zero; }
+.gma-range__label { font: var(--font-label); color: var(--text-muted); }
+.gma-range__value { font-family: var(--font-mono); font-weight: var(--weight-bold); font-size: var(--text-base); color: var(--text-strong); font-variant-numeric: tabular-nums slashed-zero; }
 .gma-range__input {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
   height: 6px;
   border-radius: var(--radius-full);
-  background: var(--gray-200);
+  background: var(--surface-raised);
   cursor: pointer;
   outline-offset: 6px;
 }
@@ -214,27 +215,27 @@
   width: 22px;
   height: 22px;
   border-radius: var(--radius-full);
-  background: var(--action-primary-bg);
-  border: 3px solid var(--white);
+  background: var(--accent);
+  border: 3px solid var(--bg);
   box-shadow: var(--shadow-sm);
   transition: transform var(--duration-fast) var(--ease-standard);
 }
 .gma-range__input::-webkit-slider-thumb:hover { transform: scale(1.08); }
-.gma-range__input:active::-webkit-slider-thumb { background: var(--action-primary-bg-active); }
+.gma-range__input:active::-webkit-slider-thumb { background: var(--accent-active); }
 /* Firefox thumb + track */
 .gma-range__input::-moz-range-thumb {
   width: 22px; height: 22px; border-radius: var(--radius-full);
-  background: var(--action-primary-bg); border: 3px solid var(--white);
+  background: var(--accent); border: 3px solid var(--bg);
   box-shadow: var(--shadow-sm);
 }
-.gma-range__input::-moz-range-track { height: 6px; border-radius: var(--radius-full); background: var(--gray-200); }
+.gma-range__input::-moz-range-track { height: 6px; border-radius: var(--radius-full); background: var(--surface-raised); }
 .gma-range__ticks { display: flex; justify-content: space-between; font: var(--font-caption); color: var(--text-muted); }
 
 /* ---------------------------------------------------------------
    Skeleton — loading placeholder (matches the feed's pulse)
    --------------------------------------------------------------- */
 .gma-skeleton {
-  background: var(--gray-200);
+  background: var(--surface-raised);
   border-radius: var(--radius-lg);
   animation: gma-pulse 1.4s var(--ease-standard) infinite;
 }
@@ -256,6 +257,6 @@
   background: var(--surface-sunken);
 }
 .gma-notice--muted { background: transparent; border-color: transparent; padding: 0; color: var(--text-muted); }
-.gma-notice--error { background: var(--surface-error); border-color: var(--red-200); color: var(--text-error); }
-.gma-notice--urgent { background: var(--surface-urgent); border-color: var(--amber-200); color: var(--text-urgent); }
+.gma-notice--error { background: var(--surface-error); border-color: var(--status-error); color: var(--text-error); }
+.gma-notice--urgent { background: var(--surface-urgent); border-color: var(--status-urgent); color: var(--text-urgent); }
 .gma-notice__icon { flex: none; margin-top: 1px; }

@@ -7,7 +7,7 @@ describe('Header', () => {
     render(<Header onOpenSettings={vi.fn()} />)
 
     expect(screen.getByRole('banner')).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 1, name: "Gma's Helper" })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: 'gmas list' })).toBeInTheDocument()
   })
 
   it('exposes the settings gear with an accessible label', () => {

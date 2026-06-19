@@ -107,7 +107,7 @@ export default function VehicleSelector({ open, onClose, mpg, label, onMpgChange
       <div
         aria-hidden="true"
         onClick={onClose}
-        style={{ position: 'absolute', inset: 0, background: 'rgba(17, 24, 39, 0.45)' }}
+        style={{ position: 'absolute', inset: 0, background: 'var(--scrim)' }}
       />
       <div
         ref={dialogRef}
@@ -132,7 +132,7 @@ export default function VehicleSelector({ open, onClose, mpg, label, onMpgChange
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-            <span aria-hidden="true" style={{ color: 'var(--green-700)' }}>
+            <span aria-hidden="true" style={{ color: 'var(--accent)' }}>
               <Icon name="car" size={20} />
             </span>
             <h2 style={{ fontSize: 'var(--text-lg)', fontWeight: 'var(--weight-semibold)', margin: 0 }}>
