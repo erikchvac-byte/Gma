@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import DealCard from './DealCard'
+import DealTypeFilter from './DealTypeFilter'
 import DistanceFilter, {
   DEFAULT_DISTANCE_MILES,
   MAX_DISTANCE_MILES,
@@ -9,6 +11,7 @@ import { useLocalStorage } from '../hooks/useLocalStorage'
 import { useNow } from '../hooks/useNow'
 import { hasValidTimedWindow, isDealActive, minutesUntilEnd } from '../utils/dealTime'
 import { groupDealsByStore } from '../utils/sortDeals'
+import { filterByType, type DealTypeSelection } from '../utils/dealView'
 import { formatCountdown, formatLastUpdated, formatTimeOfDay } from '../utils/formatTime'
 import { formatGasCost, isPositiveFinite, roundTripGasCost } from '../utils/gasCost'
 import StaleIndicator from './StaleIndicator'
@@ -51,6 +54,9 @@ export default function DealFeed({ mpg = null }: DealFeedProps) {
     'gma_distance_miles',
     DEFAULT_DISTANCE_MILES,
   )
+  // chip filter — in-memory only (mirrors the distance filter), not persisted;
+  // 'all' is the default so the feed opens unfiltered
+  const [dealType, setDealType] = useState<DealTypeSelection>('all')
   // same use-site validation pattern as MPG: stored value counts only as a
   // whole number of miles within the slider's range; anything else falls back
   // to DEFAULT_DISTANCE_MILES (50)
@@ -97,7 +103,10 @@ export default function DealFeed({ mpg = null }: DealFeedProps) {
     ...dispensary,
     deals: dispensary.deals.filter((deal) => isDealActive(deal, now)),
   }))
-  const storeGroups = groupDealsByStore(activeDispensaries, now)
+  // chip filter runs in-memory after expiry, before grouping — a store with no
+  // deals matching the active chip yields no group and drops from the feed
+  const typedDispensaries = filterByType(activeDispensaries, dealType)
+  const storeGroups = groupDealsByStore(typedDispensaries, now)
   const lastUpdated = formatLastUpdated(data.meta.lastScraperRun)
 
   // stored vehicle MPG wins only when it's a finite number > 0; anything else
@@ -112,6 +121,7 @@ export default function DealFeed({ mpg = null }: DealFeedProps) {
   return (
     <section aria-label="Deal feed" style={feedStyle}>
       <DistanceFilter value={maxDistance} onChange={setStoredDistance} />
+      <DealTypeFilter selected={dealType} onSelect={setDealType} />
       {storeGroups.length === 0 ? (
         <Notice variant="muted" role="status" aria-live="polite">
           No active deals right now

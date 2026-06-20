@@ -1,6 +1,6 @@
-import type { CSSProperties } from 'react'
 import type { Deal, Dispensary } from '../types'
 import { Badge, Card, Icon } from './ui'
+import { discountTier, storeUrgencyBadge } from '../utils/dealView'
 
 // One deal plus its upstream-computed display strings. windowText/countdown are
 // computed in DealFeed (null means "render nothing" — e.g. malformed times).
@@ -15,94 +15,80 @@ export interface DealCardProps {
   // all of this store's active deals, already sorted; rendered in one card
   deals: DealView[]
   // pre-formatted '$X.XX' from gasCost.ts; per-store (the trip), shown once.
-  // null → no gas line at all
+  // null → distance-only trip chip
   gasCostText: string | null
 }
 
-const figure: CSSProperties = {
-  fontFamily: 'var(--font-mono)',
-  fontVariantNumeric: 'tabular-nums slashed-zero',
+// title falls back to the deal's kind when ingest suppressed its description
+// (sanitizeDescription can blank non-compliant retailer copy to ''). Daily
+// deals are already labelled by their meta ('Daily deal · …'), so a blank one
+// omits the title rather than doubling the label; happy hours keep the label
+// because their meta is only a time window.
+function dealTitle(deal: Deal): string | null {
+  if (deal.description && deal.description.trim() !== '') return deal.description
+  return deal.type === 'happy_hour' ? 'Happy hour' : null
+}
+
+// metadata line: the happy-hour window, or a daily label + status. null when a
+// happy hour has no parseable window (then only the title renders).
+function dealMeta(deal: Deal, windowText: string | null): string | null {
+  if (deal.type === 'happy_hour') return windowText
+  return `Daily deal · ${windowText ?? 'Active today'}`
 }
 
 // Purely presentational: receives data and computed values as props.
 // No fetching, no intervals, no hooks.
 export default function DealCard({ dispensary, deals, gasCostText }: DealCardProps) {
-  // accent border when the store has any happy hour among its deals
-  const hasHappyHour = deals.some(({ deal }) => deal.type === 'happy_hour')
+  // one store-level urgency badge — reports time, never a verdict (ADR-009).
+  // The card's accent border is driven from the same signal so border and
+  // badge can never disagree (urgent only when a live countdown exists).
+  const urgency = storeUrgencyBadge(deals)
+  const tripText = gasCostText === null
+    ? `${dispensary.distanceMiles.toFixed(1)} mi`
+    : `${dispensary.distanceMiles.toFixed(1)} mi · ${gasCostText}`
+
   return (
-    <Card as="article" urgent={hasHappyHour} style={{ display: 'grid', gap: 'var(--space-2)' }}>
-      <div style={{ display: 'grid', gap: 'var(--space-1)' }}>
-        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 'var(--space-2)' }}>
+    <Card as="article" urgent={urgency.variant === 'urgent'} style={{ display: 'grid', gap: 'var(--space-3)' }}>
+      <div style={{ display: 'grid', gap: 'var(--space-2)' }}>
+        <div className="gma-dealcard__head">
           <h2 style={{ fontSize: 'var(--text-base)', fontWeight: 'var(--weight-semibold)' }}>{dispensary.name}</h2>
-          <span style={{ ...figure, fontSize: 'var(--text-sm)', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
-            {dispensary.distanceMiles.toFixed(1)} miles
-          </span>
+          {/* trip cost (distance + gas) is a property of the drive to the store,
+              so it renders once per card in the header (ADR-038) */}
+          <span className="gma-trip-chip">{tripText}</span>
         </div>
-        {/* gas cost is a property of the trip to the store, so it lives in the
-            header and renders once per card (null → omit entirely) */}
-        {gasCostText !== null && (
-          <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}>
-            <span style={figure}>{gasCostText}</span> to get there
-          </p>
-        )}
+        <div>
+          {urgency.variant === 'urgent' ? (
+            <Badge variant="urgent"><Icon name="clock" size={12} /> {urgency.text}</Badge>
+          ) : (
+            <Badge variant="neutral">{urgency.text}</Badge>
+          )}
+        </div>
       </div>
       {/* deals are plain divs, not list items: the feed keeps one listitem per
           STORE (the card), so nesting <li> here would inflate that count */}
-      <div style={{ display: 'grid', gap: 'var(--space-3)' }}>
-        {deals.map(({ deal, windowText, countdown }, i) => {
-          const isHappyHour = deal.type === 'happy_hour'
+      <div className="gma-deal-grid">
+        {deals.map(({ deal, windowText }, i) => {
+          const tier = discountTier(deal.discountPct)
+          const title = dealTitle(deal)
+          const meta = dealMeta(deal, windowText)
           return (
             // index keeps the key unique even when sanitize blanks two
             // same-window/same-type deals' descriptions to ''
             <div
               key={`${deal.type}|${deal.description}|${deal.startTime ?? ''}|${deal.endTime ?? ''}|${i}`}
-              style={{ display: 'grid', gap: 'var(--space-1)' }}
+              className="gma-deal-block"
             >
-              <div>
-                {isHappyHour ? (
-                  <Badge variant="urgent"><Icon name="clock" size={12} /> Happy hour</Badge>
-                ) : (
-                  <Badge variant="neutral">Daily deal</Badge>
+              {/* discount magnitude encoded with the teal accent (ADR-037);
+                  null discount → no figure at all */}
+              {tier !== null && (
+                <span className={`gma-deal-block__pct gma-deal-block__pct--${tier}`}>{`${deal.discountPct}%`}</span>
+              )}
+              <div className="gma-deal-block__body">
+                {title !== null && <span className="gma-deal-block__title">{title}</span>}
+                {meta !== null && meta !== '' && (
+                  <span className="gma-deal-block__meta">{meta}</span>
                 )}
               </div>
-              {/* description may be '' when ingest suppressed non-compliant
-                  retailer copy (see server sanitizeDescription) — render nothing
-                  rather than an empty <p>. Trim-guard also covers whitespace-only
-                  / undefined copy from any path that bypasses the sanitizer. */}
-              {deal.description && deal.description.trim() !== '' && (
-                <p style={{ color: 'var(--text-body)' }}>{deal.description}</p>
-              )}
-              {/* discount stays per-deal (gas moved to the store header). Render
-                  only when present. */}
-              {deal.discountPct !== null && (
-                <p style={{ fontWeight: 'var(--weight-medium)' }}>
-                  <span style={{ color: 'var(--accent)', fontWeight: 'var(--weight-semibold)' }}>
-                    {deal.discountPct}% off
-                  </span>
-                </p>
-              )}
-              {(windowText !== null || countdown !== null) && (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--space-2)' }}>
-                  {windowText !== null && (
-                    <span style={{ ...figure, fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}>{windowText}</span>
-                  )}
-                  {countdown !== null && (
-                    <span
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: 6,
-                        fontSize: 'var(--text-sm)',
-                        fontWeight: 'var(--weight-semibold)',
-                        color: 'var(--text-urgent)',
-                      }}
-                    >
-                      <Icon name="clock" size={14} />
-                      <span style={figure}>{countdown}</span> left
-                    </span>
-                  )}
-                </div>
-              )}
             </div>
           )
         })}

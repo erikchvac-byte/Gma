@@ -133,24 +133,24 @@ describe('DealFeed', () => {
     expect(within(items[0]).getByText('Bravo Buds')).toBeInTheDocument()
     expect(within(items[1]).getByText('Alpha Greens')).toBeInTheDocument()
 
-    // Bravo card: header shows distance + a single gas line (5 mi × 2 × 4.1/28 = $1.46);
-    // all three of its deals are grouped inside, in sort order
-    expect(within(items[0]).getByText('5.0 miles')).toBeInTheDocument()
-    expect(within(items[0]).getByText(hasText('$1.46 to get there'))).toBeInTheDocument()
-    expect(within(items[0]).getAllByText(/to get there/)).toHaveLength(1)
-    expect(within(items[0]).getByText('30% off')).toBeInTheDocument()
+    // Bravo card: header shows a single trip chip (distance + gas, 5 mi × 2 ×
+    // 4.1/28 = $1.46); all three of its deals are grouped inside, in sort order
+    expect(within(items[0]).getByText(hasText('5.0 mi · $1.46'))).toBeInTheDocument()
+    expect(within(items[0]).getAllByText(/\$1\.46/)).toHaveLength(1)
+    expect(within(items[0]).getByText('30%')).toBeInTheDocument()
     expect(within(items[0]).getByText('8:00 PM – 11:30 PM')).toBeInTheDocument()
-    expect(within(items[0]).getByText(hasText('0:30 left'))).toBeInTheDocument()
+    // store-level urgency badge = soonest live countdown (HH ending 23:30)
+    expect(within(items[0]).getByText(hasText('ends in 0:30'), { selector: '.gma-badge' })).toBeInTheDocument()
     expect(within(items[0]).getByText('all-day HH')).toBeInTheDocument()
-    expect(within(items[0]).getByText('35% off')).toBeInTheDocument()
+    expect(within(items[0]).getByText('35%')).toBeInTheDocument()
     const bravoText = items[0].textContent ?? ''
     expect(bravoText.indexOf('soonest HH')).toBeLessThan(bravoText.indexOf('all-day HH'))
     expect(bravoText.indexOf('all-day HH')).toBeLessThan(bravoText.indexOf('daily thirty-five'))
 
     // Alpha card: overnight HH active at 23:00 (countdown 3:00), then daily twenty
     expect(within(items[1]).getByText('10:00 PM – 2:00 AM')).toBeInTheDocument()
-    expect(within(items[1]).getByText(hasText('3:00 left'))).toBeInTheDocument()
-    expect(within(items[1]).getByText('20% off')).toBeInTheDocument()
+    expect(within(items[1]).getByText(hasText('ends in 3:00'), { selector: '.gma-badge' })).toBeInTheDocument()
+    expect(within(items[1]).getByText('20%')).toBeInTheDocument()
 
     expect(screen.getByText('Last updated Jun 10, 7:45 AM')).toBeInTheDocument()
     expect(screen.queryByText('Charlie Cannabis')).not.toBeInTheDocument()
@@ -167,9 +167,9 @@ describe('DealFeed', () => {
     mockUseDeals.mockReturnValue({ data: withData([near, far]), isLoading: false, error: null })
     render(<DealFeed />)
 
-    // gas now lives in each store's header, separate from the per-deal discount
-    expect(screen.getByText(hasText('$3.63 to get there'))).toBeInTheDocument()
-    expect(screen.getByText(hasText('$1.46 to get there'))).toBeInTheDocument()
+    // gas now lives in each store's header trip chip, beside its own distance
+    expect(screen.getByText(hasText('12.4 mi · $3.63'))).toBeInTheDocument()
+    expect(screen.getByText(hasText('5.0 mi · $1.46'))).toBeInTheDocument()
   })
 
   it('uses the national average for gas cost when no vehicle mpg is provided', () => {
@@ -183,7 +183,7 @@ describe('DealFeed', () => {
     render(<DealFeed />)
 
     // 5 mi × 2 × 4.1/28 = $1.46
-    expect(screen.getByText(hasText('$1.46 to get there'))).toBeInTheDocument()
+    expect(screen.getByText(hasText('5.0 mi · $1.46'))).toBeInTheDocument()
   })
 
   it('uses the provided vehicle mpg for gas cost', () => {
@@ -197,7 +197,7 @@ describe('DealFeed', () => {
     render(<DealFeed mpg={20} />)
 
     // 5 mi × 2 × 4.1/20 = $2.05
-    expect(screen.getByText(hasText('$2.05 to get there'))).toBeInTheDocument()
+    expect(screen.getByText(hasText('5.0 mi · $2.05'))).toBeInTheDocument()
   })
 
   it('drops deals that ended earlier today (startTime-aware expiry)', () => {
@@ -296,8 +296,8 @@ describe('DealFeed', () => {
 
     const item = screen.getByRole('listitem')
     expect(within(item).getByText('malformed HH')).toBeInTheDocument()
-    expect(within(item).getByText('10% off')).toBeInTheDocument()
-    expect(within(item).getByText(hasText('$1.46 to get there'))).toBeInTheDocument()
+    expect(within(item).getByText('10%')).toBeInTheDocument()
+    expect(within(item).getByText(hasText('5.0 mi · $1.46'))).toBeInTheDocument()
     expect(within(item).queryByText(/left/)).not.toBeInTheDocument()
     expect(within(item).queryByText(/AM|PM|close|Active today/)).not.toBeInTheDocument()
     expect(item.textContent).not.toContain('NaN')
@@ -315,14 +315,14 @@ describe('DealFeed', () => {
     })
     render(<DealFeed />)
 
-    expect(screen.getByText(hasText('0:30 left'))).toBeInTheDocument()
+    expect(screen.getByText(hasText('ends in 0:30'), { selector: '.gma-badge' })).toBeInTheDocument()
 
     act(() => {
       vi.advanceTimersByTime(60000)
     })
 
-    expect(screen.getByText(hasText('0:29 left'))).toBeInTheDocument()
-    expect(screen.queryByText(hasText('0:30 left'))).not.toBeInTheDocument()
+    expect(screen.getByText(hasText('ends in 0:29'), { selector: '.gma-badge' })).toBeInTheDocument()
+    expect(screen.queryByText(hasText('ends in 0:30'), { selector: '.gma-badge' })).not.toBeInTheDocument()
   })
 
   it('removes an expired deal on tick and shows the empty state with the timestamp', () => {
@@ -361,8 +361,87 @@ describe('DealFeed', () => {
     render(<DealFeed />)
 
     const item = screen.getByRole('listitem')
-    expect(within(item).getByText('35% off', { selector: 'span' })).toBeInTheDocument()
+    expect(within(item).getByText('35%', { selector: 'span' })).toBeInTheDocument()
     expect(item.textContent).not.toContain('to get there')
+  })
+
+  describe('deal-type chip filter', () => {
+    // fixed clock is 23:00, so a 20:00–23:30 happy hour is live (countdown 0:30)
+    const mixed = () =>
+      withData([
+        makeDispensary('hh', 'HH Only', [
+          makeDeal({ type: 'happy_hour', description: 'hh only deal', startTime: '20:00', endTime: '23:30' }),
+        ]),
+        makeDispensary('daily', 'Daily Only', [makeDeal({ type: 'daily', description: 'daily only deal' })]),
+        makeDispensary('both', 'Both Kinds', [
+          makeDeal({ type: 'happy_hour', description: 'both hh deal', startTime: '20:00', endTime: '23:30' }),
+          makeDeal({ type: 'daily', description: 'both daily deal' }),
+        ]),
+      ])
+
+    it('defaults to "All deals" and shows every store', () => {
+      mockUseDeals.mockReturnValue({ data: mixed(), isLoading: false, error: null })
+      render(<DealFeed />)
+
+      expect(screen.getByRole('button', { name: 'All deals' })).toHaveAttribute('aria-pressed', 'true')
+      expect(screen.getAllByRole('listitem')).toHaveLength(3)
+    })
+
+    it('filters to happy hours, dropping daily-only stores, with no network request', () => {
+      const fetchSpy = vi.spyOn(window, 'fetch')
+      mockUseDeals.mockReturnValue({ data: mixed(), isLoading: false, error: null })
+      render(<DealFeed />)
+
+      fireEvent.click(screen.getByRole('button', { name: 'Happy hours' }))
+
+      expect(screen.getAllByRole('listitem')).toHaveLength(2)
+      expect(screen.getByText('HH Only')).toBeInTheDocument()
+      expect(screen.getByText('Both Kinds')).toBeInTheDocument()
+      expect(screen.queryByText('Daily Only')).not.toBeInTheDocument()
+      // the mixed store hides its daily deal under the happy-hours chip
+      expect(screen.queryByText('both daily deal')).not.toBeInTheDocument()
+      expect(fetchSpy).not.toHaveBeenCalled()
+    })
+
+    it('filters to daily deals, dropping happy-hour-only stores', () => {
+      mockUseDeals.mockReturnValue({ data: mixed(), isLoading: false, error: null })
+      render(<DealFeed />)
+
+      fireEvent.click(screen.getByRole('button', { name: 'Daily deals' }))
+
+      expect(screen.getAllByRole('listitem')).toHaveLength(2)
+      expect(screen.getByText('Daily Only')).toBeInTheDocument()
+      expect(screen.getByText('Both Kinds')).toBeInTheDocument()
+      expect(screen.queryByText('HH Only')).not.toBeInTheDocument()
+    })
+
+    it('restores all stores when switching back to "All deals"', () => {
+      mockUseDeals.mockReturnValue({ data: mixed(), isLoading: false, error: null })
+      render(<DealFeed />)
+
+      fireEvent.click(screen.getByRole('button', { name: 'Happy hours' }))
+      expect(screen.getAllByRole('listitem')).toHaveLength(2)
+      fireEvent.click(screen.getByRole('button', { name: 'All deals' }))
+      expect(screen.getAllByRole('listitem')).toHaveLength(3)
+    })
+
+    it('shows the empty state but keeps chips usable when a filter empties the feed', () => {
+      mockUseDeals.mockReturnValue({
+        data: withData([
+          makeDispensary('daily', 'Daily Only', [makeDeal({ type: 'daily', description: 'daily only deal' })]),
+        ]),
+        isLoading: false,
+        error: null,
+      })
+      render(<DealFeed />)
+
+      fireEvent.click(screen.getByRole('button', { name: 'Happy hours' }))
+      expect(screen.getByText('No active deals right now')).toBeInTheDocument()
+      expect(screen.queryByRole('listitem')).not.toBeInTheDocument()
+
+      fireEvent.click(screen.getByRole('button', { name: 'All deals' }))
+      expect(screen.getByText('Daily Only')).toBeInTheDocument()
+    })
   })
 
   describe('distance filter', () => {
