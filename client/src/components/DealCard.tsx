@@ -88,8 +88,8 @@ export default function DealCard({ dispensary, deals, gasCostText }: DealCardPro
               key={`${deal.type}|${deal.description}|${deal.startTime ?? ''}|${deal.endTime ?? ''}|${i}`}
               className="gma-deal-block"
             >
-              {/* discount magnitude in the cyan value accent (ADR-037/040);
-                  null discount → no figure and no "off" at all */}
+              {/* discount magnitude in the cyan value accent (ADR-040: full
+                  opacity, weight-only ramp); null discount → no figure / no "off" */}
               {tier !== null && (
                 <>
                   <span className={`gma-deal-block__pct gma-deal-block__pct--${tier}`}>{`${deal.discountPct}%`}</span>
