@@ -31,3 +31,24 @@ export function sortDeals(dispensaries: Dispensary[], now: Date): DealRow[] {
     return tierA !== tierB ? tierA - tierB : valueA - valueB
   })
 }
+
+export interface StoreGroup {
+  dispensary: Dispensary
+  deals: Deal[]
+}
+
+// One card per store: run the same global deal sort, then group rows by
+// dispensary. A Map preserves first-appearance order, so stores end up ordered
+// by their best (highest-priority) deal while each store's deals stay in
+// sortDeals order. Reuses sortDeals wholesale — no duplicated tier logic.
+// Assumes dispensary.id is unique per store (the data contract): two distinct
+// stores sharing an id would merge into one card under the first one's name.
+export function groupDealsByStore(dispensaries: Dispensary[], now: Date): StoreGroup[] {
+  const groups = new Map<string, StoreGroup>()
+  for (const { dispensary, deal } of sortDeals(dispensaries, now)) {
+    const group = groups.get(dispensary.id)
+    if (group) group.deals.push(deal)
+    else groups.set(dispensary.id, { dispensary, deals: [deal] })
+  }
+  return [...groups.values()]
+}

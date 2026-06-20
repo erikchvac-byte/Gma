@@ -1,6 +1,6 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
-import DealCard from './DealCard'
+import DealCard, { type DealView } from './DealCard'
 import type { Deal, Dispensary } from '../types'
 
 const makeDeal = (overrides: Partial<Deal>): Deal => ({
@@ -11,6 +11,12 @@ const makeDeal = (overrides: Partial<Deal>): Deal => ({
   endTime: '23:30',
   daysValid: ['everyday'],
   ...overrides,
+})
+
+const view = (deal: Partial<Deal>, windowText: string | null, countdown: string | null): DealView => ({
+  deal: makeDeal(deal),
+  windowText,
+  countdown,
 })
 
 const makeDispensary = (overrides: Partial<Dispensary>): Dispensary => ({
@@ -24,9 +30,9 @@ const makeDispensary = (overrides: Partial<Dispensary>): Dispensary => ({
   ...overrides,
 })
 
-// Figures (gas, countdown) and the discount now render in their own styled
-// <span>s, so a line's text spans multiple nodes. getByText sees only an
-// element's direct text nodes, so match on full (nested) textContent instead.
+// figures (gas, countdown) render in their own styled <span>s, so a line's text
+// spans multiple nodes. getByText sees only an element's direct text nodes, so
+// match on full (nested) textContent instead.
 const byFullText = (text: string) =>
   screen.getByText(
     (_content: string, node: Element | null) =>
@@ -34,62 +40,81 @@ const byFullText = (text: string) =>
   )
 
 describe('DealCard', () => {
-  it('renders a timed happy hour with window, countdown, and the side-by-side Discount Display', () => {
+  it('renders the store header once: name, distance, and a single gas line', () => {
     render(
       <DealCard
         dispensary={makeDispensary({})}
-        deal={makeDeal({})}
-        windowText="9:00 PM – 11:30 PM"
-        countdown="0:30"
+        deals={[
+          view({ description: 'Happy hour special' }, '9:00 PM – 11:30 PM', '0:30'),
+          view({ type: 'daily', description: 'Daily special', discountPct: 35, startTime: null, endTime: null }, 'Active today', null),
+        ]}
         gasCostText="$3.63"
       />,
     )
 
     expect(screen.getByText('Alpha Greens')).toBeInTheDocument()
     expect(screen.getByText('12.4 miles')).toBeInTheDocument()
-    expect(screen.getByText('Happy hour special')).toBeInTheDocument()
-    expect(byFullText('25% off — $3.63 to get there')).toBeInTheDocument()
-    expect(screen.getByText('9:00 PM – 11:30 PM')).toBeInTheDocument()
-    expect(byFullText('0:30 left')).toBeInTheDocument()
+    // gas is per-store: rendered exactly once even with two deals
+    expect(byFullText('$3.63 to get there')).toBeInTheDocument()
+    expect(screen.getAllByText(/to get there/)).toHaveLength(1)
   })
 
-  it('shows an urgent "Happy hour" badge for happy-hour deals', () => {
+  it('lists every deal of the store inside one card', () => {
     render(
       <DealCard
         dispensary={makeDispensary({})}
-        deal={makeDeal({})}
-        windowText="9:00 PM – 11:30 PM"
-        countdown="0:30"
+        deals={[
+          view({ description: 'Happy hour special' }, '9:00 PM – 11:30 PM', '0:30'),
+          view({ type: 'daily', description: 'Daily special', discountPct: 35, startTime: null, endTime: null }, 'Active today', null),
+        ]}
         gasCostText="$3.63"
       />,
     )
 
-    expect(screen.getByText('Happy hour')).toBeInTheDocument()
-    expect(screen.queryByText('Daily deal')).not.toBeInTheDocument()
+    const card = screen.getByRole('article')
+    expect(within(card).getByText('Happy hour special')).toBeInTheDocument()
+    expect(within(card).getByText('Daily special')).toBeInTheDocument()
+    // per-deal badges
+    expect(within(card).getByText('Happy hour')).toBeInTheDocument()
+    expect(within(card).getByText('Daily deal')).toBeInTheDocument()
+    // per-deal discount (gas no longer joins it)
+    expect(within(card).getByText('25% off')).toBeInTheDocument()
+    expect(within(card).getByText('35% off')).toBeInTheDocument()
+    // per-deal window + countdown
+    expect(within(card).getByText('9:00 PM – 11:30 PM')).toBeInTheDocument()
+    expect(byFullText('0:30 left')).toBeInTheDocument()
+    expect(within(card).getByText('Active today')).toBeInTheDocument()
   })
 
-  it('shows a neutral "Daily deal" badge for daily deals', () => {
-    render(
+  it('marks the card urgent when any deal is a happy hour, neutral when none are', () => {
+    const { rerender } = render(
       <DealCard
         dispensary={makeDispensary({})}
-        deal={makeDeal({ type: 'daily', startTime: null, endTime: null })}
-        windowText="Active today"
-        countdown={null}
+        deals={[view({ type: 'daily', description: 'Daily special', startTime: null, endTime: null }, 'Active today', null)]}
         gasCostText="$1.80"
       />,
     )
-
     expect(screen.getByText('Daily deal')).toBeInTheDocument()
     expect(screen.queryByText('Happy hour')).not.toBeInTheDocument()
+
+    rerender(
+      <DealCard
+        dispensary={makeDispensary({})}
+        deals={[
+          view({ type: 'daily', description: 'Daily special', startTime: null, endTime: null }, 'Active today', null),
+          view({ description: 'Happy hour special' }, '9:00 PM – 11:30 PM', '0:30'),
+        ]}
+        gasCostText="$1.80"
+      />,
+    )
+    expect(screen.getByText('Happy hour')).toBeInTheDocument()
   })
 
   it('renders an until-close happy hour without a countdown', () => {
     render(
       <DealCard
         dispensary={makeDispensary({})}
-        deal={makeDeal({ endTime: null })}
-        windowText="9:00 PM – close"
-        countdown={null}
+        deals={[view({ endTime: null }, '9:00 PM – close', null)]}
         gasCostText="$1.80"
       />,
     )
@@ -98,61 +123,26 @@ describe('DealCard', () => {
     expect(screen.queryByText(/left/)).not.toBeInTheDocument()
   })
 
-  it('renders an all-day happy hour as "Active today" without a countdown', () => {
-    render(
-      <DealCard
-        dispensary={makeDispensary({})}
-        deal={makeDeal({ startTime: null, endTime: null })}
-        windowText="Active today"
-        countdown={null}
-        gasCostText="$1.80"
-      />,
-    )
-
-    expect(screen.getByText('Active today')).toBeInTheDocument()
-    expect(screen.queryByText(/left/)).not.toBeInTheDocument()
-  })
-
-  it('renders a daily deal as "Active today" with the side-by-side Discount Display', () => {
-    render(
-      <DealCard
-        dispensary={makeDispensary({})}
-        deal={makeDeal({ type: 'daily', description: 'Daily special', discountPct: 35, startTime: null, endTime: null })}
-        windowText="Active today"
-        countdown={null}
-        gasCostText="$1.80"
-      />,
-    )
-
-    expect(screen.getByText('Daily special')).toBeInTheDocument()
-    expect(byFullText('35% off — $1.80 to get there')).toBeInTheDocument()
-    expect(screen.getByText('Active today')).toBeInTheDocument()
-    expect(screen.queryByText(/left/)).not.toBeInTheDocument()
-  })
-
-  it('renders the discount alone when gasCostText is null', () => {
+  it('omits the gas line entirely when gasCostText is null', () => {
     const { container } = render(
       <DealCard
         dispensary={makeDispensary({})}
-        deal={makeDeal({ type: 'daily', discountPct: 35, startTime: null, endTime: null })}
-        windowText="Active today"
-        countdown={null}
+        deals={[view({ type: 'daily', discountPct: 35, startTime: null, endTime: null }, 'Active today', null)]}
         gasCostText={null}
       />,
     )
 
-    expect(screen.getByText('35% off', { selector: 'span' })).toBeInTheDocument()
+    expect(screen.getByText('35% off')).toBeInTheDocument()
     expect(container.textContent).not.toContain('to get there')
+    // guard against re-introducing the old "discount — gas" joined line
     expect(container.textContent).not.toContain('—')
   })
 
-  it('renders gas cost alone (no "null% off") when discountPct is null', () => {
+  it('renders gas in the header (no "null% off") when a deal has no discount', () => {
     const { container } = render(
       <DealCard
         dispensary={makeDispensary({})}
-        deal={makeDeal({ type: 'daily', description: 'Mystery deal', discountPct: null, startTime: null, endTime: null })}
-        windowText="Active today"
-        countdown={null}
+        deals={[view({ type: 'daily', description: 'Mystery deal', discountPct: null, startTime: null, endTime: null }, 'Active today', null)]}
         gasCostText="$1.80"
       />,
     )
@@ -163,30 +153,11 @@ describe('DealCard', () => {
     expect(container.textContent).not.toContain('% off')
   })
 
-  it('omits the discount line entirely when both discountPct and gasCostText are null', () => {
-    const { container } = render(
-      <DealCard
-        dispensary={makeDispensary({})}
-        deal={makeDeal({ type: 'daily', description: 'Mystery deal', discountPct: null, startTime: null, endTime: null })}
-        windowText="Active today"
-        countdown={null}
-        gasCostText={null}
-      />,
-    )
-
-    expect(screen.getByText('Mystery deal')).toBeInTheDocument()
-    expect(container.textContent).not.toContain('null')
-    expect(container.textContent).not.toContain('% off')
-    expect(container.textContent).not.toContain('to get there')
-  })
-
   it('formats whole-number distances with one decimal', () => {
     render(
       <DealCard
         dispensary={makeDispensary({ distanceMiles: 12 })}
-        deal={makeDeal({})}
-        windowText="9:00 PM – 11:30 PM"
-        countdown="0:30"
+        deals={[view({}, '9:00 PM – 11:30 PM', '0:30')]}
         gasCostText="$1.80"
       />,
     )
@@ -194,35 +165,33 @@ describe('DealCard', () => {
     expect(screen.getByText('12.0 miles')).toBeInTheDocument()
   })
 
-  it('renders no description paragraph when the description was suppressed ("")', () => {
-    const { container } = render(
+  it('renders no description paragraph when a deal description was suppressed ("")', () => {
+    render(
       <DealCard
         dispensary={makeDispensary({})}
-        deal={makeDeal({ description: '', discountPct: 30 })}
-        windowText="Active today"
-        countdown={null}
+        deals={[view({ description: '', discountPct: 30 }, '9:00 PM – 11:30 PM', '0:30')]}
         gasCostText="$1.80"
       />,
     )
 
-    // deal still renders with badge + discount + window, just no empty <p>
-    expect(byFullText('30% off — $1.80 to get there')).toBeInTheDocument()
-    expect(container.querySelectorAll('p').length).toBe(1) // only the discount line
+    // deal still renders badge + discount + window, just no empty description <p>
+    expect(screen.getByText('30% off')).toBeInTheDocument()
+    expect(screen.getByText('Happy hour')).toBeInTheDocument()
+    expect(screen.queryByText('Happy hour special')).not.toBeInTheDocument()
   })
 
-  it('renders malformed-time deals without window, countdown, or NaN text', () => {
+  it('renders a malformed-time deal without window, countdown, or NaN text', () => {
     const { container } = render(
       <DealCard
         dispensary={makeDispensary({})}
-        deal={makeDeal({ startTime: '14:00', endTime: '4pm' })}
-        windowText={null}
-        countdown={null}
+        deals={[view({ startTime: '14:00', endTime: '4pm' }, null, null)]}
         gasCostText="$3.63"
       />,
     )
 
     expect(screen.getByText('Alpha Greens')).toBeInTheDocument()
-    expect(byFullText('25% off — $3.63 to get there')).toBeInTheDocument()
+    expect(screen.getByText('25% off')).toBeInTheDocument()
+    expect(byFullText('$3.63 to get there')).toBeInTheDocument()
     expect(screen.queryByText(/left/)).not.toBeInTheDocument()
     expect(screen.queryByText(/AM|PM|close|Active today/)).not.toBeInTheDocument()
     expect(container.textContent).not.toContain('NaN')

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { sortDeals } from './sortDeals'
+import { sortDeals, groupDealsByStore } from './sortDeals'
 import type { Deal, Dispensary } from '../types'
 
 const makeDeal = (overrides: Partial<Deal>): Deal => ({
@@ -124,5 +124,52 @@ describe('sortDeals', () => {
       ['b', 'from b'],
       ['a', 'from a'],
     ])
+  })
+})
+
+describe('groupDealsByStore', () => {
+  it('collapses a store with multiple deals into a single group, deals in sort order', () => {
+    const dispensaries = [
+      makeDispensary('a', [
+        makeDeal({ type: 'daily', description: 'daily 20', discountPct: 20 }),
+        makeDeal({ type: 'happy_hour', description: 'timed HH', startTime: '20:00', endTime: '23:30' }),
+        makeDeal({ type: 'daily', description: 'daily 40', discountPct: 40 }),
+      ]),
+    ]
+
+    const groups = groupDealsByStore(dispensaries, at2300)
+    expect(groups).toHaveLength(1)
+    expect(groups[0].dispensary.id).toBe('a')
+    // within a store: timed HH (tier 0), then dailies by discount desc
+    expect(groups[0].deals.map((d) => d.description)).toEqual(['timed HH', 'daily 40', 'daily 20'])
+  })
+
+  it('orders stores by their best deal while keeping each store grouped', () => {
+    const dispensaries = [
+      makeDispensary('a', [
+        makeDeal({ type: 'daily', description: 'a daily 15', discountPct: 15 }),
+        makeDeal({ type: 'happy_hour', description: 'a HH ends 23:45', startTime: '20:00', endTime: '23:45' }),
+      ]),
+      makeDispensary('b', [
+        makeDeal({ type: 'happy_hour', description: 'b HH ends 23:30', startTime: '20:00', endTime: '23:30' }),
+        makeDeal({ type: 'daily', description: 'b daily 50', discountPct: 50 }),
+      ]),
+    ]
+
+    const groups = groupDealsByStore(dispensaries, at2300)
+    // b's best deal (HH ending 23:30) outranks a's (HH ending 23:45) → b first
+    expect(groups.map((g) => g.dispensary.id)).toEqual(['b', 'a'])
+    expect(groups[0].deals.map((d) => d.description)).toEqual(['b HH ends 23:30', 'b daily 50'])
+    expect(groups[1].deals.map((d) => d.description)).toEqual(['a HH ends 23:45', 'a daily 15'])
+  })
+
+  it('omits stores left with no active deals and returns [] when all are dealless', () => {
+    expect(groupDealsByStore([makeDispensary('a', []), makeDispensary('b', [])], at2300)).toEqual([])
+
+    const groups = groupDealsByStore(
+      [makeDispensary('empty', []), makeDispensary('full', [makeDeal({ description: 'only deal' })])],
+      at2300,
+    )
+    expect(groups.map((g) => g.dispensary.id)).toEqual(['full'])
   })
 })

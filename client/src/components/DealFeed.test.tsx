@@ -107,7 +107,7 @@ describe('DealFeed', () => {
     expect(screen.queryByText(/Last updated/)).not.toBeInTheDocument()
   })
 
-  it('renders one card per active deal in spec sort order with the timestamp', () => {
+  it('renders one card per store, deals grouped inside, stores in best-deal order', () => {
     mockUseDeals.mockReturnValue({
       data: withData([
         makeDispensary('a', 'Alpha Greens', [
@@ -126,30 +126,31 @@ describe('DealFeed', () => {
     })
     render(<DealFeed />)
 
+    // one listitem per STORE (Charlie is dealless → omitted); Bravo's soonest HH
+    // (ends 23:30) beats Alpha's overnight HH (ends 02:00) → Bravo first
     const items = screen.getAllByRole('listitem')
-    expect(items).toHaveLength(5)
-    const order = ['soonest HH', 'overnight HH', 'all-day HH', 'daily thirty-five', 'daily twenty']
-    order.forEach((description, index) => {
-      expect(within(items[index]).getByText(description)).toBeInTheDocument()
-    })
-
-    // timed HH card: name, distance, side-by-side Discount Display
-    // (5 mi × 2 × 4.1/28 = $1.46), 12-hour window, countdown
+    expect(items).toHaveLength(2)
     expect(within(items[0]).getByText('Bravo Buds')).toBeInTheDocument()
+    expect(within(items[1]).getByText('Alpha Greens')).toBeInTheDocument()
+
+    // Bravo card: header shows distance + a single gas line (5 mi × 2 × 4.1/28 = $1.46);
+    // all three of its deals are grouped inside, in sort order
     expect(within(items[0]).getByText('5.0 miles')).toBeInTheDocument()
-    expect(within(items[0]).getByText(hasText('30% off — $1.46 to get there'))).toBeInTheDocument()
+    expect(within(items[0]).getByText(hasText('$1.46 to get there'))).toBeInTheDocument()
+    expect(within(items[0]).getAllByText(/to get there/)).toHaveLength(1)
+    expect(within(items[0]).getByText('30% off')).toBeInTheDocument()
     expect(within(items[0]).getByText('8:00 PM – 11:30 PM')).toBeInTheDocument()
     expect(within(items[0]).getByText(hasText('0:30 left'))).toBeInTheDocument()
+    expect(within(items[0]).getByText('all-day HH')).toBeInTheDocument()
+    expect(within(items[0]).getByText('35% off')).toBeInTheDocument()
+    const bravoText = items[0].textContent ?? ''
+    expect(bravoText.indexOf('soonest HH')).toBeLessThan(bravoText.indexOf('all-day HH'))
+    expect(bravoText.indexOf('all-day HH')).toBeLessThan(bravoText.indexOf('daily thirty-five'))
 
-    // overnight HH at 23:00: active, countdown 3:00
+    // Alpha card: overnight HH active at 23:00 (countdown 3:00), then daily twenty
     expect(within(items[1]).getByText('10:00 PM – 2:00 AM')).toBeInTheDocument()
     expect(within(items[1]).getByText(hasText('3:00 left'))).toBeInTheDocument()
-
-    // all-day HH and daily deals: "Active today", no countdown
-    expect(within(items[2]).getByText('Active today')).toBeInTheDocument()
-    expect(within(items[2]).queryByText(/left/)).not.toBeInTheDocument()
-    expect(within(items[3]).getByText('Active today')).toBeInTheDocument()
-    expect(within(items[3]).queryByText(/left/)).not.toBeInTheDocument()
+    expect(within(items[1]).getByText('20% off')).toBeInTheDocument()
 
     expect(screen.getByText('Last updated Jun 10, 7:45 AM')).toBeInTheDocument()
     expect(screen.queryByText('Charlie Cannabis')).not.toBeInTheDocument()
@@ -166,8 +167,9 @@ describe('DealFeed', () => {
     mockUseDeals.mockReturnValue({ data: withData([near, far]), isLoading: false, error: null })
     render(<DealFeed />)
 
-    expect(screen.getByText(hasText('30% off — $3.63 to get there'))).toBeInTheDocument()
-    expect(screen.getByText(hasText('20% off — $1.46 to get there'))).toBeInTheDocument()
+    // gas now lives in each store's header, separate from the per-deal discount
+    expect(screen.getByText(hasText('$3.63 to get there'))).toBeInTheDocument()
+    expect(screen.getByText(hasText('$1.46 to get there'))).toBeInTheDocument()
   })
 
   it('uses the national average for gas cost when no vehicle mpg is provided', () => {
@@ -181,7 +183,7 @@ describe('DealFeed', () => {
     render(<DealFeed />)
 
     // 5 mi × 2 × 4.1/28 = $1.46
-    expect(screen.getByText(hasText('10% off — $1.46 to get there'))).toBeInTheDocument()
+    expect(screen.getByText(hasText('$1.46 to get there'))).toBeInTheDocument()
   })
 
   it('uses the provided vehicle mpg for gas cost', () => {
@@ -195,7 +197,7 @@ describe('DealFeed', () => {
     render(<DealFeed mpg={20} />)
 
     // 5 mi × 2 × 4.1/20 = $2.05
-    expect(screen.getByText(hasText('30% off — $2.05 to get there'))).toBeInTheDocument()
+    expect(screen.getByText(hasText('$2.05 to get there'))).toBeInTheDocument()
   })
 
   it('drops deals that ended earlier today (startTime-aware expiry)', () => {
@@ -259,7 +261,7 @@ describe('DealFeed', () => {
     expect(screen.getByText('end-only HH')).toBeInTheDocument()
   })
 
-  it('keeps malformed-start deals out of the urgent tier and shows no countdown', () => {
+  it('orders a malformed-start deal after the valid timed one within the store card', () => {
     mockUseDeals.mockReturnValue({
       data: withData([
         makeDispensary('a', 'Alpha Greens', [
@@ -272,11 +274,12 @@ describe('DealFeed', () => {
     })
     render(<DealFeed />)
 
-    const items = screen.getAllByRole('listitem')
-    // valid timed deal outranks the degenerate one (tier 0 vs tier 1)
-    expect(within(items[0]).getByText('valid timed HH')).toBeInTheDocument()
-    expect(within(items[1]).getByText('bad start HH')).toBeInTheDocument()
-    expect(within(items[1]).queryByText(/left/)).not.toBeInTheDocument()
+    // one store → one card; valid timed deal outranks the degenerate one (tier 0 vs 1)
+    const item = screen.getByRole('listitem')
+    const text = item.textContent ?? ''
+    expect(text.indexOf('valid timed HH')).toBeLessThan(text.indexOf('bad start HH'))
+    expect(within(item).getByText('valid timed HH')).toBeInTheDocument()
+    expect(within(item).getByText('bad start HH')).toBeInTheDocument()
   })
 
   it('renders malformed-time deals without window, countdown, or NaN text', () => {
@@ -293,7 +296,8 @@ describe('DealFeed', () => {
 
     const item = screen.getByRole('listitem')
     expect(within(item).getByText('malformed HH')).toBeInTheDocument()
-    expect(within(item).getByText(hasText('10% off — $1.46 to get there'))).toBeInTheDocument()
+    expect(within(item).getByText('10% off')).toBeInTheDocument()
+    expect(within(item).getByText(hasText('$1.46 to get there'))).toBeInTheDocument()
     expect(within(item).queryByText(/left/)).not.toBeInTheDocument()
     expect(within(item).queryByText(/AM|PM|close|Active today/)).not.toBeInTheDocument()
     expect(item.textContent).not.toContain('NaN')
@@ -376,13 +380,13 @@ describe('DealFeed', () => {
         atDistance('d', 'Far', 12.5),
       ])
 
-    it('defaults to 25 miles and shows all dispensaries', () => {
+    it('defaults to 50 miles and shows all dispensaries', () => {
       mockUseDeals.mockReturnValue({ data: fourDispensaries(), isLoading: false, error: null })
       render(<DealFeed />)
 
       const slider = screen.getByRole('slider', { name: 'Within' })
-      expect(slider).toHaveValue('25')
-      expect(slider).toHaveAttribute('aria-valuetext', '25 miles')
+      expect(slider).toHaveValue('50')
+      expect(slider).toHaveAttribute('aria-valuetext', '50 miles')
       expect(screen.getAllByRole('listitem')).toHaveLength(4)
     })
 
@@ -441,17 +445,18 @@ describe('DealFeed', () => {
     })
 
     it.each(['abc', '0', '-5', '75', 'null', '"30"', '12.5'])(
-      'falls back to 25 when gma_distance_miles holds %s',
+      'falls back to 50 when gma_distance_miles holds %s',
       (stored) => {
         localStorage.setItem('gma_distance_miles', stored)
+        // "Out of range" sits beyond the 50-mi default so the fallback still excludes it
         mockUseDeals.mockReturnValue({
-          data: withData([atDistance('d', 'Far', 12.5), atDistance('x', 'Out of range', 35)]),
+          data: withData([atDistance('d', 'Far', 12.5), atDistance('x', 'Out of range', 55)]),
           isLoading: false,
           error: null,
         })
         render(<DealFeed />)
 
-        expect(screen.getByRole('slider', { name: 'Within' })).toHaveValue('25')
+        expect(screen.getByRole('slider', { name: 'Within' })).toHaveValue('50')
         expect(screen.getByText('Far deal')).toBeInTheDocument()
         expect(screen.queryByText('Out of range deal')).not.toBeInTheDocument()
       },
