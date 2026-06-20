@@ -396,8 +396,10 @@
   border-radius: var(--radius-lg);
   padding: var(--space-2) var(--space-3);
 }
-/* discount magnitude in the cyan value accent (spec: 22px); tiers keep the
-   ADR-037 weight + opacity ramp — magnitude is never re-encoded as a second hue */
+/* discount magnitude in the cyan value accent (spec: 22px). Every tier renders
+   at full opacity — the Synthwave mockup wants uniformly bright cyan figures
+   (ADR-040 drops ADR-037's opacity ramp); a subtle weight step is the only
+   remaining magnitude cue, so magnitude is still never a second hue. */
 .gma-deal-block__pct {
   flex: none;
   font-family: var(--font-mono);
@@ -406,9 +408,9 @@
   color: var(--accent);
   font-variant-numeric: tabular-nums slashed-zero;
 }
-.gma-deal-block__pct--high { font-weight: var(--weight-semibold); opacity: 1; }
-.gma-deal-block__pct--mid  { font-weight: var(--weight-medium); opacity: 0.85; }
-.gma-deal-block__pct--low  { font-weight: var(--weight-medium); opacity: 0.7; }
+.gma-deal-block__pct--high { font-weight: var(--weight-semibold); }
+.gma-deal-block__pct--mid  { font-weight: var(--weight-medium); }
+.gma-deal-block__pct--low  { font-weight: var(--weight-medium); }
 /* "off" — quiet companion to the discount figure (spec: 13px, muted) */
 .gma-deal-block__off {
   flex: none;
