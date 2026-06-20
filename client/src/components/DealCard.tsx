@@ -1,5 +1,5 @@
 import type { Deal, Dispensary } from '../types'
-import { Badge, Card, Icon } from './ui'
+import { Card, Icon } from './ui'
 import { discountTier, storeUrgencyBadge } from '../utils/dealView'
 
 // One deal plus its upstream-computed display strings. windowText/countdown are
@@ -43,24 +43,34 @@ export default function DealCard({ dispensary, deals, gasCostText }: DealCardPro
   // The card's accent border is driven from the same signal so border and
   // badge can never disagree (urgent only when a live countdown exists).
   const urgency = storeUrgencyBadge(deals)
-  const tripText = gasCostText === null
-    ? `${dispensary.distanceMiles.toFixed(1)} mi`
-    : `${dispensary.distanceMiles.toFixed(1)} mi · ${gasCostText}`
+  // Synthwave splits the trip into two figures (ADR-040): a cyan distance pill
+  // ("how far") in the header and a cyan gas line ("what it costs") below it.
+  // Both still describe the one drive to the store (ADR-038).
+  const distanceText = `${dispensary.distanceMiles.toFixed(1)} mi`
 
   return (
     <Card as="article" urgent={urgency.variant === 'urgent'} style={{ display: 'grid', gap: 'var(--space-3)' }}>
       <div style={{ display: 'grid', gap: 'var(--space-2)' }}>
         <div className="gma-dealcard__head">
-          <h2 style={{ fontSize: 'var(--text-base)', fontWeight: 'var(--weight-semibold)' }}>{dispensary.name}</h2>
-          {/* trip cost (distance + gas) is a property of the drive to the store,
-              so it renders once per card in the header (ADR-038) */}
-          <span className="gma-trip-chip">{tripText}</span>
+          <h2 className="gma-dealcard__name">{dispensary.name}</h2>
+          <span className="gma-distance-pill">{distanceText}</span>
         </div>
-        <div>
+        {/* gas line — omitted entirely when round-trip cost can't be computed */}
+        {gasCostText !== null && (
+          <span className="gma-gas-line"><Icon name="fuel" size={13} /> {gasCostText}</span>
+        )}
+        {/* status: live happy hour → pink pulse badge + countdown; else neutral */}
+        <div className="gma-dealcard__status">
           {urgency.variant === 'urgent' ? (
-            <Badge variant="urgent"><Icon name="clock" size={12} /> {urgency.text}</Badge>
+            <>
+              <span className="gma-happy-badge">
+                <span className="gma-pulse-dot" aria-hidden="true" />
+                Happy hour
+              </span>
+              <span className="gma-countdown">{urgency.text}</span>
+            </>
           ) : (
-            <Badge variant="neutral">{urgency.text}</Badge>
+            <span className="gma-daily-badge">{urgency.text}</span>
           )}
         </div>
       </div>
@@ -78,10 +88,13 @@ export default function DealCard({ dispensary, deals, gasCostText }: DealCardPro
               key={`${deal.type}|${deal.description}|${deal.startTime ?? ''}|${deal.endTime ?? ''}|${i}`}
               className="gma-deal-block"
             >
-              {/* discount magnitude encoded with the teal accent (ADR-037);
-                  null discount → no figure at all */}
+              {/* discount magnitude in the cyan value accent (ADR-037/040);
+                  null discount → no figure and no "off" at all */}
               {tier !== null && (
-                <span className={`gma-deal-block__pct gma-deal-block__pct--${tier}`}>{`${deal.discountPct}%`}</span>
+                <>
+                  <span className={`gma-deal-block__pct gma-deal-block__pct--${tier}`}>{`${deal.discountPct}%`}</span>
+                  <span className="gma-deal-block__off">off</span>
+                </>
               )}
               <div className="gma-deal-block__body">
                 {title !== null && <span className="gma-deal-block__title">{title}</span>}

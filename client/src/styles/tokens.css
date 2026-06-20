@@ -1,10 +1,12 @@
 /* ==========================================================================
-   gmas list — Token Layer  ("Tidewater" direction)
+   gmas list — Token Layer  ("Synthwave" direction)
    Source: planning-artifacts/ux-designs/ux-Happy-2026-06-11/DESIGN.md
            (distilled from imports/GMAS_LIST_BRIEF.md — canonical).
    Dark is the default and primary mode. Token NAMES are preserved from the
-   prior (light/green) system so the component layer is a pure value swap;
-   values are Tidewater. Fonts load from Google Fonts via index.html.
+   prior (Tidewater/teal) system so the component layer stays a value swap;
+   values are Synthwave (ADR-040). Two accents now carry meaning: cyan is the
+   "go"/value accent (discount, distance, primary actions); pink (mapped onto
+   the --warning/urgency role) carries happy-hour urgency. Fonts unchanged.
    ========================================================================== */
 
 /* ==========================================================================
@@ -13,38 +15,45 @@
 
 :root {
   /* -------------------------------------------------------------------------
-     Tidewater palette (brief §2). Dark base, single teal accent.
+     Synthwave palette (ADR-040). Deep indigo base, twin neon accents
+     (cyan = value/go, pink = urgency). Depth from surfaces + neon hairlines.
      ------------------------------------------------------------------------- */
 
-  /* Surfaces (stepped by lightness — depth comes from these + borders) */
-  --bg:             #0E1417; /* app background */
-  --surface:        #161F23; /* cards, rows */
-  --surface-raised: #1F2A30; /* chips, inputs, tiles */
-  --tw-border:      #2C3A41; /* subtle hairlines, dividers, secondary-button resting border */
-  --tw-border-strong: #3C4D55; /* crisper card & field edges + hover-brightened border */
+  /* Surfaces (stepped — indigo→violet) */
+  --bg:             #0a0a1f; /* app background */
+  --surface:        #15122e; /* cards, rows */
+  --surface-raised: #1d1840; /* chips, inputs, tiles, deal sub-blocks */
+  --tw-border:      #2a2350; /* divider line, subtle hairlines, secondary-button resting border */
+  --tw-border-strong: #3a3270; /* crisper field edges + hover-brightened border */
+
+  /* Card edge is a neon cyan hairline at low alpha (Synthwave signature) */
+  --card-border:    rgba(45, 226, 230, 0.2);
 
   /* Text */
-  --tw-text:        #E8EFF2; /* primary */
-  --tw-text-muted:  #9DB0B8; /* secondary / labels */
-  --tw-text-faint:  #5E6E76; /* metadata, struck prices, captions */
+  --tw-text:        #efeaff; /* primary */
+  --tw-text-muted:  #9b94c8; /* secondary / labels */
+  --tw-text-faint:  #6b6499; /* metadata, struck prices, captions */
 
-  /* Accent (single locked brand color) */
-  --accent:         #4FD1C5;
-  --accent-hover:   #6FE0D6;
-  --accent-active:  #18A294;
-  --accent-soft:    #14302E; /* low-emphasis teal fill */
-  --accent-on-light:#18A294;
+  /* Accent — cyan (value/go: discount, distance, primary actions) */
+  --accent:         #2de2e6;
+  --accent-hover:   #5cebee;
+  --accent-active:  #1bbfc3;
+  --accent-soft:    rgba(45, 226, 230, 0.12); /* low-emphasis cyan fill (distance pill) */
+  --accent-soft-border: rgba(45, 226, 230, 0.4); /* cyan pill border */
+  --accent-on-light:#1bbfc3;
 
-  /* Semantic (meaning only) */
-  --success:        #5BD6A0;
-  --warning:        #E8C36A;
-  --danger:         #E87E6E;
+  /* Semantic (meaning only) — pink now carries urgency (happy hour) */
+  --success:        #2de2e6; /* fresh reads cyan in Synthwave */
+  --warning:        #ff2e88; /* pink urgency accent */
+  --warning-soft:   rgba(255, 46, 136, 0.13); /* happy-hour badge fill */
+  --warning-soft-border: rgba(255, 46, 136, 0.36); /* happy-hour badge border */
+  --danger:         #ff5470;
 
-  /* Derived dark tints for warning/error surfaces */
-  --surface-urgent-dark: #221C0E;
-  --surface-error-dark:  #241413;
+  /* Derived translucent tints for warning/error surfaces */
+  --surface-urgent-dark: rgba(255, 46, 136, 0.13);
+  --surface-error-dark:  rgba(255, 84, 112, 0.13);
 
-  --scrim: rgba(6, 10, 12, 0.62); /* flat sheet scrim — no blur */
+  --scrim: rgba(4, 4, 14, 0.66); /* flat sheet scrim — no blur */
 
   /* -------------------------------------------------------------------------
      Semantic aliases — preserved names, Tidewater values.
@@ -89,8 +98,16 @@
   /* Borders */
   --border-default:   var(--tw-border);
   --border-strong:    var(--tw-border-strong);
+  --border-card:      var(--card-border);   /* neon cyan card hairline */
   --border-field:     var(--tw-border-strong);
   --border-focus:     var(--accent);
+
+  /* Card-element fills (Synthwave neon pills/badges) */
+  --fill-distance:    var(--accent-soft);          /* cyan distance pill */
+  --fill-distance-border: var(--accent-soft-border);
+  --fill-happy:       var(--warning-soft);         /* pink happy-hour badge */
+  --fill-happy-border: var(--warning-soft-border);
+  --fill-daily:       rgba(255, 255, 255, 0.05);   /* neutral daily badge */
 
   /* Status accents */
   --status-fresh:     var(--success);
@@ -226,18 +243,18 @@
    ========================================================================== */
 
 @theme {
-  /* --- Accent / surfaces (utilities, if used) --- */
-  --color-accent:        #4FD1C5;
-  --color-accent-hover:  #6FE0D6;
-  --color-bg:            #0E1417;
-  --color-surface:       #161F23;
-  --color-surface-raised:#1F2A30;
-  --color-ink:           #E8EFF2;
-  --color-ink-muted:     #9DB0B8;
-  --color-ink-faint:     #5E6E76;
-  --color-success:       #5BD6A0;
-  --color-warning:       #E8C36A;
-  --color-danger:        #E87E6E;
+  /* --- Accent / surfaces (utilities, if used) — Synthwave (ADR-040) --- */
+  --color-accent:        #2de2e6;
+  --color-accent-hover:  #5cebee;
+  --color-bg:            #0a0a1f;
+  --color-surface:       #15122e;
+  --color-surface-raised:#1d1840;
+  --color-ink:           #efeaff;
+  --color-ink-muted:     #9b94c8;
+  --color-ink-faint:     #6b6499;
+  --color-success:       #2de2e6;
+  --color-warning:       #ff2e88;
+  --color-danger:        #ff5470;
 
   /* --- Font families --- */
   --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;

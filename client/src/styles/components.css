@@ -99,9 +99,9 @@
    --------------------------------------------------------------- */
 .gma-card {
   background: var(--surface-card);
-  /* card edge uses the crisper --border-strong: --surface sits only ~1.1:1 off
-     --bg on dark, so the hairline carries the card boundary (contrast audit polish) */
-  border: var(--border-hairline) solid var(--border-strong);
+  /* Synthwave: the card boundary is a low-alpha neon cyan hairline (--surface
+     sits close to --bg on dark, so the glow-tinted edge carries the boundary) */
+  border: var(--border-hairline) solid var(--border-card);
   border-radius: var(--radius-lg);
   padding: var(--pad-card);
 }
@@ -132,7 +132,7 @@
 }
 .gma-badge--neutral { background: var(--surface-raised); color: var(--text-muted); }
 .gma-badge--fresh   { background: var(--accent-soft); color: var(--accent); }
-.gma-badge--urgent  { background: var(--surface-urgent); color: var(--text-urgent); border-color: var(--status-urgent); }
+.gma-badge--urgent  { background: var(--fill-happy); color: var(--text-urgent); border-color: var(--fill-happy-border); }
 .gma-badge--stale   { background: var(--surface-raised); color: var(--text-faint); }
 .gma-badge--discount{ background: var(--accent); color: var(--bg); }
 
@@ -270,7 +270,11 @@
 }
 
 /* ---------------------------------------------------------------
-   Deal card — trip-cost chip, urgency badge, deal sub-blocks
+   Deal card — Synthwave (ADR-040). Header: store name + cyan distance
+   pill + cyan gas line; status row: pink happy-hour badge w/ pulse dot
+   + pink countdown, or a neutral daily badge; teal→cyan deal sub-blocks.
+   Card-specific px sizes come straight from the Synthwave spec and live
+   here (not on the global type scale) on purpose.
    --------------------------------------------------------------- */
 .gma-dealcard__head {
   display: flex;
@@ -278,20 +282,101 @@
   justify-content: space-between;
   gap: var(--space-2);
 }
-/* the trip (distance + gas) is one honest "worth the drive" signal, shown
-   once per store in the header (ADR-038) */
-.gma-trip-chip {
+/* store name — the card's identity line (spec: 26px) */
+.gma-dealcard__name {
+  font-family: var(--font-head);
+  font-size: 26px;
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-tight);
+  color: var(--text-strong);
+  min-width: 0;
+}
+/* distance: a neon cyan pill — the "how far" half of the trip (ADR-038
+   split into two figures for Synthwave; spec: 12px, cyan fill .12 / border .4) */
+.gma-distance-pill {
   flex: none;
   display: inline-flex;
   align-items: center;
   font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  color: var(--text-muted);
-  background: var(--surface-sunken);
+  font-size: 12px;
+  color: var(--accent);
+  background: var(--fill-distance);
+  border: var(--border-hairline) solid var(--fill-distance-border);
   border-radius: var(--radius-full);
   padding: var(--space-1) var(--space-3);
   white-space: nowrap;
   font-variant-numeric: tabular-nums slashed-zero;
+}
+/* gas: the "what it costs to get there" half — cyan figure line (spec: 12.5px) */
+.gma-gas-line {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+
+/* status row — urgency lives here (ADR-009: reports time, never a verdict) */
+.gma-dealcard__status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+/* happy-hour badge — pink, the urgency signal (spec: fill .13 / border .36,
+   10.5px uppercase label) */
+.gma-happy-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: 10.5px;
+  line-height: 1;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--warning);
+  background: var(--fill-happy);
+  border: var(--border-hairline) solid var(--fill-happy-border);
+  border-radius: var(--radius-full);
+  padding: 4px var(--space-2);
+  white-space: nowrap;
+}
+/* pulse dot — pink, the "live right now" tell */
+.gma-pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--warning);
+  animation: gma-pulse-dot 1.4s var(--ease-standard) infinite;
+}
+@keyframes gma-pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.78); }
+}
+@media (prefers-reduced-motion: reduce) { .gma-pulse-dot { animation: none; } }
+/* countdown — pink figure, the live time-left (spec: 11.5px) */
+.gma-countdown {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: var(--weight-medium);
+  color: var(--warning);
+  font-variant-numeric: tabular-nums slashed-zero;
+  white-space: nowrap;
+}
+/* daily badge — neutral, no urgency (spec: white .05 fill, muted, 10.5px) */
+.gma-daily-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: 10.5px;
+  line-height: 1;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: var(--fill-daily);
+  border-radius: var(--radius-full);
+  padding: 4px var(--space-2);
+  white-space: nowrap;
 }
 
 /* deals as a flex-wrap grid of sub-blocks (plain divs — one listitem per
@@ -311,12 +396,12 @@
   border-radius: var(--radius-lg);
   padding: var(--space-2) var(--space-3);
 }
-/* discount magnitude encoded with the single teal accent (ADR-037) via
-   weight + opacity — never a second hue. AA-large (24px) holds at every tier. */
+/* discount magnitude in the cyan value accent (spec: 22px); tiers keep the
+   ADR-037 weight + opacity ramp — magnitude is never re-encoded as a second hue */
 .gma-deal-block__pct {
   flex: none;
   font-family: var(--font-mono);
-  font-size: var(--text-2xl);
+  font-size: 22px;
   line-height: 1;
   color: var(--accent);
   font-variant-numeric: tabular-nums slashed-zero;
@@ -324,6 +409,13 @@
 .gma-deal-block__pct--high { font-weight: var(--weight-semibold); opacity: 1; }
 .gma-deal-block__pct--mid  { font-weight: var(--weight-medium); opacity: 0.85; }
 .gma-deal-block__pct--low  { font-weight: var(--weight-medium); opacity: 0.7; }
+/* "off" — quiet companion to the discount figure (spec: 13px, muted) */
+.gma-deal-block__off {
+  flex: none;
+  margin-left: calc(-1 * var(--space-2));
+  font-size: 13px;
+  color: var(--text-muted);
+}
 .gma-deal-block__body {
   display: flex;
   flex-direction: column;
@@ -335,8 +427,9 @@
   font-weight: var(--weight-medium);
   color: var(--text-body);
 }
+/* time window / daily label (spec: 12px) */
 .gma-deal-block__meta {
-  font-size: var(--text-xs);
+  font-size: 12px;
   color: var(--text-muted);
 }
 

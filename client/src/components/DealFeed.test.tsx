@@ -134,14 +134,15 @@ describe('DealFeed', () => {
     expect(within(items[0]).getByText('Bravo Buds')).toBeInTheDocument()
     expect(within(items[1]).getByText('Alpha Greens')).toBeInTheDocument()
 
-    // Bravo card: header shows a single trip chip (distance + gas, 5 mi × 2 ×
+    // Bravo card header: cyan distance pill + cyan gas line (5 mi × 2 ×
     // 4.1/28 = $1.46); all three of its deals are grouped inside, in sort order
-    expect(within(items[0]).getByText(hasText('5.0 mi · $1.46'))).toBeInTheDocument()
+    expect(within(items[0]).getByText(hasText('5.0 mi'), { selector: '.gma-distance-pill' })).toBeInTheDocument()
+    expect(within(items[0]).getByText(hasText('$1.46'), { selector: '.gma-gas-line' })).toBeInTheDocument()
     expect(within(items[0]).getAllByText(/\$1\.46/)).toHaveLength(1)
     expect(within(items[0]).getByText('30%')).toBeInTheDocument()
     expect(within(items[0]).getByText('8:00 PM – 11:30 PM')).toBeInTheDocument()
-    // store-level urgency badge = soonest live countdown (HH ending 23:30)
-    expect(within(items[0]).getByText(hasText('ends in 0:30'), { selector: '.gma-badge' })).toBeInTheDocument()
+    // store-level urgency = soonest live countdown (HH ending 23:30), shown pink
+    expect(within(items[0]).getByText(hasText('ends in 0:30'), { selector: '.gma-countdown' })).toBeInTheDocument()
     expect(within(items[0]).getByText('all-day HH')).toBeInTheDocument()
     expect(within(items[0]).getByText('35%')).toBeInTheDocument()
     const bravoText = items[0].textContent ?? ''
@@ -150,7 +151,7 @@ describe('DealFeed', () => {
 
     // Alpha card: overnight HH active at 23:00 (countdown 3:00), then daily twenty
     expect(within(items[1]).getByText('10:00 PM – 2:00 AM')).toBeInTheDocument()
-    expect(within(items[1]).getByText(hasText('ends in 3:00'), { selector: '.gma-badge' })).toBeInTheDocument()
+    expect(within(items[1]).getByText(hasText('ends in 3:00'), { selector: '.gma-countdown' })).toBeInTheDocument()
     expect(within(items[1]).getByText('20%')).toBeInTheDocument()
 
     expect(screen.getByText('Last updated Jun 10, 7:45 AM')).toBeInTheDocument()
@@ -186,9 +187,11 @@ describe('DealFeed', () => {
     mockUseDeals.mockReturnValue({ data: withData([near, far]), isLoading: false, error: null })
     render(<DealFeed />)
 
-    // gas now lives in each store's header trip chip, beside its own distance
-    expect(screen.getByText(hasText('12.4 mi · $3.63'))).toBeInTheDocument()
-    expect(screen.getByText(hasText('5.0 mi · $1.46'))).toBeInTheDocument()
+    // each store's header carries its own distance pill + gas line
+    expect(screen.getByText(hasText('12.4 mi'), { selector: '.gma-distance-pill' })).toBeInTheDocument()
+    expect(screen.getByText(hasText('$3.63'), { selector: '.gma-gas-line' })).toBeInTheDocument()
+    expect(screen.getByText(hasText('5.0 mi'), { selector: '.gma-distance-pill' })).toBeInTheDocument()
+    expect(screen.getByText(hasText('$1.46'), { selector: '.gma-gas-line' })).toBeInTheDocument()
   })
 
   it('uses the national average for gas cost when no vehicle mpg is provided', () => {
@@ -202,7 +205,7 @@ describe('DealFeed', () => {
     render(<DealFeed />)
 
     // 5 mi × 2 × 4.1/28 = $1.46
-    expect(screen.getByText(hasText('5.0 mi · $1.46'))).toBeInTheDocument()
+    expect(screen.getByText(hasText('$1.46'), { selector: '.gma-gas-line' })).toBeInTheDocument()
   })
 
   it('uses the provided vehicle mpg for gas cost', () => {
@@ -216,7 +219,7 @@ describe('DealFeed', () => {
     render(<DealFeed mpg={20} />)
 
     // 5 mi × 2 × 4.1/20 = $2.05
-    expect(screen.getByText(hasText('5.0 mi · $2.05'))).toBeInTheDocument()
+    expect(screen.getByText(hasText('$2.05'), { selector: '.gma-gas-line' })).toBeInTheDocument()
   })
 
   it('drops deals that ended earlier today (startTime-aware expiry)', () => {
@@ -316,7 +319,8 @@ describe('DealFeed', () => {
     const item = screen.getByRole('listitem')
     expect(within(item).getByText('malformed HH')).toBeInTheDocument()
     expect(within(item).getByText('10%')).toBeInTheDocument()
-    expect(within(item).getByText(hasText('5.0 mi · $1.46'))).toBeInTheDocument()
+    expect(within(item).getByText(hasText('5.0 mi'), { selector: '.gma-distance-pill' })).toBeInTheDocument()
+    expect(within(item).getByText(hasText('$1.46'), { selector: '.gma-gas-line' })).toBeInTheDocument()
     expect(within(item).queryByText(/left/)).not.toBeInTheDocument()
     expect(within(item).queryByText(/AM|PM|close|Active today/)).not.toBeInTheDocument()
     expect(item.textContent).not.toContain('NaN')
@@ -334,14 +338,14 @@ describe('DealFeed', () => {
     })
     render(<DealFeed />)
 
-    expect(screen.getByText(hasText('ends in 0:30'), { selector: '.gma-badge' })).toBeInTheDocument()
+    expect(screen.getByText(hasText('ends in 0:30'), { selector: '.gma-countdown' })).toBeInTheDocument()
 
     act(() => {
       vi.advanceTimersByTime(60000)
     })
 
-    expect(screen.getByText(hasText('ends in 0:29'), { selector: '.gma-badge' })).toBeInTheDocument()
-    expect(screen.queryByText(hasText('ends in 0:30'), { selector: '.gma-badge' })).not.toBeInTheDocument()
+    expect(screen.getByText(hasText('ends in 0:29'), { selector: '.gma-countdown' })).toBeInTheDocument()
+    expect(screen.queryByText(hasText('ends in 0:30'), { selector: '.gma-countdown' })).not.toBeInTheDocument()
   })
 
   it('removes an expired deal on tick and shows the empty state with the timestamp', () => {
