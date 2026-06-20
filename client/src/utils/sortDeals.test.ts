@@ -12,11 +12,11 @@ const makeDeal = (overrides: Partial<Deal>): Deal => ({
   ...overrides,
 })
 
-const makeDispensary = (id: string, deals: Deal[]): Dispensary => ({
+const makeDispensary = (id: string, deals: Deal[], distanceMiles = 5): Dispensary => ({
   id,
   name: `Dispensary ${id}`,
   url: `https://example.com/${id}`,
-  distanceMiles: 5,
+  distanceMiles,
   stale: false,
   lastFetchedAt: '2026-06-10T07:00:00Z',
   deals,
@@ -144,8 +144,26 @@ describe('groupDealsByStore', () => {
     expect(groups[0].deals.map((d) => d.description)).toEqual(['timed HH', 'daily 40', 'daily 20'])
   })
 
-  it('orders stores by their best deal while keeping each store grouped', () => {
+  it('orders stores by distance ascending even when a farther store has the better deal', () => {
     const dispensaries = [
+      // far store with the highest-priority deal (soonest HH)
+      makeDispensary('far', [
+        makeDeal({ type: 'happy_hour', description: 'far HH ends 23:30', startTime: '20:00', endTime: '23:30' }),
+      ], 12),
+      // near store with a weaker daily deal
+      makeDispensary('near', [
+        makeDeal({ type: 'daily', description: 'near daily 15', discountPct: 15 }),
+      ], 5),
+    ]
+
+    const groups = groupDealsByStore(dispensaries, at2300)
+    // closest store wins the card order regardless of deal priority
+    expect(groups.map((g) => g.dispensary.id)).toEqual(['near', 'far'])
+  })
+
+  it('keeps best-deal order as the tie-break when stores are equidistant', () => {
+    const dispensaries = [
+      // both default to distanceMiles 5 → tie → best-deal order decides
       makeDispensary('a', [
         makeDeal({ type: 'daily', description: 'a daily 15', discountPct: 15 }),
         makeDeal({ type: 'happy_hour', description: 'a HH ends 23:45', startTime: '20:00', endTime: '23:45' }),

@@ -107,7 +107,7 @@ describe('DealFeed', () => {
     expect(screen.queryByText(/Last updated/)).not.toBeInTheDocument()
   })
 
-  it('renders one card per store, deals grouped inside, stores in best-deal order', () => {
+  it('renders one card per store, deals grouped inside, equidistant stores in best-deal order', () => {
     mockUseDeals.mockReturnValue({
       data: withData([
         makeDispensary('a', 'Alpha Greens', [
@@ -126,7 +126,8 @@ describe('DealFeed', () => {
     })
     render(<DealFeed />)
 
-    // one listitem per STORE (Charlie is dealless → omitted); Bravo's soonest HH
+    // one listitem per STORE (Charlie is dealless → omitted); both stores are
+    // equidistant (5 mi), so the best-deal tie-break decides: Bravo's soonest HH
     // (ends 23:30) beats Alpha's overnight HH (ends 02:00) → Bravo first
     const items = screen.getAllByRole('listitem')
     expect(items).toHaveLength(2)
@@ -155,6 +156,24 @@ describe('DealFeed', () => {
     expect(screen.getByText('Last updated Jun 10, 7:45 AM')).toBeInTheDocument()
     expect(screen.queryByText('Charlie Cannabis')).not.toBeInTheDocument()
     expect(screen.queryByText('No active deals right now')).not.toBeInTheDocument()
+  })
+
+  it('orders store cards by distance, nearest first, regardless of deal priority', () => {
+    const far = { ...makeDispensary('far', 'Far Buds', [
+      makeDeal({ type: 'happy_hour', description: 'far soonest HH', startTime: '20:00', endTime: '23:30' }),
+    ]), distanceMiles: 12 }
+    const near = { ...makeDispensary('near', 'Near Greens', [
+      makeDeal({ type: 'daily', description: 'near weak daily', discountPct: 15 }),
+    ]), distanceMiles: 5 }
+    mockUseDeals.mockReturnValue({ data: withData([far, near]), isLoading: false, error: null })
+    render(<DealFeed />)
+
+    // Near Greens is closer, so its card comes first even though Far Buds has the
+    // higher-priority deal
+    const items = screen.getAllByRole('listitem')
+    expect(items).toHaveLength(2)
+    expect(within(items[0]).getByText('Near Greens')).toBeInTheDocument()
+    expect(within(items[1]).getByText('Far Buds')).toBeInTheDocument()
   })
 
   it('computes each card from its own dispensary distance', () => {
