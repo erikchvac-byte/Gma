@@ -234,6 +234,113 @@
 .gma-range__ticks { display: flex; justify-content: space-between; font: var(--font-caption); color: var(--text-muted); }
 
 /* ---------------------------------------------------------------
+   Deal-type chips — horizontal scroll filter row
+   --------------------------------------------------------------- */
+.gma-chips {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: var(--space-1) 0; /* room for the focus ring */
+}
+.gma-chips::-webkit-scrollbar { display: none; }
+.gma-chip {
+  flex: none;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  line-height: 1;
+  white-space: nowrap;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  border: var(--border-hairline) solid var(--border-strong);
+  background: transparent;
+  color: var(--text-body);
+  cursor: pointer;
+  transition: var(--transition-control);
+}
+.gma-chip:hover { border-color: var(--accent); }
+.gma-chip:focus-visible { outline: none; box-shadow: var(--ring); }
+/* active chip: filled teal, inverted text (fg is --bg, never white) */
+.gma-chip[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--text-on-primary);
+  border-color: var(--accent);
+}
+
+/* ---------------------------------------------------------------
+   Deal card — trip-cost chip, urgency badge, deal sub-blocks
+   --------------------------------------------------------------- */
+.gma-dealcard__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+/* the trip (distance + gas) is one honest "worth the drive" signal, shown
+   once per store in the header (ADR-038) */
+.gma-trip-chip {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  background: var(--surface-sunken);
+  border-radius: var(--radius-full);
+  padding: var(--space-1) var(--space-3);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+
+/* deals as a flex-wrap grid of sub-blocks (plain divs — one listitem per
+   store stays intact, ADR-038) */
+.gma-deal-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.gma-deal-block {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex: 1;
+  min-width: 180px;
+  background: var(--surface-sunken);
+  border-radius: var(--radius-lg);
+  padding: var(--space-2) var(--space-3);
+}
+/* discount magnitude encoded with the single teal accent (ADR-037) via
+   weight + opacity — never a second hue. AA-large (24px) holds at every tier. */
+.gma-deal-block__pct {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xl);
+  line-height: 1;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+.gma-deal-block__pct--high { font-weight: var(--weight-semibold); opacity: 1; }
+.gma-deal-block__pct--mid  { font-weight: var(--weight-medium); opacity: 0.85; }
+.gma-deal-block__pct--low  { font-weight: var(--weight-medium); opacity: 0.7; }
+.gma-deal-block__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+.gma-deal-block__title {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--text-body);
+}
+.gma-deal-block__meta {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+/* ---------------------------------------------------------------
    Skeleton — loading placeholder (matches the feed's pulse)
    --------------------------------------------------------------- */
 .gma-skeleton {
