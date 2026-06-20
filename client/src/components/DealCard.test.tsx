@@ -41,7 +41,7 @@ const byFullText = (text: string, selector?: string) =>
   )
 
 describe('DealCard', () => {
-  it('renders the store header once: name, distance, and a single gas line', () => {
+  it('renders the store header once: name, a cyan distance pill, and one gas line', () => {
     render(
       <DealCard
         dispensary={makeDispensary({})}
@@ -54,8 +54,10 @@ describe('DealCard', () => {
     )
 
     expect(screen.getByText('Alpha Greens')).toBeInTheDocument()
-    // distance + gas render once, together, in the header trip chip (ADR-038)
-    expect(byFullText('12.4 mi · $3.63')).toBeInTheDocument()
+    // Synthwave (ADR-040): distance and gas are two separate cyan figures
+    expect(byFullText('12.4 mi', '.gma-distance-pill')).toBeInTheDocument()
+    expect(byFullText('$3.63', '.gma-gas-line')).toBeInTheDocument()
+    // gas still renders exactly once (not duplicated onto a deal)
     expect(screen.getAllByText(/\$3\.63/)).toHaveLength(1)
   })
 
@@ -74,13 +76,15 @@ describe('DealCard', () => {
     const card = screen.getByRole('article')
     expect(within(card).getByText('Happy hour special')).toBeInTheDocument()
     expect(within(card).getByText('Daily special')).toBeInTheDocument()
-    // store-level urgency badge reports the soonest live countdown (ADR-009)
-    expect(byFullText('ends in 0:30', '.gma-badge')).toBeInTheDocument()
+    // live happy hour → pink badge + pink countdown reporting soonest end (ADR-009)
+    expect(within(card).getByText('Happy hour')).toHaveClass('gma-happy-badge')
+    expect(byFullText('ends in 0:30', '.gma-countdown')).toBeInTheDocument()
     // daily deal's metadata line
     expect(within(card).getByText('Daily deal · Active today')).toBeInTheDocument()
-    // per-deal discount figure (gas no longer joins it)
+    // per-deal discount figure + its quiet "off" companion (gas joins neither)
     expect(within(card).getByText('25%')).toBeInTheDocument()
     expect(within(card).getByText('35%')).toBeInTheDocument()
+    expect(within(card).getAllByText('off')).toHaveLength(2)
     // happy-hour window stays per deal
     expect(within(card).getByText('9:00 PM – 11:30 PM')).toBeInTheDocument()
   })
@@ -133,8 +137,9 @@ describe('DealCard', () => {
     )
 
     expect(screen.getByText('35%')).toBeInTheDocument()
-    // trip chip falls back to distance-only when gas is unavailable
-    expect(byFullText('12.4 mi')).toBeInTheDocument()
+    // distance pill still renders; the gas line is omitted entirely
+    expect(byFullText('12.4 mi', '.gma-distance-pill')).toBeInTheDocument()
+    expect(container.querySelector('.gma-gas-line')).toBeNull()
     expect(container.textContent).not.toContain('to get there')
     // guard against re-introducing the old "discount — gas" joined line
     expect(container.textContent).not.toContain('—')
@@ -150,9 +155,12 @@ describe('DealCard', () => {
     )
 
     expect(screen.getByText('Mystery deal')).toBeInTheDocument()
-    expect(byFullText('12.4 mi · $1.80')).toBeInTheDocument()
+    expect(byFullText('12.4 mi', '.gma-distance-pill')).toBeInTheDocument()
+    expect(byFullText('$1.80', '.gma-gas-line')).toBeInTheDocument()
     expect(container.textContent).not.toContain('null')
+    // no discount → no figure, no "% off"
     expect(container.textContent).not.toContain('%')
+    expect(container.textContent).not.toContain('off')
   })
 
   it('formats whole-number distances with one decimal', () => {
@@ -164,7 +172,8 @@ describe('DealCard', () => {
       />,
     )
 
-    expect(byFullText('12.0 mi · $1.80')).toBeInTheDocument()
+    expect(byFullText('12.0 mi', '.gma-distance-pill')).toBeInTheDocument()
+    expect(byFullText('$1.80', '.gma-gas-line')).toBeInTheDocument()
   })
 
   it('renders no description paragraph when a deal description was suppressed ("")', () => {
@@ -176,10 +185,11 @@ describe('DealCard', () => {
       />,
     )
 
-    // deal still renders discount + window; title falls back to the kind label
-    // ('Happy hour') instead of an empty node
+    // deal still renders discount + window; the deal title falls back to the
+    // kind label ('Happy hour') instead of an empty node. Scope to the title so
+    // it isn't confused with the pink "Happy hour" urgency badge above it.
     expect(screen.getByText('30%')).toBeInTheDocument()
-    expect(screen.getByText('Happy hour')).toBeInTheDocument()
+    expect(byFullText('Happy hour', '.gma-deal-block__title')).toBeInTheDocument()
     expect(screen.queryByText('Happy hour special')).not.toBeInTheDocument()
   })
 
@@ -194,7 +204,8 @@ describe('DealCard', () => {
 
     expect(screen.getByText('Alpha Greens')).toBeInTheDocument()
     expect(screen.getByText('25%')).toBeInTheDocument()
-    expect(byFullText('12.4 mi · $3.63')).toBeInTheDocument()
+    expect(byFullText('12.4 mi', '.gma-distance-pill')).toBeInTheDocument()
+    expect(byFullText('$3.63', '.gma-gas-line')).toBeInTheDocument()
     expect(screen.queryByText(/left/)).not.toBeInTheDocument()
     expect(screen.queryByText(/AM|PM|close|Active today/)).not.toBeInTheDocument()
     expect(container.textContent).not.toContain('NaN')
@@ -210,7 +221,7 @@ describe('DealCard', () => {
     )
 
     const badge = screen.getByText('active today')
-    expect(badge).toHaveClass('gma-badge--neutral')
+    expect(badge).toHaveClass('gma-daily-badge')
     expect(screen.queryByText(/ends in/)).not.toBeInTheDocument()
   })
 })
