@@ -112,10 +112,14 @@
 .gma-card--interactive:hover { border-color: var(--border-strong); box-shadow: var(--shadow-sm); }
 .gma-card--urgent { border-color: var(--status-urgent); background: var(--surface-urgent); }
 
-/* Arcade card-top motif (ADR-041): a pink hairline over an amber hairline at
-   the very top of every deal card — decoration only. Deal cards are the sole
-   article.gma-card, so scope by element (no extra className / DOM change). */
+/* Card-top motif (ADR-041, retained by ADR-042): an accent hairline over a gold
+   hairline at the very top of every deal card — decoration only. Deal cards are
+   the sole article.gma-card, so scope by element (no extra className / DOM change). */
 article.gma-card { position: relative; }
+/* Daylight (ADR-042): frame the deal card in the same gold as the motif's bottom
+   line — 1px (--border-hairline, half the 2px top bars), so it ties to the topbars
+   without overpowering. Urgent (happy-hour) cards keep their crimson frame. */
+article.gma-card:not(.gma-card--urgent) { border-color: var(--discount); }
 article.gma-card::before {
   content: "";
   position: absolute;
