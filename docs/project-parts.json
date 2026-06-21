@@ -1,0 +1,65 @@
+{
+  "repository_type": "multi-part monorepo",
+  "package_manager": "npm (per-part installs via --prefix; not npm/pnpm workspaces)",
+  "parts": [
+    {
+      "part_id": "client",
+      "display_name": "React Client",
+      "project_type_id": "web",
+      "root_path": "client/",
+      "language": "TypeScript",
+      "framework": "React 19 + Vite 8",
+      "styling": "Tailwind v4 + CSS custom-property design tokens",
+      "entry_point": "client/src/main.tsx -> App.tsx",
+      "build_output": "client/dist/"
+    },
+    {
+      "part_id": "server",
+      "display_name": "Express API + Scrape Pipeline",
+      "project_type_id": "backend",
+      "root_path": "server/",
+      "language": "TypeScript",
+      "framework": "Express 5",
+      "entry_point": "server/index.ts (compiled to server/dist/server/index.js)",
+      "build_output": "server/dist/",
+      "data_store": "server/data/data.json (flat file, atomic writes + in-process lock)"
+    },
+    {
+      "part_id": "scraper",
+      "display_name": "Python Stealth Scraper Microservice",
+      "project_type_id": "backend",
+      "root_path": "scraper-svc/",
+      "language": "Python 3.13",
+      "framework": "FastAPI + Uvicorn",
+      "entry_point": "scraper-svc/api/server.py (app)",
+      "notes": "Vendored from C:/Users/erikc/Dev/Scraper (ADR-017/034). Booted in-job by GitHub Actions; not a deployed Render service."
+    },
+    {
+      "part_id": "design-system",
+      "display_name": "Design System Bundle (reference)",
+      "project_type_id": "reference",
+      "root_path": "design-system/",
+      "notes": "Token/component/guideline bundle (Tidewater -> Synthwave themes). Not compiled or deployed; consumed as design reference. See GMAS_LIST_BRIEF.md and ADR-040."
+    }
+  ],
+  "integration_points": [
+    {
+      "from": "client",
+      "to": "server",
+      "type": "REST (HTTP GET)",
+      "details": "GET /api/data — same-origin in production (one Render service); Vite dev proxy / CORS to localhost:3001 in dev"
+    },
+    {
+      "from": "github-actions-cron",
+      "to": "server",
+      "type": "REST (HTTP POST, shared-secret auth)",
+      "details": "POST /api/ingest with x-ingest-secret header — sole writer of data.json (ADR-034)"
+    },
+    {
+      "from": "server (scrape pipeline)",
+      "to": "scraper",
+      "type": "REST (HTTP POST)",
+      "details": "POST {SCRAPER_URL}/scrape — Dutchie menus only; default http://localhost:8000/scrape. Booted in the Actions job, not on Render."
+    }
+  ]
+}
