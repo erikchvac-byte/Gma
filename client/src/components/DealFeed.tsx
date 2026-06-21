@@ -116,7 +116,11 @@ export default function DealFeed({ mpg = null }: DealFeedProps) {
   // (absent, null, garbage) silently falls back to nationalMpg
   const effectiveMpg =
     typeof mpg === 'number' && isPositiveFinite(mpg) ? mpg : data.meta.nationalMpg
-  const gasCostText = (distanceMiles: number): string | null => {
+  // distanceMiles is optional (ADR-043): no distance → no gas line (null), same
+  // suppression DealCard's pill uses. roundTripGasCost also null-guards, but the
+  // undefined check keeps the number-only formula contract intact.
+  const gasCostText = (distanceMiles: number | undefined): string | null => {
+    if (distanceMiles === undefined) return null
     const cost = roundTripGasCost(distanceMiles, data.meta.gasPrice, effectiveMpg)
     return cost === null ? null : formatGasCost(cost)
   }
