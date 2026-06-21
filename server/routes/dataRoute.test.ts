@@ -34,6 +34,47 @@ describe('GET /api/data', () => {
     })
   })
 
+  it('emits a per-store status + lastFetchedAt for every dispensary (ADR-034 Goal B)', async () => {
+    const res = await request(app).get('/api/data')
+
+    expect(res.status).toBe(200)
+    for (const d of res.body.dispensaries) {
+      expect(['ok', 'stale', 'failed']).toContain(d.status)
+      expect(typeof d.lastFetchedAt).toBe('string')
+    }
+  })
+
+  it('derives ok / stale / failed from each store lastFetchedAt (ADR-034 Goal B)', async () => {
+    const now = new Date()
+    const fresh = now.toISOString()
+    const old = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString()
+    const base = {
+      name: 'X',
+      url: 'https://example.test',
+      distanceMiles: 1,
+      stale: false,
+      deals: [],
+    }
+    mockedReadFileSync.mockReturnValueOnce(
+      JSON.stringify({
+        meta: { lastScraperRun: fresh, gasPrice: 4, nationalMpg: 28, gasPriceUpdatedAt: fresh },
+        dispensaries: [
+          { id: 'a', ...base, lastFetchedAt: fresh },
+          { id: 'b', ...base, lastFetchedAt: old },
+          { id: 'c', ...base, lastFetchedAt: '' },
+        ],
+      }),
+    )
+
+    const res = await request(app).get('/api/data')
+
+    expect(res.status).toBe(200)
+    const byId = Object.fromEntries(res.body.dispensaries.map((d: { id: string }) => [d.id, d]))
+    expect(byId.a.status).toBe('ok')
+    expect(byId.b.status).toBe('stale')
+    expect(byId.c.status).toBe('failed')
+  })
+
   it('returns 500 with { error, code } when data.json is unreadable (AC6)', async () => {
     mockedReadFileSync.mockImplementationOnce(() => {
       throw new Error('ENOENT: no such file or directory')

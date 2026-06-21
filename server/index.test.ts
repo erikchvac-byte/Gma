@@ -36,5 +36,8 @@ describe('server/index.ts', () => {
 
     expect(content).not.toContain('runScrapers')
     expect(content).not.toContain('SCRAPE_INTERVAL_MS')
+    // Render stays read-only over data.json — the in-process scraper client must
+    // not be wired into the server entry; the only data writer is POST /api/ingest.
+    expect(content).not.toContain('scraperClient')
   })
 })
