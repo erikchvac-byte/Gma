@@ -3,6 +3,7 @@ import remedyTulalipScrape from './remedy-tulalip.js'
 import theJointEverettScrape from './the-joint-everett.js'
 import jetCannabisEverettScrape from './jet-cannabis-everett.js'
 import kush21EverettEvergreenScrape from './kush21-everett-evergreen.js'
+import { dutchieScrapers } from './dutchie-stores.js'
 
 export const scrapers: Record<string, () => Promise<Deal[]>> = {
   'remedy-tulalip': remedyTulalipScrape,
@@ -12,6 +13,9 @@ export const scrapers: Record<string, () => Promise<Deal[]>> = {
   'the-joint-everett': theJointEverettScrape,
   'jet-cannabis-everett': jetCannabisEverettScrape,
   'kush21-everett-evergreen': kush21EverettEvergreenScrape,
+  // Batch-resolved Dutchie stores (2026-06-21), id === embed cName. See
+  // dutchie-stores.ts. Each needs a matching dispensary record in data.json.
+  ...dutchieScrapers,
 }
 
 // Single source of truth for the CI scrape matrix (ADR-034 Goal D). The Actions

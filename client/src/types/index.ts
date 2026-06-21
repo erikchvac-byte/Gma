@@ -21,7 +21,11 @@ export interface Dispensary {
   id: string
   name: string
   url: string
-  distanceMiles: number
+  // Optional enrichment, NOT a visibility gate (ADR-043). A store renders on its
+  // own validity; distance/gas only appear when this is a finite number. The 4
+  // seed stores carry a fixed-origin value (ADR-008, retired in Deliverable 2);
+  // push-ingested Dutchie stores have none until D2 geocodes them.
+  distanceMiles?: number
   stale: boolean
   lastFetchedAt: string
   // Always emitted by GET /api/data; optional so pre-Goal-B fixtures/payloads

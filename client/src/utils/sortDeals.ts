@@ -45,8 +45,9 @@ export interface StoreGroup {
 // sortDeals order. Reuses sortDeals wholesale — no duplicated tier logic.
 // Assumes dispensary.id is unique per store (the data contract): two distinct
 // stores sharing an id would merge into one card under the first one's name.
-// distanceMiles is trusted as a finite number (same assumption as DealFeed's
-// distance filter) — no extra guarding here.
+// distanceMiles is optional (ADR-043): a store without one sorts LAST (treated as
+// Infinity) so distanced stores stay nearest-first and undistanced stores follow
+// deterministically, with best-deal order as the stable tie-break.
 export function groupDealsByStore(dispensaries: Dispensary[], now: Date): StoreGroup[] {
   const groups = new Map<string, StoreGroup>()
   for (const { dispensary, deal } of sortDeals(dispensaries, now)) {
@@ -55,6 +56,6 @@ export function groupDealsByStore(dispensaries: Dispensary[], now: Date): StoreG
     else groups.set(dispensary.id, { dispensary, deals: [deal] })
   }
   return [...groups.values()].sort(
-    (a, b) => a.dispensary.distanceMiles - b.dispensary.distanceMiles,
+    (a, b) => (a.dispensary.distanceMiles ?? Infinity) - (b.dispensary.distanceMiles ?? Infinity),
   )
 }

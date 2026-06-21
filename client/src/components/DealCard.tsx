@@ -43,17 +43,22 @@ export default function DealCard({ dispensary, deals, gasCostText }: DealCardPro
   // The card's accent border is driven from the same signal so border and
   // badge can never disagree (urgent only when a live countdown exists).
   const urgency = storeUrgencyBadge(deals)
-  // The trip is split into two figures (ADR-040): a pink distance pill
-  // ("how far") in the header and a pink gas line ("what it costs") below it.
-  // Both still describe the one drive to the store (ADR-038).
-  const distanceText = `${dispensary.distanceMiles.toFixed(1)} mi`
+  // The trip is split into two figures (ADR-040): a distance pill ("how far") in
+  // the header and a gas line ("what it costs") below it. Both describe the one
+  // drive to the store (ADR-038). distanceMiles is optional (ADR-043): when it is
+  // absent/non-finite the pill is omitted entirely — Honest Math, never a faked
+  // or zero distance (the gas line is already suppressed by a null gasCostText).
+  const distanceText =
+    typeof dispensary.distanceMiles === 'number' && Number.isFinite(dispensary.distanceMiles)
+      ? `${dispensary.distanceMiles.toFixed(1)} mi`
+      : null
 
   return (
     <Card as="article" urgent={urgency.variant === 'urgent'} style={{ display: 'grid', gap: 'var(--space-3)' }}>
       <div style={{ display: 'grid', gap: 'var(--space-2)' }}>
         <div className="gma-dealcard__head">
           <h2 className="gma-dealcard__name">{dispensary.name}</h2>
-          <span className="gma-distance-pill">{distanceText}</span>
+          {distanceText !== null && <span className="gma-distance-pill">{distanceText}</span>}
         </div>
         {/* gas line — omitted entirely when round-trip cost can't be computed */}
         {gasCostText !== null && (
