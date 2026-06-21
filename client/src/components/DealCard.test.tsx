@@ -211,6 +211,26 @@ describe('DealCard', () => {
     expect(container.textContent).not.toContain('NaN')
   })
 
+  it('omits the distance pill (and never crashes) when distanceMiles is absent — ADR-043', () => {
+    const noDistance = makeDispensary({})
+    delete (noDistance as Partial<Dispensary>).distanceMiles
+    const { container } = render(
+      <DealCard
+        dispensary={noDistance}
+        deals={[view({ type: 'daily', description: 'Daily special', discountPct: 35, startTime: null, endTime: null }, 'Active today', null)]}
+        gasCostText={null}
+      />,
+    )
+
+    // store + its deal still render; no distance pill, no gas line, no fake number
+    expect(screen.getByText('Alpha Greens')).toBeInTheDocument()
+    expect(screen.getByText('Daily special')).toBeInTheDocument()
+    expect(container.querySelector('.gma-distance-pill')).toBeNull()
+    expect(container.querySelector('.gma-gas-line')).toBeNull()
+    expect(container.textContent).not.toContain('mi')
+    expect(container.textContent).not.toContain('NaN')
+  })
+
   it('shows a neutral "active today" badge for a daily-only store (no countdown)', () => {
     render(
       <DealCard

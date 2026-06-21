@@ -577,6 +577,27 @@ describe('DealFeed', () => {
       expect(slider).toHaveAttribute('aria-valuetext', valueText)
     })
 
+    it('never drops a store that has no distance, even at the narrowest slider (ADR-043)', () => {
+      localStorage.setItem('gma_distance_miles', '1')
+      const noDistance = makeDispensary('nd', 'No Distance', [makeDeal({ description: 'No Distance deal' })])
+      delete (noDistance as Partial<Dispensary>).distanceMiles
+      mockUseDeals.mockReturnValue({
+        data: withData([atDistance('far', 'Far', 40), noDistance]),
+        isLoading: false,
+        error: null,
+      })
+      render(<DealFeed />)
+
+      // 1-mile radius excludes the 40-mi store but the undistanced store stays —
+      // the filter only narrows stores that actually have a distance to compare
+      expect(screen.queryByText('Far deal')).not.toBeInTheDocument()
+      expect(screen.getByText('No Distance deal')).toBeInTheDocument()
+      // and it renders without a distance pill or gas line
+      const item = screen.getByRole('listitem')
+      expect(item.querySelector('.gma-distance-pill')).toBeNull()
+      expect(item.querySelector('.gma-gas-line')).toBeNull()
+    })
+
     it('keeps the slider visible and usable when filtering empties the feed', () => {
       localStorage.setItem('gma_distance_miles', '1')
       mockUseDeals.mockReturnValue({

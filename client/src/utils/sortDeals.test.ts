@@ -181,6 +181,21 @@ describe('groupDealsByStore', () => {
     expect(groups[1].deals.map((d) => d.description)).toEqual(['a HH ends 23:45', 'a daily 15'])
   })
 
+  it('sorts stores with no distance after distanced stores, deterministically (ADR-043)', () => {
+    // delete (not undefined-arg) so the helper default doesn't backfill a distance
+    const noDist = makeDispensary('no-dist', [makeDeal({ description: 'no-dist deal' })])
+    delete (noDist as Partial<Dispensary>).distanceMiles
+    const dispensaries = [
+      noDist,
+      makeDispensary('far', [makeDeal({ description: 'far deal' })], 12),
+      makeDispensary('near', [makeDeal({ description: 'near deal' })], 5),
+    ]
+
+    const groups = groupDealsByStore(dispensaries, at2300)
+    // distanced stores nearest-first; the undistanced store (Infinity) lands last
+    expect(groups.map((g) => g.dispensary.id)).toEqual(['near', 'far', 'no-dist'])
+  })
+
   it('omits stores left with no active deals and returns [] when all are dealless', () => {
     expect(groupDealsByStore([makeDispensary('a', []), makeDispensary('b', [])], at2300)).toEqual([])
 

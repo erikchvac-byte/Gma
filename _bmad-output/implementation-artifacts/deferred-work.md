@@ -1,5 +1,19 @@
 # Deferred Work
 
+## DEFERRED — Deliverable 2: per-user distance + honest gas (split from deals-first, 2026-06-21)
+
+Split out of `spec-all-stores-show-deals.md` (Deliverable 1) at Erik's direction — **deals first, then distance, then gas**. D1 makes distance *optional* so all stores show their deals; D2 then makes the distance/gas **real and per-user**, retiring the fixed-origin placeholder.
+
+- **Problem it solves:** every store's `distanceMiles` is a fixed distance from ZIP 98270 (ADR-008) — identical for every user regardless of where they are. A fabricated number that violates Honest Math (ADR-007/009). After D1, the 4 originals still show this fixed number and the ~18 Dutchie stores show no distance at all — an honest but inconsistent interim state D2 resolves.
+- **Approach (zero runtime external dep, zero API key — works on Render free plan):**
+  1. **Geocode every store once** via free OpenStreetMap **Nominatim** (dev-time script `server/scripts/geocodeStores.ts` with an inline `id→address` map; addresses are dev input, NOT a runtime schema field). Writes `lat`/`lng` into each `data.json` record. Re-runnable; only fills records missing coords (covers the D1-seeded Dutchie stores too). **Unblocks Dutchie distances without Erik hand-supplying 18 numbers.**
+  2. **User ZIP input** (audience = elderly; ZIP preferred over a GPS permission prompt). Persist in `localStorage` `gma_zip`, validated at the use site like `gma_vehicle_mpg`. Resolve ZIP→`{lat,lng}` from a committed **WA Census ZCTA centroid** JSON (public domain; WA-only matches the local Snohomish/Skagit/Whatcom audience — a non-WA ZIP resolves to `null` = "not recognized", correct not a crash). Widening to a national set is a later bundle-size call.
+  3. **Compute distance client-side**: `haversine(user, store) × 1.3` road factor → feeds the EXISTING consumers (`roundTripGasCost`, distance filter, nearest-first sort). Gas line already null-safe, so it lights up automatically when a distance exists.
+- **Honest Math:** until a usable ZIP is entered there is NO distance — suppress pill + gas, never fake a number (the D1 optional-distance plumbing already supports this).
+- **Retires:** **ADR-008** (fixed origin 98270) and **ADR-011** (hardcoded road-distance lookups) → new ADR. Approximating road distance with haversine×1.3 honors ADR-002's road-distance intent at zero runtime cost.
+- **Touch set (≈6 new + ~6 edits):** `distance.ts` (+test), `zipCentroids.wa.json` + `zipCentroids.ts` (+test), `useLocation.ts` (+test), `LocationInput.tsx` (+test), `geocodeStores.ts`; edits to types (`lat`/`lng`), `data.json`, `normalizeDispensaries`, `DealCard`, `DealFeed`, `DistanceFilter`, ADR. **Ask-First:** if the stores' street addresses can't be sourced confidently, HALT (don't hallucinate coords); if WA-only proves too narrow, HALT before adding a national dataset.
+- Out of scope (D3 / later): driving-time, traffic, GPS Geolocation API.
+
 ## DEFERRED — from review of spec-adr-034-ingest-endpoint (2026-06-18)
 
 Surfaced by the 3-reviewer pass on the ingest endpoint. All pre-existing or low-priority hardening; none block Goal A (which shipped review-clean). Most touch the **shared** `normalizeDeals`/`express.json` layer, so they affect the in-process `runScrapers` path equally and deserve a focused change rather than a drive-by in the ingest story.

@@ -29,12 +29,25 @@ describe('normalizeDispensaries', () => {
     expect(normalizeDispensaries(raw)).toEqual([good])
   })
 
-  it('drops records with a non-finite or negative distanceMiles', () => {
+  it('drops records with a PRESENT but non-finite or negative distanceMiles', () => {
     expect(normalizeDispensaries([valid({ distanceMiles: null as unknown as number })])).toEqual([])
     expect(normalizeDispensaries([valid({ distanceMiles: NaN })])).toEqual([])
     expect(normalizeDispensaries([valid({ distanceMiles: Infinity })])).toEqual([])
     expect(normalizeDispensaries([valid({ distanceMiles: -3 })])).toEqual([])
     expect(normalizeDispensaries([valid({ distanceMiles: '5' as unknown as number })])).toEqual([])
+  })
+
+  it('keeps records with no distanceMiles at all (optional enrichment, ADR-043)', () => {
+    const noDistance = valid()
+    delete (noDistance as Partial<Dispensary>).distanceMiles
+    expect(normalizeDispensaries([noDistance])).toEqual([noDistance])
+  })
+
+  it('drops records with a missing or empty id', () => {
+    expect(normalizeDispensaries([valid({ id: '' })])).toEqual([])
+    const noId = valid()
+    delete (noId as Partial<Dispensary>).id
+    expect(normalizeDispensaries([noId])).toEqual([])
   })
 
   it('drops records whose deals is not an array', () => {

@@ -93,9 +93,12 @@ export default function DealFeed({ mpg = null }: DealFeedProps) {
   const staleCount = data.dispensaries.filter(isStale).length
   const freshDispensaries = data.dispensaries.filter((dispensary) => !isStale(dispensary))
   // distance filter runs against the full in-memory array — no re-fetch;
-  // inclusive boundary so a dispensary at exactly maxDistance stays visible
+  // inclusive boundary so a dispensary at exactly maxDistance stays visible.
+  // ADR-043: a store with no distance is never dropped by the radius slider —
+  // the filter only narrows stores that actually have a distance to compare.
   const nearbyDispensaries = freshDispensaries.filter(
-    (dispensary) => dispensary.distanceMiles <= maxDistance,
+    (dispensary) =>
+      dispensary.distanceMiles === undefined || dispensary.distanceMiles <= maxDistance,
   )
   // expiry filter runs BEFORE sortDeals so expired deals never reach the
   // comparator's overnight-wrap heuristic
