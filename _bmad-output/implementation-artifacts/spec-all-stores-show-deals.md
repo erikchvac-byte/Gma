@@ -2,7 +2,7 @@
 title: 'All Stores Show Deals — Decouple Visibility from Distance + Seed 18 Dutchie Stores'
 type: 'feature'
 created: '2026-06-21'
-status: 'in-review'
+status: 'done'
 baseline_commit: '8bb35c3'
 context:
   - '{project-root}/ADR.md'
