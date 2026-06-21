@@ -43,8 +43,8 @@ export default function DealCard({ dispensary, deals, gasCostText }: DealCardPro
   // The card's accent border is driven from the same signal so border and
   // badge can never disagree (urgent only when a live countdown exists).
   const urgency = storeUrgencyBadge(deals)
-  // Synthwave splits the trip into two figures (ADR-040): a cyan distance pill
-  // ("how far") in the header and a cyan gas line ("what it costs") below it.
+  // The trip is split into two figures (ADR-040): a pink distance pill
+  // ("how far") in the header and a pink gas line ("what it costs") below it.
   // Both still describe the one drive to the store (ADR-038).
   const distanceText = `${dispensary.distanceMiles.toFixed(1)} mi`
 
@@ -59,7 +59,7 @@ export default function DealCard({ dispensary, deals, gasCostText }: DealCardPro
         {gasCostText !== null && (
           <span className="gma-gas-line"><Icon name="fuel" size={13} /> {gasCostText}</span>
         )}
-        {/* status: live happy hour → pink pulse badge + countdown; else neutral */}
+        {/* status: live happy hour → red pulse badge + countdown; else neutral */}
         <div className="gma-dealcard__status">
           {urgency.variant === 'urgent' ? (
             <>
@@ -88,7 +88,7 @@ export default function DealCard({ dispensary, deals, gasCostText }: DealCardPro
               key={`${deal.type}|${deal.description}|${deal.startTime ?? ''}|${deal.endTime ?? ''}|${i}`}
               className="gma-deal-block"
             >
-              {/* discount magnitude in the cyan value accent (ADR-040: full
+              {/* discount magnitude in the amber discount accent (ADR-041: full
                   opacity, weight-only ramp); null discount → no figure / no "off" */}
               {tier !== null && (
                 <>
