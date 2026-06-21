@@ -1,13 +1,14 @@
 /* ==========================================================================
-   gmas list — Token Layer  ("Arcade" direction)
+   gmas list — Token Layer  ("Daylight" direction)
    Source: planning-artifacts/ux-designs/ux-Happy-2026-06-11/DESIGN.md
            (distilled from imports/GMAS_LIST_BRIEF.md — canonical).
-   Dark is the default and primary mode. Token NAMES are preserved from the
-   prior (Synthwave/Tidewater) system so the component layer stays a value
-   swap; values are Arcade (ADR-041). A high-contrast THREE-color system:
-   pink (--accent) is the single brand/interactive accent; amber (--discount,
-   the one new token) is discount-semantic; red (--warning) carries happy-hour
-   urgency. Fonts unchanged. Supersedes the Synthwave palette of ADR-040.
+   LIGHT is the default and primary mode (ADR-042). Token NAMES are preserved
+   from the prior (Arcade/Synthwave/Tidewater) system so the component layer
+   stays a value swap; values are Daylight. A calm THREE-color system on warm
+   paper: emerald (--accent) is the single brand/interactive accent; deep amber
+   (--discount, retained from ADR-041) is discount-semantic; crimson (--warning)
+   carries happy-hour urgency. Color is rationed — a touch, used sparingly.
+   Fonts unchanged. Supersedes the Arcade palette of ADR-041 (structure kept).
    ========================================================================== */
 
 /* ==========================================================================
@@ -16,52 +17,53 @@
 
 :root {
   /* -------------------------------------------------------------------------
-     Arcade palette (ADR-041). Near-black base, high-contrast three-color
-     system: pink = brand/interactive, amber = discount, red = urgency.
-     Supersedes the Synthwave palette of ADR-040 (mechanism retained).
+     Daylight palette (ADR-042). Warm-paper base, calm three-color system:
+     emerald = brand/interactive, deep amber = discount, crimson = urgency.
+     Supersedes the Arcade palette of ADR-041 (three-color structure retained).
      ------------------------------------------------------------------------- */
 
-  /* Surfaces (stepped — near-black → ink) */
-  --bg:             #050507; /* app background */
-  --surface:        #121016; /* cards, rows */
-  --surface-raised: #1c1922; /* chips, inputs, tiles, deal sub-blocks */
-  --tw-border:      #2a2330; /* divider line, subtle hairlines, secondary-button resting border */
-  --tw-border-strong: #3a3242; /* crisper field edges + hover-brightened border */
+  /* Surfaces (stepped — warm paper → white cards) */
+  --bg:             #f7f6f3; /* app background — warm paper, no glare */
+  --surface:        #ffffff; /* cards, rows */
+  --surface-raised: #f1efe9; /* chips, inputs, tiles, deal sub-blocks */
+  --tw-border:      #e4e1d9; /* divider line, subtle hairlines, secondary-button resting border */
+  --tw-border-strong: #d6d2c8; /* crisper field edges + hover-darkened border */
 
-  /* Card edge is a neon pink hairline at low alpha (Arcade brand signature) */
-  --card-border:    rgba(255, 61, 139, 0.2);
+  /* Card edge retires to a quiet hairline (neon edge gone — air does the work) */
+  --card-border:    #e4e1d9;
 
-  /* Text */
-  --tw-text:        #f5f2f7; /* primary */
-  --tw-text-muted:  #a8a0b2; /* secondary / labels */
-  --tw-text-faint:  #6e6676; /* metadata, struck prices, captions */
+  /* Text — ink on paper */
+  --tw-text:        #1a1a1f; /* primary */
+  --tw-text-muted:  #5c5a55; /* secondary / labels */
+  --tw-text-faint:  #8a8780; /* metadata, struck prices, captions (non-essential only) */
 
-  /* Accent — pink (the single brand/interactive accent: buttons, chips,
-     focus, links, wordmark dot, distance pill, gas line) */
-  --accent:         #ff3d8b;
-  --accent-hover:   #ff5fa1;
-  --accent-active:  #e0276f;
-  --accent-soft:    rgba(255, 61, 139, 0.12); /* low-emphasis pink fill (distance pill) */
-  --accent-soft-border: rgba(255, 61, 139, 0.4); /* pink pill border */
-  --accent-on-light:#e0276f;
+  /* Accent — deep emerald (the single brand/interactive accent: buttons, chips,
+     focus, links, wordmark dot, distance pill, gas line). AA both as link text
+     on white AND as a fill carrying white labels. */
+  --accent:         #18794e;
+  --accent-hover:   #15663f;
+  --accent-active:  #114f31;
+  --accent-soft:    rgba(24, 121, 78, 0.10); /* low-emphasis emerald fill (distance pill) */
+  --accent-soft-border: rgba(24, 121, 78, 0.30); /* emerald pill border */
+  --accent-on-light:#15663f;
 
-  /* Discount — amber. The one new token (ADR-041): discount has no existing
-     semantic home now that --accent is the pink brand color. Discount-semantic
-     ONLY (figures, discount badge) + the sanctioned card-top motif line. */
-  --discount:       #ffc83d;
+  /* Discount — deep amber (retained token, ADR-041). Neon amber is invisible on
+     white, so it deepens to an AA-passing gold. Discount-semantic ONLY (figures,
+     discount badge) + the sanctioned card-top motif line. */
+  --discount:       #b45309;
 
-  /* Semantic (meaning only) — red now carries urgency (happy hour) */
-  --success:        #ff3d8b; /* fresh reads as the brand pink in Arcade */
-  --warning:        #ff5470; /* red urgency accent */
-  --warning-soft:   rgba(255, 84, 112, 0.13); /* happy-hour badge fill */
-  --warning-soft-border: rgba(255, 84, 112, 0.36); /* happy-hour badge border */
-  --danger:         #ff3b5c; /* error red — distinct from urgency */
+  /* Semantic (meaning only) — crimson carries urgency (happy hour) */
+  --success:        #18794e; /* fresh reads as the brand emerald in Daylight */
+  --warning:        #c92a44; /* crimson urgency accent */
+  --warning-soft:   rgba(201, 42, 68, 0.10); /* happy-hour badge fill */
+  --warning-soft-border: rgba(201, 42, 68, 0.30); /* happy-hour badge border */
+  --danger:         #c0233d; /* error red — distinct from urgency */
 
   /* Derived translucent tints for warning/error surfaces */
-  --surface-urgent-dark: rgba(255, 84, 112, 0.13);
-  --surface-error-dark:  rgba(255, 59, 92, 0.13);
+  --surface-urgent-dark: rgba(201, 42, 68, 0.08);
+  --surface-error-dark:  rgba(192, 35, 61, 0.08);
 
-  --scrim: rgba(2, 2, 4, 0.7); /* flat sheet scrim — no blur */
+  --scrim: rgba(26, 26, 31, 0.45); /* flat sheet scrim — no blur */
 
   /* -------------------------------------------------------------------------
      Semantic aliases — preserved names, Arcade values.
@@ -81,7 +83,7 @@
   --text-body:        var(--tw-text);
   --text-muted:       var(--tw-text-muted);
   --text-faint:       var(--tw-text-faint);
-  --text-on-primary:  var(--bg);            /* on the pink accent — NEVER white */
+  --text-on-primary:  #ffffff;              /* white label on the emerald accent (ADR-042; supersedes ADR-041 "NEVER white") */
   --text-on-inverse:  var(--tw-text);
   --text-urgent:      var(--warning);
   --text-error:       var(--danger);
@@ -115,7 +117,7 @@
   --fill-distance-border: var(--accent-soft-border);
   --fill-happy:       var(--warning-soft);         /* red happy-hour badge */
   --fill-happy-border: var(--warning-soft-border);
-  --fill-daily:       rgba(255, 255, 255, 0.05);   /* neutral daily badge */
+  --fill-daily:       rgba(26, 26, 31, 0.05);      /* neutral daily badge (ink tint on white) */
 
   /* Status accents */
   --status-fresh:     var(--success);
@@ -213,10 +215,10 @@
      ------------------------------------------------------------------------- */
 
   --shadow-none: none;
-  --shadow-xs:   0 1px 2px 0 rgba(0, 0, 0, 0.30);
-  --shadow-sm:   0 1px 3px 0 rgba(0, 0, 0, 0.40), 0 1px 2px -1px rgba(0, 0, 0, 0.40);
-  --shadow-md:   0 4px 12px -2px rgba(0, 0, 0, 0.45), 0 2px 6px -2px rgba(0, 0, 0, 0.35);
-  --shadow-lg:   0 12px 28px -6px rgba(0, 0, 0, 0.55), 0 4px 10px -4px rgba(0, 0, 0, 0.40);
+  --shadow-xs:   0 1px 2px 0 rgba(26, 26, 31, 0.06);
+  --shadow-sm:   0 1px 3px 0 rgba(26, 26, 31, 0.08), 0 1px 2px -1px rgba(26, 26, 31, 0.06);
+  --shadow-md:   0 4px 12px -2px rgba(26, 26, 31, 0.10), 0 2px 6px -2px rgba(26, 26, 31, 0.06);
+  --shadow-lg:   0 12px 28px -6px rgba(26, 26, 31, 0.14), 0 4px 10px -4px rgba(26, 26, 31, 0.08);
 
   --ring-offset: 2px;
   --ring-width:  2px;
@@ -234,7 +236,7 @@
                         color var(--duration-fast) var(--ease-standard),
                         box-shadow var(--duration-fast) var(--ease-standard);
 
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 /* Reduced-motion — collapses duration tokens to 0ms */
@@ -251,19 +253,19 @@
    ========================================================================== */
 
 @theme {
-  /* --- Accent / surfaces (utilities, if used) — Arcade (ADR-041) --- */
-  --color-accent:        #ff3d8b;
-  --color-accent-hover:  #ff5fa1;
-  --color-bg:            #050507;
-  --color-surface:       #121016;
-  --color-surface-raised:#1c1922;
-  --color-ink:           #f5f2f7;
-  --color-ink-muted:     #a8a0b2;
-  --color-ink-faint:     #6e6676;
-  --color-discount:      #ffc83d;
-  --color-success:       #ff3d8b;
-  --color-warning:       #ff5470;
-  --color-danger:        #ff3b5c;
+  /* --- Accent / surfaces (utilities, if used) — Daylight (ADR-042) --- */
+  --color-accent:        #18794e;
+  --color-accent-hover:  #15663f;
+  --color-bg:            #f7f6f3;
+  --color-surface:       #ffffff;
+  --color-surface-raised:#f1efe9;
+  --color-ink:           #1a1a1f;
+  --color-ink-muted:     #5c5a55;
+  --color-ink-faint:     #8a8780;
+  --color-discount:      #b45309;
+  --color-success:       #18794e;
+  --color-warning:       #c92a44;
+  --color-danger:        #c0233d;
 
   /* --- Font families --- */
   --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
