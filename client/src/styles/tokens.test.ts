@@ -16,7 +16,7 @@ const tokens = readFileSync(resolve(process.cwd(), 'src/styles/tokens.css'), 'ut
 describe('tokens.css — Daylight palette (ADR-042)', () => {
   it('declares the Daylight core values on their preserved token names', () => {
     expect(tokens).toMatch(/--accent:\s*#18794e/)   // emerald brand/interactive
-    expect(tokens).toMatch(/--discount:\s*#b45309/)  // deep amber discount
+    expect(tokens).toMatch(/--discount:\s*#ad4f08/)  // deep amber discount (AA-tuned on surface-raised)
     expect(tokens).toMatch(/--warning:\s*#c92a44/)   // crimson urgency
     expect(tokens).toMatch(/--bg:\s*#f7f6f3/)        // warm paper canvas
     expect(tokens).toMatch(/--surface:\s*#ffffff/)   // white cards
@@ -29,7 +29,7 @@ describe('tokens.css — Daylight palette (ADR-042)', () => {
 
   it('mirrors the accent + discount value into the Tailwind @theme block', () => {
     expect(tokens).toMatch(/--color-accent:\s*#18794e/)
-    expect(tokens).toMatch(/--color-discount:\s*#b45309/)
+    expect(tokens).toMatch(/--color-discount:\s*#ad4f08/)
   })
 
   it('retains no superseded palette hues (Arcade, Synthwave, or Tidewater)', () => {

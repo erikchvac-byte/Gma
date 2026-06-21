@@ -49,8 +49,9 @@
 
   /* Discount — deep amber (retained token, ADR-041). Neon amber is invisible on
      white, so it deepens to an AA-passing gold. Discount-semantic ONLY (figures,
-     discount badge) + the sanctioned card-top motif line. */
-  --discount:       #b45309;
+     discount badge) + the sanctioned card-top motif line. Value tuned to clear
+     AA (4.5:1) on --surface-raised, where the 22px figures sit (audit 2026-06-21). */
+  --discount:       #ad4f08;
 
   /* Semantic (meaning only) — crimson carries urgency (happy hour) */
   --success:        #18794e; /* fresh reads as the brand emerald in Daylight */
@@ -262,7 +263,7 @@
   --color-ink:           #1a1a1f;
   --color-ink-muted:     #5c5a55;
   --color-ink-faint:     #8a8780;
-  --color-discount:      #b45309;
+  --color-discount:      #ad4f08;
   --color-success:       #18794e;
   --color-warning:       #c92a44;
   --color-danger:        #c0233d;
