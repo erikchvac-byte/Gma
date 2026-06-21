@@ -116,6 +116,14 @@
    hairline at the very top of every deal card — decoration only. Deal cards are
    the sole article.gma-card, so scope by element (no extra className / DOM change). */
 article.gma-card { position: relative; }
+/* Daylight (ADR-042): a soft gold bloom dissolves down out of the topbar motif
+   into the card body (~80px) — carries the gold as warmth/light, no enclosing
+   frame. Urgent (happy-hour) cards keep their crimson tint. */
+article.gma-card:not(.gma-card--urgent) {
+  background:
+    linear-gradient(to bottom, var(--discount-soft), transparent 80px),
+    var(--surface-card);
+}
 article.gma-card::before {
   content: "";
   position: absolute;
