@@ -1,12 +1,13 @@
 /* ==========================================================================
-   gmas list — Token Layer  ("Synthwave" direction)
+   gmas list — Token Layer  ("Arcade" direction)
    Source: planning-artifacts/ux-designs/ux-Happy-2026-06-11/DESIGN.md
            (distilled from imports/GMAS_LIST_BRIEF.md — canonical).
    Dark is the default and primary mode. Token NAMES are preserved from the
-   prior (Tidewater/teal) system so the component layer stays a value swap;
-   values are Synthwave (ADR-040). Two accents now carry meaning: cyan is the
-   "go"/value accent (discount, distance, primary actions); pink (mapped onto
-   the --warning/urgency role) carries happy-hour urgency. Fonts unchanged.
+   prior (Synthwave/Tidewater) system so the component layer stays a value
+   swap; values are Arcade (ADR-041). A high-contrast THREE-color system:
+   pink (--accent) is the single brand/interactive accent; amber (--discount,
+   the one new token) is discount-semantic; red (--warning) carries happy-hour
+   urgency. Fonts unchanged. Supersedes the Synthwave palette of ADR-040.
    ========================================================================== */
 
 /* ==========================================================================
@@ -15,48 +16,55 @@
 
 :root {
   /* -------------------------------------------------------------------------
-     Synthwave palette (ADR-040). Deep indigo base, twin neon accents
-     (cyan = value/go, pink = urgency). Depth from surfaces + neon hairlines.
+     Arcade palette (ADR-041). Near-black base, high-contrast three-color
+     system: pink = brand/interactive, amber = discount, red = urgency.
+     Supersedes the Synthwave palette of ADR-040 (mechanism retained).
      ------------------------------------------------------------------------- */
 
-  /* Surfaces (stepped — indigo→violet) */
-  --bg:             #0a0a1f; /* app background */
-  --surface:        #15122e; /* cards, rows */
-  --surface-raised: #1d1840; /* chips, inputs, tiles, deal sub-blocks */
-  --tw-border:      #2a2350; /* divider line, subtle hairlines, secondary-button resting border */
-  --tw-border-strong: #3a3270; /* crisper field edges + hover-brightened border */
+  /* Surfaces (stepped — near-black → ink) */
+  --bg:             #050507; /* app background */
+  --surface:        #121016; /* cards, rows */
+  --surface-raised: #1c1922; /* chips, inputs, tiles, deal sub-blocks */
+  --tw-border:      #2a2330; /* divider line, subtle hairlines, secondary-button resting border */
+  --tw-border-strong: #3a3242; /* crisper field edges + hover-brightened border */
 
-  /* Card edge is a neon cyan hairline at low alpha (Synthwave signature) */
-  --card-border:    rgba(45, 226, 230, 0.2);
+  /* Card edge is a neon pink hairline at low alpha (Arcade brand signature) */
+  --card-border:    rgba(255, 61, 139, 0.2);
 
   /* Text */
-  --tw-text:        #efeaff; /* primary */
-  --tw-text-muted:  #9b94c8; /* secondary / labels */
-  --tw-text-faint:  #6b6499; /* metadata, struck prices, captions */
+  --tw-text:        #f5f2f7; /* primary */
+  --tw-text-muted:  #a8a0b2; /* secondary / labels */
+  --tw-text-faint:  #6e6676; /* metadata, struck prices, captions */
 
-  /* Accent — cyan (value/go: discount, distance, primary actions) */
-  --accent:         #2de2e6;
-  --accent-hover:   #5cebee;
-  --accent-active:  #1bbfc3;
-  --accent-soft:    rgba(45, 226, 230, 0.12); /* low-emphasis cyan fill (distance pill) */
-  --accent-soft-border: rgba(45, 226, 230, 0.4); /* cyan pill border */
-  --accent-on-light:#1bbfc3;
+  /* Accent — pink (the single brand/interactive accent: buttons, chips,
+     focus, links, wordmark dot, distance pill, gas line) */
+  --accent:         #ff3d8b;
+  --accent-hover:   #ff5fa1;
+  --accent-active:  #e0276f;
+  --accent-soft:    rgba(255, 61, 139, 0.12); /* low-emphasis pink fill (distance pill) */
+  --accent-soft-border: rgba(255, 61, 139, 0.4); /* pink pill border */
+  --accent-on-light:#e0276f;
 
-  /* Semantic (meaning only) — pink now carries urgency (happy hour) */
-  --success:        #2de2e6; /* fresh reads cyan in Synthwave */
-  --warning:        #ff2e88; /* pink urgency accent */
-  --warning-soft:   rgba(255, 46, 136, 0.13); /* happy-hour badge fill */
-  --warning-soft-border: rgba(255, 46, 136, 0.36); /* happy-hour badge border */
-  --danger:         #ff5470;
+  /* Discount — amber. The one new token (ADR-041): discount has no existing
+     semantic home now that --accent is the pink brand color. Discount-semantic
+     ONLY (figures, discount badge) + the sanctioned card-top motif line. */
+  --discount:       #ffc83d;
+
+  /* Semantic (meaning only) — red now carries urgency (happy hour) */
+  --success:        #ff3d8b; /* fresh reads as the brand pink in Arcade */
+  --warning:        #ff5470; /* red urgency accent */
+  --warning-soft:   rgba(255, 84, 112, 0.13); /* happy-hour badge fill */
+  --warning-soft-border: rgba(255, 84, 112, 0.36); /* happy-hour badge border */
+  --danger:         #ff3b5c; /* error red — distinct from urgency */
 
   /* Derived translucent tints for warning/error surfaces */
-  --surface-urgent-dark: rgba(255, 46, 136, 0.13);
-  --surface-error-dark:  rgba(255, 84, 112, 0.13);
+  --surface-urgent-dark: rgba(255, 84, 112, 0.13);
+  --surface-error-dark:  rgba(255, 59, 92, 0.13);
 
-  --scrim: rgba(4, 4, 14, 0.66); /* flat sheet scrim — no blur */
+  --scrim: rgba(2, 2, 4, 0.7); /* flat sheet scrim — no blur */
 
   /* -------------------------------------------------------------------------
-     Semantic aliases — preserved names, Tidewater values.
+     Semantic aliases — preserved names, Arcade values.
      Components reference these; never raw palette.
      ------------------------------------------------------------------------- */
 
@@ -73,13 +81,13 @@
   --text-body:        var(--tw-text);
   --text-muted:       var(--tw-text-muted);
   --text-faint:       var(--tw-text-faint);
-  --text-on-primary:  var(--bg);            /* on the teal accent — NEVER white */
+  --text-on-primary:  var(--bg);            /* on the pink accent — NEVER white */
   --text-on-inverse:  var(--tw-text);
   --text-urgent:      var(--warning);
   --text-error:       var(--danger);
   --text-link:        var(--accent);
 
-  /* Action — primary (the single teal "go") */
+  /* Action — primary (the single pink "go") */
   --action-primary-bg:        var(--accent);
   --action-primary-bg-hover:  var(--accent-hover);
   --action-primary-bg-active: var(--accent-active);
@@ -98,14 +106,14 @@
   /* Borders */
   --border-default:   var(--tw-border);
   --border-strong:    var(--tw-border-strong);
-  --border-card:      var(--card-border);   /* neon cyan card hairline */
+  --border-card:      var(--card-border);   /* neon pink card hairline */
   --border-field:     var(--tw-border-strong);
   --border-focus:     var(--accent);
 
-  /* Card-element fills (Synthwave neon pills/badges) */
-  --fill-distance:    var(--accent-soft);          /* cyan distance pill */
+  /* Card-element fills (Arcade neon pills/badges) */
+  --fill-distance:    var(--accent-soft);          /* pink distance pill */
   --fill-distance-border: var(--accent-soft-border);
-  --fill-happy:       var(--warning-soft);         /* pink happy-hour badge */
+  --fill-happy:       var(--warning-soft);         /* red happy-hour badge */
   --fill-happy-border: var(--warning-soft-border);
   --fill-daily:       rgba(255, 255, 255, 0.05);   /* neutral daily badge */
 
@@ -187,7 +195,7 @@
   --radius-xl:    18px;  /* between lg (14) and 2xl (20) — keeps scale monotonic */
   --radius-2xl:   20px;  /* bottom sheets, gate card */
   --radius-full:  9999px;
-  --radius-dot:   2px;   /* the teal set-dot */
+  --radius-dot:   2px;   /* the pink set-dot */
 
   --border-hairline: 1px;
   --border-thick:    2px;
@@ -243,18 +251,19 @@
    ========================================================================== */
 
 @theme {
-  /* --- Accent / surfaces (utilities, if used) — Synthwave (ADR-040) --- */
-  --color-accent:        #2de2e6;
-  --color-accent-hover:  #5cebee;
-  --color-bg:            #0a0a1f;
-  --color-surface:       #15122e;
-  --color-surface-raised:#1d1840;
-  --color-ink:           #efeaff;
-  --color-ink-muted:     #9b94c8;
-  --color-ink-faint:     #6b6499;
-  --color-success:       #2de2e6;
-  --color-warning:       #ff2e88;
-  --color-danger:        #ff5470;
+  /* --- Accent / surfaces (utilities, if used) — Arcade (ADR-041) --- */
+  --color-accent:        #ff3d8b;
+  --color-accent-hover:  #ff5fa1;
+  --color-bg:            #050507;
+  --color-surface:       #121016;
+  --color-surface-raised:#1c1922;
+  --color-ink:           #f5f2f7;
+  --color-ink-muted:     #a8a0b2;
+  --color-ink-faint:     #6e6676;
+  --color-discount:      #ffc83d;
+  --color-success:       #ff3d8b;
+  --color-warning:       #ff5470;
+  --color-danger:        #ff3b5c;
 
   /* --- Font families --- */
   --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;

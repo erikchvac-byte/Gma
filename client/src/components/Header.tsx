@@ -25,7 +25,7 @@ export default function Header({ onOpenSettings }: HeaderProps) {
       }}
     >
       {/* Locked wordmark: lowercase "gmas list" in Space Grotesk Medium + the
-          teal "set-dot" brand signature. Never capitalized, never a pictorial
+          pink "set-dot" brand signature. Never capitalized, never a pictorial
           icon (DESIGN.md → Brand & Style; legal: no cannabis imagery). */}
       <h1
         style={{

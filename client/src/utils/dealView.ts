@@ -4,8 +4,8 @@ import type { Dispensary } from '../types'
 // product-category field). 'all' is the default and a pure passthrough.
 export type DealTypeSelection = 'all' | 'happy_hour' | 'daily'
 
-// Discount magnitude is encoded with the single teal accent (ADR-037) at
-// stepped weight/opacity — these tiers drive that, never a second hue.
+// Discount magnitude is encoded with the single amber discount accent (ADR-041)
+// at a stepped font-weight — these tiers drive that, never a second hue.
 export type DiscountTier = 'high' | 'mid' | 'low'
 
 // In-memory filter mirroring DealFeed's distance filter — zero network.

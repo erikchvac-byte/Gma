@@ -113,6 +113,10 @@ Story 4.3 shipped the TypeScript Dutchie integration fixture-tested; live end-to
 - ~~Affirm-gate `AgeGate` has no real focus trap~~ **RESOLVED 2026-06-19 by ADR-036** — the Tidewater gate added a real `Tab` focus-trap (`handleKeyDown`) on the ask/out states; `aria-modal="true"` is now backed by a trap.
 - `sanitizeDescription` no-space truncation can split a UTF-16 surrogate pair — an 80-char description with no spaces and an astral character on the boundary leaves a lone surrogate, rendered as a replacement char. Negligible real-world likelihood (astral letters in a dispensary deal description landing exactly at the cap).
 
+## Deferred from: "Arcade" palette swap (ADR-041, 2026-06-20)
+
+- **Re-run the WCAG 2.2 AA contrast audit for the Arcade palette** — the prior audit (2026-06-19) validated the *Tidewater* teal palette; ADR-041 changed every load-bearing pair (amber `#ffc83d`, pink `#ff3d8b`, red `#ff5470`, all on near-black `#050507`/`#121016`/`#1c1922`). DESIGN.md is now `status: draft` with AA flagged **UNVERIFIED**. Measure sRGB ratios for: primary/muted/faint text on each surface; `--bg` on pink (button label, focus ring); amber discount figures; red urgency badge/countdown; and the pink card hairline. Restore the per-pair table and set `status: final` only after all essential-text pairs pass AA. **Likely risk:** amber `#ffc83d` and red `#ff5470` on near-black are bright (probably pass as large/figure text), but verify the 10.5px happy-hour badge label and 11.5px countdown specifically.
+
 ## Deferred from: code review of GMAS_LIST_BRIEF.md / Tidewater reskin (2026-06-19)
 
 - ~~**Full dark-palette WCAG AA contrast audit**~~ **DONE 2026-06-19** (see DESIGN.md → Colors → Contrast table). All shipped essential text passes AA (text 14.4, all text-muted contexts 6.5–8.3 incl. legal small print + stale line, action button 9.95, semantics 6.1–9.9). Polish follow-ups:

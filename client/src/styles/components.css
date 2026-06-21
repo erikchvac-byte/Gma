@@ -1,5 +1,5 @@
 /* ============================================================
-   gmas list — Component styles ("Tidewater")
+   gmas list — Component styles ("Arcade")
    Class-based styling for the reusable primitives. Every value
    references a token. Hover / active / focus / disabled states
    live here so the JSX stays declarative.
@@ -42,7 +42,7 @@
 .gma-btn--lg { min-height: var(--control-height-lg); }
 .gma-btn--block { width: 100%; }
 
-/* primary — the single teal "go" affordance (fg is always --bg, never white) */
+/* primary — the single pink "go" affordance (fg is always --bg, never white) */
 .gma-btn--primary {
   background: var(--action-primary-bg);
   color: var(--action-primary-fg);
@@ -99,7 +99,7 @@
    --------------------------------------------------------------- */
 .gma-card {
   background: var(--surface-card);
-  /* Synthwave: the card boundary is a low-alpha neon cyan hairline (--surface
+  /* Arcade: the card boundary is a low-alpha neon pink hairline (--surface
      sits close to --bg on dark, so the glow-tinted edge carries the boundary) */
   border: var(--border-hairline) solid var(--border-card);
   border-radius: var(--radius-lg);
@@ -111,6 +111,22 @@
 .gma-card--interactive { cursor: pointer; transition: var(--transition-control); }
 .gma-card--interactive:hover { border-color: var(--border-strong); box-shadow: var(--shadow-sm); }
 .gma-card--urgent { border-color: var(--status-urgent); background: var(--surface-urgent); }
+
+/* Arcade card-top motif (ADR-041): a pink hairline over an amber hairline at
+   the very top of every deal card — decoration only. Deal cards are the sole
+   article.gma-card, so scope by element (no extra className / DOM change). */
+article.gma-card { position: relative; }
+article.gma-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 6px;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  background:
+    linear-gradient(var(--accent) 0 0)   top    / 100% 2px no-repeat,
+    linear-gradient(var(--discount) 0 0) bottom / 100% 2px no-repeat;
+  pointer-events: none;
+}
 
 /* ---------------------------------------------------------------
    Badge — small status / category pill
@@ -134,7 +150,7 @@
 .gma-badge--fresh   { background: var(--accent-soft); color: var(--accent); }
 .gma-badge--urgent  { background: var(--fill-happy); color: var(--text-urgent); border-color: var(--fill-happy-border); }
 .gma-badge--stale   { background: var(--surface-raised); color: var(--text-faint); }
-.gma-badge--discount{ background: var(--accent); color: var(--bg); }
+.gma-badge--discount{ background: var(--discount); color: var(--bg); }
 
 /* solid-dot indicator inside fresh/stale badges */
 .gma-badge__dot { width: 6px; height: 6px; border-radius: var(--radius-full); background: currentColor; }
@@ -262,7 +278,7 @@
 }
 .gma-chip:hover { border-color: var(--accent); }
 .gma-chip:focus-visible { outline: none; box-shadow: var(--ring); }
-/* active chip: filled teal, inverted text (fg is --bg, never white) */
+/* active chip: filled pink, inverted text (fg is --bg, never white) */
 .gma-chip[aria-pressed="true"] {
   background: var(--accent);
   color: var(--text-on-primary);
@@ -270,10 +286,10 @@
 }
 
 /* ---------------------------------------------------------------
-   Deal card — Synthwave (ADR-040). Header: store name + cyan distance
-   pill + cyan gas line; status row: pink happy-hour badge w/ pulse dot
-   + pink countdown, or a neutral daily badge; teal→cyan deal sub-blocks.
-   Card-specific px sizes come straight from the Synthwave spec and live
+   Deal card — Arcade (ADR-041). Header: store name + pink distance
+   pill + pink gas line; status row: red happy-hour badge w/ pulse dot
+   + red countdown, or a neutral daily badge; amber discount figures.
+   Card-specific px sizes come straight from the Arcade spec and live
    here (not on the global type scale) on purpose.
    --------------------------------------------------------------- */
 .gma-dealcard__head {
@@ -291,8 +307,8 @@
   color: var(--text-strong);
   min-width: 0;
 }
-/* distance: a neon cyan pill — the "how far" half of the trip (ADR-038
-   split into two figures for Synthwave; spec: 12px, cyan fill .12 / border .4) */
+/* distance: a neon pink pill — the "how far" half of the trip (ADR-038
+   split into two figures; spec: 12px, pink fill .12 / border .4) */
 .gma-distance-pill {
   flex: none;
   display: inline-flex;
@@ -307,7 +323,7 @@
   white-space: nowrap;
   font-variant-numeric: tabular-nums slashed-zero;
 }
-/* gas: the "what it costs to get there" half — cyan figure line (spec: 12.5px) */
+/* gas: the "what it costs to get there" half — pink figure line (spec: 12.5px) */
 .gma-gas-line {
   font-family: var(--font-mono);
   font-size: 12.5px;
@@ -321,7 +337,7 @@
   align-items: center;
   gap: var(--space-2);
 }
-/* happy-hour badge — pink, the urgency signal (spec: fill .13 / border .36,
+/* happy-hour badge — red, the urgency signal (spec: fill .13 / border .36,
    10.5px uppercase label) */
 .gma-happy-badge {
   display: inline-flex;
@@ -340,7 +356,7 @@
   padding: 4px var(--space-2);
   white-space: nowrap;
 }
-/* pulse dot — pink, the "live right now" tell */
+/* pulse dot — red, the "live right now" tell */
 .gma-pulse-dot {
   width: 6px;
   height: 6px;
@@ -353,7 +369,7 @@
   50% { opacity: 0.4; transform: scale(0.78); }
 }
 @media (prefers-reduced-motion: reduce) { .gma-pulse-dot { animation: none; } }
-/* countdown — pink figure, the live time-left (spec: 11.5px) */
+/* countdown — red figure, the live time-left (spec: 11.5px) */
 .gma-countdown {
   font-family: var(--font-mono);
   font-size: 11.5px;
@@ -396,16 +412,15 @@
   border-radius: var(--radius-lg);
   padding: var(--space-2) var(--space-3);
 }
-/* discount magnitude in the cyan value accent (spec: 22px). Every tier renders
-   at full opacity — the Synthwave mockup wants uniformly bright cyan figures
-   (ADR-040 drops ADR-037's opacity ramp); a subtle weight step is the only
-   remaining magnitude cue, so magnitude is still never a second hue. */
+/* discount magnitude in the amber discount accent (spec: 22px). Every tier
+   renders at full opacity (ADR-040/041 drop ADR-037's opacity ramp); a subtle
+   weight step is the only magnitude cue, so magnitude is never a second hue. */
 .gma-deal-block__pct {
   flex: none;
   font-family: var(--font-mono);
   font-size: 22px;
   line-height: 1;
-  color: var(--accent);
+  color: var(--discount);
   font-variant-numeric: tabular-nums slashed-zero;
 }
 .gma-deal-block__pct--high { font-weight: var(--weight-semibold); }

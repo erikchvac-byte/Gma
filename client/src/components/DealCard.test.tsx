@@ -41,7 +41,7 @@ const byFullText = (text: string, selector?: string) =>
   )
 
 describe('DealCard', () => {
-  it('renders the store header once: name, a cyan distance pill, and one gas line', () => {
+  it('renders the store header once: name, a pink distance pill, and one gas line', () => {
     render(
       <DealCard
         dispensary={makeDispensary({})}
@@ -54,7 +54,7 @@ describe('DealCard', () => {
     )
 
     expect(screen.getByText('Alpha Greens')).toBeInTheDocument()
-    // Synthwave (ADR-040): distance and gas are two separate cyan figures
+    // Arcade (ADR-041): distance and gas are two separate pink figures
     expect(byFullText('12.4 mi', '.gma-distance-pill')).toBeInTheDocument()
     expect(byFullText('$3.63', '.gma-gas-line')).toBeInTheDocument()
     // gas still renders exactly once (not duplicated onto a deal)
@@ -76,7 +76,7 @@ describe('DealCard', () => {
     const card = screen.getByRole('article')
     expect(within(card).getByText('Happy hour special')).toBeInTheDocument()
     expect(within(card).getByText('Daily special')).toBeInTheDocument()
-    // live happy hour → pink badge + pink countdown reporting soonest end (ADR-009)
+    // live happy hour → red badge + red countdown reporting soonest end (ADR-009)
     expect(within(card).getByText('Happy hour')).toHaveClass('gma-happy-badge')
     expect(byFullText('ends in 0:30', '.gma-countdown')).toBeInTheDocument()
     // daily deal's metadata line
@@ -187,7 +187,7 @@ describe('DealCard', () => {
 
     // deal still renders discount + window; the deal title falls back to the
     // kind label ('Happy hour') instead of an empty node. Scope to the title so
-    // it isn't confused with the pink "Happy hour" urgency badge above it.
+    // it isn't confused with the red "Happy hour" urgency badge above it.
     expect(screen.getByText('30%')).toBeInTheDocument()
     expect(byFullText('Happy hour', '.gma-deal-block__title')).toBeInTheDocument()
     expect(screen.queryByText('Happy hour special')).not.toBeInTheDocument()
