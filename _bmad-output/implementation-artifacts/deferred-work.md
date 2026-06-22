@@ -1,6 +1,18 @@
 # Deferred Work
 
-## DEFERRED — Deliverable 2: per-user distance + honest gas (split from deals-first, 2026-06-21)
+## DEFERRED — User-Relative Positioning #2–#6 (brainstorm split, 2026-06-21)
+
+Source: `_bmad-output/brainstorming/brainstorming-session-2026-06-21-1721.md` (proposed **ADR-044** "User-Relative Positioning Supersedes Fixed-Origin Distance", retires ADR-008 fixed-origin + ADR-011 hand-distances). The brainstorm **supersedes & absorbs** the older "Deliverable 2" section below — same geocode/haversine engine, expanded to all 22 stores + Geolocation two-door + centroid cold-start + ferry honesty + slider reframe. Decomposed into 6 build-order deliverables; **#1 (geocode all 22 + lat/lng on records & type) taken now** via bmad-quick-dev (`spec-geocode-stores-latlng`). Remaining, in dependency order:
+
+- **#2 — Location input on AgeGate (Theme B #4/#5):** fold "📍 Use my location" (Geolocation API, one tap, exact) **and** a ZIP box side-by-side into the existing `AgeGate.tsx` after the 21+ yes. Plus the honest "no location yet" state. Confident users tap; cautious users type; undecided get the honest empty state. Persist location for the distance engine.
+- **#3 — Live user-relative distance → gas cost + distance-only sort (Theme A #3):** `haversine(user, store) × 1.3` road factor feeds existing `roundTripGasCost` + nearest-first sort. **Single sort axis = distance to user**; deal urgency shows on the card but NEVER reorders. Depends on #1 (lat/lng) + #2 (user location). **Carry-in from #1 review:** `normalizeDispensaries` does not validate `lat`/`lng` (only `id`/`deals`/`distanceMiles`) — when #3 makes a consumer read coords, add a finite-coord drop-rule there so a poisoned `lat: NaN` can't reach the haversine/sort path (mirrors the existing present-but-invalid `distanceMiles` rule).
+- **#4 — Centroid cold-start seed, number-suppressed (Theme B #6):** if user skips location, sort the feed by distance from the DERIVED store centroid (post-geocode) but show NO distance/gas number until real location exists. Preserves Honest Math (ADR-007/009). Depends on #1.
+- **#5 — Slider reframe, default 25mi (Theme C #E2):** reframe the radius slider as a personal-reach trim, not a zone rule. Default shrinks 50 → 25mi (tunable 20/30, widen-able ~60).
+- **#6 — Ferry chip (Theme C #E3):** manual `ferry` boolean on the store record → small "🚤 ferry" chip on the card. No routing engine; doesn't affect sort. Smallest, fully standalone. Salish Coast / Port Townsend confirmed; check Whatcom cluster.
+
+Open items carried to the specs: confirm/derive 18 Dutchie store **street addresses** for the geocode script (#1); final slider default (#5); which stores get the ferry flag (#6).
+
+## DEFERRED (SUPERSEDED by User-Relative Positioning split above, 2026-06-21) — Deliverable 2: per-user distance + honest gas (split from deals-first, 2026-06-21)
 
 Split out of `spec-all-stores-show-deals.md` (Deliverable 1) at Erik's direction — **deals first, then distance, then gas**. D1 makes distance *optional* so all stores show their deals; D2 then makes the distance/gas **real and per-user**, retiring the fixed-origin placeholder.
 

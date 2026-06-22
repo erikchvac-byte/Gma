@@ -26,6 +26,13 @@ export interface Dispensary {
   // seed stores carry a fixed-origin value (ADR-008, retired in Deliverable 2);
   // push-ingested Dutchie stores have none until D2 geocodes them.
   distanceMiles?: number
+  // Real store coordinates, populated by the dev-time geocode script
+  // (server/scripts/geocodeStores.ts, OpenStreetMap Nominatim) and committed
+  // into data.json. Additive optional enrichment like `status` — no consumer
+  // reads them yet; deferred #3 (live user-relative distance/sort) and #4
+  // (centroid cold-start) are the consumers. Absent until geocoded. (ADR-044)
+  lat?: number
+  lng?: number
   stale: boolean
   lastFetchedAt: string
   // Always emitted by GET /api/data; optional so pre-Goal-B fixtures/payloads
