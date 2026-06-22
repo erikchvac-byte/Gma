@@ -172,8 +172,12 @@ jobs:
           git config user.email 'gma-bot@users.noreply.github.com'
           git add server/data/data.json
           git commit -m 'chore(data): refresh seed [skip ci]'
+          # --autostash: the job's `npm install` rewrites the tracked server/package-lock.json,
+          # leaving an unstaged change that would otherwise abort `pull --rebase`. Autostash
+          # parks it across the rebase and restores it after (discarded at job end). We commit
+          # only data.json, so the lockfile churn never lands on master.
           for attempt in 1 2; do
-            git pull --rebase origin master && git push origin HEAD:master && exit 0
+            git pull --rebase --autostash origin master && git push origin HEAD:master && exit 0
             echo "push attempt $attempt failed; retrying"
             sleep 3
           done
