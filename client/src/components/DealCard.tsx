@@ -1,6 +1,6 @@
 import type { Deal, Dispensary } from '../types'
 import { Card, Icon } from './ui'
-import { discountTier, storeUrgencyBadge } from '../utils/dealView'
+import { discountTier, storeUrgencyBadge, stripDiscountPrefix } from '../utils/dealView'
 
 // One deal plus its upstream-computed display strings. windowText/countdown are
 // computed in DealFeed (null means "render nothing" — e.g. malformed times).
@@ -24,9 +24,18 @@ export interface DealCardProps {
 // deals are already labelled by their meta ('Daily deal · …'), so a blank one
 // omits the title rather than doubling the label; happy hours keep the label
 // because their meta is only a time window.
-function dealTitle(deal: Deal): string | null {
-  if (deal.description && deal.description.trim() !== '') return deal.description
-  return deal.type === 'happy_hour' ? 'Happy hour' : null
+//
+// badgeRendering: when the percent badge is showing this deal's magnitude, drop
+// any leading "N% off" phrase the scraped description embeds so the card doesn't
+// stutter it (ADR-046). Badge-anchored — never strip when nothing else shows the
+// figure. If stripping empties the title, fall through to the kind fallback
+// (NOT the raw description — that would re-introduce the stutter).
+function dealTitle(deal: Deal, badgeRendering: boolean): string | null {
+  const kindFallback = deal.type === 'happy_hour' ? 'Happy hour' : null
+  if (!deal.description || deal.description.trim() === '') return kindFallback
+  if (!badgeRendering) return deal.description
+  const stripped = stripDiscountPrefix(deal.description)
+  return stripped !== '' ? stripped : kindFallback
 }
 
 // metadata line: the happy-hour window, or a daily label + status. null when a
@@ -84,7 +93,9 @@ export default function DealCard({ dispensary, deals, gasCostText }: DealCardPro
       <div className="gma-deal-grid">
         {deals.map(({ deal, windowText }, i) => {
           const tier = discountTier(deal.discountPct)
-          const title = dealTitle(deal)
+          // badge-anchored: pass whether the percent badge is rendering so the
+          // title only drops the "N% off" prefix the badge is already showing.
+          const title = dealTitle(deal, tier !== null)
           const meta = dealMeta(deal, windowText)
           return (
             // index keeps the key unique even when sanitize blanks two
