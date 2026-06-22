@@ -4,6 +4,8 @@ node_modules/
 .env
 client/dist/
 server/dist/
+# ADR-047 commit-back: ingestRun --emit seed artifacts (CI-only; never commit)
+server/out/
 
 # TLS cert/key bundles — contain private keys, never commit
 *-ssl-bundle/
