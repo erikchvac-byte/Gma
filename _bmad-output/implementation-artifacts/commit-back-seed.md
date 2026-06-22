@@ -4,7 +4,7 @@ baseline_commit: e63806c7462b20371032003aedd2df658c551143
 
 # Story: Commit-Back Seed — Durable Live Data Across Render Deploys
 
-Status: review
+Status: done
 
 <!-- Cross-cutting follow-up story (no parent epic). Origin: Correct-Course 2026-06-22.
      Sprint Change Proposal: _bmad-output/planning-artifacts/sprint-change-proposal-2026-06-22.md

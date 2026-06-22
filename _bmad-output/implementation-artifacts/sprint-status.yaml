@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-09
-last_updated: 2026-06-22 (commit-back-seed → review)
+last_updated: 2026-06-22 (commit-back-seed → done, PR#29 merged)
 project: Happy
 project_key: NOKEY
 tracking_system: file-system
@@ -78,7 +78,7 @@ development_status:
   4-3-live-pass: done  # spec-4-3-live-pass — live E2E: 3/3 Dutchie stores flow real deals; transform reconciled to real shape (ADR-030); all 4 sources data-complete
   5-1-deploy-scraper-service: done  # deploy-READINESS + ADR only (Erik: stay free / defer live 2026-06-15) — env-parametrize SCRAPER_URL + topology ADR-033 + runbook; no Render spend. Review-verified 2026-06-16 (ADR reconcile confirmed).
   compliance-launch-gate: done  # compliance-launch-gate.md — the 3 "verify with counsel" items from regulated-content review: (1) description sanitization+blocklist at normalizeDeals chokepoint [WAC 314-55-155 advertiser-status posture], (2) standing disclaimer footer + flag-gated WA-warning slot, (3) age-gate decline affordance. Two-track: counsel determination (Erik) + defensible engineering posture (dev). LAUNCH-GATING.
-  commit-back-seed: review  # commit-back-seed.md (Correct-Course 2026-06-22, ADR-047) — make Render's ephemeral-disk reset non-destructive: cron commits scraped data.json back to master as a fresh seed, built via in-CI applyIngest merge (NOT GET /api/data, which filterActiveDeals makes lossy). New commit-back job in scrape-ingest.yml + commitBackSeed.ts + ingestRun emit flag; paths-ignore loop-breaker. Fixes frozen "Last updated Jun 14" / 17-unavailable flip-flop. Out of scope: lowering the unresolved-Dutchie-cName floor.
+  commit-back-seed: done  # commit-back-seed.md (Correct-Course 2026-06-22, ADR-047) — make Render's ephemeral-disk reset non-destructive: cron commits scraped data.json back to master as a fresh seed, built via in-CI applyIngest merge (NOT GET /api/data, which filterActiveDeals makes lossy). New commit-back job in scrape-ingest.yml + commitBackSeed.ts + ingestRun emit flag; paths-ignore loop-breaker. Fixes frozen "Last updated Jun 14" / 17-unavailable flip-flop. Out of scope: lowering the unresolved-Dutchie-cName floor.
 
   # Epic 6: Apply Gma's Helper Design System to the client
   # Split ruled with Erik 2026-06-16: foundation → primitives → surface re-skin.
