@@ -28,7 +28,6 @@ export const DUTCHIE_STORE_IDS = [
   '2020-solutions-north-bellingham',
   '2020-solutions-pacific-highway',
   'starbuds-bellingham',
-  'liv-ferndale',
   'salish-coast-cannabis',
 ] as const
 

@@ -50,8 +50,11 @@ describe('mergeCoords', () => {
 })
 
 describe('EXPECTED_UNCOORDED', () => {
-  it('lists liv-ferndale so its known gap does not flip the run to a failure', () => {
-    expect(EXPECTED_UNCOORDED.has('liv-ferndale')).toBe(true)
+  it('is empty — every listed store geocodes to a real WA coordinate', () => {
+    // liv-ferndale (LIV Cannabis, Ferndale MICHIGAN) was removed 2026-06-22; no
+    // store is now knowingly uncoorded. A non-empty set here is a smell: either
+    // geocode the store or, if it cannot resolve to WA, it likely does not belong.
+    expect(EXPECTED_UNCOORDED.size).toBe(0)
   })
 })
 
