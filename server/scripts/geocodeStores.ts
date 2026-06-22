@@ -49,8 +49,6 @@ export const STORE_ADDRESSES: Record<string, string> = {
   '2020-solutions-pacific-highway': '4770 Pacific Hwy, Bellingham, WA 98226', // 2020-solutions.com Pacific Hwy
   'starbuds-bellingham': '145 N Samish Way, Bellingham, WA 98225', // starbud.com / Yelp
   'salish-coast-cannabis': '12947 Casino Drive, Anacortes, WA 98221', // salishcoastcannabis.com/contact (Anacortes, NOT Port Townsend)
-  // 'liv-ferndale': UNRESOLVED — every lookup collides with LIV Cannabis Ferndale, MICHIGAN;
-  // Dutchie info page is JS/age-gated. Pending a confidently-sourced Ferndale, WA address.
 }
 
 // Building-precision coordinates that OSM Nominatim cannot derive because the
@@ -68,10 +66,12 @@ export const VERIFIED_COORDS: Record<string, { lat: number; lng: number }> = {
 
 // Stores knowingly left uncoorded by an explicit human call (NOT a geocode
 // failure), so the exit code stays meaningful: the run fails only on an
-// UNEXPECTED miss. Remove an id from here once it has a sourced address/coord.
-export const EXPECTED_UNCOORDED = new Set<string>([
-  'liv-ferndale', // no confidently-sourced Ferndale, WA address — every lookup hits Ferndale, MI; pending
-])
+// UNEXPECTED miss. Add an id here only with a justification; currently empty —
+// every listed store geocodes to a real WA coordinate (enforced by the
+// data.json WA-bounds integrity test, server/scrapers/storeRegistry.test.ts).
+// (liv-ferndale was removed 2026-06-22: it was LIV Cannabis in Ferndale,
+// MICHIGAN — an out-of-state store that never belonged in this WA list.)
+export const EXPECTED_UNCOORDED = new Set<string>([])
 
 // Rough WA bounding box — rejects an out-of-state mis-geocode (e.g. a homonym
 // resolving to Ferndale, MI) before it can poison the data.
