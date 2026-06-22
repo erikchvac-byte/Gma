@@ -8,6 +8,12 @@ name: scrape-ingest
 on:
   schedule:
     - cron: '0 * * * *' # hourly (UTC)
+  # Render's disk is ephemeral, so every redeploy resets data.json to the committed
+  # seed. Every master push triggers a Render redeploy (deploy-hook), so re-scrape on
+  # push too — prod repopulates within ~3 min instead of waiting up to an hour for the
+  # next hourly cron. The concurrency group below serializes this with the schedule.
+  push:
+    branches: [master]
   workflow_dispatch: {} # manual trigger for testing
 
 permissions:
