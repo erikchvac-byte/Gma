@@ -31,21 +31,66 @@ export function storeUrgencyBadge(
     : { variant: 'neutral', text: 'active today' }
 }
 
-// The leading "N% off" phrase the percent badge already shows (e.g. "50% off ",
-// "15% Off ", "10% OFF · "). Scraped descriptions embed it ("50% off Select
-// Brands"), so the card would stutter the magnitude — badge + title — unless the
-// title drops it. Consumed as ONE unit: number (any N, optional decimal) + "%" +
-// "off" + the trailing whitespace/separator, so no orphan word and no leading
-// space survive. Case-insensitive on "off" because live data uses "Off"/"OFF"
-// while the badge renders lowercase "off" (a case-sensitive match would no-op on
-// most real descriptions). `\b` keeps it from biting into "Offers"/"off-brand".
-const DISCOUNT_PREFIX = /^\s*\d+(?:\.\d+)?\s*%\s*off\b[\s·:•–—-]*/i
+// Counts distinct "N%" figures in a title. 2+ means a layered sale string
+// ("Up to 50% Off Sale - 40% Off Brands") where removing the badge's magnitude
+// leaves dangling connectives ("Up to … Sale -") — worse than the stutter. We
+// keep those whole (the guard below) rather than mangle them.
+const PERCENT_FIGURE = /\d+(?:\.\d+)?\s*%/g
 
-// Display-only: returns the title with a leading percent-off phrase suppressed.
-// Never mutates input. Callers strip ONLY when the percent badge is rendering
-// (badge-anchored) — see dealTitle in DealCard. Defensive trim per the contract.
-export function stripDiscountPrefix(title: string): string {
-  return title.replace(DISCOUNT_PREFIX, '').trim()
+// Separators that orphan when a magnitude is removed from the head/tail of a
+// title ("Dabstract - 50% off" → "Dabstract -" → "Dabstract").
+const EDGE_SEPARATORS = /^[·:•–—*\s-]+|[·:•–—*\s-]+$/g
+
+// Qualifiers that grammatically govern the magnitude right after them ("Up to
+// 50% off", "Save 20% off"). On a single-figure title the multi-tier guard does
+// not fire, so removing the magnitude would orphan the qualifier into a
+// meaningless lead-in ("Up to Sale"). When one survives at the head of the
+// result we keep the whole original instead — same spirit as the multi-tier
+// guard. Scoped to the English copy these WA dispensary feeds use.
+const DANGLING_QUALIFIER = /^(?:up to|save|spend|get|extra)\b/i
+
+// Escapes regex metacharacters so a magnitude that stringifies with one (a
+// decimal point, or an exotic exponent form) can never corrupt the pattern.
+function escapeRegExp(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+// Display-only: drops the magnitude the percent badge already shows so the card
+// doesn't stutter it (ADR-046, generalized). Badge-anchored to the deal's EXACT
+// discountPct — wherever it appears, not just the start — so a *different* number
+// in the title (e.g. a "30% THC" when the discount is 50%) is never touched.
+// `off` is optional because real rows carry the figure without it ("40% ONLINE
+// ORDERS") yet still derive a discountPct. Multi-tier and dangling-qualifier
+// titles are returned whole (guards). Never mutates input; an empty result means
+// the title was nothing but the phrase — the caller (dealTitle) falls back to
+// the kind label.
+export function stripDiscountPrefix(title: string, discountPct: number): string {
+  // Defensive: the caller only passes a positive finite pct, but a bad value
+  // would build a nonsense pattern — no-op rather than mangle.
+  if (!Number.isFinite(discountPct)) return title
+
+  // Guard: layered sale → leave the whole title, don't collapse it to nonsense.
+  const figures = title.match(PERCENT_FIGURE)
+  if (figures && figures.length >= 2) return title
+
+  // Anchor to the badge's own magnitude. `\b` before the number stops `5` from
+  // biting into "45%"; the literal "%" stops it from matching year digits.
+  const badgeMagnitude = new RegExp(
+    `\\b${escapeRegExp(String(discountPct))}\\s*%\\s*(?:off\\b)?[\\s·:•–—*-]*`,
+    'gi',
+  )
+
+  const stripped = title
+    .replace(badgeMagnitude, ' ') // space, not '', so "2026 40% Off Ounces" → "2026 Ounces"
+    .replace(/\s{2,}/g, ' ')
+    .replace(EDGE_SEPARATORS, '')
+    .trim()
+
+  // Stripping orphaned a governing qualifier ("Up to 50% Off Sale" → "Up to
+  // Sale") — keep the readable original rather than emit the fragment.
+  if (DANGLING_QUALIFIER.test(stripped)) return title
+
+  return stripped
 }
 
 // Magnitude bucket for the discount figure. null / non-finite / non-positive
