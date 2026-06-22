@@ -1,4 +1,6 @@
 import { pathToFileURL } from 'node:url'
+import { mkdirSync, writeFileSync } from 'node:fs'
+import path from 'node:path'
 import axios from 'axios'
 import { scrapers, storeIds } from '../scrapers/index.js'
 import { normalizeDeals } from '../utils/normalizeDeals.js'
@@ -58,6 +60,13 @@ export interface RunIngestOptions {
   secret: string
   registry?: Record<string, () => Promise<Deal[]>>
   postFn?: PostFn
+  // ADR-047: when set, each scraped IngestEntry is additionally written to
+  // <emitDir>/<dispensaryId>.json BEFORE the POST. These artifacts are the
+  // commit-back seed source (uploaded by CI, merged via applyIngest). Emitting
+  // before POST means a POST failure — the deploy-cutover race this story fixes —
+  // still leaves a good on-disk scrape for the seed. Additive: unset = today's
+  // behavior, no files written.
+  emitDir?: string
 }
 
 export interface RunIngestOutcome {
@@ -99,6 +108,15 @@ export async function runIngest(opts: RunIngestOptions): Promise<RunIngestOutcom
     }
   }
 
+  // Emit the scraped entries as seed artifacts before POSTing (see emitDir doc).
+  if (opts.emitDir && entries.length > 0) {
+    mkdirSync(opts.emitDir, { recursive: true })
+    for (const entry of entries) {
+      const file = path.join(opts.emitDir, `${entry.dispensaryId}.json`)
+      writeFileSync(file, JSON.stringify(entry))
+    }
+  }
+
   if (entries.length > 0) {
     try {
       const posted = await postFn(opts.ingestUrl, { stores: entries }, opts.secret)
@@ -124,6 +142,13 @@ export async function runIngest(opts: RunIngestOptions): Promise<RunIngestOutcom
 export function parseStoreArg(argv: string[]): string | undefined {
   const i = argv.indexOf('--store')
   return i >= 0 ? argv[i + 1] : undefined
+}
+
+// `--emit <dir>` (or env INGEST_EMIT_DIR) writes seed artifacts; flag wins.
+export function parseEmitDir(argv: string[], env: NodeJS.ProcessEnv): string | undefined {
+  const i = argv.indexOf('--emit')
+  if (i >= 0 && argv[i + 1]) return argv[i + 1]
+  return env.INGEST_EMIT_DIR || undefined
 }
 
 async function main(): Promise<void> {
@@ -152,7 +177,8 @@ async function main(): Promise<void> {
     stores = storeIds
   }
 
-  const { ok, results } = await runIngest({ stores, ingestUrl, secret })
+  const emitDir = parseEmitDir(args, process.env)
+  const { ok, results } = await runIngest({ stores, ingestUrl, secret, emitDir })
   for (const [id, r] of Object.entries(results)) console.log(`[ingestRun] ${id}: ${r}`)
   process.exit(ok ? 0 : 1)
 }

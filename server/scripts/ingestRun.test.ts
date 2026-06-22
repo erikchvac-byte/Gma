@@ -1,6 +1,10 @@
 import { describe, it, expect, vi } from 'vitest'
-import { runIngest, parseStoreArg, type PostFn } from './ingestRun.js'
+import { mkdtempSync, readFileSync, existsSync, readdirSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import path from 'node:path'
+import { runIngest, parseStoreArg, parseEmitDir, type PostFn } from './ingestRun.js'
 import type { Deal } from '../../client/src/types/index.js'
+import type { IngestEntry } from '../types/index.js'
 
 // A deal that survives normalizeDeals (both times null = all-day, daysValid valid).
 const validDeal: Deal = {
@@ -146,6 +150,88 @@ describe('runIngest', () => {
     expect(out.ok).toBe(false)
     expect(out.results.nope).toBe('error')
     expect(postFn).not.toHaveBeenCalled()
+  })
+})
+
+describe('runIngest emit (ADR-047 seed artifacts)', () => {
+  it('with emitDir set, writes the normalized IngestEntry shape per store', async () => {
+    const emitDir = mkdtempSync(path.join(tmpdir(), 'emit-'))
+    const postFn = vi.fn<PostFn>().mockResolvedValue({ 'store-a': 'ok' })
+    await runIngest({
+      stores: ['store-a'],
+      ingestUrl: URL,
+      secret: SECRET,
+      registry: { 'store-a': async () => [validDeal] },
+      postFn,
+      emitDir,
+    })
+
+    const file = path.join(emitDir, 'store-a.json')
+    expect(existsSync(file)).toBe(true)
+    const written: IngestEntry = JSON.parse(readFileSync(file, 'utf-8'))
+    expect(written).toEqual({ dispensaryId: 'store-a', deals: [validDeal] })
+  })
+
+  it('emits the post-normalize entry (junk dropped) — empty deals still written', async () => {
+    const emitDir = mkdtempSync(path.join(tmpdir(), 'emit-'))
+    const postFn = vi.fn<PostFn>().mockResolvedValue({ 'store-a': 'stale' })
+    const bad = [{ type: 'daily', description: 'x', discountPct: 1, startTime: '09:00', endTime: '09:00', daysValid: ['everyday'] }] as Deal[]
+    await runIngest({
+      stores: ['store-a'],
+      ingestUrl: URL,
+      secret: SECRET,
+      registry: { 'store-a': async () => bad },
+      postFn,
+      emitDir,
+    })
+
+    const written: IngestEntry = JSON.parse(readFileSync(path.join(emitDir, 'store-a.json'), 'utf-8'))
+    expect(written).toEqual({ dispensaryId: 'store-a', deals: [] }) // normalized, not raw junk
+  })
+
+  it('emits before POST: a POST failure still leaves the seed artifact on disk', async () => {
+    const emitDir = mkdtempSync(path.join(tmpdir(), 'emit-'))
+    const postFn = vi.fn<PostFn>().mockRejectedValue(new Error('boom')) // deploy-cutover race
+    const out = await runIngest({
+      stores: ['store-a'],
+      ingestUrl: URL,
+      secret: SECRET,
+      registry: { 'store-a': async () => [validDeal] },
+      postFn,
+      emitDir,
+    })
+
+    expect(out.ok).toBe(false) // POST failed
+    const written: IngestEntry = JSON.parse(readFileSync(path.join(emitDir, 'store-a.json'), 'utf-8'))
+    expect(written.deals).toEqual([validDeal]) // but the seed survived
+  })
+
+  it('without emitDir, no files are written and behavior is identical to today', async () => {
+    const emitDir = mkdtempSync(path.join(tmpdir(), 'emit-'))
+    const postFn = vi.fn<PostFn>().mockResolvedValue({ 'store-a': 'ok' })
+    const out = await runIngest({
+      stores: ['store-a'],
+      ingestUrl: URL,
+      secret: SECRET,
+      registry: { 'store-a': async () => [validDeal] },
+      postFn,
+      // emitDir omitted
+    })
+
+    expect(out).toEqual({ ok: true, results: { 'store-a': 'ok' } })
+    expect(readdirSync(emitDir)).toEqual([]) // nothing written anywhere
+  })
+})
+
+describe('parseEmitDir', () => {
+  it('prefers the --emit flag over the env var', () => {
+    expect(parseEmitDir(['--emit', 'flagdir'], { INGEST_EMIT_DIR: 'envdir' })).toBe('flagdir')
+  })
+  it('falls back to INGEST_EMIT_DIR when no flag', () => {
+    expect(parseEmitDir([], { INGEST_EMIT_DIR: 'envdir' })).toBe('envdir')
+  })
+  it('returns undefined when neither is set', () => {
+    expect(parseEmitDir([], {})).toBeUndefined()
   })
 })
 

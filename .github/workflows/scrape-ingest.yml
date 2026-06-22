@@ -14,10 +14,17 @@ on:
   # next hourly cron. The concurrency group below serializes this with the schedule.
   push:
     branches: [master]
+    # ADR-047 loop-breaker: the commit-back job pushes a refreshed data.json to
+    # master. Ignoring that path here means the data commit can NOT re-trigger this
+    # workflow — fully in-repo, no dependency on the (unreadable) Render dashboard.
+    # ([skip ci] in the commit message is belt-and-suspenders.)
+    paths-ignore: ['server/data/data.json']
   workflow_dispatch: {} # manual trigger for testing
 
+# contents: write is required by the commit-back job (ADR-047) to push the refreshed
+# seed. All other jobs only read, but workflow permissions are workflow-scoped.
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: scrape-ingest
@@ -87,6 +94,10 @@ jobs:
           curl -sf http://127.0.0.1:8000/health || { echo 'scraper failed to start'; cat uvicorn.log; exit 1; }
         working-directory: scraper-svc
 
+      # A single scrape feeds BOTH the live POST /api/ingest (immediate refresh) and
+      # the emitted seed artifact (ADR-047 commit-back) — no double-scrape. Emit runs
+      # BEFORE the POST, so even when the POST loses the deploy-cutover race (exit 1),
+      # the good scrape is still on disk for the seed.
       - name: Scrape & ingest
         run: npx tsx scripts/ingestRun.ts --store "${{ matrix.store }}"
         working-directory: server
@@ -94,6 +105,79 @@ jobs:
           INGEST_URL: https://gmaslist.com/api/ingest
           INGEST_SECRET: ${{ secrets.INGEST_SECRET }}
           SCRAPER_URL: http://127.0.0.1:8000/scrape
+          INGEST_EMIT_DIR: out # writes server/out/<store>.json
+
+      # if: always() is load-bearing — a POST failure exits the step non-zero (the
+      # exact deploy-cutover race this story fixes), which would otherwise SKIP this
+      # upload and defeat the commit-back in its target case. if-no-files-found:ignore
+      # covers a store whose scrape threw before emitting.
+      - name: Upload seed artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scrape-out-${{ matrix.store }}
+          path: server/out/${{ matrix.store }}.json
+          if-no-files-found: ignore
+          retention-days: 1
+
+  # ADR-047: keep the committed data.json continuously fresh so Render's ephemeral-disk
+  # reset on every redeploy lands on RECENT data instead of the frozen seed. Builds the
+  # seed by merging the per-store scrape artifacts into the checked-out data.json via the
+  # SAME applyIngest the live server uses (NOT GET /api/data, which filterActiveDeals
+  # makes lossy). Reads git, not prod → fully deploy-independent (no cutover race).
+  #
+  # Trigger scope: runs on schedule + push + workflow_dispatch alike — safe on all three
+  # because it never reads prod, only merges artifacts into the checked-out file. The
+  # push trigger is retained ONLY for the immediate live refresh (the POST above); this
+  # job is what makes deploys non-destructive.
+  commit-back:
+    needs: scrape
+    if: always()
+    # AC5: a transient git failure must never red the run — alert-gate stays the SOLE
+    # alert (ADR-034 §6). A permanent push failure is surfaced as a ::warning:: below.
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history so `git pull --rebase` can integrate concurrent commits
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install
+        working-directory: server
+
+      # Merge all per-store artifacts into one dir (server/out/<store>.json).
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: scrape-out-*
+          merge-multiple: true
+          path: server/out
+
+      - name: Build refreshed seed
+        run: npx tsx scripts/commitBackSeed.ts --in out
+        working-directory: server
+
+      # Commit ONLY data.json (never `git add -A`) so downloaded artifacts can't sneak
+      # into the commit and break the paths-ignore loop-breaker. Push retries once on a
+      # non-fast-forward; a persistent failure warns (visible in the Actions UI) without
+      # reding the run.
+      - name: Commit refreshed seed to master
+        run: |
+          if [ -z "$(git status --porcelain server/data/data.json)" ]; then
+            echo "data.json unchanged — nothing to commit"
+            exit 0
+          fi
+          git config user.name 'gma-bot'
+          git config user.email 'gma-bot@users.noreply.github.com'
+          git add server/data/data.json
+          git commit -m 'chore(data): refresh seed [skip ci]'
+          for attempt in 1 2; do
+            git pull --rebase origin master && git push origin HEAD:master && exit 0
+            echo "push attempt $attempt failed; retrying"
+            sleep 3
+          done
+          echo "::warning::commit-back push to master failed after retries — seed not refreshed this run"
 
   # ADR-034 §6 (amended): the SOLE alert. Runs after the scrape matrix (regardless of
   # individual store outcomes) and reads prod /api/data. Reds the run only on a total
