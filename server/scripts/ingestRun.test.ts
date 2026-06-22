@@ -35,7 +35,7 @@ describe('runIngest', () => {
     )
   })
 
-  it('empty scrape → still POSTs (empty deals), server stale → ok=false', async () => {
+  it('empty scrape → still POSTs (empty deals), server stale → ok=true (not a hard failure)', async () => {
     const postFn = vi.fn<PostFn>().mockResolvedValue({ 'store-a': 'stale' })
     const out = await runIngest({
       stores: ['store-a'],
@@ -45,7 +45,8 @@ describe('runIngest', () => {
       postFn,
     })
 
-    expect(out.ok).toBe(false)
+    // 'stale' = empty scrape, last-known-good kept — acceptable, not the alert.
+    expect(out.ok).toBe(true)
     expect(out.results['store-a']).toBe('stale')
     expect(postFn).toHaveBeenCalledWith(
       URL,
@@ -54,7 +55,7 @@ describe('runIngest', () => {
     )
   })
 
-  it('garbage deals are dropped by normalizeDeals → empty batch → stale', async () => {
+  it('garbage deals are dropped by normalizeDeals → empty batch → stale → ok=true', async () => {
     const postFn = vi.fn<PostFn>().mockResolvedValue({ 'store-a': 'stale' })
     const bad = [{ type: 'daily', description: 'x', discountPct: 1, startTime: '09:00', endTime: '09:00', daysValid: ['everyday'] }] as Deal[]
     const out = await runIngest({
@@ -66,7 +67,20 @@ describe('runIngest', () => {
     })
 
     expect(postFn).toHaveBeenCalledWith(URL, { stores: [{ dispensaryId: 'store-a', deals: [] }] }, SECRET)
-    expect(out.ok).toBe(false)
+    expect(out.ok).toBe(true)
+  })
+
+  it('mixed batch: one ok + one stale → ok=true (stale alone never fails the run)', async () => {
+    const postFn = vi.fn<PostFn>().mockResolvedValue({ good: 'ok', empty: 'stale' })
+    const out = await runIngest({
+      stores: ['good', 'empty'],
+      ingestUrl: URL,
+      secret: SECRET,
+      registry: { good: async () => [validDeal], empty: async () => [] },
+      postFn,
+    })
+    expect(out.ok).toBe(true)
+    expect(out.results).toEqual({ good: 'ok', empty: 'stale' })
   })
 
   it('unknown server result (unknown dispensary) → ok=false', async () => {

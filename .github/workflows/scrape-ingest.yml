@@ -47,6 +47,10 @@ jobs:
   scrape:
     needs: prepare
     runs-on: ubuntu-latest
+    # A single store failing (empty scrape, a transient site/boot hiccup) must NOT
+    # red the workflow — that's just noise. The alert-gate job below is the real
+    # alert; it fires only on a total failure or persistent (multi-run) staleness.
+    continue-on-error: true
     strategy:
       fail-fast: false # one store's failure must not block the others
       matrix:
@@ -90,3 +94,24 @@ jobs:
           INGEST_URL: https://gmaslist.com/api/ingest
           INGEST_SECRET: ${{ secrets.INGEST_SECRET }}
           SCRAPER_URL: http://127.0.0.1:8000/scrape
+
+  # ADR-034 §6 (amended): the SOLE alert. Runs after the scrape matrix (regardless of
+  # individual store outcomes) and reads prod /api/data. Reds the run only on a total
+  # failure (no store fresh) or a store stale for several runs — not on a single empty
+  # store. A red run here is the GitHub failure email.
+  alert-gate:
+    needs: scrape
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install
+        working-directory: server
+      - name: Evaluate ingest health
+        run: npx tsx scripts/alertGate.ts
+        working-directory: server
+        env:
+          DATA_URL: https://gmaslist.com/api/data

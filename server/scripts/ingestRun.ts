@@ -8,10 +8,15 @@ import type { IngestEntry, IngestResult } from '../types/index.js'
 // Push counterpart to runScrapers (ADR-034 Goal D). Run by the GitHub Actions cron
 // (one store per matrix job). For each store it runs the SAME pipeline runScrapers
 // uses — scrape() -> normalizeDeals — then POSTs the batch to /api/ingest instead of
-// writing data.json. Exit semantics make a silent failure a RED job (GitHub's
-// scheduled-failure email is the alert, ADR-034 §6): ok only when the POST succeeds
-// and every per-store result is 'ok'. A 'stale' (empty scrape) or 'unknown' result,
-// a scrape throw, or a POST failure all flip ok=false.
+// writing data.json.
+//
+// Exit semantics (ADR-034 §6, amended): an empty scrape ('stale') is NOT a failure —
+// the server keeps last-known-good, and a store legitimately having no specials this
+// hour is normal. Only a genuine error flips ok=false: a scrape throw, a POST failure,
+// an 'unknown' dispensary, or a missing scraper. Even so, a single store's red is no
+// longer the alert — the workflow runs this per-store with continue-on-error and a
+// separate alert-gate job (alertGate.ts) raises the actual alert only on a TOTAL
+// failure or a store that stays stale for several runs.
 
 export type PostFn = (
   url: string,
@@ -83,8 +88,8 @@ export async function runIngest(opts: RunIngestOptions): Promise<RunIngestOutcom
     }
     try {
       // normalize at the same chokepoint runScrapers/applyIngest use. An empty
-      // result is still POSTed: the server flags it stale (keeping good data) and
-      // the non-'ok' result fails the job, surfacing the silent failure.
+      // result is still POSTed: the server flags it stale and keeps last-known-good.
+      // An empty/'stale' result is NOT treated as a failure here (see exit semantics).
       const deals = normalizeDeals(await withTimeout(scrape(), SCRAPE_TIMEOUT_MS, id))
       entries.push({ dispensaryId: id, deals })
     } catch (err) {
@@ -100,7 +105,10 @@ export async function runIngest(opts: RunIngestOptions): Promise<RunIngestOutcom
       for (const entry of entries) {
         const r = posted[entry.dispensaryId] ?? 'error'
         results[entry.dispensaryId] = r
-        if (r !== 'ok') ok = false
+        // 'stale' (empty scrape, last-known-good kept) is acceptable — not a hard
+        // failure. Only 'unknown'/'error' (and a missing key, defaulted to 'error')
+        // flip ok=false.
+        if (r !== 'ok' && r !== 'stale') ok = false
       }
     } catch (err) {
       ok = false
