@@ -34,7 +34,9 @@ function dealTitle(deal: Deal, badgeRendering: boolean): string | null {
   const kindFallback = deal.type === 'happy_hour' ? 'Happy hour' : null
   if (!deal.description || deal.description.trim() === '') return kindFallback
   if (!badgeRendering) return deal.description
-  const stripped = stripDiscountPrefix(deal.description)
+  // badgeRendering ⇒ discountTier(discountPct) !== null ⇒ a positive finite pct,
+  // so the strip can anchor to the exact magnitude the badge is showing.
+  const stripped = stripDiscountPrefix(deal.description, deal.discountPct as number)
   return stripped !== '' ? stripped : kindFallback
 }
 

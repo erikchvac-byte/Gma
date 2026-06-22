@@ -98,13 +98,13 @@ describe('discountTier', () => {
 
 describe('stripDiscountPrefix', () => {
   // any N, not a hardcoded 50 — the badge shows the figure, the title carries
-  // only the remainder
+  // only the remainder. Second arg is the badge's exact discountPct.
   it.each([
-    ['10% off Select Brands', 'Select Brands'],
-    ['25% off Select Brands', 'Select Brands'],
-    ['50% off Select Brands', 'Select Brands'],
-  ])('strips the leading percent-off phrase for any N (%s)', (input, expected) => {
-    expect(stripDiscountPrefix(input)).toBe(expected)
+    ['10% off Select Brands', 10, 'Select Brands'],
+    ['25% off Select Brands', 25, 'Select Brands'],
+    ['50% off Select Brands', 50, 'Select Brands'],
+  ])('strips the leading percent-off phrase for any N (%s)', (input, pct, expected) => {
+    expect(stripDiscountPrefix(input, pct)).toBe(expected)
   })
 
   // case-insensitive: live data uses Off/OFF while the badge renders "off". A
@@ -114,40 +114,77 @@ describe('stripDiscountPrefix', () => {
     ['15% Off Edibles + Drinks (Excluding Capsules)', 'Edibles + Drinks (Excluding Capsules)'],
     ['15% OFF Edibles + Drinks (Excluding Capsules)', 'Edibles + Drinks (Excluding Capsules)'],
   ])('matches "off" regardless of casing (%s)', (input, expected) => {
-    expect(stripDiscountPrefix(input)).toBe(expected)
+    expect(stripDiscountPrefix(input, 15)).toBe(expected)
   })
 
-  it('consumes the whole phrase — no dangling "Off", no leading space', () => {
-    const result = stripDiscountPrefix('15% Off Edibles + Drinks (Excluding Capsules)')
-    expect(result).toBe('Edibles + Drinks (Excluding Capsules)')
-    expect(result.startsWith('Off')).toBe(false)
-    expect(result.startsWith(' ')).toBe(false)
+  // generalized past the start anchor: the badge magnitude is stripped wherever
+  // it sits — behind a sale banner, a brand/day prefix, or at the very end.
+  it.each([
+    ['JUNE 2026 SUMMER SALE 30% Off Flower PULLMAN', 30, 'JUNE 2026 SUMMER SALE Flower PULLMAN'],
+    ['STOREWIDE 30% OFF', 30, 'STOREWIDE'],
+    ['Dabstract - 50% off', 50, 'Dabstract'],
+    ['2026 40% Off Ounces', 40, '2026 Ounces'],
+  ])('strips the badge magnitude mid/trailing and cleans the seam (%s)', (input, pct, expected) => {
+    expect(stripDiscountPrefix(input, pct)).toBe(expected)
   })
 
-  it('also consumes a trailing separator after the phrase', () => {
-    expect(stripDiscountPrefix('30% off · Premium Flower')).toBe('Premium Flower')
-    expect(stripDiscountPrefix('30% off - Premium Flower')).toBe('Premium Flower')
+  // real rows carry the figure without an "off" yet still derive a discountPct
+  it.each([
+    ['40% ONLINE ORDERS', 40, 'ONLINE ORDERS'],
+    ['JUNE 2026 SUMMER SALE 20% ALL Pre-Rolls PULLMAN', 20, 'JUNE 2026 SUMMER SALE ALL Pre-Rolls PULLMAN'],
+  ])('treats "off" as optional (%s)', (input, pct, expected) => {
+    expect(stripDiscountPrefix(input, pct)).toBe(expected)
   })
 
-  it('leaves a description without a leading percent-off phrase unchanged', () => {
-    expect(stripDiscountPrefix('Select Brands')).toBe('Select Brands')
-    expect(stripDiscountPrefix('Buy one get one')).toBe('Buy one get one')
+  // multi-tier guard: 2+ percent figures → a layered sale; stripping mangles it
+  // ("Up to Sale - Brands"), so the whole title is kept verbatim.
+  it.each([
+    ['Up to 50% Off Sale - 50% Off Brands', 50],
+    ['Up to 50% Off Sale - 40% Off Brands', 50],
+  ])('keeps a multi-tier title whole (%s)', (input, pct) => {
+    expect(stripDiscountPrefix(input, pct)).toBe(input)
+  })
+
+  // single-figure titles whose qualifier governs the magnitude: stripping would
+  // orphan the lead-in ("Up to Sale"), so the whole title is kept (review patch).
+  it.each([
+    ['Up to 50% Off Sale', 50],
+    ['Save 20% off, 2026 deals', 20],
+    ['Get 30% off everything', 30],
+  ])('keeps a title whole when stripping would orphan a governing qualifier (%s)', (input, pct) => {
+    expect(stripDiscountPrefix(input, pct)).toBe(input)
+  })
+
+  it('no-ops on a non-finite pct instead of building a nonsense pattern', () => {
+    expect(stripDiscountPrefix('50% off Select Brands', NaN)).toBe('50% off Select Brands')
+  })
+
+  it('leaves a *different* percentage than the badge untouched', () => {
+    // badge shows 50% off; the 30% is a THC figure, not the discount → no-op
+    expect(stripDiscountPrefix('Contains 30% THC blend', 50)).toBe('Contains 30% THC blend')
+  })
+
+  it('leaves a description with no percentage unchanged (no stutter to remove)', () => {
+    expect(stripDiscountPrefix('Join the Joint: Savings!', 20)).toBe('Join the Joint: Savings!')
+    expect(stripDiscountPrefix('Select Brands', 25)).toBe('Select Brands')
     // "$5 off" is a non-percent prefix (deferred) — nothing to dedupe, left intact
-    expect(stripDiscountPrefix('$5 off edibles')).toBe('$5 off edibles')
-    // "Offers" must not be mistaken for the "off" token
-    expect(stripDiscountPrefix('15% Offers inside')).toBe('15% Offers inside')
+    expect(stripDiscountPrefix('$5 off edibles', 50)).toBe('$5 off edibles')
+  })
+
+  it('does not let the badge number bite into a larger number ("5" vs "45%")', () => {
+    expect(stripDiscountPrefix('45% off Select Products', 5)).toBe('45% off Select Products')
   })
 
   it('returns an empty string when the description is nothing but the phrase', () => {
     // caller (dealTitle) treats this as "fall back to the kind label", never a
     // blank title
-    expect(stripDiscountPrefix('50% off')).toBe('')
-    expect(stripDiscountPrefix('50% OFF')).toBe('')
+    expect(stripDiscountPrefix('50% off', 50)).toBe('')
+    expect(stripDiscountPrefix('50% OFF', 50)).toBe('')
   })
 
   it('does not mutate or depend on anything beyond the passed string', () => {
     const input = '50% off Select Brands'
-    stripDiscountPrefix(input)
+    stripDiscountPrefix(input, 50)
     expect(input).toBe('50% off Select Brands')
   })
 })

@@ -256,6 +256,28 @@ describe('DealCard', () => {
     expect(title?.textContent).not.toContain('15% Off')
   })
 
+  it('keeps a multi-tier title whole (guard) while the badge still shows the magnitude once', () => {
+    const { container } = render(
+      <DealCard
+        dispensary={makeDispensary({})}
+        deals={[
+          view(
+            { type: 'daily', description: 'Up to 50% Off Sale - 40% Off Brands', discountPct: 50, startTime: null, endTime: null },
+            'Active today',
+            null,
+          ),
+        ]}
+        gasCostText="$1.80"
+      />,
+    )
+
+    // badge carries the magnitude once; the layered sale title is shown verbatim
+    // rather than collapsed to nonsense ("Up to Sale - Brands")
+    expect(within(screen.getByRole('article')).getByText('50%')).toBeInTheDocument()
+    expect(byFullText('Up to 50% Off Sale - 40% Off Brands', '.gma-deal-block__title')).toBeInTheDocument()
+    expect(container.textContent).not.toContain('Up to Sale')
+  })
+
   it('leaves the title intact when NO percent badge renders (badge-anchored — never strip what is shown nowhere else)', () => {
     const description = '50% off Select Brands'
     const deal = { type: 'daily' as const, description, discountPct: null, startTime: null, endTime: null }
