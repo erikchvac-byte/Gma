@@ -31,6 +31,23 @@ export function storeUrgencyBadge(
     : { variant: 'neutral', text: 'active today' }
 }
 
+// The leading "N% off" phrase the percent badge already shows (e.g. "50% off ",
+// "15% Off ", "10% OFF · "). Scraped descriptions embed it ("50% off Select
+// Brands"), so the card would stutter the magnitude — badge + title — unless the
+// title drops it. Consumed as ONE unit: number (any N, optional decimal) + "%" +
+// "off" + the trailing whitespace/separator, so no orphan word and no leading
+// space survive. Case-insensitive on "off" because live data uses "Off"/"OFF"
+// while the badge renders lowercase "off" (a case-sensitive match would no-op on
+// most real descriptions). `\b` keeps it from biting into "Offers"/"off-brand".
+const DISCOUNT_PREFIX = /^\s*\d+(?:\.\d+)?\s*%\s*off\b[\s·:•–—-]*/i
+
+// Display-only: returns the title with a leading percent-off phrase suppressed.
+// Never mutates input. Callers strip ONLY when the percent badge is rendering
+// (badge-anchored) — see dealTitle in DealCard. Defensive trim per the contract.
+export function stripDiscountPrefix(title: string): string {
+  return title.replace(DISCOUNT_PREFIX, '').trim()
+}
+
 // Magnitude bucket for the discount figure. null / non-finite / non-positive
 // (not parseable, or out-of-contract data reaching the client boundary
 // unvalidated) → no figure renders at all, never "NaN%" or "-5%".

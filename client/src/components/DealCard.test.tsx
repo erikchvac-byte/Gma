@@ -231,6 +231,64 @@ describe('DealCard', () => {
     expect(container.textContent).not.toContain('NaN')
   })
 
+  it('drops the redundant "N% off" title prefix when the percent badge renders it (ADR-046)', () => {
+    const { container } = render(
+      <DealCard
+        dispensary={makeDispensary({})}
+        deals={[
+          view(
+            { type: 'daily', description: '15% Off Edibles + Drinks (Excluding Capsules)', discountPct: 15, startTime: null, endTime: null },
+            'Active today',
+            null,
+          ),
+        ]}
+        gasCostText="$1.80"
+      />,
+    )
+
+    // badge still carries the magnitude exactly once
+    expect(within(screen.getByRole('article')).getByText('15%')).toBeInTheDocument()
+    // title carries only the descriptive remainder — no doubled "15% off" stutter,
+    // no dangling "Off"
+    expect(byFullText('Edibles + Drinks (Excluding Capsules)', '.gma-deal-block__title')).toBeInTheDocument()
+    const title = container.querySelector('.gma-deal-block__title')
+    expect(title?.textContent?.startsWith('Off')).toBe(false)
+    expect(title?.textContent).not.toContain('15% Off')
+  })
+
+  it('leaves the title intact when NO percent badge renders (badge-anchored — never strip what is shown nowhere else)', () => {
+    const description = '50% off Select Brands'
+    const deal = { type: 'daily' as const, description, discountPct: null, startTime: null, endTime: null }
+    render(
+      <DealCard
+        dispensary={makeDispensary({})}
+        deals={[view(deal, 'Active today', null)]}
+        gasCostText="$1.80"
+      />,
+    )
+
+    // discountPct null → discountTier null → no badge → the full description must
+    // survive (the figure is shown nowhere else)
+    expect(byFullText('50% off Select Brands', '.gma-deal-block__title')).toBeInTheDocument()
+    // display-only: the source description is not mutated by rendering
+    expect(deal.description).toBe('50% off Select Brands')
+  })
+
+  it('falls back to the kind label (never a blank title) when the description is only the percent phrase', () => {
+    render(
+      <DealCard
+        dispensary={makeDispensary({})}
+        deals={[view({ description: '30% off', discountPct: 30 }, '9:00 PM – 11:30 PM', '0:30')]}
+        gasCostText="$1.80"
+      />,
+    )
+
+    // stripping empties the title → happy_hour kind fallback, not a blank node,
+    // and crucially not the raw "30% off" (which would re-introduce the stutter)
+    expect(screen.getByText('30%')).toBeInTheDocument()
+    expect(byFullText('Happy hour', '.gma-deal-block__title')).toBeInTheDocument()
+  })
+
   it('shows a neutral "active today" badge for a daily-only store (no countdown)', () => {
     render(
       <DealCard

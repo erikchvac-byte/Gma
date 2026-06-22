@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { filterByType, storeUrgencyBadge, discountTier } from './dealView'
+import { filterByType, storeUrgencyBadge, discountTier, stripDiscountPrefix } from './dealView'
 import type { Deal, Dispensary } from '../types'
 
 const makeDeal = (overrides: Partial<Deal>): Deal => ({
@@ -93,5 +93,61 @@ describe('discountTier', () => {
     [1, 'low'],
   ])('buckets %i as %s', (pct, tier) => {
     expect(discountTier(pct)).toBe(tier)
+  })
+})
+
+describe('stripDiscountPrefix', () => {
+  // any N, not a hardcoded 50 — the badge shows the figure, the title carries
+  // only the remainder
+  it.each([
+    ['10% off Select Brands', 'Select Brands'],
+    ['25% off Select Brands', 'Select Brands'],
+    ['50% off Select Brands', 'Select Brands'],
+  ])('strips the leading percent-off phrase for any N (%s)', (input, expected) => {
+    expect(stripDiscountPrefix(input)).toBe(expected)
+  })
+
+  // case-insensitive: live data uses Off/OFF while the badge renders "off". A
+  // case-sensitive match would silently no-op on real descriptions.
+  it.each([
+    ['15% off Edibles + Drinks (Excluding Capsules)', 'Edibles + Drinks (Excluding Capsules)'],
+    ['15% Off Edibles + Drinks (Excluding Capsules)', 'Edibles + Drinks (Excluding Capsules)'],
+    ['15% OFF Edibles + Drinks (Excluding Capsules)', 'Edibles + Drinks (Excluding Capsules)'],
+  ])('matches "off" regardless of casing (%s)', (input, expected) => {
+    expect(stripDiscountPrefix(input)).toBe(expected)
+  })
+
+  it('consumes the whole phrase — no dangling "Off", no leading space', () => {
+    const result = stripDiscountPrefix('15% Off Edibles + Drinks (Excluding Capsules)')
+    expect(result).toBe('Edibles + Drinks (Excluding Capsules)')
+    expect(result.startsWith('Off')).toBe(false)
+    expect(result.startsWith(' ')).toBe(false)
+  })
+
+  it('also consumes a trailing separator after the phrase', () => {
+    expect(stripDiscountPrefix('30% off · Premium Flower')).toBe('Premium Flower')
+    expect(stripDiscountPrefix('30% off - Premium Flower')).toBe('Premium Flower')
+  })
+
+  it('leaves a description without a leading percent-off phrase unchanged', () => {
+    expect(stripDiscountPrefix('Select Brands')).toBe('Select Brands')
+    expect(stripDiscountPrefix('Buy one get one')).toBe('Buy one get one')
+    // "$5 off" is a non-percent prefix (deferred) — nothing to dedupe, left intact
+    expect(stripDiscountPrefix('$5 off edibles')).toBe('$5 off edibles')
+    // "Offers" must not be mistaken for the "off" token
+    expect(stripDiscountPrefix('15% Offers inside')).toBe('15% Offers inside')
+  })
+
+  it('returns an empty string when the description is nothing but the phrase', () => {
+    // caller (dealTitle) treats this as "fall back to the kind label", never a
+    // blank title
+    expect(stripDiscountPrefix('50% off')).toBe('')
+    expect(stripDiscountPrefix('50% OFF')).toBe('')
+  })
+
+  it('does not mutate or depend on anything beyond the passed string', () => {
+    const input = '50% off Select Brands'
+    stripDiscountPrefix(input)
+    expect(input).toBe('50% off Select Brands')
   })
 })
