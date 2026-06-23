@@ -5,6 +5,7 @@ import {
   discountTier,
   stripDiscountPrefix,
   stripCrossLocationTag,
+  resolveLayeredSale,
 } from './dealView'
 import type { Deal, Dispensary } from '../types'
 
@@ -239,5 +240,42 @@ describe('stripCrossLocationTag', () => {
     const input = 'Flower PULLMAN'
     stripCrossLocationTag(input)
     expect(input).toBe('Flower PULLMAN')
+  })
+})
+
+describe('resolveLayeredSale', () => {
+  // the real KushMart / Local Roots / Kushman's tier strings — badge the TIER
+  // figure (Y, bound to the product), title the subject only
+  it.each([
+    ['Up to 50% Off Sale - 50% Off Brands', 50, 'Brands'],
+    ['Up to 50% Off Sale - 40% Off Brands', 40, 'Brands'],
+    ['Up to 50% Off Sale - 30% Off Brands', 30, 'Brands'],
+  ])('resolves the tier figure + subject (%s)', (input, pct, title) => {
+    expect(resolveLayeredSale(input)).toEqual({ pct, title })
+  })
+
+  it('matches the en/em-dash separator forms too', () => {
+    expect(resolveLayeredSale('Up to 50% Off Sale – 40% Off Brands')).toEqual({ pct: 40, title: 'Brands' })
+    expect(resolveLayeredSale('Up to 50% Off Sale — 30% Off Edibles')).toEqual({ pct: 30, title: 'Edibles' })
+  })
+
+  it('is case-insensitive on the headline/tier copy', () => {
+    expect(resolveLayeredSale('UP TO 50% OFF SALE - 40% OFF BRANDS')).toEqual({ pct: 40, title: 'BRANDS' })
+  })
+
+  it.each([
+    'Dabstract - 50% off',
+    '40% Off Cookies Vapes June 2026',
+    '50% off - Evergreen Ounces',
+    'Up to 50% Off Sale', // no tier clause → not this pattern
+    'JUNE 2026 SUMMER SALE 30% Off Flower',
+    '',
+  ])('returns null for non-layered titles (%s)', (input) => {
+    expect(resolveLayeredSale(input)).toBeNull()
+  })
+
+  it('returns null on null/undefined input', () => {
+    expect(resolveLayeredSale(null)).toBeNull()
+    expect(resolveLayeredSale(undefined)).toBeNull()
   })
 })

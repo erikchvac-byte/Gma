@@ -1,6 +1,12 @@
 import type { Deal, Dispensary } from '../types'
 import { Card, Icon } from './ui'
-import { discountTier, storeUrgencyBadge, stripCrossLocationTag, stripDiscountPrefix } from '../utils/dealView'
+import {
+  discountTier,
+  resolveLayeredSale,
+  storeUrgencyBadge,
+  stripCrossLocationTag,
+  stripDiscountPrefix,
+} from '../utils/dealView'
 
 // One deal plus its upstream-computed display strings. windowText/countdown are
 // computed in DealFeed (null means "render nothing" — e.g. malformed times).
@@ -100,10 +106,15 @@ export default function DealCard({ dispensary, deals, gasCostText }: DealCardPro
           STORE (the card), so nesting <li> here would inflate that count */}
       <div className="gma-deal-grid">
         {deals.map(({ deal, windowText }, i) => {
-          const tier = discountTier(deal.discountPct)
+          // Layered "Up to X% Off Sale - Y% Off <subject>" tiers (ADR-049) badge the
+          // TIER figure Y, not the stored discountPct (the headline X), and title
+          // the subject only. Takes precedence over the percent/multi-tier strip.
+          const layered = resolveLayeredSale(deal.description)
+          const pct = layered ? layered.pct : deal.discountPct
+          const tier = discountTier(pct)
           // badge-anchored: pass whether the percent badge is rendering so the
           // title only drops the "N% off" prefix the badge is already showing.
-          const title = dealTitle(deal, tier !== null)
+          const title = layered ? layered.title : dealTitle(deal, tier !== null)
           const meta = dealMeta(deal, windowText)
           return (
             // index keeps the key unique even when sanitize blanks two
@@ -116,7 +127,7 @@ export default function DealCard({ dispensary, deals, gasCostText }: DealCardPro
                   opacity, weight-only ramp); null discount → no figure / no "off" */}
               {tier !== null && (
                 <>
-                  <span className={`gma-deal-block__pct gma-deal-block__pct--${tier}`}>{`${deal.discountPct}%`}</span>
+                  <span className={`gma-deal-block__pct gma-deal-block__pct--${tier}`}>{`${pct}%`}</span>
                   <span className="gma-deal-block__off">off</span>
                 </>
               )}

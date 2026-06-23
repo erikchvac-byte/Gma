@@ -124,6 +124,33 @@ export function stripCrossLocationTag(title: string): string {
   return title.replace(CROSS_LOCATION_TAG, '').replace(EDGE_SEPARATORS, '').trim()
 }
 
+// Layered "Up to X% Off Sale - Y% Off <subject>" tier cards (ADR-049). Three WA
+// stores (KushMart North, Local Roots 128th, Kushman's Evergreen) post ONE card per
+// brand-tier under a shared "Up to 50% Off Sale" headline: "… - 50% Off Brands",
+// "… - 40% Off Brands", "… - 30% Off Brands". Two faults result: (1) the scraper's
+// parsePercent grabs the FIRST figure ("Up to 50%"), so the 40%/30% tiers all badge
+// 50% — an over-promise; (2) stripDiscountPrefix's multi-tier guard (2+ figures →
+// keep whole) preserves the title verbatim, stuttering the magnitude the badge
+// already shows. Operator-confirmed these are genuine tiers (shoppers get Y% on
+// those brands), so the card must badge the TIER figure Y (bound to the product) and
+// title the subject only. This MUST run BEFORE discountTier/stripDiscountPrefix in
+// the caller — it takes precedence over the multi-tier guard that would otherwise
+// keep the whole string. Returns null when the title isn't this exact pattern.
+const LAYERED_SALE =
+  /^\s*up to\s+\d+(?:\.\d+)?\s*%\s*off\s+sale\s*[-–—]\s*(\d+(?:\.\d+)?)\s*%\s*off\s+(.+?)\s*$/i
+export function resolveLayeredSale(
+  description: string | null | undefined,
+): { pct: number; title: string } | null {
+  if (!description) return null
+  const m = description.match(LAYERED_SALE)
+  if (!m) return null
+  const pct = Number(m[1])
+  // Defensive: the regex guarantees a numeric group, but a non-positive/non-finite
+  // tier would badge nonsense — bail to the normal path rather than show "0% off".
+  if (!Number.isFinite(pct) || pct <= 0) return null
+  return { pct, title: m[2].trim() }
+}
+
 // Magnitude bucket for the discount figure. null / non-finite / non-positive
 // (not parseable, or out-of-contract data reaching the client boundary
 // unvalidated) → no figure renders at all, never "NaN%" or "-5%".

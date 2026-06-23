@@ -215,6 +215,32 @@ describe('DealCard', () => {
     expect(container.textContent).not.toContain('PULLMAN')
   })
 
+  it('badges layered "Up to X% Off Sale - Y% Off Brands" tiers by their own Y% (ADR-049)', () => {
+    render(
+      <DealCard
+        dispensary={makeDispensary({ name: 'KushMart North' })}
+        deals={[
+          // stored discountPct is 50 for ALL three (scraper grabbed the "Up to 50%"
+          // headline); the tier badge must show each tier's own figure instead
+          view({ type: 'daily', description: 'Up to 50% Off Sale - 50% Off Brands', discountPct: 50, startTime: null, endTime: null }, 'Active today', null),
+          view({ type: 'daily', description: 'Up to 50% Off Sale - 40% Off Brands', discountPct: 50, startTime: null, endTime: null }, 'Active today', null),
+          view({ type: 'daily', description: 'Up to 50% Off Sale - 30% Off Brands', discountPct: 50, startTime: null, endTime: null }, 'Active today', null),
+        ]}
+        gasCostText="$3.63"
+      />,
+    )
+
+    const card = screen.getByRole('article')
+    // each tier badges its OWN figure — the 40/30 cards no longer over-promise 50%
+    expect(within(card).getByText('50%')).toBeInTheDocument()
+    expect(within(card).getByText('40%')).toBeInTheDocument()
+    expect(within(card).getByText('30%')).toBeInTheDocument()
+    // title is the subject only — no "Up to … Sale" headline, no repeated magnitude
+    expect(within(card).getAllByText('Brands', { selector: '.gma-deal-block__title' })).toHaveLength(3)
+    expect(card.textContent).not.toContain('Up to')
+    expect(card.textContent).not.toContain('Off Brands')
+  })
+
   it('renders a malformed-time deal without window, countdown, or NaN text', () => {
     const { container } = render(
       <DealCard
@@ -278,13 +304,16 @@ describe('DealCard', () => {
     expect(title?.textContent).not.toContain('15% Off')
   })
 
-  it('keeps a multi-tier title whole (guard) while the badge still shows the magnitude once', () => {
+  it('keeps a NON-layered multi-tier title whole (guard) rather than mangling it', () => {
+    // a 2+-figure title that is NOT the "Up to X% Off Sale - Y% Off …" family
+    // (ADR-049 handles that one) — the stripDiscountPrefix multi-tier guard keeps
+    // it verbatim rather than collapsing it to nonsense
     const { container } = render(
       <DealCard
         dispensary={makeDispensary({})}
         deals={[
           view(
-            { type: 'daily', description: 'Up to 50% Off Sale - 40% Off Brands', discountPct: 50, startTime: null, endTime: null },
+            { type: 'daily', description: 'Mix & Match - 25% Off 2, 50% Off 3', discountPct: 50, startTime: null, endTime: null },
             'Active today',
             null,
           ),
@@ -293,11 +322,9 @@ describe('DealCard', () => {
       />,
     )
 
-    // badge carries the magnitude once; the layered sale title is shown verbatim
-    // rather than collapsed to nonsense ("Up to Sale - Brands")
     expect(within(screen.getByRole('article')).getByText('50%')).toBeInTheDocument()
-    expect(byFullText('Up to 50% Off Sale - 40% Off Brands', '.gma-deal-block__title')).toBeInTheDocument()
-    expect(container.textContent).not.toContain('Up to Sale')
+    expect(byFullText('Mix & Match - 25% Off 2, 50% Off 3', '.gma-deal-block__title')).toBeInTheDocument()
+    expect(container.textContent).not.toContain('Mix & Match -  ,')
   })
 
   it('leaves the title intact when NO percent badge renders (badge-anchored — never strip what is shown nowhere else)', () => {
