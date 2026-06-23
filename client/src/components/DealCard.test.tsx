@@ -193,6 +193,28 @@ describe('DealCard', () => {
     expect(screen.queryByText('Happy hour special')).not.toBeInTheDocument()
   })
 
+  it('drops a trailing cross-location tag from the deal title (Happy Time "PULLMAN")', () => {
+    const { container } = render(
+      <DealCard
+        dispensary={makeDispensary({ name: 'Happy Time - Mount Vernon' })}
+        deals={[
+          view(
+            { type: 'daily', description: 'JUNE 2026 SUMMER SALE 30% Off Flower PULLMAN', discountPct: 30, startTime: null, endTime: null },
+            'Active today',
+            null,
+          ),
+        ]}
+        gasCostText="$3.63"
+      />,
+    )
+
+    // the badge shows the 30%; the title drops both the "% off" prefix AND the
+    // trailing PULLMAN location tag the dispensary baked into its promo name
+    expect(screen.getByText('30%')).toBeInTheDocument()
+    expect(byFullText('JUNE 2026 SUMMER SALE Flower', '.gma-deal-block__title')).toBeInTheDocument()
+    expect(container.textContent).not.toContain('PULLMAN')
+  })
+
   it('renders a malformed-time deal without window, countdown, or NaN text', () => {
     const { container } = render(
       <DealCard

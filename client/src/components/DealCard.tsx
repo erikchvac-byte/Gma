@@ -1,6 +1,6 @@
 import type { Deal, Dispensary } from '../types'
 import { Card, Icon } from './ui'
-import { discountTier, storeUrgencyBadge, stripDiscountPrefix } from '../utils/dealView'
+import { discountTier, storeUrgencyBadge, stripCrossLocationTag, stripDiscountPrefix } from '../utils/dealView'
 
 // One deal plus its upstream-computed display strings. windowText/countdown are
 // computed in DealFeed (null means "render nothing" — e.g. malformed times).
@@ -33,11 +33,17 @@ export interface DealCardProps {
 function dealTitle(deal: Deal, badgeRendering: boolean): string | null {
   const kindFallback = deal.type === 'happy_hour' ? 'Happy hour' : null
   if (!deal.description || deal.description.trim() === '') return kindFallback
-  if (!badgeRendering) return deal.description
   // badgeRendering ⇒ discountTier(discountPct) !== null ⇒ a positive finite pct,
-  // so the strip can anchor to the exact magnitude the badge is showing.
-  const stripped = stripDiscountPrefix(deal.description, deal.discountPct as number)
-  return stripped !== '' ? stripped : kindFallback
+  // so the strip can anchor to the exact magnitude the badge is showing. When no
+  // badge renders we keep the percent figure (it's the only place it shows).
+  const base = badgeRendering
+    ? stripDiscountPrefix(deal.description, deal.discountPct as number)
+    : deal.description
+  // Then drop any trailing cross-location tag a chain baked into the title (e.g.
+  // Happy Time's "PULLMAN" on its Mount Vernon menu). Applied in both branches so
+  // the tag never survives, badge or not.
+  const cleaned = stripCrossLocationTag(base)
+  return cleaned !== '' ? cleaned : kindFallback
 }
 
 // metadata line: the happy-hour window, or a daily label + status. null when a

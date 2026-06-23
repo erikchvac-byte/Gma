@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest'
-import { filterByType, storeUrgencyBadge, discountTier, stripDiscountPrefix } from './dealView'
+import {
+  filterByType,
+  storeUrgencyBadge,
+  discountTier,
+  stripDiscountPrefix,
+  stripCrossLocationTag,
+} from './dealView'
 import type { Deal, Dispensary } from '../types'
 
 const makeDeal = (overrides: Partial<Deal>): Deal => ({
@@ -186,5 +192,52 @@ describe('stripDiscountPrefix', () => {
     const input = '50% off Select Brands'
     stripDiscountPrefix(input, 50)
     expect(input).toBe('50% off Select Brands')
+  })
+})
+
+describe('stripCrossLocationTag', () => {
+  // the real Happy Time / Mount Vernon descriptions (post percent-strip) — the
+  // trailing "PULLMAN" tag the dispensary baked into its shared promo titles
+  it.each([
+    ['JUNE 2026 SUMMER SALE Flower PULLMAN', 'JUNE 2026 SUMMER SALE Flower'],
+    ['JUNE 2026 SUMMER SALE ALL Pre-Rolls PULLMAN', 'JUNE 2026 SUMMER SALE ALL Pre-Rolls'],
+    ['MAY 2026 MEMORIAL DAY SALE Concentrates PULLMAN', 'MAY 2026 MEMORIAL DAY SALE Concentrates'],
+  ])('drops the trailing cross-location tag and cleans the seam (%s)', (input, expected) => {
+    expect(stripCrossLocationTag(input)).toBe(expected)
+  })
+
+  // case-insensitive: a chain may type it any way; all forms must be caught
+  it.each([
+    ['Flower PULLMAN', 'Flower'],
+    ['Flower Pullman', 'Flower'],
+    ['Flower pullman', 'Flower'],
+  ])('matches the tag regardless of casing (%s)', (input, expected) => {
+    expect(stripCrossLocationTag(input)).toBe(expected)
+  })
+
+  it('only strips the tag at the END of the title, never mid-string', () => {
+    // a (hypothetical) mid-title occurrence is left intact — trailing-only by design
+    expect(stripCrossLocationTag('PULLMAN exclusive Flower')).toBe('PULLMAN exclusive Flower')
+  })
+
+  it('whole-word only: a longer word merely ending in the tag is untouched', () => {
+    expect(stripCrossLocationTag('Flower SPULLMAN')).toBe('Flower SPULLMAN')
+  })
+
+  it('leaves a title with no cross-location tag unchanged', () => {
+    expect(stripCrossLocationTag('JUNE 2026 SUMMER SALE Flower')).toBe('JUNE 2026 SUMMER SALE Flower')
+    expect(stripCrossLocationTag('Daily special')).toBe('Daily special')
+  })
+
+  it('returns an empty string when the title is nothing but the tag', () => {
+    // caller (dealTitle) treats this as "fall back to the kind label"
+    expect(stripCrossLocationTag('PULLMAN')).toBe('')
+    expect(stripCrossLocationTag('  PULLMAN  ')).toBe('')
+  })
+
+  it('does not mutate the passed string', () => {
+    const input = 'Flower PULLMAN'
+    stripCrossLocationTag(input)
+    expect(input).toBe('Flower PULLMAN')
   })
 })

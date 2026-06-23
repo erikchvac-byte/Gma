@@ -93,6 +93,37 @@ export function stripDiscountPrefix(title: string, discountPct: number): string 
   return stripped
 }
 
+// Operator-maintained set of cross-location tags some chains append to a
+// special's display name when they author ONE promo list shared across stores.
+// Happy Time runs the same six specials at its Pullman and Mount Vernon shops and
+// types "PULLMAN" into each title (proven: description ← menuDisplayName verbatim,
+// server/scrapers/_dutchie.ts) — so the Mount Vernon store's cards all read
+// "… Pre-Rolls PULLMAN". This is the dispensary's own text, not anything our code
+// adds; neither sanitizeDescription (compliance) nor stripDiscountPrefix (percent)
+// touches a location word. Add a tag here only when a real listing warrants it —
+// same operator-tuned philosophy as DESCRIPTION_BLOCKLIST.
+export const CROSS_LOCATION_TAGS: readonly string[] = ['PULLMAN']
+
+// Matches one cross-location tag pinned to the END of the title, plus the
+// separator/space that precedes it ("Flower PULLMAN" → "Flower", not "Flower ").
+// Trailing-only + whole-word (\b) + case-insensitive keeps it surgical: it can't
+// bite a tag that legitimately appears mid-title, nor a longer word that merely
+// ends in one. Empty list ⇒ never-matching pattern (the `(?!)` fail-fast).
+const CROSS_LOCATION_TAG = CROSS_LOCATION_TAGS.length
+  ? new RegExp(
+      `[\\s·:•–—*-]*\\b(?:${CROSS_LOCATION_TAGS.map(escapeRegExp).join('|')})\\b\\s*$`,
+      'i',
+    )
+  : /(?!)/
+
+// Display-only: drops a trailing cross-location tag (see CROSS_LOCATION_TAGS) so a
+// Mount Vernon card stops reading "… PULLMAN". Never mutates input. An empty result
+// means the title was nothing but the tag — the caller (dealTitle) falls back to
+// the kind label, never to the raw description.
+export function stripCrossLocationTag(title: string): string {
+  return title.replace(CROSS_LOCATION_TAG, '').replace(EDGE_SEPARATORS, '').trim()
+}
+
 // Magnitude bucket for the discount figure. null / non-finite / non-positive
 // (not parseable, or out-of-contract data reaching the client boundary
 // unvalidated) → no figure renders at all, never "NaN%" or "-5%".
