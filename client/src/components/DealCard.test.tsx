@@ -61,6 +61,39 @@ describe('DealCard', () => {
     expect(screen.getAllByText(/\$3\.63/)).toHaveLength(1)
   })
 
+  it('links the store name to its website, opening in a new tab', () => {
+    render(
+      <DealCard
+        dispensary={makeDispensary({ url: 'https://example.com/alpha-greens' })}
+        deals={[]}
+        gasCostText={null}
+      />,
+    )
+
+    const link = screen.getByRole('link', { name: /Alpha Greens/ })
+    expect(link).toHaveAttribute('href', 'https://example.com/alpha-greens')
+    expect(link).toHaveAttribute('target', '_blank')
+    expect(link).toHaveAttribute('rel', 'noopener noreferrer')
+    // screen-reader-only context switch warning, no visible footprint
+    expect(link).toHaveTextContent('opens in new tab')
+  })
+
+  it('falls back to plain text when the store has no url', () => {
+    render(<DealCard dispensary={makeDispensary({ url: '' })} deals={[]} gasCostText={null} />)
+
+    expect(screen.queryByRole('link', { name: /Alpha Greens/ })).not.toBeInTheDocument()
+    expect(screen.getByText('Alpha Greens')).toBeInTheDocument()
+  })
+
+  it('falls back to plain text when the url is malformed or non-http(s)', () => {
+    render(
+      <DealCard dispensary={makeDispensary({ url: 'javascript:alert(1)' })} deals={[]} gasCostText={null} />,
+    )
+
+    expect(screen.queryByRole('link', { name: /Alpha Greens/ })).not.toBeInTheDocument()
+    expect(screen.getByText('Alpha Greens')).toBeInTheDocument()
+  })
+
   it('lists every deal of the store inside one card', () => {
     render(
       <DealCard

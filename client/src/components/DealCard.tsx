@@ -59,6 +59,17 @@ function dealMeta(deal: Deal, windowText: string | null): string | null {
   return `Daily deal · ${windowText ?? 'Active today'}`
 }
 
+// url is a required field but not validated upstream (scraped/ingested data) —
+// only render it as a link when it's a well-formed http(s) address, never a
+// javascript:/data: URI or malformed string.
+function isLinkableUrl(url: string): boolean {
+  try {
+    return ['http:', 'https:'].includes(new URL(url).protocol)
+  } catch {
+    return false
+  }
+}
+
 // Purely presentational: receives data and computed values as props.
 // No fetching, no intervals, no hooks.
 export default function DealCard({ dispensary, deals, gasCostText }: DealCardProps) {
@@ -80,7 +91,21 @@ export default function DealCard({ dispensary, deals, gasCostText }: DealCardPro
     <Card as="article" urgent={urgency.variant === 'urgent'} style={{ display: 'grid', gap: 'var(--space-3)' }}>
       <div style={{ display: 'grid', gap: 'var(--space-2)' }}>
         <div className="gma-dealcard__head">
-          <h2 className="gma-dealcard__name">{dispensary.name}</h2>
+          <h2 className="gma-dealcard__name">
+            {isLinkableUrl(dispensary.url) ? (
+              <a
+                href={dispensary.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="gma-dealcard__name-link"
+              >
+                {dispensary.name}
+                <span className="gma-sr-only"> (opens in new tab)</span>
+              </a>
+            ) : (
+              dispensary.name
+            )}
+          </h2>
           {distanceText !== null && <span className="gma-distance-pill">{distanceText}</span>}
         </div>
         {/* gas line — omitted entirely when round-trip cost can't be computed */}
