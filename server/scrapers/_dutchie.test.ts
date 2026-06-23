@@ -33,7 +33,7 @@ describe('dutchieEmbedUrl / dutchieRequest', () => {
 
 describe('pickSpecials', () => {
   it('finds the GetSpecialMenuCards intercept and returns its menu cards', () => {
-    expect(pickSpecials(fixture.intercepted)).toHaveLength(5)
+    expect(pickSpecials(fixture.intercepted)).toHaveLength(6)
   })
 
   it('returns [] when no GetSpecialMenuCards intercept is present', () => {
@@ -69,8 +69,8 @@ describe('pickSpecials', () => {
 describe('transformSpecials', () => {
   const deals = transformSpecials(fixture.intercepted)
 
-  it('skips the nameless/malformed card (5 cards → 4 deals)', () => {
-    expect(deals).toHaveLength(4)
+  it('skips the nameless/malformed card (6 cards → 5 deals)', () => {
+    expect(deals).toHaveLength(5)
   })
 
   it('parses percent from the name and weekday restrictions from free text', () => {
@@ -98,6 +98,14 @@ describe('transformSpecials', () => {
 
   it('yields discountPct null for a non-percent (dollar-off) special', () => {
     const d = deals.find((x) => x.description === '$5 Off Pre-Rolls')!
+    expect(d.discountPct).toBeNull()
+    expect(d.type).toBe('daily')
+  })
+
+  it('suppresses a description-only percent on a price-titled card (ADR-050)', () => {
+    // "$50 Crossroads Ounce" displays a price; its "50% OFF" lives only in the hidden
+    // menuDisplayDescription. Badging it 50% off would contradict the visible title.
+    const d = deals.find((x) => x.description === '$50 Crossroads Ounce')!
     expect(d.discountPct).toBeNull()
     expect(d.type).toBe('daily')
   })

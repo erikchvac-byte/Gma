@@ -91,6 +91,22 @@ function parsePercent(text: string): number | null {
   return m ? parseInt(m[1], 10) : null
 }
 
+// A title that quotes a literal price (e.g. "$50 Crossroads Ounce").
+const PRICE_IN_TITLE = /\$\s*\d/
+
+// Resolve the badge percent for a card. parsePercent reads name + the (often invisible)
+// menuDisplayDescription, but the displayed title is the name ALONE — so a "% off" living
+// only in the description would badge a PRICE-titled card with a discount its own visible
+// title contradicts ("$50 …" shown, "50% off" badged; see ADR-050). Guard: when the title
+// states a price and carries no percent of its own, drop any description-sourced percent.
+// Prose titles with no price keep the description percent — there the badge is the only
+// place the number appears (e.g. "Join the Joint…" / "20% OFF ALL ONLINE ORDERS"). A title
+// stating BOTH a price and its own percent (e.g. "$50 Oz - 50% off") keeps that percent.
+function resolveDiscountPct(name: string, text: string): number | null {
+  if (PRICE_IN_TITLE.test(name) && parsePercent(name) === null) return null
+  return parsePercent(text)
+}
+
 // GetSpecialMenuCards → Deal[]. Every live special is all-day → daily (times null).
 // description ← menuDisplayName; discountPct + daysValid are parsed from the combined
 // name + description text. Cards with no usable name are skipped (never throw).
@@ -106,7 +122,7 @@ export function transformSpecials(intercepted: Intercepted[]): Deal[] {
     deals.push({
       type: 'daily',
       description: name,
-      discountPct: parsePercent(text),
+      discountPct: resolveDiscountPct(name, text),
       startTime: null,
       endTime: null,
       daysValid: days.length > 0 ? days : ['everyday'],
