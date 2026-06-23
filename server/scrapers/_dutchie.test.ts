@@ -3,7 +3,13 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import type { Intercepted } from '../utils/scraperClient.js'
-import { dutchieEmbedUrl, dutchieRequest, pickSpecials, transformSpecials } from './_dutchie.js'
+import {
+  dutchieEmbedUrl,
+  dutchieRequest,
+  pickSpecials,
+  scrapeDutchieSpecials,
+  transformSpecials,
+} from './_dutchie.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const fixture = JSON.parse(
@@ -118,5 +124,70 @@ describe('transformSpecials', () => {
 
   it('returns [] when there are no specials at all', () => {
     expect(transformSpecials([])).toEqual([])
+  })
+})
+
+describe('scrapeDutchieSpecials (retry-on-empty)', () => {
+  // Build a GetSpecialMenuCards intercept with the given menuDisplayNames.
+  const cards = (...names: string[]): Intercepted[] => [
+    {
+      url: 'https://dutchie.com/graphql?operationName=GetSpecialMenuCards',
+      status: 200,
+      data: { data: { getSpecialMenuCards: { menuCards: names.map((n) => ({ menuDisplayName: n })) } } },
+    },
+  ]
+  const EMPTY = cards() // intercept present, zero cards — the race/no-specials case
+
+  // A postFn that yields the queued batches in order (last batch repeats), counting calls.
+  function queuedPost(batches: Intercepted[][]) {
+    const calls = { n: 0 }
+    const postFn = async () => {
+      const batch = batches[Math.min(calls.n, batches.length - 1)]
+      calls.n++
+      return batch
+    }
+    return { postFn, calls }
+  }
+
+  it('returns deals from the first attempt without retrying when non-empty', async () => {
+    const { postFn, calls } = queuedPost([cards('40% OFF Everything')])
+    const deals = await scrapeDutchieSpecials('store-x', { postFn })
+    expect(deals).toHaveLength(1)
+    expect(deals[0].discountPct).toBe(40)
+    expect(calls.n).toBe(1) // no wasted retries on a good first scrape
+  })
+
+  it('retries past empty captures and returns deals once they populate', async () => {
+    const { postFn, calls } = queuedPost([EMPTY, EMPTY, cards('25% OFF Edibles')])
+    const deals = await scrapeDutchieSpecials('store-x', { postFn })
+    expect(deals).toHaveLength(1)
+    expect(deals[0].discountPct).toBe(25)
+    expect(calls.n).toBe(3) // two empties, then the populated capture
+  })
+
+  it('returns [] after exhausting attempts on a genuinely specials-less store', async () => {
+    const { postFn, calls } = queuedPost([EMPTY])
+    const deals = await scrapeDutchieSpecials('store-x', { postFn, attempts: 3 })
+    expect(deals).toEqual([])
+    expect(calls.n).toBe(3)
+  })
+
+  it('treats a thrown attempt as empty and keeps retrying', async () => {
+    let n = 0
+    const postFn = async () => {
+      n++
+      if (n === 1) throw new Error('service unreachable')
+      return cards('30% OFF Flower')
+    }
+    const deals = await scrapeDutchieSpecials('store-x', { postFn })
+    expect(deals).toHaveLength(1)
+    expect(deals[0].discountPct).toBe(30)
+    expect(n).toBe(2)
+  })
+
+  it('respects a custom attempts count', async () => {
+    const { postFn, calls } = queuedPost([EMPTY])
+    await scrapeDutchieSpecials('store-x', { postFn, attempts: 2 })
+    expect(calls.n).toBe(2)
   })
 })

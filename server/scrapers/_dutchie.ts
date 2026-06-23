@@ -1,5 +1,5 @@
 import type { Deal } from '../../client/src/types/index.js'
-import { type Intercepted, type ScrapeRequest } from '../utils/scraperClient.js'
+import { postScrape, type Intercepted, type ScrapeRequest } from '../utils/scraperClient.js'
 
 // Shared, store-agnostic Dutchie logic. Every Dutchie store serves the identical
 // GraphQL shape, so the transform lives here once; the per-store files only supply
@@ -127,6 +127,48 @@ export function transformSpecials(intercepted: Intercepted[]): Deal[] {
       endTime: null,
       daysValid: days.length > 0 ? days : ['everyday'],
     })
+  }
+  return deals
+}
+
+// Default attempt budget for scrapeDutchieSpecials (1 try + 2 retries).
+const DEFAULT_ATTEMPTS = 3
+
+export interface ScrapeDutchieOptions {
+  attempts?: number
+  postFn?: typeof postScrape
+  // Friendly id for logs; defaults to storeId (which, for the dedicated stores, is the
+  // opaque embed id/cName rather than the readable dispensary id).
+  label?: string
+}
+
+// Scrape + transform one Dutchie store, RETRYING while the specials come back empty.
+// The embed's GetSpecialMenuCards response is captured by URL pattern, but on a slow or
+// race-y load the op can fire BEFORE its menuCards array populates (the late-emit hazard
+// dutchieRequest already warns about), yielding zero deals for a store that genuinely has
+// specials. Downstream that empty result is indistinguishable from a real no-specials
+// store, so applyIngest flags it 'stale', keeps last-known-good, and the store silently
+// goes dark run after run (the root cause diagnosed in ADR-051). Re-running gives the menu
+// another full load to populate; a store that truly has no specials just stays empty across
+// every attempt — cheap (empty scrapes return fast) and harmless. Never throws: a thrown
+// attempt logs and counts as empty, exactly like the old single-shot path, so the caller
+// still degrades to [] → stale rather than crashing the run.
+export async function scrapeDutchieSpecials(
+  storeId: string,
+  opts: ScrapeDutchieOptions = {},
+): Promise<Deal[]> {
+  const attempts = Math.max(1, opts.attempts ?? DEFAULT_ATTEMPTS)
+  const post = opts.postFn ?? postScrape
+  const label = opts.label ?? storeId
+  let deals: Deal[] = []
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try {
+      deals = transformSpecials(await post(dutchieRequest(storeId)))
+    } catch (err) {
+      console.error(`[scraper:${label}] attempt ${attempt}/${attempts}`, err)
+      deals = []
+    }
+    if (deals.length > 0) return deals
   }
   return deals
 }

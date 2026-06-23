@@ -1,6 +1,5 @@
 import type { Deal } from '../../client/src/types/index.js'
-import { postScrape } from '../utils/scraperClient.js'
-import { dutchieRequest, transformSpecials } from './_dutchie.js'
+import { scrapeDutchieSpecials } from './_dutchie.js'
 
 // Config-driven Dutchie store registration (batch-resolved 2026-06-21). Every
 // entry here is a standard Dutchie embed whose store id IS its embed cName, so it
@@ -31,19 +30,13 @@ export const DUTCHIE_STORE_IDS = [
   'salish-coast-cannabis',
 ] as const
 
-// Build a Dutchie scrape() for one store id. Mirrors the per-store files: scrape
-// via the Python service, transform the GetSpecialMenuCards intercept, and never
-// throw — a failure logs and returns [] so the source degrades to stale, never
-// crashes the run.
+// Build a Dutchie scrape() for one store id. Mirrors the per-store files: scrape via
+// the Python service and transform the GetSpecialMenuCards intercept through the shared
+// retry-on-empty helper (ADR-051) — it never throws, returning [] so the source degrades
+// to stale rather than crashing the run. Here storeId === the readable dispensary id, so
+// no label override is needed.
 function makeDutchieScraper(storeId: string): () => Promise<Deal[]> {
-  return async () => {
-    try {
-      return transformSpecials(await postScrape(dutchieRequest(storeId)))
-    } catch (err) {
-      console.error(`[scraper:${storeId}]`, err)
-      return []
-    }
-  }
+  return () => scrapeDutchieSpecials(storeId)
 }
 
 export const dutchieScrapers: Record<string, () => Promise<Deal[]>> = Object.fromEntries(

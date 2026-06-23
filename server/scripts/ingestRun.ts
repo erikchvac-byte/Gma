@@ -52,7 +52,11 @@ function withTimeout<T>(p: Promise<T>, ms: number, label: string): Promise<T> {
   return Promise.race([p, timeout]).finally(() => clearTimeout(timer))
 }
 
-const SCRAPE_TIMEOUT_MS = 90000
+// Backstop budget for a single store's scrape(). A Dutchie scrape() now makes up to 3
+// retry-on-empty attempts (ADR-051), each bounded by scraperClient's own 50s axios
+// timeout, so the worst case (~150s) must fit under this ceiling — empties return fast,
+// so the budget is rarely approached, but it must not abort a legitimate retry sequence.
+const SCRAPE_TIMEOUT_MS = 180000
 
 export interface RunIngestOptions {
   stores: string[]
