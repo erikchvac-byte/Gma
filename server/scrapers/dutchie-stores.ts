@@ -45,11 +45,30 @@ export const dutchieScrapers: Record<string, () => Promise<Deal[]>> = Object.fro
   DUTCHIE_STORE_IDS.map((id) => [id, makeDutchieScraper(id)]),
 )
 
-// PRODUCT-pricing scrapers (SPEC-dutchie-product-pricing, ADR-053) — a SEPARATE
-// registry from dutchieScrapers above, returning RawProduct[] (not Deal[]). Same
-// batch-resolved stores where id === embed cName; the three original Dutchie stores
-// (the-joint/jet/kush21) whose ids diverge from their cNames are NOT included pending
-// their embed-id wiring. The product scrape is decoupled from the deals scrape and runs
-// on a lower-frequency commit-back schedule.
-export const dutchieProductScrapers: Record<string, () => Promise<RawProduct[]>> =
-  Object.fromEntries(DUTCHIE_STORE_IDS.map((id) => [id, () => scrapeDutchieProducts(id)]))
+// The three original Dutchie stores keep dedicated DEALS files because their readable
+// dispensary id diverges from their embed cName (historical, resolved in the 4.3 live
+// pass). Product scraping needs the same split: scrape the cName's menu, but record
+// observations under the READABLE id so the dataset keys match the deals store records.
+// We get that by registering each under its readable id while passing the cName to
+// scrapeDutchieProducts (which builds the embed URL from its first arg). The cNames here
+// are the exact STORE_IDs from the per-store deals files (the-joint/jet/kush21-everett).
+const ORIGINAL_DUTCHIE_PRODUCT_CNAMES: Record<string, string> = {
+  'the-joint-everett': '689cd028ea84b6a605458416',
+  'jet-cannabis-everett': 'thc-connection',
+  'kush21-everett-evergreen': 'kush21-everett',
+}
+
+// PRODUCT-pricing scrapers (SPEC-dutchie-product-pricing, ADR-053) — a SEPARATE registry
+// from dutchieScrapers above, returning RawProduct[] (not Deal[]). The batch-resolved
+// stores register id===cName directly; the three originals register readable-id → cName
+// via ORIGINAL_DUTCHIE_PRODUCT_CNAMES (id ≠ cName). The product scrape is decoupled from
+// the deals scrape and runs on a lower-frequency commit-back schedule.
+export const dutchieProductScrapers: Record<string, () => Promise<RawProduct[]>> = {
+  ...Object.fromEntries(DUTCHIE_STORE_IDS.map((id) => [id, () => scrapeDutchieProducts(id)])),
+  ...Object.fromEntries(
+    Object.entries(ORIGINAL_DUTCHIE_PRODUCT_CNAMES).map(([id, cName]) => [
+      id,
+      () => scrapeDutchieProducts(cName, { label: id }),
+    ]),
+  ),
+}
