@@ -31,8 +31,22 @@ export function parsePackCount(name: string): number | null {
 }
 
 // Total grams for an option label: "2g"→2, "3.5g"→3.5, "100mg"→0.1, "1oz"→28.35,
-// bare "2"→2 (grams assumed). Returns null when no number is present.
+// "1/8oz"→3.54, bare "2"→2 (grams assumed). Returns null when no number is present.
 export function parseGrams(option: string): number | null {
+  // Fractional labels ("1/8oz", "1/2 oz", "1/4oz") MUST be evaluated as numerator over
+  // denominator. The general number match below would grab only the leading numerator
+  // ("1/8oz"→1g instead of 3.54g — a SILENT wrong value, never flagged, that inflated
+  // $/gram for fractional-oz flower across the dataset; ADR-054).
+  const frac = option.match(/(\d+)\s*\/\s*(\d+)\s*(g|gram|grams|mg|milligram|milligrams|oz|ounce|ounces)?/i)
+  if (frac) {
+    const den = parseInt(frac[2], 10)
+    if (!den) return null
+    const val = parseInt(frac[1], 10) / den
+    const fracUnit = (frac[3] ?? 'g').toLowerCase()
+    if (fracUnit.startsWith('mg') || fracUnit.startsWith('milligram')) return r2(val / 1000)
+    if (fracUnit.startsWith('oz') || fracUnit.startsWith('ounce')) return r2(val * GRAMS_PER_OZ)
+    return r2(val)
+  }
   const m = option.match(/([\d.]+)\s*(g|gram|grams|mg|milligram|milligrams|oz|ounce|ounces)?/i)
   if (!m) return null
   const val = parseFloat(m[1])

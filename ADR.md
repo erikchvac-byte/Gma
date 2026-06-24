@@ -503,6 +503,16 @@ Build-time verification (when implemented): fixture snapshot-test per store *sha
 
 ---
 
+### ADR-054: Fix silent fractional-ounce mis-parse in `parseGrams` (`1/8oz`→1g bug)
+**Status**: Accepted (2026-06-24)
+**Context**: The FIRST live `scrape-products` run (PR #32 merged as `e6a4907`; run 28122803634; observation `2026-06-24T19:05:43Z` committed as `5f2f6a9`, served live at `gmaslist.com/api/products`) captured 1665 products across 14 stores. Verification of the committed data exposed a normalization bug: `parseGrams("1/8oz")` returned **1 gram** instead of 3.54. The regex `([\d.]+)` matches only the leading numerator (`1`), stops at the `/`, and the `oz` branch never runs — so an eighth/quarter/half ounce was treated as 1g. This inflated `pricePerGram` for **568 of 710 oz options** (a $35 eighth showed "$35/g" instead of ~$9.89/g). Worst part: a number *did* match, so `weightGrams` was non-null → the `unparseable-weight` flag never fired (SILENT), and the `weight-mismatch` reconciliation couldn't catch it because it trusts the same parsed grams. `1oz`→28.35 was always correct; `$/joint` (pricePerItem, pre-rolls) was unaffected.
+**Decision**: Add a fraction branch to `parseGrams` that matches `(\d+)\s*/\s*(\d+)` with an optional unit and evaluates numerator/denominator before the general number match. `1/8oz` → 0.125 × 28.3495 → **3.54g** (true eighth-ounce, consistent with the existing `1oz`→28.35 true-ounce convention — NOT the industry-rounded 3.5g). Genuinely unparseable labels still return null and flag as before; the fix only removes the wrong-non-null path. Four parsing-table cases added (`1/8oz`, `1/4oz`, `1/2oz`, `1/2 oz` whitespace-tolerant).
+**Rationale**: $/gram is the headline comparison metric for Flower/Vaporizers — a silent 3.5× error on the most common flower denominations defeats the engine's purpose. A targeted fraction branch is minimal and leaves the validated `g`/`mg`/`oz`/bare-number paths byte-identical. Fix-forward chosen over scrubbing the already-committed bad observation (Erik 2026-06-24): it's an R&D/private dataset with no public UI consumer, so the corrected observation simply appends after the bad one in `history`.
+**Consequences**: Corrects all future fractional-oz observations. The single bad observation `2026-06-24T19:05:43Z` REMAINS in `history` by decision — CAP-6 longitudinal consumers must tolerate it (or filter by `observedAt`). No data-shape change; deals pipeline untouched. The three original Dutchie stores remain excluded (ADR-053). No bare fractions (`1/8` without a unit) appeared in the live dataset, but the new branch handles them too.
+**Testing**: `normalizeProduct.test.ts` 25 green (4 new fraction cases); full server suite **258 passed** (was 254); `npm run build` (server tsc + client vite) clean. Re-dispatch of `scrape-products` confirms `1/8oz`→3.54g / ~$9.89/g in the next committed observation.
+
+---
+
 ## Technical Constraints
 
 - US only, v1 zone: 50 road-miles from zip 98270 (Marysville, WA), no ferry crossings
