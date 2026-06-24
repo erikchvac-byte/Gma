@@ -59,6 +59,7 @@ class NetworkInterceptor:
         wait_for_pattern: Optional[str] = None,
         extra_wait_ms: int = 8000,
         scroll: bool = True,
+        scroll_after_wait: bool = False,
         timeout: int = 45000,
     ) -> list[dict]:
         """
@@ -66,6 +67,9 @@ class NetworkInterceptor:
 
         wait_for_pattern: blocks via expect_response() until that URL fires.
         scroll: scrolls to bottom after load to trigger lazy-loaded iframes.
+        scroll_after_wait: when wait_for_pattern is used, ALSO scroll + hold after it
+            fires so lazy/paginated follow-up requests load (ADR-053, products scrape).
+            Off by default → the wait-and-return path (deals scrape) is unchanged.
         extra_wait_ms: additional wait after load/scroll for in-flight requests.
         """
         self._captured.clear()
@@ -77,6 +81,11 @@ class NetworkInterceptor:
             ):
                 await self._page.goto(url, wait_until="domcontentloaded", timeout=timeout)
             await asyncio.sleep(1)
+            # The op fired, but on a paginated menu only the first page(s) are in yet —
+            # scroll to pull the rest, then hold for those in-flight responses.
+            if scroll_after_wait:
+                await self._scroll_to_bottom()
+                await asyncio.sleep(extra_wait_ms / 1000)
         else:
             # "load" fires when HTML + blocking resources are done.
             # Does NOT wait for infinite Next.js RSC prefetches (networkidle would hang).
