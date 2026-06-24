@@ -41,6 +41,10 @@ describe('parseGrams', () => {
     ['0.5g', 0.5],
     ['100mg', 0.1],
     ['1oz', 28.35],
+    ['1/8oz', 3.54], // 0.125 * 28.3495 — true eighth-ounce, NOT mis-parsed as 1g (ADR-054)
+    ['1/4oz', 7.09],
+    ['1/2oz', 14.17],
+    ['1/2 oz', 14.17], // tolerate whitespace around the slash
     ['weird', null],
   ])('parses %j → %j', (option, expected) => {
     expect(parseGrams(option)).toBe(expected)
