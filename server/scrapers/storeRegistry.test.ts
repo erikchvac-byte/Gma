@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import { inWaBounds } from '../scripts/geocodeStores.js'
-import { DUTCHIE_STORE_IDS } from './dutchie-stores.js'
+import { DUTCHIE_STORE_IDS, dutchieProductScrapers } from './dutchie-stores.js'
 import type { ApiDataResponse } from '../../client/src/types/index.js'
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -49,5 +49,19 @@ describe('store registry / seed data integrity', () => {
 
   it('liv-ferndale (the Michigan store) is gone', () => {
     expect(ids.has('liv-ferndale')).toBe(false)
+  })
+
+  // ADR-053 / Item 3 (2026-06-24): the three original Dutchie stores were excluded from
+  // product scraping because their readable id ≠ embed cName. They are now wired via
+  // ORIGINAL_DUTCHIE_PRODUCT_CNAMES (registered under the readable id, scraped by cName).
+  it('the three original Dutchie stores are registered for product scraping', () => {
+    for (const id of ['the-joint-everett', 'jet-cannabis-everett', 'kush21-everett-evergreen']) {
+      expect(dutchieProductScrapers[id], `missing product scraper: ${id}`).toBeTypeOf('function')
+    }
+  })
+
+  it('every product-scraper id refers to a store that exists in the seed (no orphan targets)', () => {
+    const orphans = Object.keys(dutchieProductScrapers).filter((id) => !ids.has(id))
+    expect(orphans, `product-scrape targets absent from data.json: ${orphans.join(', ')}`).toEqual([])
   })
 })
