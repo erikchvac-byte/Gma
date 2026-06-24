@@ -1,5 +1,7 @@
 import type { Deal } from '../../client/src/types/index.js'
+import type { RawProduct } from '../types/index.js'
 import { scrapeDutchieSpecials } from './_dutchie.js'
+import { scrapeDutchieProducts } from './_dutchieProducts.js'
 
 // Config-driven Dutchie store registration (batch-resolved 2026-06-21). Every
 // entry here is a standard Dutchie embed whose store id IS its embed cName, so it
@@ -42,3 +44,12 @@ function makeDutchieScraper(storeId: string): () => Promise<Deal[]> {
 export const dutchieScrapers: Record<string, () => Promise<Deal[]>> = Object.fromEntries(
   DUTCHIE_STORE_IDS.map((id) => [id, makeDutchieScraper(id)]),
 )
+
+// PRODUCT-pricing scrapers (SPEC-dutchie-product-pricing, ADR-053) — a SEPARATE
+// registry from dutchieScrapers above, returning RawProduct[] (not Deal[]). Same
+// batch-resolved stores where id === embed cName; the three original Dutchie stores
+// (the-joint/jet/kush21) whose ids diverge from their cNames are NOT included pending
+// their embed-id wiring. The product scrape is decoupled from the deals scrape and runs
+// on a lower-frequency commit-back schedule.
+export const dutchieProductScrapers: Record<string, () => Promise<RawProduct[]>> =
+  Object.fromEntries(DUTCHIE_STORE_IDS.map((id) => [id, () => scrapeDutchieProducts(id)]))

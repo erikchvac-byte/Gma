@@ -10,6 +10,10 @@ class ScrapeRequest(BaseModel):
     tier: Literal["browser", "tls", "cloudflare"] = "browser"
     headless: bool = True
     timeout: int = 30000                      # milliseconds
+    # After wait_for_pattern fires, scroll to trigger lazy/paginated follow-up
+    # requests and hold for them (ADR-053, products scrape). Default False keeps the
+    # deals scrape's wait-and-return timing unchanged.
+    scroll_after_wait: bool = False
 
 
 class InterceptedPayload(BaseModel):

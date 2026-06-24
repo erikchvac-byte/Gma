@@ -18,6 +18,11 @@ export interface ScrapeRequest {
   tier: 'browser' | 'tls' | 'cloudflare'
   headless: boolean
   timeout: number
+  // After wait_for_pattern unblocks, scroll the page to trigger lazy/paginated
+  // follow-up requests and hold for them before returning (ADR-053). Defaults to
+  // false service-side, so requests that omit it (the deals scrape) are unchanged;
+  // only the product scrape sets it to capture the full paginated menu.
+  scroll_after_wait?: boolean
 }
 
 export interface Intercepted {

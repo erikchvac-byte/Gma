@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url'
 import 'dotenv/config'
 import { dataRoute } from './routes/dataRoute.js'
 import { ingestRoute } from './routes/ingestRoute.js'
+import { productsRoute } from './routes/productsRoute.js'
 import { refreshGasPrice } from './utils/refreshGasPrice.js'
 
 const app = express()
@@ -26,6 +27,11 @@ app.get('/api/data', dataRoute)
 // in-process setInterval scrape (ADR-010) was retired in Goal C, so this Render
 // service is read-only over data.json/the store and serves last-known-good.
 app.post('/api/ingest', ingestRoute)
+
+// Read-only product-pricing dataset (SPEC-dutchie-product-pricing CAP-4, ADR-053).
+// Additive and fully decoupled from /api/data — serves the committed longitudinal
+// products.json; never reads data.json or the deals contract.
+app.get('/api/products', productsRoute)
 
 // In production this single service also serves the built React client, so
 // gmaslist.com hits one origin for both the app and its API.

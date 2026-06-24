@@ -119,6 +119,7 @@ async def _run_browser(request: ScrapeRequest, start: float) -> ScrapeResponse:
                 captured = await interceptor.navigate_and_collect(
                     request.url,
                     wait_for_pattern=request.wait_for_pattern,
+                    scroll_after_wait=request.scroll_after_wait,
                     timeout=request.timeout,
                 )
 

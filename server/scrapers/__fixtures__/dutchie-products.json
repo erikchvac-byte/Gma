@@ -1,0 +1,298 @@
+{
+  "_provenance": {
+    "store": "kushmart-north",
+    "op": "FilteredProducts",
+    "url": "https://dutchie.com/api-3/graphql?operationName=FilteredProducts&variables=%7B%22includeEnterpriseSpecials%22%3Afalse%2C%22productsFilter%22%3A%7B%22productIds%22%3A%5B%22683a26e78d1f98b36757bc11%22%2C%22699614ba7f1438c9532b8358%22%2C%22686d75648b67ed118ddbaefe%22%2C%2268a4e4db776aa3473f0e5f60%22%2C%226a21abe6d3c3a236a4e18197%22%2C%2268937d5b7d6593991fbbd892%22%2C%2268a4e4db776aa3473f0e5f5c%22%2C%226a04ec4c5461391bb756c60f%22%2C%2268f9117cc2105ff518dbc533%22%2C%2269f290d29d113c64c695bf37%22%2C%2268d3178ed9027c7211725def%22%2C%22699614ba7f1438c9532b8359%22%2C%226977b1f4a0e342dfa6b8c85e%22%2C%22683a26e78d1f98b36757bc10%22%2C%226a185e74f6208da9de7e524e%22%2C%226a20b0d14dd0b5e57d1cc756%22%2C%226a20b0d14dd0b5e57d1cc758%22%2C%226a21abe6d3c3a236a4e18193%22%2C%226a20b0d14dd0b5e57d1cc755%22%2C%22683a26e78d1f98b36757bbf4%22%2C%22683a26e78d1f98b36757bbf6%22%2C%2268dd5f82a4e0419636d910ab%22%2C%226a21abe6d3c3a236a4e18198%22%2C%226a21abe6d3c3a236a4e18192%22%2C%2269c57ead0804ab450fedea97%22%5D%2C%22dispensaryId%22%3A%2267068790432055b33dc37888%22%2C%22pricingType%22%3A%22rec%22%2C%22strainTypes%22%3A%5B%5D%2C%22subcategories%22%3A%5B%5D%2C%22Status%22%3A%22Active%22%2C%22types%22%3A%5B%5D%2C%22useCache%22%3Atrue%2C%22isDefaultSort%22%3Atrue%2C%22sortBy%22%3A%22popularSortIdx%22%2C%22sortDirection%22%3A1%2C%22bypassOnlineThresholds%22%3Afalse%2C%22isKioskMenu%22%3Afalse%2C%22removeProductsBelowOptionThresholds%22%3Atrue%2C%22platformType%22%3A%22ONLINE_MENU%22%2C%22preOrderType%22%3Anull%7D%2C%22page%22%3A0%2C%22perPage%22%3A50%7D&extensions=%7B%22persistedQuery%22%3A%7B%22version%22%3A1%2C%22sha256Hash%22%3A%220fae0c65b4f7910948ee6bb3ff5dc31e5a437839609b037f7d88a5215c82768d%22%7D%7D",
+    "path": "data.filteredProducts.products[]",
+    "captured": "2026-06-24 live",
+    "note": "One real product object. 'chose pre-roll' indicates whether a Pre-Rolls type was found."
+  },
+  "product": {
+    "_id": "683a26e78d1f98b36757bbf6",
+    "id": "683a26e78d1f98b36757bbf6",
+    "AdditionalOptions": [],
+    "duplicatedProductId": null,
+    "libraryProductId": "69825cb97166e60007543449",
+    "libraryProductScore": 24.67144,
+    "brand": {
+      "id": "9bba931b-88ed-41a3-80e4-fecda8afbc80",
+      "name": "mama J's",
+      "parentBrandId": null,
+      "imageUrl": "https://s3-us-west-2.amazonaws.com/dutchie-images/d51df4a4bc5cf64135b4a835cacf3766",
+      "__typename": "Brand",
+      "_id": "9bba931b-88ed-41a3-80e4-fecda8afbc80",
+      "description": "mama J\u2019s team of highly experienced professionals has seen it all and still grind hard every day, staying true to cannabis culture. We\u2019re continually searching for new ways to innovate and take our game to the next level. Using our unique genetic library coupled with industry-leading grow methods and high-tech extraction processes, mama J\u2019s delivers premium-grade cannabis products with a consistent quality level you can trust. "
+    },
+    "brandId": "9bba931b-88ed-41a3-80e4-fecda8afbc80",
+    "brandName": "mama J's",
+    "CBD": null,
+    "CBDContent": {
+      "unit": "PERCENTAGE",
+      "range": [
+        0.04,
+        0.05
+      ],
+      "__typename": "ProductPotency"
+    },
+    "certificateOfAnalysisEnabled": false,
+    "collectionCardBadge": null,
+    "comingSoon": null,
+    "createdAt": "1748641511238",
+    "updatedAt": "2026-06-13T05:24:11.208Z",
+    "DispensaryID": "67068790432055b33dc37888",
+    "enterpriseProductId": "683a2a91593a8d00071a5041",
+    "Image": "https://s3-us-west-2.amazonaws.com/dutchie-images/f21c344826775008d5120ccecd86e6da",
+    "images": [
+      {
+        "url": "https://s3-us-west-2.amazonaws.com/dutchie-images/f21c344826775008d5120ccecd86e6da",
+        "description": "",
+        "active": true,
+        "__typename": "Products_Images"
+      },
+      {
+        "url": "https://s3-us-west-2.amazonaws.com/dutchie-images/54b57308b60029587f637dc75ff28d13",
+        "description": null,
+        "active": true,
+        "__typename": "Products_Images"
+      }
+    ],
+    "measurements": {
+      "netWeight": {
+        "unit": "MILLIGRAMS",
+        "values": [
+          2000
+        ],
+        "__typename": "Products_measurement"
+      },
+      "volume": null,
+      "__typename": "Products_measurements"
+    },
+    "medicalOnly": false,
+    "medicalPrices": [
+      8
+    ],
+    "medicalSpecialPrices": [
+      4
+    ],
+    "wholesalePrices": null,
+    "Name": "Mama J's: Alien Rock Candy  - PR 2pk",
+    "nonArmsLength": null,
+    "Options": [
+      "2g"
+    ],
+    "limitsPerCustomer": null,
+    "manualInventory": null,
+    "POSMetaData": {
+      "activeBatchTags": [],
+      "canonicalBrandId": null,
+      "canonicalBrandName": "Mama J's",
+      "canonicalCategory": "Pre-Roll",
+      "canonicalCategoryId": null,
+      "canonicalID": "4915537",
+      "canonicalPackageId": null,
+      "canonicalImgUrl": "https://pbit-production.s3.amazonaws.com/images/image/312568/large_mamaJs_preroll-indica.png",
+      "canonicalLabResultUrl": null,
+      "canonicalName": "Mama J's: Alien Rock Candy  - PR 2pk 2g",
+      "canonicalProductTags": [],
+      "canonicalSKU": null,
+      "canonicalStrainId": null,
+      "canonicalVendorId": null,
+      "children": [
+        {
+          "activeBatchTags": [],
+          "canonicalBrandId": null,
+          "canonicalBrandName": null,
+          "canonicalCategory": "Pre-Roll",
+          "canonicalCategoryId": null,
+          "canonicalEffectivePotencyMg": null,
+          "canonicalID": "4915537",
+          "canonicalPackageId": null,
+          "canonicalImgUrl": "https://pbit-production.s3.amazonaws.com/images/image/312568/large_mamaJs_preroll-indica.png",
+          "canonicalLabResultUrl": null,
+          "canonicalName": "Mama J's: Alien Rock Candy  - PR 2pk 2g",
+          "canonicalSKU": null,
+          "canonicalProductTags": [],
+          "canonicalStrainId": null,
+          "canonicalVendorId": null,
+          "kioskQuantityAvailable": 25,
+          "medPrice": null,
+          "option": "2g",
+          "packageQuantity": null,
+          "price": 8,
+          "quantity": 25,
+          "quantityAvailable": 25,
+          "recEquivalent": null,
+          "recPrice": 8,
+          "standardEquivalent": null,
+          "__typename": "Products_POSMetaData_children"
+        }
+      ],
+      "integrationID": "6706d3023fa7f23c1f30c8cf",
+      "__typename": "Products_POSMetaData"
+    },
+    "Prices": [
+      8
+    ],
+    "pricingTierData": null,
+    "specialIdsPerOption": [
+      {
+        "option": "2g",
+        "conditionIds": [],
+        "rewardIds": [],
+        "__typename": "Products_specialIdsPerOption"
+      }
+    ],
+    "rawOptions": [
+      "2.0g"
+    ],
+    "recOnly": false,
+    "recPrices": [
+      8
+    ],
+    "recSpecialPrices": [
+      4
+    ],
+    "special": true,
+    "specialData": {
+      "bogoSpecials": null,
+      "saleSpecials": [
+        {
+          "createdBy": "63e2c968f006c500f535b9b0",
+          "directPOSProductIdMapping": false,
+          "rawPOSWeightMapping": false,
+          "useLatestCartCalculator": null,
+          "discount": 50,
+          "discountStacking": false,
+          "dollarDiscount": false,
+          "eligibleProductOptions": null,
+          "menuType": "both",
+          "minorVersion": 0,
+          "nonStackingBehavior": "favorCustomer",
+          "payByBankIncentiveEnabled": null,
+          "paymentRestrictions": null,
+          "percentDiscount": true,
+          "saleDiscounts": null,
+          "settingsDerivedFrom": "dispensary",
+          "skipV4Merge": null,
+          "source": null,
+          "sourceId": null,
+          "specialId": "68c34c77a6e73800899a152b",
+          "specialName": "50% Off Brands",
+          "specialType": "sale",
+          "specialRestrictions": {
+            "520a7275-0c6d-4dc7-a27b-3a8d66464254": {
+              "discountType": "percentDiscount"
+            },
+            "379a87de-eed7-425d-8a64-bc6455d68dfb": {
+              "discountType": "percentDiscount"
+            },
+            "f857ce38-b05c-456f-9d3e-ca298025554f": {
+              "discountType": "percentDiscount"
+            },
+            "0a311d28-4975-490d-8f50-613c5a126f7c": {
+              "discountType": "percentDiscount"
+            },
+            "380a3aed-c4a7-4fdd-80c5-f3ee193e0550": {
+              "discountType": "percentDiscount"
+            },
+            "596edd71-abd6-4573-a1e0-b7707e6639ce": {
+              "discountType": "percentDiscount"
+            },
+            "35a1d56b-870d-45cc-9101-2dced58e4174": {
+              "discountType": "percentDiscount"
+            },
+            "67a4ccf0-8e50-48aa-99ab-e83913c7a518": {
+              "discountType": "percentDiscount"
+            },
+            "12c27914-73d8-4274-89a5-b5589d71460d": {
+              "discountType": "percentDiscount"
+            },
+            "591074b0-965d-4178-aea3-92997a73db74": {
+              "discountType": "percentDiscount"
+            },
+            "95ca2fd3-c801-4d03-97b4-d8a69f64c193": {
+              "discountType": "percentDiscount"
+            },
+            "5b575bf5-fc7c-4ff0-96e8-4aa527fe8a51": {
+              "discountType": "percentDiscount"
+            },
+            "c06b2f14-2824-417c-b4ad-27b15de902aa": {
+              "discountType": "percentDiscount"
+            },
+            "1ebb9427-ba87-477a-825d-1de30a675c66": {
+              "discountType": "percentDiscount"
+            },
+            "4fec96dd-8442-4f1b-bb64-77cc65d5abef": {
+              "discountType": "percentDiscount"
+            },
+            "cea74025-eddf-4a62-bd47-511cdf962264": {
+              "discountType": "percentDiscount"
+            },
+            "bad1533b-c8f5-4927-9872-919452e103ee": {
+              "discountType": "percentDiscount"
+            },
+            "05d6b69a-e459-451a-b09e-235d62cc2294": {
+              "discountType": "percentDiscount"
+            },
+            "8d6713a2-1630-47b4-a38a-b1a10d4b24ff": {
+              "discountType": "percentDiscount"
+            },
+            "72c4fd29-54be-4af4-b6d1-a07224973822": {
+              "discountType": "percentDiscount"
+            },
+            "9bba931b-88ed-41a3-80e4-fecda8afbc80": {
+              "discountType": "percentDiscount"
+            }
+          },
+          "stackingBehavior": "cumulative",
+          "stackingMode": null,
+          "targetPrice": false,
+          "useGreedOptimizedCalculator": null,
+          "useTotalQtyCalcsFix": null,
+          "version": 3,
+          "__typename": "Products_specialData_saleSpecials"
+        }
+      ],
+      "__typename": "Products_specialData"
+    },
+    "Status": "Active",
+    "strainType": "Indica",
+    "subcategory": "singles",
+    "subcategories": null,
+    "THC": null,
+    "THCContent": {
+      "unit": "PERCENTAGE",
+      "range": [
+        21,
+        22
+      ],
+      "__typename": "ProductPotency"
+    },
+    "totalTerpenes": null,
+    "type": "Pre-Rolls",
+    "vapeTaxApplicable": null,
+    "weight": 1000,
+    "featured": null,
+    "isBelowThreshold": false,
+    "isBelowKioskThreshold": false,
+    "optionsBelowThreshold": [],
+    "optionsBelowKioskThreshold": [],
+    "cName": "mama-j-s-alien-rock-candy-pr-2pk",
+    "pastCNames": [
+      "mama-j-s-alien-rock-candy-pr-2pk"
+    ],
+    "brandLogo": "https://s3-us-west-2.amazonaws.com/dutchie-images/d51df4a4bc5cf64135b4a835cacf3766",
+    "bottleDepositTaxCents": null,
+    "useBetterPotencyTaxes": null,
+    "__typename": "Products",
+    "effects": {
+      "relaxed": 9,
+      "painRelief": 7,
+      "sleepy": 8,
+      "happy": 8,
+      "euphoric": 8
+    },
+    "cannabinoidsV2": [],
+    "provider": "dutchie"
+  }
+}
