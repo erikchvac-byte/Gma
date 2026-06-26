@@ -1,5 +1,10 @@
 # Deferred Work
 
+## ~~DEFERRED~~ RESOLVED — duplicate store kushmans-everett-evergreen-way (from chunk-1 review, 2026-06-26)
+
+Surfaced by the blind-hunter + edge-case reviewers of `spec-card-address-and-remove-mpg-default`: `kush21-everett-evergreen` and `kushmans-everett-evergreen-way` carried the identical address `"8911 Evergreen Way, Everett, WA 98208"` (verbatim from the cited `STORE_ADDRESSES` map; "same site as Kush21 Evergreen") and already shared `lat`/`lng`. **RESOLVED 2026-06-26 (Erik's call): they are the same physical shop, so `kushmans-everett-evergreen-way` was removed entirely** — from `server/data/data.json` (21→20 stores), `server/data/products.json` (−272 product entries), `DUTCHIE_STORE_IDS` (`dutchie-stores.ts`), and `STORE_ADDRESSES` (`geocodeStores.ts`). `kush21-everett-evergreen` is retained. Guard rail `storeRegistry.test.ts` re-verified (no orphan registry/product-scrape ids).
+
+
 ## DEFERRED — User-Relative Positioning #2–#6 (brainstorm split, 2026-06-21)
 
 Source: `_bmad-output/brainstorming/brainstorming-session-2026-06-21-1721.md` (proposed **ADR-044** "User-Relative Positioning Supersedes Fixed-Origin Distance", retires ADR-008 fixed-origin + ADR-011 hand-distances). The brainstorm **supersedes & absorbs** the older "Deliverable 2" section below — same geocode/haversine engine, expanded to all 22 stores + Geolocation two-door + centroid cold-start + ferry honesty + slider reframe. Decomposed into 6 build-order deliverables; **#1 (geocode all 22 + lat/lng on records & type) taken now** via bmad-quick-dev (`spec-geocode-stores-latlng`). Remaining, in dependency order:

@@ -19,7 +19,6 @@ Returns the current deal feed. Reads `data/data.json` and strips expired/out-of-
   "meta": {
     "lastScraperRun": "2026-06-18T19:14:00.000Z",
     "gasPrice": 5.343,
-    "nationalMpg": 25,
     "gasPriceUpdatedAt": "2026-06-17T12:00:00.000Z"
   },
   "dispensaries": [
@@ -27,6 +26,7 @@ Returns the current deal feed. Reads `data/data.json` and strips expired/out-of-
       "id": "remedy-tulalip",
       "name": "Remedy Tulalip",
       "url": "https://…",
+      "address": "9226 34th Avenue NE, Tulalip, WA 98271",
       "distanceMiles": 4.2,
       "stale": false,
       "lastFetchedAt": "2026-06-18T19:14:00.000Z",

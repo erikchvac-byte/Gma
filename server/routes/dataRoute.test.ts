@@ -27,7 +27,6 @@ describe('GET /api/data', () => {
       meta: {
         lastScraperRun: expect.any(String),
         gasPrice: expect.any(Number),
-        nationalMpg: expect.any(Number),
         gasPriceUpdatedAt: expect.any(String),
       },
       dispensaries: expect.any(Array),
@@ -57,7 +56,7 @@ describe('GET /api/data', () => {
     }
     mockedReadFileSync.mockReturnValueOnce(
       JSON.stringify({
-        meta: { lastScraperRun: fresh, gasPrice: 4, nationalMpg: 28, gasPriceUpdatedAt: fresh },
+        meta: { lastScraperRun: fresh, gasPrice: 4, gasPriceUpdatedAt: fresh },
         dispensaries: [
           { id: 'a', ...base, lastFetchedAt: fresh },
           { id: 'b', ...base, lastFetchedAt: old },

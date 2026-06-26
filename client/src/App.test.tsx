@@ -6,7 +6,6 @@ import type { ApiDataResponse } from './types'
 const meta = {
   lastScraperRun: '2026-06-10T07:45:00',
   gasPrice: 4.1,
-  nationalMpg: 28,
   gasPriceUpdatedAt: '2026-06-10T07:00:00',
 }
 
@@ -103,9 +102,10 @@ describe('App', () => {
     vi.stubGlobal('fetch', routeFetch(oneDispensary, 20))
     render(<App />)
 
-    // national average first: 5 mi × 2 × 4.1/28 = $1.46 (cyan gas line in header)
-    expect(await screen.findByText(hasText('$1.46'), { selector: '.gma-gas-line' })).toBeInTheDocument()
-    expect(screen.getByText('30%')).toBeInTheDocument()
+    // no vehicle selected yet → NO gas line (the 28-MPG national default was
+    // removed, CAP-4); the deal + distance still render
+    expect(await screen.findByText('30%')).toBeInTheDocument()
+    expect(document.querySelector('.gma-gas-line')).toBeNull()
 
     fireEvent.click(screen.getByRole('button', { name: 'Vehicle & settings' }))
     await screen.findByRole('option', { name: '2019' })

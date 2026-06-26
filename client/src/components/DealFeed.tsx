@@ -19,7 +19,7 @@ import { Notice, SkeletonFeed } from './ui'
 import type { Deal, Dispensary } from '../types'
 
 interface DealFeedProps {
-  // resolved vehicle MPG from App (already validated); null → national average
+  // resolved vehicle MPG from App (already validated); null → no gas line
   mpg?: number | null
 }
 
@@ -112,15 +112,14 @@ export default function DealFeed({ mpg = null }: DealFeedProps) {
   const storeGroups = groupDealsByStore(typedDispensaries, now)
   const lastUpdated = formatLastUpdated(data.meta.lastScraperRun)
 
-  // stored vehicle MPG wins only when it's a finite number > 0; anything else
-  // (absent, null, garbage) silently falls back to nationalMpg
-  const effectiveMpg =
-    typeof mpg === 'number' && isPositiveFinite(mpg) ? mpg : data.meta.nationalMpg
-  // distanceMiles is optional (ADR-043): no distance → no gas line (null), same
-  // suppression DealCard's pill uses. roundTripGasCost also null-guards, but the
-  // undefined check keeps the number-only formula contract intact.
+  // MPG now comes ONLY from the user's chosen vehicle — the hardcoded
+  // national-average default (ADR-003/013) was removed. No vehicle selected →
+  // null → no gas line (Honest Math: never a gas figure on a guessed MPG).
+  const effectiveMpg = typeof mpg === 'number' && isPositiveFinite(mpg) ? mpg : null
+  // Gas needs BOTH a distance (ADR-043: optional) AND a vehicle MPG; either
+  // missing → null → no gas line. Distance still shows from distanceMiles alone.
   const gasCostText = (distanceMiles: number | undefined): string | null => {
-    if (distanceMiles === undefined) return null
+    if (distanceMiles === undefined || effectiveMpg === null) return null
     const cost = roundTripGasCost(distanceMiles, data.meta.gasPrice, effectiveMpg)
     return cost === null ? null : formatGasCost(cost)
   }

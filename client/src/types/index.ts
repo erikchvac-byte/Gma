@@ -21,6 +21,11 @@ export interface Dispensary {
   id: string
   name: string
   url: string
+  // Real store street address, committed into data.json (sourced from the cited
+  // geocodeStores.ts STORE_ADDRESSES map). Additive optional enrichment like
+  // `lat`/`lng`/`status` — NOT a visibility gate (ADR-043): rendered only when a
+  // non-empty string is present, never fabricated (Honest Math, ADR-007/009).
+  address?: string
   // Optional enrichment, NOT a visibility gate (ADR-043). A store renders on its
   // own validity; distance/gas only appear when this is a finite number. The 4
   // seed stores carry a fixed-origin value (ADR-008, retired in Deliverable 2);
@@ -44,7 +49,6 @@ export interface Dispensary {
 export interface Meta {
   lastScraperRun: string
   gasPrice: number
-  nationalMpg: number
   gasPriceUpdatedAt: string
 }
 

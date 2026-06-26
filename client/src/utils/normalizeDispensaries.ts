@@ -13,11 +13,13 @@ import type { Dispensary } from '../types'
 //   - deals is an array
 //   - distanceMiles is ABSENT, or a finite number >= 0
 //
-// ADR-043: distanceMiles is optional enrichment, not a visibility gate — a
-// push-ingested store with no distance must still render (no pill / no gas, per
-// the consumers' finite-number guards). But a distance that is PRESENT yet bad
-// (NaN/Infinity/negative) still signals a corrupt record and drops it, so the
-// `.toFixed(1)` / filter / sort consumers never meet a poisoned number.
+// ADR-043: distanceMiles and address are optional enrichment, NOT visibility
+// gates. distanceMiles is the one exception that still drops a record when it is
+// PRESENT yet bad (NaN/Infinity/negative): it feeds `.toFixed(1)` / the radius
+// filter / the sort comparator, so a poisoned number must never reach them.
+// `address` has no such math or crash path — DealCard guards it with `typeof` +
+// `.trim()` — so a bad address (empty/whitespace/non-string) NEVER drops the
+// store; the card simply omits the address line and the store's deals still show.
 export function normalizeDispensaries(raw: unknown[]): Dispensary[] {
   return raw.filter((item): item is Dispensary => {
     if (item === null || typeof item !== 'object') return false

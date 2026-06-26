@@ -39,7 +39,6 @@ export const STORE_ADDRESSES: Record<string, string> = {
   // — Everett / Lynnwood —
   'kushmart-north': '6309 Evergreen Way, Everett, WA 98203', // Yelp (now Kush21 Everett North)
   'local-roots-everett-128th': '517 128th Street SW, Everett, WA 98204', // mylocalroots.com / Yelp
-  'kushmans-everett-evergreen-way': '8911 Evergreen Way, Everett, WA 98208', // shopkushmans.com (same site as Kush21 Evergreen)
   'hangar-420-everett': '14221 Lake Rd, Everett, WA 98087', // hangar420wa.com store locator (Everett)
   'hangar-420-west': '15919 Highway 99, Lynnwood, WA 98087', // hangar420wa.com store locator (Lynnwood / "West")
   // — Whatcom / Bellingham —

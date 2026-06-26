@@ -24,7 +24,7 @@ function seed(): { dataPath: string; prior: Deal[] } {
   const dataPath = path.join(dir, 'data.json')
   const prior: Deal[] = [{ ...validDeal, description: 'prior deal', daysValid: ['monday'] }]
   const file: ApiDataResponse = {
-    meta: { lastScraperRun: EPOCH, gasPrice: 4, nationalMpg: 28, gasPriceUpdatedAt: EPOCH },
+    meta: { lastScraperRun: EPOCH, gasPrice: 4, gasPriceUpdatedAt: EPOCH },
     dispensaries: [
       {
         id: 'remedy-tulalip',

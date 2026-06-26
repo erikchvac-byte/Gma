@@ -144,7 +144,7 @@ export default function VehicleSelector({ open, onClose, mpg, label, onMpgChange
           </IconButton>
         </div>
         <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-muted)', margin: 0 }}>
-          Set it once for exact gas math. Skip it and we use the national average.
+          Set it once for exact gas math. Skip it and we&apos;ll show the distance but no gas cost.
         </p>
         {mpg !== null && label !== null && (
           <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-body)', margin: 0 }}>
@@ -159,7 +159,7 @@ export default function VehicleSelector({ open, onClose, mpg, label, onMpgChange
             {error}{' '}
             {mpg !== null
               ? 'Gas costs will keep using your saved vehicle.'
-              : 'Gas costs will use the national average.'}
+              : 'Gas costs stay hidden until you pick a vehicle.'}
           </Notice>
         )}
         <Select

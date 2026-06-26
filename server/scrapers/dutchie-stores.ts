@@ -21,7 +21,6 @@ export const DUTCHIE_STORE_IDS = [
   'bud-hut-camano-island',
   'kushmart-north',
   'local-roots-everett-128th',
-  'kushmans-everett-evergreen-way',
   'hangar-420-everett',
   'hangar-420-west',
   'evolve-cannabis-bellingham',
