@@ -35,9 +35,12 @@ A store and its deals + freshness/location metadata.
 | `id` | `string` | stable key; matches the scraper registry id |
 | `name` | `string` | display name |
 | `url` | `string` | source menu URL |
-| `distanceMiles` | `number` | from the user's reference point (Marysville-area) — drives gas math |
+| `address` | `string` (optional) | street address; rendered top-right on the card. Additive enrichment, NOT a visibility gate (ADR-043) — a bad/absent address never hides the store |
+| `distanceMiles` | `number` (optional) | interim fixed-origin distance; drives gas math. Per-user distance arrives in chunk 2 (retires ADR-008/011). Present-but-invalid drops the record |
+| `lat` / `lng` | `number` (optional) | committed real coords (ADR-044); consumed by per-user distance (chunk 2) |
 | `stale` | `boolean` | true when the last scrape failed/was empty (good data kept) |
 | `lastFetchedAt` | `string` | ISO timestamp of last successful fetch |
+| `status` | `'ok' \| 'stale' \| 'failed'` (optional) | per-store ingest recency (ADR-034 Goal B) |
 | `deals` | `Deal[]` | active deals (read path filters expired) |
 
 ### `Meta`
@@ -47,7 +50,6 @@ Feed-level metadata used for true-cost math and freshness.
 |---|---|---|
 | `lastScraperRun` | `string` | ISO; advances only when a real deal push is accepted |
 | `gasPrice` | `number` | $/gal — EIA WA weekly regular (`refreshGasPrice`) |
-| `nationalMpg` | `number` | fallback MPG when user hasn't picked a vehicle |
 | `gasPriceUpdatedAt` | `string` | ISO of last gas refresh |
 
 ### `ApiDataResponse`
@@ -72,7 +74,7 @@ driveCost = distanceMiles * 2 * (gasPrice / mpg)   // client/src/utils/gasCost.t
 trueCost  = salePrice + driveCost
 ```
 
-`gasPrice` comes from `Meta`; `mpg` from the user's vehicle selection (`useVehicleMpg`, persisted in `localStorage`), falling back to `meta.nationalMpg`.
+`gasPrice` comes from `Meta`; `mpg` comes ONLY from the user's vehicle selection (`useVehicleMpg`, persisted in `localStorage`). The hardcoded national-average fallback was removed (ADR-003/013 retired) — with no vehicle selected there is no `mpg`, so no gas figure is shown (distance still shows). Gas needs BOTH a distance and a vehicle.
 
 ## Relationships
 

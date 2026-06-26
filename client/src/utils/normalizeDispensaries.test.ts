@@ -55,6 +55,27 @@ describe('normalizeDispensaries', () => {
     expect(normalizeDispensaries([valid({ deals: 'x' as unknown as [] })])).toEqual([])
   })
 
+  it('keeps records with a PRESENT non-empty string address', () => {
+    const withAddress = valid({ address: '9226 34th Avenue NE, Tulalip, WA 98271' })
+    expect(normalizeDispensaries([withAddress])).toEqual([withAddress])
+  })
+
+  it('keeps records with no address at all (optional enrichment, ADR-043)', () => {
+    const noAddress = valid()
+    expect('address' in noAddress).toBe(false)
+    expect(normalizeDispensaries([noAddress])).toEqual([noAddress])
+  })
+
+  it('keeps records even when address is empty, whitespace-only, or non-string — address never gates visibility (ADR-043)', () => {
+    // a bad address has no math/crash path (DealCard guards typeof + .trim()), so
+    // the store and its deals must still render; the card just omits the address.
+    const empty = valid({ address: '' })
+    const ws = valid({ address: '   ' })
+    const num = valid({ address: 123 as unknown as string })
+    const nul = valid({ address: null as unknown as string })
+    expect(normalizeDispensaries([empty, ws, num, nul])).toEqual([empty, ws, num, nul])
+  })
+
   it('keeps the valid records and drops the malformed ones in a mixed list', () => {
     const good = valid()
     const raw = [good, null, valid({ id: 'bad', distanceMiles: NaN })]

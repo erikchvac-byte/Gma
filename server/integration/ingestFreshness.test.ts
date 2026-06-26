@@ -87,7 +87,7 @@ function store(id: string, lastFetchedAt: string, deals: Deal[] = []): Dispensar
 function seed(dispensaries: Dispensary[]): void {
   const ts = new Date().toISOString()
   const file: ApiDataResponse = {
-    meta: { lastScraperRun: ts, gasPrice: 4.25, nationalMpg: 28, gasPriceUpdatedAt: ts },
+    meta: { lastScraperRun: ts, gasPrice: 4.25, gasPriceUpdatedAt: ts },
     dispensaries,
   }
   writeFileSync(path.join(holder.dir, 'data.json'), JSON.stringify(file))

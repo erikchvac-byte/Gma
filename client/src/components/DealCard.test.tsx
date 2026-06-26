@@ -393,6 +393,63 @@ describe('DealCard', () => {
     expect(byFullText('Happy hour', '.gma-deal-block__title')).toBeInTheDocument()
   })
 
+  it('renders the store street address in the header at deal-title size when present (CAP-1)', () => {
+    render(
+      <DealCard
+        dispensary={makeDispensary({ address: '9226 34th Avenue NE, Tulalip, WA 98271' })}
+        deals={[view({ type: 'daily', description: 'Daily special', startTime: null, endTime: null }, 'Active today', null)]}
+        gasCostText="$1.80"
+      />,
+    )
+
+    const address = screen.getByText('9226 34th Avenue NE, Tulalip, WA 98271')
+    // semantic <address> element, styled to deal-title size via .gma-dealcard__address
+    expect(address.tagName).toBe('ADDRESS')
+    expect(address).toHaveClass('gma-dealcard__address')
+  })
+
+  it('omits the address element entirely when the store has no address (ADR-043)', () => {
+    const { container } = render(
+      <DealCard dispensary={makeDispensary({})} deals={[]} gasCostText={null} />,
+    )
+
+    // makeDispensary({}) carries a distance (pill renders) but no address
+    expect(container.querySelector('.gma-dealcard__address')).toBeNull()
+    expect(byFullText('12.4 mi', '.gma-distance-pill')).toBeInTheDocument()
+  })
+
+  it('renders no address line for a blank/whitespace address but still shows the store + deal', () => {
+    const { container } = render(
+      <DealCard
+        dispensary={makeDispensary({ address: '   ' })}
+        deals={[view({ type: 'daily', description: 'Daily special', startTime: null, endTime: null }, 'Active today', null)]}
+        gasCostText={null}
+      />,
+    )
+
+    // address never gates visibility (ADR-043): the store + its deal render, the
+    // address element is simply omitted
+    expect(screen.getByText('Alpha Greens')).toBeInTheDocument()
+    expect(screen.getByText('Daily special')).toBeInTheDocument()
+    expect(container.querySelector('.gma-dealcard__address')).toBeNull()
+  })
+
+  it('shows the address as the sole header-right element when there is no location (no pill/gas)', () => {
+    const noDistance = makeDispensary({ address: '13224 Highway 99, Everett, WA 98204' })
+    delete (noDistance as Partial<Dispensary>).distanceMiles
+    const { container } = render(
+      <DealCard
+        dispensary={noDistance}
+        deals={[view({ type: 'daily', description: 'Daily special', startTime: null, endTime: null }, 'Active today', null)]}
+        gasCostText={null}
+      />,
+    )
+
+    expect(screen.getByText('13224 Highway 99, Everett, WA 98204')).toHaveClass('gma-dealcard__address')
+    expect(container.querySelector('.gma-distance-pill')).toBeNull()
+    expect(container.querySelector('.gma-gas-line')).toBeNull()
+  })
+
   it('shows a neutral "active today" badge for a daily-only store (no countdown)', () => {
     render(
       <DealCard

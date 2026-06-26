@@ -45,7 +45,7 @@ function seed(): { dataPath: string; priorRemedy: Deal[]; priorKush: Deal[] } {
     deals,
   })
   const file: ApiDataResponse = {
-    meta: { lastScraperRun: EPOCH, gasPrice: 4, nationalMpg: 28, gasPriceUpdatedAt: EPOCH },
+    meta: { lastScraperRun: EPOCH, gasPrice: 4, gasPriceUpdatedAt: EPOCH },
     dispensaries: [mk('remedy-tulalip', priorRemedy), mk('kush21', priorKush)],
   }
   writeFileSync(dataPath, JSON.stringify(file))

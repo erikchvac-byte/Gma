@@ -27,7 +27,6 @@ const seedData = {
   meta: {
     lastScraperRun: '2026-06-09T00:00:00.000Z',
     gasPrice: 4.25,
-    nationalMpg: 28,
     gasPriceUpdatedAt: '2026-06-09T00:00:00.000Z',
   },
   dispensaries: [

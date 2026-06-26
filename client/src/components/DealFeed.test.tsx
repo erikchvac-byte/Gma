@@ -17,7 +17,6 @@ const hasText = (text: string) => (_content: string, node: Element | null) =>
 const meta = {
   lastScraperRun: '2026-06-10T07:45:00',
   gasPrice: 4.1,
-  nationalMpg: 28,
   gasPriceUpdatedAt: '2026-06-10T07:00:00',
 }
 
@@ -124,7 +123,8 @@ describe('DealFeed', () => {
       isLoading: false,
       error: null,
     })
-    render(<DealFeed />)
+    // mpg supplied → gas lines render (no national-average fallback anymore)
+    render(<DealFeed mpg={28} />)
 
     // one listitem per STORE (Charlie is dealless → omitted); both stores are
     // equidistant (5 mi), so the best-deal tie-break decides: Bravo's soonest HH
@@ -185,7 +185,7 @@ describe('DealFeed', () => {
       makeDeal({ type: 'daily', description: 'far deal', discountPct: 30 }),
     ]), distanceMiles: 12.4 }
     mockUseDeals.mockReturnValue({ data: withData([near, far]), isLoading: false, error: null })
-    render(<DealFeed />)
+    render(<DealFeed mpg={28} />)
 
     // each store's header carries its own distance pill + gas line
     expect(screen.getByText(hasText('12.4 mi'), { selector: '.gma-distance-pill' })).toBeInTheDocument()
@@ -194,7 +194,7 @@ describe('DealFeed', () => {
     expect(screen.getByText(hasText('$1.46'), { selector: '.gma-gas-line' })).toBeInTheDocument()
   })
 
-  it('uses the national average for gas cost when no vehicle mpg is provided', () => {
+  it('shows no gas line when no vehicle mpg is provided, but keeps the distance pill', () => {
     mockUseDeals.mockReturnValue({
       data: withData([
         makeDispensary('a', 'Alpha Greens', [makeDeal({ type: 'daily', description: 'a deal', discountPct: 10 })]),
@@ -204,8 +204,11 @@ describe('DealFeed', () => {
     })
     render(<DealFeed />)
 
-    // 5 mi × 2 × 4.1/28 = $1.46
-    expect(screen.getByText(hasText('$1.46'), { selector: '.gma-gas-line' })).toBeInTheDocument()
+    // CAP-4: the hardcoded national-average MPG was removed — no vehicle → no gas
+    // figure (Honest Math), but distance still shows from distanceMiles alone.
+    const item = screen.getByRole('listitem')
+    expect(item.querySelector('.gma-gas-line')).toBeNull()
+    expect(within(item).getByText(hasText('5.0 mi'), { selector: '.gma-distance-pill' })).toBeInTheDocument()
   })
 
   it('uses the provided vehicle mpg for gas cost', () => {
@@ -314,7 +317,7 @@ describe('DealFeed', () => {
       isLoading: false,
       error: null,
     })
-    render(<DealFeed />)
+    render(<DealFeed mpg={28} />)
 
     const item = screen.getByRole('listitem')
     expect(within(item).getByText('malformed HH')).toBeInTheDocument()

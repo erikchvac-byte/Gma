@@ -177,7 +177,7 @@ describe('VehicleSelector (bottom sheet)', () => {
 
     const alert = await screen.findByRole('alert')
     expect(alert).toHaveTextContent('network down')
-    expect(alert).toHaveTextContent('Gas costs will use the national average.')
+    expect(alert).toHaveTextContent('Gas costs stay hidden until you pick a vehicle.')
     expect(screen.getByRole('dialog')).toBeInTheDocument()
     expect(onMpgChange).not.toHaveBeenCalled()
   })

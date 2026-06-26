@@ -294,9 +294,32 @@ article.gma-card::before {
    --------------------------------------------------------------- */
 .gma-dealcard__head {
   display: flex;
-  align-items: baseline;
+  align-items: flex-start;
   justify-content: space-between;
   gap: var(--space-2);
+}
+/* right column of the header: address on top, distance pill tucked beneath it
+   (ADR-040 split; gas line sits below the header). Right-aligned, wraps, and
+   capped so a long store name on the left still gets room. */
+.gma-dealcard__head-right {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 55%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-1);
+  text-align: right;
+}
+/* address — deal-title size/weight/color (matches .gma-deal-block__title), the
+   size the spec pinned to the deal-title example. `address` element, de-italic. */
+.gma-dealcard__address {
+  font-style: normal;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--text-body);
+  line-height: 1.3;
+  overflow-wrap: anywhere;
 }
 /* store name — the card's identity line (spec: 26px) */
 .gma-dealcard__name {

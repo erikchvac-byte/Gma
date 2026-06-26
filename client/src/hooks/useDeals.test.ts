@@ -7,7 +7,6 @@ const payload: ApiDataResponse = {
   meta: {
     lastScraperRun: '2026-06-10T07:45:00Z',
     gasPrice: 4.1,
-    nationalMpg: 28,
     gasPriceUpdatedAt: '2026-06-10T07:00:00Z',
   },
   dispensaries: [],

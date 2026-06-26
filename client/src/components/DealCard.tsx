@@ -86,6 +86,14 @@ export default function DealCard({ dispensary, deals, gasCostText }: DealCardPro
     typeof dispensary.distanceMiles === 'number' && Number.isFinite(dispensary.distanceMiles)
       ? `${dispensary.distanceMiles.toFixed(1)} mi`
       : null
+  // Address is optional enrichment (ADR-043): rendered only when present and
+  // non-empty, never fabricated (Honest Math). It anchors the top-right of the
+  // header at deal-title size; the distance pill tucks beneath it. With no
+  // location (no pill) the address is the sole top-right element.
+  const addressText =
+    typeof dispensary.address === 'string' && dispensary.address.trim() !== ''
+      ? dispensary.address
+      : null
 
   return (
     <Card as="article" urgent={urgency.variant === 'urgent'} style={{ display: 'grid', gap: 'var(--space-3)' }}>
@@ -106,7 +114,14 @@ export default function DealCard({ dispensary, deals, gasCostText }: DealCardPro
               dispensary.name
             )}
           </h2>
-          {distanceText !== null && <span className="gma-distance-pill">{distanceText}</span>}
+          {(addressText !== null || distanceText !== null) && (
+            <div className="gma-dealcard__head-right">
+              {addressText !== null && (
+                <address className="gma-dealcard__address">{addressText}</address>
+              )}
+              {distanceText !== null && <span className="gma-distance-pill">{distanceText}</span>}
+            </div>
+          )}
         </div>
         {/* gas line — omitted entirely when round-trip cost can't be computed */}
         {gasCostText !== null && (

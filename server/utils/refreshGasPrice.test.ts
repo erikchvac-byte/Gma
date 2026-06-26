@@ -12,7 +12,6 @@ const seed = {
   meta: {
     lastScraperRun: '2026-06-09T00:00:00.000Z',
     gasPrice: 4.25,
-    nationalMpg: 28,
     gasPriceUpdatedAt: '2026-06-09T00:00:00.000Z',
   },
   dispensaries: [{ id: 'a', name: 'Alpha Greens' }],
@@ -66,7 +65,6 @@ describe('refreshGasPrice', () => {
     const file = fileNow()
     expect(file.dispensaries).toEqual(seed.dispensaries)
     expect(file.meta.lastScraperRun).toBe(seed.meta.lastScraperRun)
-    expect(file.meta.nationalMpg).toBe(28)
     expect(existsSync(path.join(dir, 'data.tmp.json'))).toBe(false)
   })
 
