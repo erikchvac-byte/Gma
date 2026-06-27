@@ -1,5 +1,10 @@
 # Deferred Work
 
+## DEFERRED — Integer-validate MPG at the fueleconomy source (from chunk-3/CAP-5 review, 2026-06-27)
+
+Edge-case reviewer of `spec-obvious-vehicle-control`: `resolveMpg` (`client/src/hooks/useFuelEconomy.ts:140`) does `Number(comb08)` gated only by `isPositiveFinite` — no integer enforcement. EPA `comb08` is documented as an integer so this is not reachable with real data, but both display sites — the new `VehicleBar` and the pre-existing `VehicleSelector.tsx:153` — render `${mpg} MPG` raw, so a non-integer would show decimals in two places. Fix belongs at the source (round/validate to integer in `resolveMpg`) so both consumers stay consistent — NOT in `VehicleBar` alone (that would diverge from the unchanged sheet). Pairs naturally with the already-deferred CAP-5 fueleconomy.gov hardening (timeout/spinner/retry/empty-result).
+
+
 ## ~~DEFERRED~~ RESOLVED — duplicate store kushmans-everett-evergreen-way (from chunk-1 review, 2026-06-26)
 
 Surfaced by the blind-hunter + edge-case reviewers of `spec-card-address-and-remove-mpg-default`: `kush21-everett-evergreen` and `kushmans-everett-evergreen-way` carried the identical address `"8911 Evergreen Way, Everett, WA 98208"` (verbatim from the cited `STORE_ADDRESSES` map; "same site as Kush21 Evergreen") and already shared `lat`/`lng`. **RESOLVED 2026-06-26 (Erik's call): they are the same physical shop, so `kushmans-everett-evergreen-way` was removed entirely** — from `server/data/data.json` (21→20 stores), `server/data/products.json` (−272 product entries), `DUTCHIE_STORE_IDS` (`dutchie-stores.ts`), and `STORE_ADDRESSES` (`geocodeStores.ts`). `kush21-everett-evergreen` is retained. Guard rail `storeRegistry.test.ts` re-verified (no orphan registry/product-scrape ids).

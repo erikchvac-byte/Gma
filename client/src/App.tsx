@@ -5,6 +5,7 @@ import DealFeed from './components/DealFeed'
 import DisclaimerFooter from './components/DisclaimerFooter'
 import LocationBar from './components/LocationBar'
 import LocationOnboarding from './components/LocationOnboarding'
+import VehicleBar from './components/VehicleBar'
 import VehicleSelector from './components/VehicleSelector'
 import { useLocalStorage } from './hooks/useLocalStorage'
 import { useLocation } from './hooks/useLocation'
@@ -39,7 +40,7 @@ function App() {
         />
       ) : (
         <div style={{ minHeight: '100vh', background: 'var(--surface-page)' }}>
-          <Header onOpenSettings={() => setSettingsOpen(true)} />
+          <Header />
           <LocationBar
             location={location}
             status={status}
@@ -47,6 +48,7 @@ function App() {
             onZipSubmit={setFromZip}
             onClear={clear}
           />
+          <VehicleBar mpg={mpg} label={label} onOpen={() => setSettingsOpen(true)} />
           <main>
             <DealFeed mpg={mpg} location={location} />
           </main>

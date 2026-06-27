@@ -569,3 +569,23 @@ article.gma-card::before {
   color: var(--text-muted);
 }
 .gma-location-bar__editor { display: grid; gap: var(--space-3); }
+
+/* persistent top-of-feed vehicle bar (CAP-5) — paired with the location bar */
+.gma-vehicle-bar {
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-card);
+  border-bottom: var(--border-hairline) solid var(--border-default);
+}
+.gma-vehicle-bar__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.gma-vehicle-bar__label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font: var(--font-caption);
+  color: var(--text-muted);
+}

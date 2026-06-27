@@ -104,22 +104,23 @@ describe('App', () => {
     expect(screen.getByText('No active deals right now')).toBeInTheDocument()
   })
 
-  it('opens the settings sheet from the header gear and returns focus to it on close', async () => {
+  it('opens the vehicle sheet from the VehicleBar control and returns focus to it on close', async () => {
     localStorage.setItem('gma_age_confirmed', 'true')
     localStorage.setItem('gma_location_onboarded', 'true')
     vi.stubGlobal('fetch', routeFetch(emptyPayload))
     render(<App />)
 
-    const gear = screen.getByRole('button', { name: 'Vehicle & settings' })
-    gear.focus() // browsers focus a button on click; jsdom does not, so do it explicitly
-    fireEvent.click(gear)
+    // no vehicle set → the bar shows the labeled "Set" control (CAP-5)
+    const setBtn = screen.getByRole('button', { name: 'Set' })
+    setBtn.focus() // browsers focus a button on click; jsdom does not, so do it explicitly
+    fireEvent.click(setBtn)
 
     expect(await screen.findByRole('dialog', { name: 'Vehicle settings' })).toBeInTheDocument()
 
     fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' })
 
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
-    expect(gear).toHaveFocus()
+    expect(setBtn).toHaveFocus()
   })
 
   it('recalculates every gas cost across the feed when a vehicle is selected', async () => {
@@ -133,7 +134,7 @@ describe('App', () => {
     expect(document.querySelector('.gma-distance-pill')).not.toBeNull()
     expect(document.querySelector('.gma-gas-line')).toBeNull()
 
-    fireEvent.click(screen.getByRole('button', { name: 'Vehicle & settings' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Set' }))
     await screen.findByRole('option', { name: '2019' })
     fireEvent.change(screen.getByLabelText('Year'), { target: { value: '2019' } })
     await screen.findByRole('option', { name: 'Toyota' })

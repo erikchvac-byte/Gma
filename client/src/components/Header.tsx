@@ -1,14 +1,9 @@
-import { Icon, IconButton } from './ui'
-
-interface HeaderProps {
-  onOpenSettings: () => void
-}
-
-// Persistent banner: static wordmark + the single entry to vehicle settings.
-// The wordmark text is the page's only <h1> (EXPERIENCE.md document semantics);
-// the nav mark beside it is decorative. Renders above the feed at App level —
-// it must outlive DealFeed's loading/error early-returns, so it lives here.
-export default function Header({ onOpenSettings }: HeaderProps) {
+// Persistent banner: the static wordmark. The wordmark text is the page's only
+// <h1> (EXPERIENCE.md document semantics); the nav mark beside it is decorative.
+// Renders above the feed at App level — it must outlive DealFeed's loading/error
+// early-returns, so it lives here. Vehicle settings now open from the labeled
+// VehicleBar below the header (CAP-5), not a gear in here.
+export default function Header() {
   return (
     <header
       style={{
@@ -53,9 +48,6 @@ export default function Header({ onOpenSettings }: HeaderProps) {
           }}
         />
       </h1>
-      <IconButton aria-label="Vehicle & settings" onClick={onOpenSettings}>
-        <Icon name="settings" size={20} />
-      </IconButton>
     </header>
   )
 }
