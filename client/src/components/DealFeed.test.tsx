@@ -6,6 +6,15 @@ import type { ApiDataResponse, Deal, Dispensary } from '../types'
 
 vi.mock('../hooks/useDeals')
 
+// applyUserDistance is unit-tested in withUserDistance.test.ts. Here it is mocked
+// to an identity so these tests can inject `distanceMiles` directly and focus on
+// the filter / nearest-first sort / pill / gas-line behavior DOWNSTREAM of the
+// transform. The transform's location gating (CAP-2: no location → no distance;
+// CAP-3: user-relative compute) is covered in DealFeed.distance.test.tsx.
+vi.mock('../utils/withUserDistance', () => ({
+  applyUserDistance: (dispensaries: unknown) => dispensaries,
+}))
+
 const mockUseDeals = vi.mocked(useDeals)
 
 // Figures and the discount now render in their own styled <span>s, so a line's

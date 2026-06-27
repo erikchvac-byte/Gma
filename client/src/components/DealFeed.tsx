@@ -14,13 +14,17 @@ import { groupDealsByStore } from '../utils/sortDeals'
 import { filterByType, type DealTypeSelection } from '../utils/dealView'
 import { formatCountdown, formatLastUpdated, formatTimeOfDay } from '../utils/formatTime'
 import { formatGasCost, isPositiveFinite, roundTripGasCost } from '../utils/gasCost'
+import { applyUserDistance } from '../utils/withUserDistance'
 import StaleIndicator from './StaleIndicator'
 import { Notice, SkeletonFeed } from './ui'
-import type { Deal, Dispensary } from '../types'
+import type { Deal, Dispensary, UserLocation } from '../types'
 
 interface DealFeedProps {
   // resolved vehicle MPG from App (already validated); null → no gas line
   mpg?: number | null
+  // resolved user location from App (already validated); null → no distance/gas
+  // anywhere (CAP-2). Distances are computed user-relative from this (CAP-3).
+  location?: UserLocation | null
 }
 
 const feedStyle = { padding: 'var(--space-4)', display: 'grid', gap: 'var(--space-4)' } as const
@@ -47,7 +51,7 @@ function countdownText(deal: Deal, now: Date): string | null {
   return formatCountdown(minutesUntilEnd(deal.endTime as string, now))
 }
 
-export default function DealFeed({ mpg = null }: DealFeedProps) {
+export default function DealFeed({ mpg = null, location = null }: DealFeedProps) {
   const { data, isLoading, error } = useDeals()
   const now = useNow()
   const [storedDistance, setStoredDistance] = useLocalStorage<number>(
@@ -86,12 +90,18 @@ export default function DealFeed({ mpg = null }: DealFeedProps) {
     )
   }
 
+  // CAP-2/CAP-3: recompute every store's distance user-relative BEFORE the
+  // radius filter, nearest-first sort, and render. With no location this strips
+  // distanceMiles from every store (including the 4 seed stores' stale
+  // fixed-origin value), so no pill or gas line shows anywhere — Honest Math,
+  // retiring ADR-008/011. One chokepoint; downstream consumers are untouched.
+  const located = applyUserDistance(data.dispensaries, location)
   // one strict predicate drives both omission and count so they can't
   // disagree (ADR-021 boolean precedent); count comes from the FULL API
   // array — deliberately independent of the distance filter below
   const isStale = (dispensary: Dispensary) => dispensary.stale === true
-  const staleCount = data.dispensaries.filter(isStale).length
-  const freshDispensaries = data.dispensaries.filter((dispensary) => !isStale(dispensary))
+  const staleCount = located.filter(isStale).length
+  const freshDispensaries = located.filter((dispensary) => !isStale(dispensary))
   // distance filter runs against the full in-memory array — no re-fetch;
   // inclusive boundary so a dispensary at exactly maxDistance stays visible.
   // ADR-043: a store with no distance is never dropped by the radius slider —
