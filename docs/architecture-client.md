@@ -19,23 +19,26 @@ A single-page React 19 app that fetches the deal feed from `GET /api/data`, comp
 
 ## Architecture pattern
 
-**Component hierarchy + hooks.** No global state library — state is local (`useState`) and lifted to `App` only where shared (vehicle MPG + settings-sheet toggle). Data fetching is encapsulated in `useDeals`; persistence in `useLocalStorage`/`useVehicleMpg`.
+**Component hierarchy + hooks.** No global state library — state is local (`useState`) and lifted to `App` only where shared (vehicle MPG, user location, settings-sheet toggle). Data fetching is encapsulated in `useDeals`; persistence in `useLocalStorage`/`useVehicleMpg`/`useLocation`.
 
 Composition root (`src/App.tsx`):
 
 ```
-<AgeGate>                         # blocks until 21+ confirmed (persisted in localStorage)
-  <Header onOpenSettings />       # wordmark + location + settings gear
-  <main><DealFeed mpg /></main>   # fetch -> compute true cost -> sort -> group -> render DealCards
-  <DisclaimerFooter />            # mandated WAC warnings
-  <VehicleSelector .../>          # bottom-sheet: pick vehicle/MPG
+<AgeGate>                            # blocks until 21+ confirmed (persisted in localStorage)
+  <LocationOnboarding/>             # first-run only: set location (GPS or WA ZIP) or skip (ADR-057)
+  <Header/>                          # wordmark only (settings gear retired, ADR-058)
+  <LocationBar .../>                # persistent: set/change location; no location -> no distances (ADR-057)
+  <VehicleBar mpg label onOpen/>    # persistent labeled control -> opens VehicleSelector (CAP-5, ADR-058)
+  <main><DealFeed mpg location/></main>  # apply user distance -> compute gas -> sort -> group -> DealCards
+  <DisclaimerFooter />              # mandated WAC warnings
+  <VehicleSelector .../>            # bottom-sheet: pick vehicle/MPG (opened by VehicleBar)
 </AgeGate>
 ```
 
 ## Data flow
 
-1. `useDeals()` fetches `/api/data` once on mount (AbortController-cancellable), validates the response shape, and drops malformed dispensary records via `normalizeDispensaries` before they reach render.
-2. `DealFeed` resolves the user's MPG (from `useVehicleMpg`) and the meta gas price, computes per-deal `driveCost` via `utils/gasCost.roundTripGasCost`, sorts/groups, and renders.
+1. `useDeals()` fetches `/api/data` once on mount (AbortController-cancellable), validates the response shape, and drops malformed dispensary records via `normalizeDispensaries` before they reach render (also strips non-finite `lat`/`lng` while keeping the store, ADR-057).
+2. `DealFeed` applies `applyUserDistance` (haversine × 1.3 from the user's location, ADR-057) to set each store's `distanceMiles`, resolves the user's MPG (from `useVehicleMpg`) and the meta gas price, computes per-deal gas cost via `utils/gasCost.roundTripGasCost`, sorts/groups, and renders. No location → no distance/gas; no vehicle → no gas (distance still shows).
 3. `DealCard` shows the discount, distance pill, gas line, and (deferred) happy-hour badge.
 
 True-cost math lives in `utils/gasCost.ts`:

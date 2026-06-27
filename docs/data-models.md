@@ -36,8 +36,8 @@ A store and its deals + freshness/location metadata.
 | `name` | `string` | display name |
 | `url` | `string` | source menu URL |
 | `address` | `string` (optional) | street address; rendered top-right on the card. Additive enrichment, NOT a visibility gate (ADR-043) — a bad/absent address never hides the store |
-| `distanceMiles` | `number` (optional) | interim fixed-origin distance; drives gas math. Per-user distance arrives in chunk 2 (retires ADR-008/011). Present-but-invalid drops the record |
-| `lat` / `lng` | `number` (optional) | committed real coords (ADR-044); consumed by per-user distance (chunk 2) |
+| `distanceMiles` | `number` (optional) | user-relative distance, set at read time by `applyUserDistance` = haversine(user, store) × 1.3 (ADR-057, retired the fixed-origin value of ADR-008/011); drives gas math. No location → stripped → no pill/gas. Any value in `data.json` is ignored (replaced/stripped on render) |
+| `lat` / `lng` | `number` (optional) | committed real coords (ADR-044); consumed by `applyUserDistance` (ADR-057). `normalizeDispensaries` strips a non-finite value but keeps the store |
 | `stale` | `boolean` | true when the last scrape failed/was empty (good data kept) |
 | `lastFetchedAt` | `string` | ISO timestamp of last successful fetch |
 | `status` | `'ok' \| 'stale' \| 'failed'` (optional) | per-store ingest recency (ADR-034 Goal B) |

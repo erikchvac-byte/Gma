@@ -32,7 +32,7 @@ client/
 ├── tsconfig*.json          # app / node / root TS project refs (strict)
 └── src/
     ├── main.tsx            # ★ entry point — mounts <App/>
-    ├── App.tsx             # composition root: AgeGate > Header > DealFeed > Footer + VehicleSelector
+    ├── App.tsx             # composition root: AgeGate > LocationOnboarding > Header > LocationBar > VehicleBar > DealFeed > Footer + VehicleSelector
     ├── components/         # feature components (DealCard, DealFeed, AgeGate, Header, filters…)
     │   └── ui/             # design-system primitives (Button, Card, Badge, Select, RangeSlider…)
     ├── hooks/              # useDeals (fetch /api/data), useVehicleMpg, useLocalStorage, useNow…

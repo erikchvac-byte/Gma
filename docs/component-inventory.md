@@ -7,12 +7,16 @@
 | Component | Category | Responsibility |
 |---|---|---|
 | `AgeGate` | Gate / layout | Mandatory 21+ entry gate; persists pass in `localStorage`; renders children only when confirmed. **Legally required** (WAC 314-55-155). |
-| `Header` | Navigation | Wordmark + location pill + settings gear (`onOpenSettings`). |
-| `DealFeed` | Container | Fetches via `useDeals`, resolves MPG, computes true cost, sorts/groups, renders `DealCard`s; owns loading/error/empty states. |
+| `Header` | Navigation | Wordmark only (no props). Settings gear retired — vehicle opens from `VehicleBar` (ADR-058). |
+| `LocationOnboarding` | Gate / sheet | First-run-only step after the age gate to set location (GPS or WA ZIP) or skip; focus-trapped (ADR-057). |
+| `LocationBar` | Navigation / form | Persistent top-of-feed control to set/change user location; no location → no distances/gas (ADR-057). |
+| `VehicleBar` | Navigation / form | Persistent labeled control; no vehicle → "Set your vehicle…" CTA, set → "label · NN MPG" + Change; opens `VehicleSelector` (CAP-5, ADR-058). |
+| `LocationInput` | Form | Shared two-door input (GPS button + WA-ZIP field) used by `LocationOnboarding` and `LocationBar` (ADR-057). |
+| `DealFeed` | Container | Fetches via `useDeals`, applies user-relative distance, resolves MPG, computes gas cost, sorts/groups, renders `DealCard`s; owns loading/error/empty states. |
 | `DealCard` | Display | One deal: discount, distance pill, gas line, "off" label, (deferred) happy-hour badge. |
 | `DealTypeFilter` | Form / filter | Chip filter over deal types (daily / happy_hour). |
 | `DistanceFilter` | Form / filter | Distance slider (default 50mi, ADR-038). |
-| `VehicleSelector` | Form / sheet | Bottom sheet to pick vehicle/MPG; drives gas math. |
+| `VehicleSelector` | Form / sheet | Bottom sheet to pick vehicle/MPG; drives gas math. Opened by `VehicleBar`. |
 | `StaleIndicator` | Display | Flags dispensaries whose last scrape failed (`stale:true`). |
 | `DisclaimerFooter` | Layout / legal | Renders verbatim mandated warnings from `constants/legal.ts`. |
 
