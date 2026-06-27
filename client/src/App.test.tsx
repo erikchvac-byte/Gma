@@ -18,7 +18,10 @@ const oneDispensary: ApiDataResponse = {
       id: 'a',
       name: 'Alpha Greens',
       url: 'https://example.com/a',
-      distanceMiles: 5,
+      // real coords so the user-relative transform can compute a distance once a
+      // location is set (distanceMiles is now derived, not read from the payload)
+      lat: 48.0803,
+      lng: -122.1862,
       stale: false,
       lastFetchedAt: '2026-06-10T07:00:00',
       deals: [
@@ -28,15 +31,25 @@ const oneDispensary: ApiDataResponse = {
   ],
 }
 
+// a confirmed visitor who has cleared age + location onboarding and set a ZIP —
+// the common precondition for exercising the feed
+const seedConfirmedWithLocation = () => {
+  localStorage.setItem('gma_age_confirmed', 'true')
+  localStorage.setItem('gma_location_onboarded', 'true')
+  localStorage.setItem('gma_location', JSON.stringify({ lat: 47.6109, lng: -122.33642, source: 'zip' }))
+}
+
 const jsonResponse = (body: unknown): Response =>
   ({ ok: true, status: 200, json: async () => body }) as unknown as Response
 
 const menu = (...values: string[]) =>
   jsonResponse({ menuItem: values.map((value) => ({ text: value, value })) })
 
-// figures/discount render across styled spans — match on full textContent
-const hasText = (text: string) => (_content: string, node: Element | null) =>
-  node?.textContent?.replace(/\s+/g, ' ').trim() === text
+// figures render across styled spans — match on full textContent. Regex variant
+// for values whose exact text depends on the user-relative distance (e.g. a
+// '$X.XX' gas line): assert the shape, not the magnitude.
+const matchesText = (re: RegExp) => (_content: string, node: Element | null) =>
+  re.test(node?.textContent?.replace(/\s+/g, ' ').trim() ?? '')
 
 // /api/data → deals payload; fueleconomy.gov → the vehicle cascade
 const routeFetch = (dealsPayload: ApiDataResponse, comb08: unknown = 20) =>
@@ -69,8 +82,19 @@ describe('App', () => {
     expect(screen.queryByRole('banner')).not.toBeInTheDocument()
   })
 
-  it('renders the header wordmark and feed region once age is confirmed', async () => {
+  it('shows the location onboarding step on first run after age is confirmed', () => {
     localStorage.setItem('gma_age_confirmed', 'true')
+    vi.stubGlobal('fetch', routeFetch(emptyPayload))
+    render(<App />)
+
+    // first-run location step gates the feed; banner/feed not shown yet
+    expect(screen.getByRole('dialog', { name: /where are you/i })).toBeInTheDocument()
+    expect(screen.queryByRole('banner')).not.toBeInTheDocument()
+  })
+
+  it('renders the header wordmark and feed region once age + location onboarding are done', async () => {
+    localStorage.setItem('gma_age_confirmed', 'true')
+    localStorage.setItem('gma_location_onboarded', 'true')
     vi.stubGlobal('fetch', routeFetch(emptyPayload))
     render(<App />)
 
@@ -82,6 +106,7 @@ describe('App', () => {
 
   it('opens the settings sheet from the header gear and returns focus to it on close', async () => {
     localStorage.setItem('gma_age_confirmed', 'true')
+    localStorage.setItem('gma_location_onboarded', 'true')
     vi.stubGlobal('fetch', routeFetch(emptyPayload))
     render(<App />)
 
@@ -98,13 +123,14 @@ describe('App', () => {
   })
 
   it('recalculates every gas cost across the feed when a vehicle is selected', async () => {
-    localStorage.setItem('gma_age_confirmed', 'true')
+    seedConfirmedWithLocation()
     vi.stubGlobal('fetch', routeFetch(oneDispensary, 20))
     render(<App />)
 
-    // no vehicle selected yet → NO gas line (the 28-MPG national default was
-    // removed, CAP-4); the deal + distance still render
+    // location set → distance pill shows; but no vehicle yet → NO gas line (the
+    // 28-MPG national default was removed, CAP-4). The deal + distance still render.
     expect(await screen.findByText('30%')).toBeInTheDocument()
+    expect(document.querySelector('.gma-distance-pill')).not.toBeNull()
     expect(document.querySelector('.gma-gas-line')).toBeNull()
 
     fireEvent.click(screen.getByRole('button', { name: 'Vehicle & settings' }))
@@ -115,19 +141,23 @@ describe('App', () => {
     await screen.findByRole('option', { name: 'Camry' })
     fireEvent.change(screen.getByLabelText('Model'), { target: { value: 'Camry' } })
 
-    // 5 mi × 2 × 4.1/20 = $2.05; selection persists and the sheet closes
-    expect(await screen.findByText(hasText('$2.05'), { selector: '.gma-gas-line' })).toBeInTheDocument()
+    // a gas line now appears (exact value depends on the user-relative distance,
+    // covered in distance/gasCost unit tests); selection persists, sheet closes
+    expect(
+      await screen.findByText(matchesText(/^\$\d+\.\d{2}$/), { selector: '.gma-gas-line' }),
+    ).toBeInTheDocument()
     expect(localStorage.getItem('gma_vehicle_mpg')).toBe('20')
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
   })
 
-  it('uses a saved vehicle from localStorage to drive gas costs', async () => {
-    localStorage.setItem('gma_age_confirmed', 'true')
+  it('uses a saved vehicle + saved location from localStorage to drive gas costs', async () => {
+    seedConfirmedWithLocation()
     localStorage.setItem('gma_vehicle_mpg', '20')
     localStorage.setItem('gma_vehicle_label', '"2019 Toyota Camry"')
     vi.stubGlobal('fetch', routeFetch(oneDispensary))
     render(<App />)
 
-    expect(await screen.findByText(hasText('$2.05'), { selector: '.gma-gas-line' })).toBeInTheDocument()
+    const gas = await screen.findByText(matchesText(/^\$\d+\.\d{2}$/), { selector: '.gma-gas-line' })
+    expect(gas).toBeInTheDocument()
   })
 })

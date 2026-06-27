@@ -81,4 +81,34 @@ describe('normalizeDispensaries', () => {
     const raw = [good, null, valid({ id: 'bad', distanceMiles: NaN })]
     expect(normalizeDispensaries(raw)).toEqual([good])
   })
+
+  it('keeps a store with a finite lat/lng pair unchanged (ADR-044 coords)', () => {
+    const located = valid({ lat: 48.08, lng: -122.18 })
+    expect(normalizeDispensaries([located])).toEqual([located])
+  })
+
+  it('keeps a store with no coords at all (optional enrichment, ADR-043)', () => {
+    const noCoords = valid()
+    expect('lat' in noCoords).toBe(false)
+    expect(normalizeDispensaries([noCoords])).toEqual([noCoords])
+  })
+
+  it('STRIPS a poisoned/partial coord but keeps the store and its deals (deals-first)', () => {
+    // coords feed the distance math (applyUserDistance) like address feeds the
+    // card — a bad coord must not cost the store its deals. It is deleted, not
+    // used to drop the record; the store survives coordless.
+    const cases: Partial<Dispensary>[] = [
+      { lat: NaN, lng: -122.1 },
+      { lat: 48.0, lng: Infinity },
+      { lat: 48.0 }, // lng missing → partial pair
+      { lng: -122.1 }, // lat missing → partial pair
+      { lat: '48' as unknown as number, lng: -122.1 }, // non-number
+    ]
+    for (const coord of cases) {
+      const [out] = normalizeDispensaries([valid(coord)])
+      expect(out.id).toBe('store-1')
+      expect('lat' in out).toBe(false)
+      expect('lng' in out).toBe(false)
+    }
+  })
 })

@@ -525,3 +525,47 @@ article.gma-card::before {
 .gma-notice--error { background: var(--surface-error); border-color: var(--status-error); color: var(--text-error); }
 .gma-notice--urgent { background: var(--surface-urgent); border-color: var(--status-urgent); color: var(--text-urgent); }
 .gma-notice__icon { flex: none; margin-top: 1px; }
+
+/* location input — the two doors (GPS button + ZIP box) side by side, with the
+   ZIP form collapsing under the button on narrow screens (CAP-3) */
+.gma-location-input { display: grid; gap: var(--space-3); width: 100%; }
+.gma-location-input__doors {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-3);
+}
+.gma-location-input__gps { flex: none; }
+.gma-location-input__or { align-self: center; font: var(--font-caption); color: var(--text-muted); }
+/* ZIP field + Go button on one baseline; field grows, button hugs its label */
+.gma-location-input__zip {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-2);
+  flex: 1 1 12rem;
+  min-width: 12rem;
+}
+.gma-location-input__zip .gma-field { flex: 1 1 auto; }
+
+/* persistent top-of-feed location bar (CAP-2/CAP-3) */
+.gma-location-bar {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-card);
+  border-bottom: var(--border-hairline) solid var(--border-default);
+}
+.gma-location-bar__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.gma-location-bar__label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font: var(--font-caption);
+  color: var(--text-muted);
+}
+.gma-location-bar__editor { display: grid; gap: var(--space-3); }

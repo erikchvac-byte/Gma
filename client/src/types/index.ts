@@ -52,6 +52,18 @@ export interface Meta {
   gasPriceUpdatedAt: string
 }
 
+// Resolved user location, persisted in localStorage (`gma_location`) and
+// validated at the use site (useLocation) — mirrors the `gma_vehicle_mpg`
+// pattern. `source` records how it was set: one-tap device GPS (exact, any
+// coords) or a recognized WA ZIP centroid. Distance/gas are computed only when
+// a valid location is present (Honest Math, ADR-007/009) — there is no
+// fixed-origin fallback (ADR-008/011 retired).
+export interface UserLocation {
+  lat: number
+  lng: number
+  source: 'gps' | 'zip'
+}
+
 export interface ApiDataResponse {
   meta: Meta
   dispensaries: Dispensary[]
