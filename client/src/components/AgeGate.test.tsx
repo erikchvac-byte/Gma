@@ -137,7 +137,7 @@ describe('AgeGate', () => {
     fireEvent.click(screen.getByRole('button', { name: /no, take me back/i }))
 
     // decline routes to the returnable "out" state without revealing content
-    expect(screen.getByText('Come back at 21')).toBeInTheDocument()
+    expect(screen.getByText('Come back at 21+')).toBeInTheDocument()
     expect(screen.queryByText('Deal Content')).not.toBeInTheDocument()
     // confirmation flag must never be set by declining
     expect(localStorage.getItem('gma_age_confirmed')).not.toBe('true')
