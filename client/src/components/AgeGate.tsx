@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { KeyboardEvent as ReactKeyboardEvent, ReactNode } from 'react'
 import { useLocalStorage } from '../hooks/useLocalStorage'
 import { AGE_GATE_WARNINGS } from '../constants/legal'
@@ -9,6 +9,62 @@ interface AgeGateProps {
 }
 
 const FOCUSABLE = 'button, input, select, textarea, a[href], [tabindex]:not([tabindex="-1"])'
+
+// Decorative product-category tiles (resized from GmasINCOlist → src/assets at
+// build time). Collected via glob so the set self-updates if tiles are added.
+const ICON_TILES = Object.values(
+  import.meta.glob('../assets/age-icons/*.webp', {
+    eager: true,
+    query: '?url',
+    import: 'default',
+  }),
+) as string[]
+
+const TILE = 96 // px — tight, uniform grid cell
+
+/**
+ * Full-bleed, randomized tile mosaic behind the gate. Purely decorative:
+ * aria-hidden, non-interactive, and dimmed to a faint texture so the solid card
+ * and warning bar always sit cleanly on top. The shuffle is memoized per mount.
+ */
+function IconField() {
+  const tiles = useMemo(() => {
+    if (ICON_TILES.length === 0) return []
+    const cols = Math.ceil(window.innerWidth / TILE)
+    const rows = Math.ceil(window.innerHeight / TILE)
+    const count = cols * rows
+    const arr = Array.from({ length: count }, (_, n) => ICON_TILES[n % ICON_TILES.length])
+    for (let n = arr.length - 1; n > 0; n--) {
+      const j = Math.floor(Math.random() * (n + 1))
+      ;[arr[n], arr[j]] = [arr[j], arr[n]]
+    }
+    return arr
+  }, [])
+
+  return (
+    <div aria-hidden="true" style={iconFieldStyle}>
+      {tiles.map((src, i) => (
+        <img key={i} src={src} alt="" draggable={false} style={tileImgStyle} />
+      ))}
+    </div>
+  )
+}
+
+/**
+ * The four WA-mandated warnings, laid out horizontally along the bottom of the
+ * page on an opaque strip so the tile mosaic can never reduce their legibility.
+ */
+function WarningBar() {
+  return (
+    <div style={warningBarStyle}>
+      {AGE_GATE_WARNINGS.map((w) => (
+        <p key={w} style={warningItemStyle}>
+          {w}
+        </p>
+      ))}
+    </div>
+  )
+}
 
 /**
  * 21+ age gate (two-option, brief §5a — supersedes ADR-021's no-decline gate;
@@ -61,73 +117,83 @@ export default function AgeGate({ children }: AgeGateProps) {
   // ----- "out" state: declined -----
   if (declined) {
     return (
-      <div
-        ref={dialogRef}
-        role="alertdialog"
-        aria-modal="true"
-        aria-labelledby="age-gate-out-heading"
-        onKeyDown={handleKeyDown}
-        style={overlayStyle}
-      >
-        <Wordmark />
-        <div style={cardStyle}>
-          <h1 id="age-gate-out-heading" style={headingStyle}>
-            Come back at 21
-          </h1>
-          <p style={contextStyle}>You must be 21 or older to view cannabis deals.</p>
-          <Button variant="secondary" block onClick={() => setDeclined(false)}>
-            Go back
-          </Button>
+      <>
+        <IconField />
+        <div
+          ref={dialogRef}
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="age-gate-out-heading"
+          onKeyDown={handleKeyDown}
+          style={overlayStyle}
+        >
+          <div style={topRowStyle}>
+            <Wordmark />
+          </div>
+          <div style={centerStyle}>
+            <div style={cardStyle}>
+              <h1 id="age-gate-out-heading" style={headingStyle}>
+                Come back at 21
+              </h1>
+              <p style={contextStyle}>You must be 21 or older to view cannabis deals.</p>
+              <Button variant="secondary" block onClick={() => setDeclined(false)}>
+                Go back
+              </Button>
+            </div>
+          </div>
         </div>
-      </div>
+      </>
     )
   }
 
   // ----- "ask" state -----
   return (
-    <div
-      ref={dialogRef}
-      role="alertdialog"
-      aria-modal="true"
-      aria-labelledby="age-gate-heading"
-      onKeyDown={handleKeyDown}
-      style={overlayStyle}
-    >
-      <Wordmark />
-      <div style={cardStyle}>
-        <span aria-hidden="true" style={tileStyle}>
-          21
-        </span>
-        <h1 id="age-gate-heading" style={headingStyle}>
-          Are you 21 or older?
-        </h1>
-        <p style={contextStyle}>
-          Cannabis deals are for adults 21 and over only.
-        </p>
-        <div style={{ display: 'grid', gap: 'var(--space-2)', width: '100%' }}>
-          <Button variant="primary" block className="gma-btn--lg" onClick={confirm}>
-            Yes — I&apos;m 21+
-          </Button>
-          <Button variant="secondary" block onClick={() => setDeclined(true)}>
-            No, take me back
-          </Button>
+    <>
+      <IconField />
+      <div
+        ref={dialogRef}
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="age-gate-heading"
+        onKeyDown={handleKeyDown}
+        style={overlayStyle}
+      >
+        <div style={topRowStyle}>
+          <Wordmark />
         </div>
-        <label style={rememberStyle}>
-          <input
-            type="checkbox"
-            checked={remember}
-            onChange={(e) => setRemember(e.target.checked)}
-            style={{ accentColor: 'var(--accent)', width: 18, height: 18 }}
-          />
-          Remember me on this device
-        </label>
+        <div style={centerStyle}>
+          <div style={cardStyle}>
+            <span aria-hidden="true" style={tileStyle}>
+              21
+            </span>
+            <h1 id="age-gate-heading" style={headingStyle}>
+              Are you 21 or older?
+            </h1>
+            <p style={contextStyle}>
+              Cannabis deals are for adults 21 and over only.
+            </p>
+            <div style={{ display: 'grid', gap: 'var(--space-2)', width: '100%' }}>
+              <Button variant="primary" block className="gma-btn--lg" onClick={confirm}>
+                Yes — I&apos;m 21+
+              </Button>
+              <Button variant="secondary" block onClick={() => setDeclined(true)}>
+                No, take me back
+              </Button>
+            </div>
+            <label style={rememberStyle}>
+              <input
+                type="checkbox"
+                checked={remember}
+                onChange={(e) => setRemember(e.target.checked)}
+                style={{ accentColor: 'var(--accent)', width: 18, height: 18 }}
+              />
+              Remember me on this device
+            </label>
+          </div>
+        </div>
+        <WarningBar />
       </div>
-      <div style={smallPrintStyle}>
-        {AGE_GATE_WARNINGS.map((w) => (
-          <p key={w}>{w}</p>
-        ))}
-      </div>
-    </div>
+    </>
   )
 }
 
@@ -160,19 +226,54 @@ function Wordmark() {
   )
 }
 
-const overlayStyle = {
+const iconFieldStyle = {
   position: 'fixed',
   inset: 0,
   zIndex: 50,
+  display: 'grid',
+  gridTemplateColumns: `repeat(auto-fill, minmax(${TILE}px, 1fr))`,
+  gap: 0,
+  overflow: 'hidden',
+  pointerEvents: 'none',
+  // dark takeover fill; tiles sit on top at low opacity as a faint texture
+  background: 'var(--surface-inverse)',
+} as const
+
+const tileImgStyle = {
+  width: '100%',
+  height: `${TILE}px`,
+  objectFit: 'cover',
+  opacity: 0.16,
+  userSelect: 'none',
+} as const
+
+const overlayStyle = {
+  position: 'fixed',
+  inset: 0,
+  zIndex: 51,
   display: 'flex',
   flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
+  alignItems: 'stretch',
   gap: 'var(--space-5)',
   padding: 'var(--space-6)',
   textAlign: 'center',
-  background: 'var(--surface-inverse)',
+  // transparent so the IconField mosaic shows through; the card and warning
+  // bar carry their own opaque backgrounds, so text legibility is structural.
+  background: 'transparent',
   color: 'var(--text-on-inverse)',
+} as const
+
+const topRowStyle = {
+  display: 'flex',
+  justifyContent: 'center',
+  flex: '0 0 auto',
+} as const
+
+const centerStyle = {
+  flex: '1 1 auto',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
 } as const
 
 const cardStyle = {
@@ -228,13 +329,26 @@ const rememberStyle = {
   cursor: 'pointer',
 } as const
 
-const smallPrintStyle = {
+const warningBarStyle = {
+  // bleed past the overlay padding so the strip runs edge-to-edge along the
+  // bottom of the page; opaque background guarantees legibility over the mosaic.
+  flex: '0 0 auto',
+  margin: 'var(--space-5) calc(-1 * var(--space-6)) calc(-1 * var(--space-6))',
+  padding: 'var(--space-3) var(--space-6)',
+  background: 'var(--surface-card)',
+  borderTop: 'var(--border-hairline) solid var(--border-strong)',
   display: 'grid',
-  gap: 'var(--space-1)',
-  maxWidth: 404,
+  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+  gap: 'var(--space-2) var(--space-5)',
+  textAlign: 'left',
+} as const
+
+const warningItemStyle = {
+  margin: 0,
   // legally-mandated warnings: hold the 14px readable floor and a muted (not
-  // faint) color so they clear WCAG AA on the dark card (review patch).
+  // faint) color so they clear WCAG AA on the opaque strip (review patch).
   font: 'var(--font-caption)',
   fontSize: 'var(--text-sm)',
+  lineHeight: 'var(--leading-snug)',
   color: 'var(--text-muted)',
 } as const
