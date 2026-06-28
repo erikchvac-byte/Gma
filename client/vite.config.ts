@@ -4,6 +4,13 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  build: {
+    // Keep the age-gate tile mosaic as separate cacheable files instead of
+    // inlining ~150KB of base64 into the critical JS bundle that every visitor
+    // loads. Other small assets keep Vite's default inlining behavior.
+    assetsInlineLimit: (filePath: string) =>
+      filePath.includes('age-icons') ? false : undefined,
+  },
   server: {
     proxy: {
       '/api': 'http://localhost:3001'
