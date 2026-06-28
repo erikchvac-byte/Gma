@@ -62,6 +62,10 @@ export interface UserLocation {
   lat: number
   lng: number
   source: 'gps' | 'zip'
+  // the 5-digit ZIP the user entered (source 'zip' only) so the UI can echo the
+  // active area back — makes a wrong/auto-filled ZIP visible. Optional for
+  // backward compatibility with already-stored locations.
+  zip?: string
 }
 
 export interface ApiDataResponse {

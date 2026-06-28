@@ -29,7 +29,7 @@ export interface UseLocationResult {
 // fallback; Honest Math).
 function validate(raw: unknown): UserLocation | null {
   if (raw === null || typeof raw !== 'object') return null
-  const { lat, lng, source } = raw as Record<string, unknown>
+  const { lat, lng, source, zip } = raw as Record<string, unknown>
   if (typeof lat !== 'number' || !Number.isFinite(lat)) return null
   if (typeof lng !== 'number' || !Number.isFinite(lng)) return null
   // finite isn't enough — a corrupt/hand-edited value could be a finite but
@@ -38,7 +38,11 @@ function validate(raw: unknown): UserLocation | null {
   if (lat < -90 || lat > 90) return null
   if (lng < -180 || lng > 180) return null
   if (source !== 'gps' && source !== 'zip') return null
-  return { lat, lng, source }
+  // echo-back ZIP is optional and cosmetic — keep it only when it's a clean
+  // 5-digit string; never let a bad value invalidate the (valid) coordinates
+  return typeof zip === 'string' && /^\d{5}$/.test(zip)
+    ? { lat, lng, source, zip }
+    : { lat, lng, source }
 }
 
 const GPS_OPTIONS: PositionOptions = {
@@ -92,7 +96,9 @@ export function useLocation(): UseLocationResult {
         setStatus('zip-not-found')
         return false
       }
-      setStored({ lat: centroid.lat, lng: centroid.lng, source: 'zip' })
+      // store the resolved 5-digit prefix so the bar can echo the active area
+      const code = /(\d{5})/.exec(zip.trim())?.[1]
+      setStored({ lat: centroid.lat, lng: centroid.lng, source: 'zip', zip: code })
       setStatus('idle')
       return true
     },
