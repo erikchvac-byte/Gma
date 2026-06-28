@@ -557,6 +557,16 @@ Build-time verification (when implemented): fixture snapshot-test per store *sha
 
 ---
 
+### ADR-060: Echo the Active ZIP in LocationBar — Make a Wrong/Auto-Filled ZIP Visible
+**Status**: Accepted (2026-06-28)
+**Context**: Erik reported the ZIP feed was "doing something wrong — Everett shown closer than Tulalip for 98274." Investigation proved the opposite: a `changeZip` integration test against the **real live `/api/data`** showed changing 98224→98274 re-centers correctly in one submit (first card = CannaZone Old Hwy 99 ~12mi; Tulalip ranks ahead of Everett). The decisive evidence was a screenshot whose three distances (41.9/42.1/43.1 mi) matched the **98224** (Baring) centroid to the decimal — the box held 98224, not 98274 (a one-digit typo, possibly aided by Chrome auto-filling a saved ZIP into the `postal-code` field). The order logic was correct; the real gap was that the bar only ever said "Distances from your ZIP area" — it never showed **which** ZIP was active, so a wrong value was invisible and undiagnosable.
+**Decision**: Store the resolved 5-digit ZIP on the location (`UserLocation.zip?`, optional/backward-compatible; `validate` keeps it only when it matches `^\d{5}$`, never lets a bad value invalidate the coordinates) and echo it in `LocationBar`: "Distances from ZIP 98274". GPS unchanged. Self-revealing AND diagnostic — if the bar's ZIP and the order disagree, that's a real bug; if they agree, it's an input problem.
+**Rationale**: Mechanism-agnostic and minimal. ZIP **number only** — there is no committed ZIP→city table, so a city name would require inventing data (rejected). The `autoComplete` angle is silent-hardening territory, not sold as the cause (Chrome routinely ignores `autoComplete="off"` on postal fields; the parsimonious cause is a typo).
+**Consequences**: `UserLocation` gains optional `zip`; `useLocation.setFromZip` records the 5-digit prefix; `LocationBar` summary branches on `location.zip`. New permanent `changeZip.test.tsx` (inline 3-store fixture, no committed live dump) asserts change-of-ZIP re-centering + ZIP echo. Could not device-verify (extension offline) — the echo IS the on-device diagnostic handed to Erik (clear box, type 98274, read back the bar).
+**Testing**: full client suite **454 green**; `npm run build` clean (bundle `index-1OZk6YlX.js`).
+
+---
+
 ## Technical Constraints
 
 - US only, WA-focused; distance is now user-relative (ADR-057) — measured from the visitor's device GPS or typed WA ZIP, not a fixed origin
@@ -630,6 +640,7 @@ Build-time verification (when implemented): fixture snapshot-test per store *sha
 
 | Date | Change |
 |------|--------|
+| 2026-06-28 | Echo active ZIP in LocationBar (ADR-060). Root cause of "Everett shown closer than Tulalip for 98274" was the box holding **98224** (Baring), proven by a real-data `changeZip` test (order logic correct) + a screenshot matching the 98224 centroid to the decimal. `UserLocation.zip?` added; bar now reads "Distances from ZIP NNNNN" so a wrong/auto-filled entry is visible. 454 client tests green; bundle `index-1OZk6YlX.js`. |
 | 2026-06-28 | Fixed ZIP-door "nothing happens" bug (Erik report). ADR-059 added: `LocationInput` now reads the live DOM input value at submit and the Go button is no longer gated on controlled state, so a value set without a React `onChange` (mobile autofill/keyboard/IME) still resolves. Red→green regression test added (sets DOM value with no `fireEvent.change`). Not device-verified (Chrome extension offline) — pending Erik confirmation on his tablet. |
 | 2026-06-24 | Decoupled Dutchie product/menu-pricing capture shipped (SPEC-dutchie-product-pricing CAP-1..6). ADR-053 added. New additive modules: `_dutchieProducts.ts`, `normalizeProduct.ts`, `productsStore.ts`, `scrapeProductsRun.ts`, `GET /api/products`, `Product*` types, seed `products.json`. Persistence = commit-back to repo (Erik's call). Deals contract (`_dutchie.ts`/`Deal`/`filterActiveDeals`/`/api/data`) byte-for-byte unchanged. Erik sign-off same day: pre-roll-single=1-joint rule (flagged `assumed-single`); CI commit-back workflow `scrape-products.yml` (daily) + opt-in `scroll_after_wait` scraper-svc pagination wired. Full suite green. |
 | 2026-06-24 | SEO spec handoff decision. ADR-052 added (split Phase 0a from 0b at the risk-class seam — 0a ships independent of WAC 314-55-155 legal review; code trace confirms `createRoot` wipes `#root` so 0a doesn't touch the age gate). No code shipped; full roundtable + trace in `_bmad-output/specs/spec-seo-crawler-visibility/HANDOFF_DECISION.md`. |

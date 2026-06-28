@@ -31,7 +31,10 @@ export default function LocationBar({
       ? null
       : location.source === 'gps'
         ? 'Distances from your current location'
-        : 'Distances from your ZIP area'
+        : // echo the active ZIP so a wrong/auto-filled entry is visible at a glance
+          location.zip
+          ? `Distances from ZIP ${location.zip}`
+          : 'Distances from your ZIP area'
 
   // collapse the editor automatically once a location resolves via either door
   const handleZipSubmit = (zip: string): boolean => {
