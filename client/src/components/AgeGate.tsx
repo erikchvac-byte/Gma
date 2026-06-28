@@ -51,6 +51,20 @@ function IconField() {
 }
 
 /**
+ * Shared decorative backdrop: the tile mosaic plus a dark scrim that sits over
+ * the tiles (equal z-index, later in the DOM) and under the card (z-index 51).
+ * Used by every gate state so the scrim can never drift out of one of them.
+ */
+function Backdrop() {
+  return (
+    <>
+      <IconField />
+      <div aria-hidden="true" style={scrimStyle} />
+    </>
+  )
+}
+
+/**
  * The four WA-mandated warnings, laid out horizontally along the bottom of the
  * page on an opaque strip so the tile mosaic can never reduce their legibility.
  */
@@ -118,7 +132,7 @@ export default function AgeGate({ children }: AgeGateProps) {
   if (declined) {
     return (
       <>
-        <IconField />
+        <Backdrop />
         <div
           ref={dialogRef}
           role="alertdialog"
@@ -133,7 +147,7 @@ export default function AgeGate({ children }: AgeGateProps) {
           <div style={centerStyle}>
             <div style={cardStyle}>
               <h1 id="age-gate-out-heading" style={headingStyle}>
-                Come back at 21
+                Come back at 21+
               </h1>
               <p style={contextStyle}>You must be 21 or older to view cannabis deals.</p>
               <Button variant="secondary" block onClick={() => setDeclined(false)}>
@@ -149,7 +163,7 @@ export default function AgeGate({ children }: AgeGateProps) {
   // ----- "ask" state -----
   return (
     <>
-      <IconField />
+      <Backdrop />
       <div
         ref={dialogRef}
         role="alertdialog"
@@ -164,7 +178,7 @@ export default function AgeGate({ children }: AgeGateProps) {
         <div style={centerStyle}>
           <div style={cardStyle}>
             <span aria-hidden="true" style={tileStyle}>
-              21
+              21+
             </span>
             <h1 id="age-gate-heading" style={headingStyle}>
               Are you 21 or older?
@@ -204,7 +218,7 @@ function Wordmark() {
         display: 'inline-flex',
         alignItems: 'flex-end',
         fontFamily: 'var(--font-head)',
-        fontSize: 'var(--text-2xl)',
+        fontSize: 'var(--text-4xl)',
         fontWeight: 'var(--weight-medium)',
         letterSpacing: '-0.01em',
         color: 'var(--text-strong)',
@@ -237,6 +251,17 @@ const iconFieldStyle = {
   pointerEvents: 'none',
   // dark takeover fill; tiles sit on top at low opacity as a faint texture
   background: 'var(--surface-inverse)',
+} as const
+
+// Dark scrim over the mosaic. Same z-index as the field but rendered after it
+// in the DOM, so it paints on top of the tiles while the card (z-index 51)
+// stays above the scrim. aria-hidden + non-interactive — purely a contrast aid.
+const scrimStyle = {
+  position: 'fixed',
+  inset: 0,
+  zIndex: 50,
+  background: 'rgba(0, 0, 0, 0.5)',
+  pointerEvents: 'none',
 } as const
 
 const tileImgStyle = {
