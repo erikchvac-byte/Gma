@@ -27,10 +27,18 @@ export default function LocationInput({ status, onUseGps, onZipSubmit }: Locatio
   const [gpsTried, setGpsTried] = useState(false)
   const locating = status === 'locating'
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    setSubmittedZip(zip)
-    if (onZipSubmit(zip)) setZip('')
+    // Read the live input value as the source of truth rather than the
+    // controlled `zip` state. On some mobile keyboards/suggestion strips/autofill
+    // the field value can land in the DOM without firing React's onChange, so
+    // `zip` stays '' and the submit silently drops. Reading the element makes the
+    // ZIP door work regardless of how the value got there.
+    const raw = event.currentTarget.querySelector('input')?.value ?? zip
+    if (raw.trim() === '') return // empty tap is a no-op (not a "bad ZIP" error)
+    setZip(raw)
+    setSubmittedZip(raw)
+    if (onZipSubmit(raw)) setZip('')
   }
 
   const handleUseGps = () => {
@@ -74,7 +82,7 @@ export default function LocationInput({ status, onUseGps, onZipSubmit }: Locatio
             onChange={(e) => setZip(e.target.value)}
             error={showZipError ? 'Enter a Washington ZIP code.' : undefined}
           />
-          <Button type="submit" variant="secondary" disabled={zip.trim() === ''}>
+          <Button type="submit" variant="secondary">
             Go
           </Button>
         </form>

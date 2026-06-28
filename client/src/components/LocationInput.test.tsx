@@ -32,6 +32,21 @@ describe('LocationInput', () => {
     expect(input.value).toBe('')
   })
 
+  it('submits the value present in the field even if onChange never fired (mobile autofill/keyboard)', () => {
+    // Regression: some mobile keyboards/suggestion strips/autofill set the input
+    // value WITHOUT dispatching a React-tracked change event, so the controlled
+    // `zip` state stays ''. The old gate (disabled when state empty + reading
+    // state on submit) silently dropped these — tapping Go did nothing and no
+    // location was set. handleSubmit must read the live DOM value instead.
+    const onZipSubmit = vi.fn().mockReturnValue(true)
+    render(<LocationInput status="idle" onUseGps={vi.fn()} onZipSubmit={onZipSubmit} />)
+    const input = screen.getByLabelText('ZIP code') as HTMLInputElement
+    // set the DOM value directly — deliberately NO fireEvent.change (no onChange)
+    input.value = '98274'
+    fireEvent.submit(input.closest('form') as HTMLFormElement)
+    expect(onZipSubmit).toHaveBeenCalledWith('98274')
+  })
+
   it('keeps the typed ZIP when the submit is rejected', () => {
     const onZipSubmit = vi.fn().mockReturnValue(false)
     render(<LocationInput status="idle" onUseGps={vi.fn()} onZipSubmit={onZipSubmit} />)
