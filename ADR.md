@@ -547,6 +547,16 @@ Build-time verification (when implemented): fixture snapshot-test per store *sha
 
 ---
 
+### ADR-059: ZIP Door Reads the Live DOM Value at Submit — Don't Gate on Controlled State Alone
+**Status**: Accepted (2026-06-28)
+**Context**: Erik reported (twice, across sessions) that manually entering a WA ZIP (e.g. 98274) "does nothing / doesn't save," while "Use my location" (GPS) works. Investigation ruled out data and build: 98274 is in the committed + live ZCTA table, the live bundle == current source, and a jsdom repro of the typed flow *passed*. The tell was behavioural — **no red error AND no change** ⇒ `handleSubmit` never ran ⇒ the Go button was disabled ⇒ controlled `zip` state was empty ⇒ the field value never reached React state. `LocationInput` gated the button on `disabled={zip.trim()===''}` and read `zip` (state) at submit. Any input path that sets the field value WITHOUT firing React's `onChange` (mobile autofill, keyboard suggestion strip, IME composition) leaves state empty → button stays disabled → tap is a silent no-op. GPS is a plain button, immune. The prior "proof" was hollow because `fireEvent.change` *fires* onChange, exercising only the path that already worked.
+**Decision**: Make the ZIP door mechanism-agnostic. `handleSubmit` now reads the live DOM value (`event.currentTarget.querySelector('input')?.value ?? zip`), early-returns on empty (so an empty tap is a no-op, NOT a spurious "bad ZIP" error), then drives `setZip`/`setSubmittedZip`/`onZipSubmit` with that value. The `disabled` gate on the Go button is removed so the submit always fires. Input stays controlled for the normal typed path.
+**Rationale**: Don't name the device quirk — fix the class. Reading the DOM at submit + an always-tappable button works regardless of how the value arrived. Both changes are required: removing `disabled` alone (still reading empty state) would convert "nothing happens" into a red `zip-not-found` error without setting location. Honest Math is untouched — an invalid-but-nonempty ZIP still errors correctly.
+**Consequences**: `LocationInput.tsx` submit handler + Go button changed; `TextField` left as-is (no `forwardRef` needed — the form is `event.currentTarget`). New regression test sets the input's DOM value with NO `fireEvent.change`, then `fireEvent.submit` — proven red on old code, green after. Could not device-verify (Chrome extension offline); targets the most likely cause, pending Erik's confirmation on his tablet.
+**Testing**: red→green regression test added; full `LocationInput` suite 11 green; `npm run build` (client) clean (bundle `index-CbtUYPZa.js`).
+
+---
+
 ## Technical Constraints
 
 - US only, WA-focused; distance is now user-relative (ADR-057) — measured from the visitor's device GPS or typed WA ZIP, not a fixed origin
@@ -620,6 +630,7 @@ Build-time verification (when implemented): fixture snapshot-test per store *sha
 
 | Date | Change |
 |------|--------|
+| 2026-06-28 | Fixed ZIP-door "nothing happens" bug (Erik report). ADR-059 added: `LocationInput` now reads the live DOM input value at submit and the Go button is no longer gated on controlled state, so a value set without a React `onChange` (mobile autofill/keyboard/IME) still resolves. Red→green regression test added (sets DOM value with no `fireEvent.change`). Not device-verified (Chrome extension offline) — pending Erik confirmation on his tablet. |
 | 2026-06-24 | Decoupled Dutchie product/menu-pricing capture shipped (SPEC-dutchie-product-pricing CAP-1..6). ADR-053 added. New additive modules: `_dutchieProducts.ts`, `normalizeProduct.ts`, `productsStore.ts`, `scrapeProductsRun.ts`, `GET /api/products`, `Product*` types, seed `products.json`. Persistence = commit-back to repo (Erik's call). Deals contract (`_dutchie.ts`/`Deal`/`filterActiveDeals`/`/api/data`) byte-for-byte unchanged. Erik sign-off same day: pre-roll-single=1-joint rule (flagged `assumed-single`); CI commit-back workflow `scrape-products.yml` (daily) + opt-in `scroll_after_wait` scraper-svc pagination wired. Full suite green. |
 | 2026-06-24 | SEO spec handoff decision. ADR-052 added (split Phase 0a from 0b at the risk-class seam — 0a ships independent of WAC 314-55-155 legal review; code trace confirms `createRoot` wipes `#root` so 0a doesn't touch the age gate). No code shipped; full roundtable + trace in `_bmad-output/specs/spec-seo-crawler-visibility/HANDOFF_DECISION.md`. |
 | 2026-06-08 | Initial ADR created. Product brief session complete. ADR-001 through ADR-005 recorded from brief decisions. |
