@@ -1,0 +1,73 @@
+name: scrape-weedmaps
+
+# AI-search Phase 2: commit-back PRODUCT scrape for the SECOND source — Weedmaps. Unlike
+# scrape-products.yml (Dutchie), the fetch is STATIC (plain HTTPS GET + __NEXT_DATA__ parse),
+# so this job needs NO Python / Playwright / scraper-svc — just Node. It runs
+# scrapeWeedmapsRun.ts (fetch -> normalize -> APPEND timestamped observation, ≥2s jittered
+# throttle between stores) and commits the refreshed server/data/products.json back to the
+# repo. Commit-back is the durable store because Render's disk is ephemeral. Entirely
+# separate from scrape-ingest.yml (deals) and scrape-products.yml (Dutchie products) — the
+# matcher reads the same products.json and picks up Weedmaps with zero code change.
+#
+# ⚠️ SCHEDULE INTENTIONALLY DISABLED (Erik's call 2026-06-29). The scaled-crawl gate passed
+# from a RESIDENTIAL IP; GitHub-Actions/datacenter IPs may be treated differently by Weedmaps
+# (gate caveat #4). Before enabling the nightly cron, run this once via workflow_dispatch and
+# confirm the runner is served real menu JSON (no 403 / PerimeterX / DataDome). Only then
+# uncomment the `schedule:` block below.
+
+on:
+  # schedule:
+  #   - cron: '0 9 * * *' # nightly 09:00 UTC — ENABLE ONLY after re-probing the runner IP
+  workflow_dispatch: {} # manual trigger (use this to re-probe the runner IP first)
+
+# Required by the commit-back step to push the refreshed dataset.
+permissions:
+  contents: write
+
+# Serialize with itself; never with the deals or Dutchie-products workflows (different groups).
+concurrency:
+  group: scrape-weedmaps
+  cancel-in-progress: false
+
+jobs:
+  scrape-weedmaps:
+    runs-on: ubuntu-latest
+    # A scrape hiccup / per-store block must not abort the commit of whatever WAS captured —
+    # the run appends to history and is low-stakes (R&D/private dataset), not an alert source.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history so `git pull --rebase` can integrate concurrent commits
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install
+        working-directory: server
+
+      # Run via tsx against SOURCE (not compiled dist) so DEFAULT_PRODUCTS_PATH resolves to
+      # server/data/products.json — the file committed back below (same ADR-053 gotcha as Dutchie).
+      - name: Scrape & append Weedmaps product prices
+        run: npx tsx scripts/scrapeWeedmapsRun.ts
+        working-directory: server
+
+      # Commit ONLY products.json (never `git add -A`). [skip ci] + no push trigger means this
+      # commit cannot re-trigger any workflow. A persistent push failure warns rather than reds.
+      - name: Commit refreshed product prices to master
+        if: always()
+        run: |
+          if [ -z "$(git status --porcelain server/data/products.json)" ]; then
+            echo "products.json unchanged — nothing to commit"
+            exit 0
+          fi
+          git config user.name 'gma-bot'
+          git config user.email 'gma-bot@users.noreply.github.com'
+          git add server/data/products.json
+          git commit -m 'chore(data): refresh weedmaps product prices [skip ci]'
+          for attempt in 1 2; do
+            git pull --rebase --autostash origin master && git push origin HEAD:master && exit 0
+            echo "push attempt $attempt failed; retrying"
+            sleep 3
+          done
+          echo "::warning::commit-back push to master failed after retries — weedmaps prices not refreshed this run"
+        working-directory: .

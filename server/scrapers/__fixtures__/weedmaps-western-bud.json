@@ -1,0 +1,137 @@
+{
+  "props": {
+    "dehydratedState": {
+      "queries": [
+        {
+          "state": {
+            "data": {
+              "data": {
+                "menuItems": [
+                  {
+                    "id": 901,
+                    "slug": "phat-panda-flower-golden-pineapple-burl-ec6ed95b",
+                    "name": "Golden Pineapple | Big Buds",
+                    "brand": null,
+                    "category": { "id": 1, "name": "Indica", "slug": "indica" },
+                    "geneticsTag": { "name": "Sativa", "uuid": "edcefa08" },
+                    "edgeCategory": {
+                      "name": "Big Buds",
+                      "slug": "big-buds",
+                      "ancestors": [{ "name": "Flower", "slug": "flower" }]
+                    },
+                    "price": {
+                      "unit": "ounce",
+                      "quantity": "1/8",
+                      "label": "1/8 oz",
+                      "complianceNetMg": 3500,
+                      "price": 50,
+                      "onSale": false,
+                      "originalPrice": 50,
+                      "discountLabel": null
+                    },
+                    "prices": {
+                      "gramsPerEighth": 3.5,
+                      "ounce": [
+                        { "label": "1/8 oz", "price": 50, "gramUnitPrice": 14.28, "units": "1/8", "onSale": false, "originalPrice": 50 }
+                      ]
+                    },
+                    "currentDealTitle": null,
+                    "dealIds": [],
+                    "isOnlineOrderable": true,
+                    "licenseType": "recreational"
+                  },
+                  {
+                    "id": 902,
+                    "slug": "phat-panda-flower-og-chem-bong-buddies-a1b2c3d4",
+                    "name": "OG Chem | Bong Buddies",
+                    "brand": null,
+                    "category": { "name": "Hybrid", "slug": "hybrid" },
+                    "edgeCategory": {
+                      "name": "Bong Buddies",
+                      "slug": "bong-buddies",
+                      "ancestors": [{ "name": "Flower", "slug": "flower" }]
+                    },
+                    "price": {
+                      "unit": "gram",
+                      "label": "2g",
+                      "complianceNetMg": 2000,
+                      "price": 8.4,
+                      "onSale": true,
+                      "originalPrice": 14
+                    },
+                    "prices": {
+                      "gram": [
+                        { "label": "2g", "price": 8.4, "onSale": true, "originalPrice": 14, "units": "2" }
+                      ]
+                    }
+                  },
+                  {
+                    "id": 903,
+                    "slug": "artizen-cannabis-flower-galactic-glue-99ffee11",
+                    "name": "Galactic Glue | Flower",
+                    "brand": { "name": "Artizen Cannabis" },
+                    "category": { "name": "Hybrid", "slug": "hybrid" },
+                    "edgeCategory": {
+                      "name": "Flower",
+                      "slug": "flower",
+                      "ancestors": []
+                    },
+                    "price": { "label": "1 oz", "complianceNetMg": 28000, "price": 312, "onSale": false, "originalPrice": 312 },
+                    "prices": {
+                      "ounce": [
+                        { "label": "1g", "price": 14, "onSale": false, "originalPrice": 14 },
+                        { "label": "1 oz", "price": 312, "onSale": false, "originalPrice": 312 }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "state": {
+            "data": {
+              "data": {
+                "menuItems": [
+                  {
+                    "id": 904,
+                    "slug": "avitas-pre-roll-limonada-7c1d9e22",
+                    "name": "Limonada Pre-Roll",
+                    "brand": null,
+                    "category": { "name": "Sativa", "slug": "sativa" },
+                    "edgeCategory": {
+                      "name": "Joints",
+                      "slug": "joints",
+                      "ancestors": [{ "name": "Pre-Roll", "slug": "pre-roll" }]
+                    },
+                    "price": { "label": "0.75g", "complianceNetMg": 750, "price": 5, "onSale": false, "originalPrice": 5 },
+                    "prices": {
+                      "each": [{ "label": "0.75g", "price": 5, "onSale": false, "originalPrice": 5 }]
+                    }
+                  },
+                  {
+                    "id": 905,
+                    "slug": "wyld-edibles-marionberry-gummies-deadbeef",
+                    "name": "Marionberry Gummies",
+                    "brand": { "name": "WYLD" },
+                    "category": { "name": "Hybrid", "slug": "hybrid" },
+                    "edgeCategory": {
+                      "name": "Gummies",
+                      "slug": "gummies",
+                      "ancestors": [{ "name": "Edibles", "slug": "edibles" }]
+                    },
+                    "price": { "label": "100mg", "complianceNetMg": 100, "price": 18, "onSale": false, "originalPrice": 18 },
+                    "prices": {
+                      "each": [{ "label": "100mg", "price": 18, "onSale": false, "originalPrice": 18 }]
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
