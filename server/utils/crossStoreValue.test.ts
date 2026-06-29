@@ -134,6 +134,37 @@ describe('buildDisparities — honesty gates', () => {
     )
     expect(buildDisparities(f)).toHaveLength(0)
   })
+
+  it('excludes a sold-out offer (quantityAvailable 0) so it cannot set a phantom low', () => {
+    const f = file(
+      // store-a's $10 is sold out → must not become the headline lowPrice
+      rec({ dispensaryId: 'store-a', productId: 'a' }, [opt({ basePrice: 10, quantityAvailable: 0 })]),
+      rec({ dispensaryId: 'store-b', productId: 'b' }, [opt({ basePrice: 15, quantityAvailable: 4 })]),
+    )
+    // only store-b's buyable offer survives → no ≥2-store disparity
+    expect(buildDisparities(f)).toHaveLength(0)
+  })
+
+  it('uses the cheapest IN-STOCK offer for the low price, ignoring sold-out listings', () => {
+    const f = file(
+      rec({ dispensaryId: 'store-a', productId: 'a' }, [opt({ basePrice: 8, quantityAvailable: 0 })]), // sold out
+      rec({ dispensaryId: 'store-a', productId: 'a2' }, [opt({ basePrice: 11, quantityAvailable: 3 })]), // buyable
+      rec({ dispensaryId: 'store-b', productId: 'b' }, [opt({ basePrice: 15, quantityAvailable: 2 })]),
+    )
+    const ds = buildDisparities(f)
+    expect(ds).toHaveLength(1)
+    expect(ds[0].lowPrice).toBe(11) // $8 sold-out listing is ignored, not the low
+  })
+
+  it('keeps an offer with UNKNOWN stock (quantityAvailable null) — only reported zero is dropped', () => {
+    const f = file(
+      rec({ dispensaryId: 'store-a', productId: 'a' }, [opt({ basePrice: 10, quantityAvailable: null })]),
+      rec({ dispensaryId: 'store-b', productId: 'b' }, [opt({ basePrice: 15, quantityAvailable: null })]),
+    )
+    const ds = buildDisparities(f)
+    expect(ds).toHaveLength(1)
+    expect(ds[0].lowPrice).toBe(10)
+  })
 })
 
 describe('buildMatchReport — counts (AC5)', () => {

@@ -19,6 +19,8 @@ import type {
 //     (that structurally surfaces trim every time — forbidden, AC4).
 //  3. Price is the real price paid: latest observation's specialPrice ?? basePrice —
 //     never a discount %, which fix6 proved carries no per-item signal.
+//  4. A reported sold-out offer (quantityAvailable <= 0) is excluded from the price
+//     comparison — an unbuyable price must not set the headline low or inflate spread.
 
 // Per-record flags that poison weight-based comparison. A record carrying ANY of these
 // is dropped from disparity output (and counted in the report).
@@ -78,6 +80,12 @@ export function buildMatchReport(file: ProductsFile): MatchReport {
     for (const opt of latest.options) {
       const weightGrams = canonicalWeightGrams(opt.option) // Gate 2: same-weight only
       if (weightGrams === null) continue
+      // Gate 4 (honesty): a known sold-out offer is not a buyable price. Dropping it
+      // stops a $0-stock listing from setting a phantom lowPrice and inflating the
+      // spread — a disparity must describe savings a shopper can actually act on.
+      // quantityAvailable null = unknown stock (scraper didn't report it) and is kept;
+      // only a reported quantityAvailable <= 0 is excluded.
+      if (opt.quantityAvailable !== null && opt.quantityAvailable <= 0) continue
       const price = opt.specialPrice ?? opt.basePrice // Gate 3: real price paid
       if (price === null || !Number.isFinite(price) || price <= 0) continue
 

@@ -49,6 +49,24 @@ function norm(s: string | null | undefined): string {
     .trim()
 }
 
+// Remove weight/size/pack measurements from a raw name BEFORE tokenizing. This must
+// run before norm() — norm() strips the decimal point in "3.5g", splitting it into the
+// bare tokens "3" and "5g" that would otherwise leak weight noise into the signature.
+// Stripping the whole measurement substring lets a genuine strain NUMBER survive ("707
+// Headband", "9 Pound Hammer", "3 Kings") instead of being indiscriminately dropped by
+// a leading-digit filter, which collapsed distinct strains into one FALSE disparity.
+function stripMeasurements(name: string): string {
+  return name
+    .toLowerCase()
+    // fractional weights: "1/8oz", "1/2 oz", "1/4g"
+    .replace(/\b\d+\s*\/\s*\d+\s*(g|grams?|mg|milligrams?|oz|ounces?|kg|lb)?\b/g, ' ')
+    // number + unit: "3.5g", "1g", "100mg", "2pk", "10ct", "5 joints", "28g", "1 oz"
+    .replace(/\b\d+(\.\d+)?\s*(g|grams?|mg|milligrams?|oz|ounces?|kg|lb|ml|pk|packs?|ct|count|joints?|x)\b/g, ' ')
+    // bare DECIMAL weights with no unit ("3.5", "0.5"); bare integers are kept since
+    // they are far more likely a strain identifier (707, 9) than a unitless weight.
+    .replace(/\b\d+\.\d+\b/g, ' ')
+}
+
 // Canonical total grams for an option label, snapped to the nearest standard cannabis
 // weight when within tolerance, else the exact parsed grams (2dp). Reuses `parseGrams`
 // (incl. the fractional-oz fix, ADR-054) — never reinvents weight parsing. Returns null
@@ -68,19 +86,19 @@ export function canonicalWeightGrams(option: string): number | null {
   return best ?? Math.round(g * 100) / 100
 }
 
-// The strain/product signature: the record name with brand tokens, form/packaging
-// filler, and any weight/size/pack numerics removed, then alphabetically sorted so
-// store-specific word order ("OG Chem" vs "Chem OG") does not split a match. Empty
-// string when the name carries no distinctive token.
+// The strain/product signature: the record name with weight/size/pack measurements
+// stripped first (see stripMeasurements), then brand tokens and form/packaging filler
+// removed, then alphabetically sorted so store-specific word order ("OG Chem" vs "Chem
+// OG") does not split a match. A genuine strain number ("707 Headband") is preserved.
+// Empty string when the name carries no distinctive token.
 export function strainToken(rec: ProductRecord): string {
   const brandTokens = new Set(norm(rec.brand).split(' ').filter(Boolean))
-  return norm(rec.name)
+  return norm(stripMeasurements(rec.name))
     .split(' ')
     .filter((t) => {
       if (!t) return false
       if (brandTokens.has(t)) return false
       if (FILLER_TOKENS.has(t)) return false
-      if (/^\d/.test(t)) return false // weight/size/pack numerics: "1g", "3.5", "2pk"
       return true
     })
     .sort()

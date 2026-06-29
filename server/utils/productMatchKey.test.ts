@@ -65,6 +65,26 @@ describe('strainToken', () => {
     const b = strainToken(rec({ name: 'Banana OG 1g Cartridge (Hustler\'s Ambition)', brand: "Hustler's Ambition", category: 'Vaporizers' }))
     expect(a).toBe(b)
   })
+
+  it('keeps a leading-number strain identifier instead of dropping it', () => {
+    // "707 Headband" must NOT collapse to just "headband" — the 707 is the strain
+    expect(strainToken(rec({ name: '707 Headband 3.5g', brand: 'Libre Cannabis' }))).toBe('707 headband')
+    expect(strainToken(rec({ name: '9 Pound Hammer', brand: 'Libre Cannabis' }))).toBe('9 hammer pound')
+  })
+
+  it('does NOT merge a numbered strain with the unnumbered one of the same brand', () => {
+    const numbered = strainToken(rec({ name: '707 Headband 3.5g', brand: 'Libre Cannabis' }))
+    const plain = strainToken(rec({ name: 'Headband 3.5g', brand: 'Libre Cannabis' }))
+    expect(numbered).not.toBe(plain) // the bug: both were 'headband' → false disparity
+  })
+
+  it('still strips weight/size/pack noise, including decimals and fractional oz', () => {
+    expect(strainToken(rec({ name: 'GG4 3.5g', brand: 'Libre Cannabis' }))).toBe('gg4')
+    expect(strainToken(rec({ name: 'GG4 1/8oz', brand: 'Libre Cannabis' }))).toBe('gg4')
+    expect(strainToken(rec({ name: 'GG4 2pk 1g', brand: 'Libre Cannabis' }))).toBe('gg4')
+    // a label-only weight collapses to empty (matches the unmatched-bucket test below)
+    expect(strainToken(rec({ name: '3.5g', brand: 'Libre Cannabis' }))).toBe('')
+  })
 })
 
 describe('deriveMatchKey', () => {
