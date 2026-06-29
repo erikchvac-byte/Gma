@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-09
-last_updated: 2026-06-22 (commit-back-seed → done, PR#29 merged)
+last_updated: 2026-06-28 (cross-store-value-matcher → review)
 project: Happy
 project_key: NOKEY
 tracking_system: file-system
@@ -88,3 +88,7 @@ development_status:
   6-2-primitive-component-library: done  # 10 primitives to .d.ts contracts + Lucide icon vendoring/component + tests
   6-3-surface-reskin-and-vehicle-sheet: done  # re-skin 6 surfaces + VehicleSelector inline→bottom-sheet (ruled .decision-log.md:48): dialog semantics, focus trap, Esc, focus-return, Lucide gear. 3 adversarial reviews run clean 2026-06-16.
   epic-6-retrospective: done  # epic-6-retro-2026-06-17.md. Epic 6 deployed LIVE to gmaslist.com (deploy dep-d8p1610g4nts73ffkimg, commit ab4dd62). Action item: fix broken Render auto-deploy webhook (service made from public repo URL → no GitHub webhook).
+
+  # Proprietary-data + AI-search strategy (no parent epic — tracked individually)
+  # Source plan: investigations/ai-search-data-strategy-investigation.md (2026-06-28).
+  cross-store-value-matcher: review  # cross-store-value-matcher.md — Phase 0 honesty hardening (honor existing weight-mismatch/unparseable flags as exclusions) + A1 keystone: same-SKU cross-store price-disparity engine (lowPrice/highPrice/spread%/storesCarrying). Private dataset/route only; additive read-only consumer of products.json. Downstream Phases 2-5 (Weedmaps wiring, accrual, legal gates→public SSR surfacing, monetization) named out-of-scope in the story.

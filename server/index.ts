@@ -8,6 +8,7 @@ import 'dotenv/config'
 import { dataRoute } from './routes/dataRoute.js'
 import { ingestRoute } from './routes/ingestRoute.js'
 import { productsRoute } from './routes/productsRoute.js'
+import { disparitiesRoute } from './routes/valueRoute.js'
 import { refreshGasPrice } from './utils/refreshGasPrice.js'
 
 const app = express()
@@ -32,6 +33,11 @@ app.post('/api/ingest', ingestRoute)
 // Additive and fully decoupled from /api/data — serves the committed longitudinal
 // products.json; never reads data.json or the deals contract.
 app.get('/api/products', productsRoute)
+
+// Read-only cross-store value/disparity dataset (SPEC ai-search-data-strategy A1).
+// Private/internal surface — derived live from products.json; additive and decoupled
+// from /api/data exactly like /api/products. No public SSR page (Phase 4, legal-gated).
+app.get('/api/value/disparities', disparitiesRoute)
 
 // In production this single service also serves the built React client, so
 // gmaslist.com hits one origin for both the app and its API.
