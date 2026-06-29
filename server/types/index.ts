@@ -96,3 +96,34 @@ export interface ProductsFile {
   lastUpdated: string
   products: Record<string, ProductRecord>
 }
+
+// --- Cross-store value matcher (SPEC ai-search-data-strategy, Tier A item A1) ----
+// The keystone proprietary fact: the SAME product priced across DIFFERENT stores.
+// Additive + read-only — never touches Deal, /api/data, or the ProductsFile write
+// path. Built by `buildDisparities` (server/utils/crossStoreValue.ts).
+
+// One store's offer within a disparity, at the canonical weight. `price` is the real
+// price paid: latest observation's `specialPrice ?? basePrice` (fix6 — discount % is
+// not a value signal).
+export interface DisparityStore {
+  dispensaryId: string
+  price: number
+  quantityAvailable: number | null
+}
+
+// A like-for-like cross-store price disparity for one (product identity, canonical
+// weight) carried by ≥2 distinct stores. Only same-weight absolute prices are
+// compared — never cross-weight, never a whole-catalog $/gram leaderboard
+// (value-analysis §4: that structurally surfaces trim). `spread = high - low`,
+// `spreadPct = spread / low`.
+export interface Disparity {
+  matchKey: string
+  displayName: string
+  category: string
+  weightGrams: number
+  lowPrice: number
+  highPrice: number
+  spread: number
+  spreadPct: number
+  storesCarrying: DisparityStore[]
+}
