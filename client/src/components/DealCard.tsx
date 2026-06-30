@@ -7,6 +7,8 @@ import {
   stripCrossLocationTag,
   stripDiscountPrefix,
 } from '../utils/dealView'
+import { dealIcons, DEAL_ICON_LABEL } from '../utils/dealIcons'
+import { DEAL_ICON_SRC } from '../utils/dealIconAssets'
 
 // One deal plus its upstream-computed display strings. windowText/countdown are
 // computed in DealFeed (null means "render nothing" — e.g. malformed times).
@@ -156,6 +158,10 @@ export default function DealCard({ dispensary, deals, gasCostText }: DealCardPro
           // title only drops the "N% off" prefix the badge is already showing.
           const title = layered ? layered.title : dealTitle(deal, tier !== null)
           const meta = dealMeta(deal, windowText)
+          // One glyph per "item" the deal names (Erik's model: the text spells
+          // the item, the icon mirrors it). Driven by the subject text — the
+          // layered tier's subject when present, else the full description.
+          const icons = dealIcons(layered ? layered.title : deal.description)
           return (
             // index keeps the key unique even when sanitize blanks two
             // same-window/same-type deals' descriptions to ''
@@ -177,6 +183,29 @@ export default function DealCard({ dispensary, deals, gasCostText }: DealCardPro
                   <span className="gma-deal-block__meta">{meta}</span>
                 )}
               </div>
+              {/* one tag per item named in the deal (Erik's sale-tag art), to the
+                  right of the text; the row's accessible name lists them so a
+                  screen-reader gets what the pictures say */}
+              {icons.length > 0 && (
+                <span
+                  className="gma-deal-icons"
+                  role="img"
+                  aria-label={icons.map((n) => DEAL_ICON_LABEL[n]).join(', ')}
+                >
+                  {icons.map((name) => (
+                    <img
+                      key={name}
+                      className="gma-deal-icon"
+                      src={DEAL_ICON_SRC[name]}
+                      alt=""
+                      width={28}
+                      height={28}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  ))}
+                </span>
+              )}
             </div>
           )
         })}
