@@ -9,16 +9,20 @@ name: scrape-weedmaps
 # separate from scrape-ingest.yml (deals) and scrape-products.yml (Dutchie products) — the
 # matcher reads the same products.json and picks up Weedmaps with zero code change.
 #
-# ⚠️ SCHEDULE INTENTIONALLY DISABLED (Erik's call 2026-06-29). The scaled-crawl gate passed
-# from a RESIDENTIAL IP; GitHub-Actions/datacenter IPs may be treated differently by Weedmaps
-# (gate caveat #4). Before enabling the nightly cron, run this once via workflow_dispatch and
-# confirm the runner is served real menu JSON (no 403 / PerimeterX / DataDome). Only then
-# uncomment the `schedule:` block below.
+# ⚠️ SCHEDULE INTENTIONALLY DISABLED — DO NOT ENABLE. The scaled-crawl gate passed from a
+# RESIDENTIAL IP, but GitHub-Actions/datacenter IPs are WALLED (gate caveat #4, confirmed).
+# Re-probe 2026-06-29 (workflow_dispatch run 28406848309, job 84171163007): Weedmaps' CDN/WAF
+# returned HTTP 406 on 44/44 requests (all 11 stores x 4 pages), 0 observations appended, no
+# commit landed. Same desktop UA + `Accept: text/html` gets 200 from a residential IP, so the
+# block is IP-driven, not header-driven — uncommenting `schedule:` here would just 406 nightly.
+# To collect Weedmaps prices, run `npx tsx scripts/scrapeWeedmapsRun.ts` from a RESIDENTIAL IP
+# (e.g. a local Task Scheduler job) and commit products.json back. See memory
+# project_ai-search-data-strategy.md (operational gate RESOLVED -> BLOCKED) for the full triage.
 
 on:
-  # schedule:
-  #   - cron: '0 9 * * *' # nightly 09:00 UTC — ENABLE ONLY after re-probing the runner IP
-  workflow_dispatch: {} # manual trigger (use this to re-probe the runner IP first)
+  # schedule:  # DO NOT ENABLE — datacenter IP is 406-walled (see header re-probe 2026-06-29)
+  #   - cron: '0 9 * * *' # nightly 09:00 UTC — would 406 from GitHub-Actions runners
+  workflow_dispatch: {} # manual trigger only (kept to re-probe the runner IP in future)
 
 # Required by the commit-back step to push the refreshed dataset.
 permissions:
