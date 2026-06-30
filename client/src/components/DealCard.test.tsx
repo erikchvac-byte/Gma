@@ -463,4 +463,52 @@ describe('DealCard', () => {
     expect(badge).toHaveClass('gma-daily-badge')
     expect(screen.queryByText(/ends in/)).not.toBeInTheDocument()
   })
+
+  it('renders one item glyph per item the deal names, in reading order (accessible name lists them)', () => {
+    const { container } = render(
+      <DealCard
+        dispensary={makeDispensary({})}
+        deals={[
+          view(
+            {
+              type: 'daily',
+              description: '15% Off Concentrates, Infused Flower, Infused Prerolls and Vapes',
+              discountPct: 15,
+              startTime: null,
+              endTime: null,
+            },
+            'Active today',
+            null,
+          ),
+        ]}
+        gasCostText="$1.80"
+      />,
+    )
+
+    const row = container.querySelector('.gma-deal-icons')
+    expect(row).not.toBeNull()
+    // four items named → four glyphs, in the order the text spells them
+    expect(row?.querySelectorAll('img')).toHaveLength(4)
+    expect(row).toHaveAttribute('aria-label', 'Concentrates, Flower, Pre-rolls, Vapes')
+  })
+
+  it('tags a deal that names no product with the single special-pricing glyph', () => {
+    const { container } = render(
+      <DealCard
+        dispensary={makeDispensary({})}
+        deals={[
+          view(
+            { type: 'daily', description: '50% off Select Brands', discountPct: 50, startTime: null, endTime: null },
+            'Active today',
+            null,
+          ),
+        ]}
+        gasCostText="$1.80"
+      />,
+    )
+
+    const row = container.querySelector('.gma-deal-icons')
+    expect(row?.querySelectorAll('img')).toHaveLength(1)
+    expect(row).toHaveAttribute('aria-label', 'Special pricing')
+  })
 })

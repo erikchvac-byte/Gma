@@ -485,6 +485,25 @@ article.gma-card::before {
   gap: var(--space-1);
   min-width: 0;
 }
+/* one tag per item named in the deal (dealIcons.ts) — Erik's sale-tag art, each
+   on a uniform rounded tile so a multi-item row reads as a clean set of tags. */
+.gma-deal-icons {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  /* sit immediately to the right of the deal text (not pushed to the card edge) */
+  flex: none;
+}
+.gma-deal-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-md);
+  background: #fff;
+  border: 1px solid var(--border-default);
+  object-fit: contain;
+  padding: 1px;
+}
 .gma-deal-block__title {
   font-size: var(--text-sm);
   font-weight: var(--weight-medium);
