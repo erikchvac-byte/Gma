@@ -1,4 +1,3 @@
-import axios from 'axios'
 import { DEFAULT_PRODUCT_CATEGORIES } from './_dutchieProducts.js'
 import type { RawProduct, RawProductOption } from '../types/index.js'
 
@@ -267,7 +266,7 @@ export interface FetchWeedmapsOptions {
 }
 
 // Fetch one store's menu: the dispensary landing page + a shallow set of category subpages,
-// concat + dedupe across pages. Plain GET, desktop UA, follow redirects (axios default). Never
+// concat + dedupe across pages. Plain GET, desktop UA, follow redirects (fetch default). Never
 // throws — a per-page error/challenge contributes [] and the others still load. The matcher only
 // needs list price per SKU, so this shallow crawl suffices (no exhaustive pagination — gate caveat).
 export async function fetchWeedmapsMenu(
@@ -300,5 +299,18 @@ export async function fetchWeedmapsMenu(
   return [...byId.values()]
 }
 
-const defaultGet: NonNullable<FetchWeedmapsOptions['getFn']> = (url, config) =>
-  axios.get(url, { ...config, responseType: 'text', maxRedirects: 5 })
+// Native fetch (undici), NOT axios. From a clean residential IP, Weedmaps 406-walls axios's
+// request fingerprint (its default header set / Node-TLS + HTTP/1.1) while serving 200 to
+// undici/curl with the IDENTICAL UA + Accept headers — verified same-machine/same-IP 2026-06-30
+// (ADR-065). Return the body as { data } to satisfy the injectable getFn contract; a non-2xx
+// throws so the caller's per-page catch logs it and that page degrades to [] (preserves the prior
+// axios fail-soft, since axios also threw on non-2xx). AbortSignal.timeout mirrors axios `timeout`.
+const defaultGet: NonNullable<FetchWeedmapsOptions['getFn']> = async (url, config) => {
+  const res = await fetch(url, {
+    headers: config.headers,
+    redirect: 'follow',
+    signal: AbortSignal.timeout(config.timeout),
+  })
+  if (!res.ok) throw new Error(`weedmaps GET ${url} -> HTTP ${res.status}`)
+  return { data: await res.text() }
+}
