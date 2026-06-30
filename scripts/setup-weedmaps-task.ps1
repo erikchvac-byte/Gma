@@ -22,12 +22,21 @@
 [CmdletBinding(SupportsShouldProcess)]
 param(
     [string]$WorktreePath = (Join-Path $HOME 'Dev\Happy-weedmaps-ingest'),
-    [string]$RepoPath     = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path,
+    [string]$RepoPath,
     [string]$TaskName     = 'GmaS Weedmaps Ingest',
     [string]$TaskTime     = '03:30'
 )
 
 $ErrorActionPreference = 'Stop'
+
+# Resolve the repo root from the script's own location -- done HERE, not in the param default,
+# because $PSScriptRoot is not reliably populated during param binding in Windows PowerShell 5.1
+# (which left $RepoPath empty -> Join-Path error).
+if (-not $RepoPath) {
+    $scriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent $MyInvocation.MyCommand.Path }
+    $RepoPath  = (Resolve-Path (Join-Path $scriptDir '..')).Path
+}
+
 $WorktreePath = $WorktreePath.TrimEnd('\', '/')
 
 Write-Host "Repo:     $RepoPath"
