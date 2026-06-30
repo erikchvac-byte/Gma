@@ -21,6 +21,20 @@ import type { ApiDataResponse } from '../../client/src/types/index.js'
 // Adding a legitimate WA store stays a normal flow: add the row + registry id,
 // run `npx tsx server/scripts/geocodeStores.ts` to commit its WA coords, done.
 // A store that cannot geocode to WA bounds simply does not belong on the list.
+//
+// THE `url` FIELD — use the right method (ADR-068, after the-vault-silvana 404'd):
+// the card link is `Dispensary.url`, shown to users. Do NOT synthesize it as
+// `dutchie.com/dispensary/<id>` from the registry id — that is a SLUG GUESS that
+// renders fine (isLinkableUrl only checks syntax) but can silently 404 / hit
+// Dutchie's location-state glitch. Instead:
+//   1. Prefer the store's OWN official site — its location-specific page for a
+//      multi-location chain (e.g. thevaultcannabis.com/silvana/), like the
+//      original stores. This is immune to Dutchie slug/state breakage.
+//   2. Only fall back to the Dutchie slug when no clean own-page exists (generic
+//      multi-location homepage) AND the slug is verified live.
+//   3. ALWAYS verify before committing — run, from a RESIDENTIAL IP (Dutchie
+//      403-walls datacenters/CI): `npx tsx server/scripts/checkStoreLinks.ts`
+//      (0 broken required).
 // ─────────────────────────────────────────────────────────────────────────────
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
