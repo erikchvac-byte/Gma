@@ -9,16 +9,21 @@ name: scrape-weedmaps
 # separate from scrape-ingest.yml (deals) and scrape-products.yml (Dutchie products) — the
 # matcher reads the same products.json and picks up Weedmaps with zero code change.
 #
-# ⚠️ SCHEDULE INTENTIONALLY DISABLED (Erik's call 2026-06-29). The scaled-crawl gate passed
-# from a RESIDENTIAL IP; GitHub-Actions/datacenter IPs may be treated differently by Weedmaps
-# (gate caveat #4). Before enabling the nightly cron, run this once via workflow_dispatch and
-# confirm the runner is served real menu JSON (no 403 / PerimeterX / DataDome). Only then
-# uncomment the `schedule:` block below.
+# ⚠️ SCHEDULE INTENTIONALLY DISABLED — DO NOT ENABLE. The scaled-crawl gate passed from a
+# RESIDENTIAL IP, but GitHub-Actions/datacenter IPs are WALLED (gate caveat #4, CONFIRMED). A
+# workflow_dispatch re-probe (2026-06-29, run 28406848309) got HTTP 406 on 44/44 requests; the
+# same desktop UA gets 200 from a residential IP, so the block is IP-driven, not header-driven —
+# uncommenting `schedule:` would just 406 nightly.
+#
+# Accrual instead runs from a RESIDENTIAL IP via the committed runner
+# `scripts/scrape-weedmaps-local.ps1` (set up once by `scripts/setup-weedmaps-task.ps1`, which
+# registers a nightly Windows Scheduled Task in an isolated master-pinned git worktree). It
+# mirrors the commit-back step below. See docs/weedmaps-residential-ingest.md and ADR-064.
 
 on:
-  # schedule:
-  #   - cron: '0 9 * * *' # nightly 09:00 UTC — ENABLE ONLY after re-probing the runner IP
-  workflow_dispatch: {} # manual trigger (use this to re-probe the runner IP first)
+  # schedule:  # DO NOT ENABLE — datacenter IP is 406-walled (see header re-probe 2026-06-29)
+  #   - cron: '0 9 * * *' # nightly 09:00 UTC — would 406 from GitHub-Actions runners
+  workflow_dispatch: {} # manual trigger only (kept to re-probe the runner IP in future)
 
 # Required by the commit-back step to push the refreshed dataset.
 permissions:
