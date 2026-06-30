@@ -15,9 +15,11 @@ name: scrape-weedmaps
 # returned HTTP 406 on 44/44 requests (all 11 stores x 4 pages), 0 observations appended, no
 # commit landed. Same desktop UA + `Accept: text/html` gets 200 from a residential IP, so the
 # block is IP-driven, not header-driven — uncommenting `schedule:` here would just 406 nightly.
-# To collect Weedmaps prices, run `npx tsx scripts/scrapeWeedmapsRun.ts` from a RESIDENTIAL IP
-# (e.g. a local Task Scheduler job) and commit products.json back. See memory
-# project_ai-search-data-strategy.md (operational gate RESOLVED -> BLOCKED) for the full triage.
+#
+# Accrual instead runs from a RESIDENTIAL IP via the committed runner
+# `scripts/scrape-weedmaps-local.ps1` (set up once by `scripts/setup-weedmaps-task.ps1`, which
+# registers a nightly Windows Scheduled Task in an isolated git worktree). It mirrors the
+# commit-back step below. See docs/weedmaps-residential-ingest.md and ADR-064.
 
 on:
   # schedule:  # DO NOT ENABLE — datacenter IP is 406-walled (see header re-probe 2026-06-29)

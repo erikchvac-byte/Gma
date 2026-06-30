@@ -1,5 +1,10 @@
 # Deferred Work
 
+## DEFERRED — Weedmaps accrual freshness alerting (from Phase-3 residential-ingest review, 2026-06-29)
+
+Blind + edge reviewers of `spec-weedmaps-residential-ingest` flagged that the residential nightly runner can stall **silently for weeks** (residential IP also starts 406-ing, Node/git falls off the Scheduled-Task PATH, or the scrape otherwise stops appending) while every run reports green — and the CI `alert-gate` (`server/scripts/alertGate.ts`) deliberately **excludes** weedmaps. v1 mitigation shipped: a runner PATH preflight + a `last-success.txt` heartbeat under the worktree's `.weedmaps-ingest\` (stale timestamp = stall). **Deferred:** real alerting — e.g. extend `alertGate`/a small heartbeat-age check to red a run (or notify) when weedmaps observations haven't advanced in N days. Gated on Erik wanting active monitoring vs. periodic manual heartbeat inspection.
+
+
 ## DEFERRED — Integer-validate MPG at the fueleconomy source (from chunk-3/CAP-5 review, 2026-06-27)
 
 Edge-case reviewer of `spec-obvious-vehicle-control`: `resolveMpg` (`client/src/hooks/useFuelEconomy.ts:140`) does `Number(comb08)` gated only by `isPositiveFinite` — no integer enforcement. EPA `comb08` is documented as an integer so this is not reachable with real data, but both display sites — the new `VehicleBar` and the pre-existing `VehicleSelector.tsx:153` — render `${mpg} MPG` raw, so a non-integer would show decimals in two places. Fix belongs at the source (round/validate to integer in `resolveMpg`) so both consumers stay consistent — NOT in `VehicleBar` alone (that would diverge from the unchanged sheet). Pairs naturally with the already-deferred CAP-5 fueleconomy.gov hardening (timeout/spinner/retry/empty-result).
