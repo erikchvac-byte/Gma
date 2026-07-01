@@ -33,9 +33,7 @@ export const STORE_ADDRESSES: Record<string, string> = {
   'happy-time-mt-vernon': '200 Suzanne Ln, Mount Vernon, WA 98273', // happytimeweed.com / Yelp
   'cannazone-old-hwy-99': '3010 Old Hwy 99 S, Mount Vernon, WA 98273', // Yelp (Old Hwy 99 location)
   'sweet-relief-mt-vernon': '14637 State Route 20, Mount Vernon, WA 98273', // AllBud / operator
-  'cannazone-mt-vernon': '17905 State Route 536, Mount Vernon, WA 98273', // Yelp "West Side" / Dutchie WA-536
   'the-vault-silvana': '1323 Pioneer Highway, Stanwood, WA 98292', // thevaultcannabis.com/silvana
-  'bud-hut-camano-island': '1137 State Route 532, Camano, WA 98282', // budhut.net / Yelp
   // — Everett / Lynnwood —
   'kushmart-north': '6309 Evergreen Way, Everett, WA 98203', // Yelp (now Kush21 Everett North)
   'local-roots-everett-128th': '517 128th Street SW, Everett, WA 98204', // mylocalroots.com / Yelp
@@ -58,7 +56,6 @@ export const STORE_ADDRESSES: Record<string, string> = {
 // This is not fabrication (Honest Math, ADR-007/009) — each coord is sourced.
 export const VERIFIED_COORDS: Record<string, { lat: number; lng: number }> = {
   'remedy-tulalip': { lat: 48.0803125, lng: -122.1861767 }, // OSM POI "Remedy Tulalip" (reverse-geocode confirmed), Quil Ceda Village
-  'bud-hut-camano-island': { lat: 48.2399961, lng: -122.4212191 }, // Google Maps place pin "Bud Hut Camano Island"
   'local-roots-everett-128th': { lat: 47.8826827, lng: -122.240823 }, // Google Maps place pin "Local Roots Cannabis in Everett"
   'cannazone-bellingham': { lat: 48.846368, lng: -122.486043 }, // greentripz embedded Google Maps coord, 5655 Guide Meridian
 }
