@@ -6,6 +6,8 @@ import {
   stripDiscountPrefix,
   stripCrossLocationTag,
   resolveLayeredSale,
+  buildDealBlocks,
+  type DealView,
 } from './dealView'
 import type { Deal, Dispensary } from '../types'
 
@@ -277,5 +279,93 @@ describe('resolveLayeredSale', () => {
   it('returns null on null/undefined input', () => {
     expect(resolveLayeredSale(null)).toBeNull()
     expect(resolveLayeredSale(undefined)).toBeNull()
+  })
+})
+
+describe('buildDealBlocks', () => {
+  const daily = (description: string, discountPct: number | null): DealView => ({
+    deal: makeDeal({ type: 'daily', description, discountPct, startTime: null, endTime: null }),
+    windowText: 'Active today',
+    countdown: null,
+  })
+
+  it('collapses same-title daily tiers into one "min–max%" block (Silvana)', () => {
+    const blocks = buildDealBlocks([
+      daily('45% off Select Products', 45),
+      daily('40% Off Select Products', 40),
+      daily('35% Off Select Products', 35),
+      daily('25% Off Select Products', 25),
+      daily('20% Off All Cannabis Items', 20),
+    ])
+    // four "Select Products" tiers → one block; "All Cannabis Items" → its own
+    expect(blocks).toHaveLength(2)
+    expect(blocks[0].title).toBe('Select Products')
+    expect(blocks[0].pctLabel).toBe('25–45%')
+    expect(blocks[0].tier).toBe('high') // ramp follows the max (45)
+    expect(blocks[1].title).toBe('All Cannabis Items')
+    expect(blocks[1].pctLabel).toBe('20%')
+  })
+
+  it('shows a plain "N%" for a lone tier (no range)', () => {
+    const blocks = buildDealBlocks([daily('40% Off Your Entire Order!', 40)])
+    expect(blocks).toHaveLength(1)
+    expect(blocks[0].pctLabel).toBe('40%')
+  })
+
+  it('dedupes exact-duplicate tiers to a single "N%" block', () => {
+    const blocks = buildDealBlocks([
+      daily('25% Off Select Products', 25),
+      daily('25% Off Select Products', 25),
+    ])
+    expect(blocks).toHaveLength(1)
+    expect(blocks[0].pctLabel).toBe('25%')
+  })
+
+  it('does NOT merge deals with different titles', () => {
+    const blocks = buildDealBlocks([
+      daily('30% Off Flower', 30),
+      daily('30% Off Edibles', 30),
+    ])
+    expect(blocks).toHaveLength(2)
+    expect(blocks.map((b) => b.title)).toEqual(['Flower', 'Edibles'])
+  })
+
+  it('collapses layered "…- Y% Off Brands" tiers into one Brands range block', () => {
+    const blocks = buildDealBlocks([
+      daily('Up to 50% Off Sale - 50% Off Brands', 50),
+      daily('Up to 50% Off Sale - 40% Off Brands', 50),
+      daily('Up to 50% Off Sale - 30% Off Brands', 50),
+    ])
+    expect(blocks).toHaveLength(1)
+    expect(blocks[0].title).toBe('Brands')
+    expect(blocks[0].pctLabel).toBe('30–50%')
+  })
+
+  it('does not merge a daily and a happy hour that share a title (meta differs)', () => {
+    const blocks = buildDealBlocks([
+      daily('20% Off Storewide', 20),
+      {
+        deal: makeDeal({ type: 'happy_hour', description: '20% Off Storewide', discountPct: 20, startTime: '07:00', endTime: '08:00' }),
+        windowText: '7:00 AM – 8:00 AM',
+        countdown: null,
+      },
+    ])
+    expect(blocks).toHaveLength(2)
+  })
+
+  it('renders no figure (pctLabel null) when the group has no parseable discount', () => {
+    const blocks = buildDealBlocks([daily('Mystery deal', null)])
+    expect(blocks).toHaveLength(1)
+    expect(blocks[0].pctLabel).toBeNull()
+    expect(blocks[0].tier).toBeNull()
+  })
+
+  it('carries item icons derived from the (shared) subject text', () => {
+    const blocks = buildDealBlocks([
+      daily('45% Off Flower', 45),
+      daily('25% Off Flower', 25),
+    ])
+    expect(blocks).toHaveLength(1)
+    expect(blocks[0].icons.length).toBeGreaterThan(0)
   })
 })

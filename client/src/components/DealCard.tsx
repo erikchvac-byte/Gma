@@ -1,22 +1,10 @@
-import type { Deal, Dispensary } from '../types'
+import type { Dispensary } from '../types'
 import { Card, Icon } from './ui'
-import {
-  discountTier,
-  resolveLayeredSale,
-  storeUrgencyBadge,
-  stripCrossLocationTag,
-  stripDiscountPrefix,
-} from '../utils/dealView'
-import { dealIcons, DEAL_ICON_LABEL } from '../utils/dealIcons'
+import { buildDealBlocks, storeUrgencyBadge, type DealView } from '../utils/dealView'
+import { DEAL_ICON_LABEL } from '../utils/dealIcons'
 import { DEAL_ICON_SRC } from '../utils/dealIconAssets'
 
-// One deal plus its upstream-computed display strings. windowText/countdown are
-// computed in DealFeed (null means "render nothing" — e.g. malformed times).
-export interface DealView {
-  deal: Deal
-  windowText: string | null
-  countdown: string | null
-}
+export type { DealView }
 
 export interface DealCardProps {
   dispensary: Dispensary
@@ -25,40 +13,6 @@ export interface DealCardProps {
   // pre-formatted '$X.XX' from gasCost.ts; per-store (the trip), shown once.
   // null → distance-only trip chip
   gasCostText: string | null
-}
-
-// title falls back to the deal's kind when ingest suppressed its description
-// (sanitizeDescription can blank non-compliant retailer copy to ''). Daily
-// deals are already labelled by their meta ('Daily deal · …'), so a blank one
-// omits the title rather than doubling the label; happy hours keep the label
-// because their meta is only a time window.
-//
-// badgeRendering: when the percent badge is showing this deal's magnitude, drop
-// any leading "N% off" phrase the scraped description embeds so the card doesn't
-// stutter it (ADR-046). Badge-anchored — never strip when nothing else shows the
-// figure. If stripping empties the title, fall through to the kind fallback
-// (NOT the raw description — that would re-introduce the stutter).
-function dealTitle(deal: Deal, badgeRendering: boolean): string | null {
-  const kindFallback = deal.type === 'happy_hour' ? 'Happy hour' : null
-  if (!deal.description || deal.description.trim() === '') return kindFallback
-  // badgeRendering ⇒ discountTier(discountPct) !== null ⇒ a positive finite pct,
-  // so the strip can anchor to the exact magnitude the badge is showing. When no
-  // badge renders we keep the percent figure (it's the only place it shows).
-  const base = badgeRendering
-    ? stripDiscountPrefix(deal.description, deal.discountPct as number)
-    : deal.description
-  // Then drop any trailing cross-location tag a chain baked into the title (e.g.
-  // Happy Time's "PULLMAN" on its Mount Vernon menu). Applied in both branches so
-  // the tag never survives, badge or not.
-  const cleaned = stripCrossLocationTag(base)
-  return cleaned !== '' ? cleaned : kindFallback
-}
-
-// metadata line: the happy-hour window, or a daily label + status. null when a
-// happy hour has no parseable window (then only the title renders).
-function dealMeta(deal: Deal, windowText: string | null): string | null {
-  if (deal.type === 'happy_hour') return windowText
-  return `Daily deal · ${windowText ?? 'Active today'}`
 }
 
 // url is a required field but not validated upstream (scraped/ingested data) —
@@ -147,68 +101,52 @@ export default function DealCard({ dispensary, deals, gasCostText }: DealCardPro
       {/* deals are plain divs, not list items: the feed keeps one listitem per
           STORE (the card), so nesting <li> here would inflate that count */}
       <div className="gma-deal-grid">
-        {deals.map(({ deal, windowText }, i) => {
-          // Layered "Up to X% Off Sale - Y% Off <subject>" tiers (ADR-049) badge the
-          // TIER figure Y, not the stored discountPct (the headline X), and title
-          // the subject only. Takes precedence over the percent/multi-tier strip.
-          const layered = resolveLayeredSale(deal.description)
-          const pct = layered ? layered.pct : deal.discountPct
-          const tier = discountTier(pct)
-          // badge-anchored: pass whether the percent badge is rendering so the
-          // title only drops the "N% off" prefix the badge is already showing.
-          const title = layered ? layered.title : dealTitle(deal, tier !== null)
-          const meta = dealMeta(deal, windowText)
-          // One glyph per "item" the deal names (Erik's model: the text spells
-          // the item, the icon mirrors it). Driven by the subject text — the
-          // layered tier's subject when present, else the full description.
-          const icons = dealIcons(layered ? layered.title : deal.description)
-          return (
-            // index keeps the key unique even when sanitize blanks two
-            // same-window/same-type deals' descriptions to ''
-            <div
-              key={`${deal.type}|${deal.description}|${deal.startTime ?? ''}|${deal.endTime ?? ''}|${i}`}
-              className="gma-deal-block"
-            >
-              {/* discount magnitude in the amber discount accent (ADR-041: full
-                  opacity, weight-only ramp); null discount → no figure / no "off" */}
-              {tier !== null && (
-                <>
-                  <span className={`gma-deal-block__pct gma-deal-block__pct--${tier}`}>{`${pct}%`}</span>
-                  <span className="gma-deal-block__off">off</span>
-                </>
-              )}
-              <div className="gma-deal-block__body">
-                {title !== null && <span className="gma-deal-block__title">{title}</span>}
-                {meta !== null && meta !== '' && (
-                  <span className="gma-deal-block__meta">{meta}</span>
-                )}
-              </div>
-              {/* one tag per item named in the deal (Erik's sale-tag art), to the
-                  right of the text; the row's accessible name lists them so a
-                  screen-reader gets what the pictures say */}
-              {icons.length > 0 && (
-                <span
-                  className="gma-deal-icons"
-                  role="img"
-                  aria-label={icons.map((n) => DEAL_ICON_LABEL[n]).join(', ')}
-                >
-                  {icons.map((name) => (
-                    <img
-                      key={name}
-                      className="gma-deal-icon"
-                      src={DEAL_ICON_SRC[name]}
-                      alt=""
-                      width={28}
-                      height={28}
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  ))}
+        {/* deals that resolve to the same title + meta collapse into one block;
+            a collapsed block's pctLabel is a "min–max%" range (buildDealBlocks) */}
+        {buildDealBlocks(deals).map((block) => (
+          <div key={block.key} className="gma-deal-block">
+            {/* discount magnitude in the amber discount accent (ADR-041: full
+                opacity, weight-only ramp); null discount → no figure / no "off".
+                pctLabel is "N%" for a single tier, "min–max%" when collapsed. */}
+            {block.pctLabel !== null && block.tier !== null && (
+              <>
+                <span className={`gma-deal-block__pct gma-deal-block__pct--${block.tier}`}>
+                  {block.pctLabel}
                 </span>
+                <span className="gma-deal-block__off">off</span>
+              </>
+            )}
+            <div className="gma-deal-block__body">
+              {block.title !== null && <span className="gma-deal-block__title">{block.title}</span>}
+              {block.meta !== null && block.meta !== '' && (
+                <span className="gma-deal-block__meta">{block.meta}</span>
               )}
             </div>
-          )
-        })}
+            {/* one tag per item named in the deal (Erik's sale-tag art), to the
+                right of the text; the row's accessible name lists them so a
+                screen-reader gets what the pictures say */}
+            {block.icons.length > 0 && (
+              <span
+                className="gma-deal-icons"
+                role="img"
+                aria-label={block.icons.map((n) => DEAL_ICON_LABEL[n]).join(', ')}
+              >
+                {block.icons.map((name) => (
+                  <img
+                    key={name}
+                    className="gma-deal-icon"
+                    src={DEAL_ICON_SRC[name]}
+                    alt=""
+                    width={28}
+                    height={28}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                ))}
+              </span>
+            )}
+          </div>
+        ))}
       </div>
     </Card>
   )

@@ -248,13 +248,14 @@ describe('DealCard', () => {
     expect(container.textContent).not.toContain('PULLMAN')
   })
 
-  it('badges layered "Up to X% Off Sale - Y% Off Brands" tiers by their own Y% (ADR-049)', () => {
+  it('collapses layered "Up to X% Off Sale - Y% Off Brands" tiers into one Brands block with a Y% range (ADR-049 + tier-collapse)', () => {
     render(
       <DealCard
         dispensary={makeDispensary({ name: 'KushMart North' })}
         deals={[
           // stored discountPct is 50 for ALL three (scraper grabbed the "Up to 50%"
-          // headline); the tier badge must show each tier's own figure instead
+          // headline); the tier figures are 50/40/30 and all title to "Brands", so
+          // they collapse to a single block spanning the tier range
           view({ type: 'daily', description: 'Up to 50% Off Sale - 50% Off Brands', discountPct: 50, startTime: null, endTime: null }, 'Active today', null),
           view({ type: 'daily', description: 'Up to 50% Off Sale - 40% Off Brands', discountPct: 50, startTime: null, endTime: null }, 'Active today', null),
           view({ type: 'daily', description: 'Up to 50% Off Sale - 30% Off Brands', discountPct: 50, startTime: null, endTime: null }, 'Active today', null),
@@ -264,14 +265,40 @@ describe('DealCard', () => {
     )
 
     const card = screen.getByRole('article')
-    // each tier badges its OWN figure — the 40/30 cards no longer over-promise 50%
-    expect(within(card).getByText('50%')).toBeInTheDocument()
-    expect(within(card).getByText('40%')).toBeInTheDocument()
-    expect(within(card).getByText('30%')).toBeInTheDocument()
-    // title is the subject only — no "Up to … Sale" headline, no repeated magnitude
-    expect(within(card).getAllByText('Brands', { selector: '.gma-deal-block__title' })).toHaveLength(3)
+    // three near-clone tiers → one block; the range spans lowest–highest tier figure
+    expect(within(card).getByText('30–50%')).toBeInTheDocument()
+    // exactly one "Brands" title and one "off" now (not three of each)
+    expect(within(card).getAllByText('Brands', { selector: '.gma-deal-block__title' })).toHaveLength(1)
+    expect(within(card).getAllByText('off')).toHaveLength(1)
+    // no over-promised standalone 50%, no "Up to … Sale" headline
+    expect(within(card).queryByText('50%')).not.toBeInTheDocument()
     expect(card.textContent).not.toContain('Up to')
     expect(card.textContent).not.toContain('Off Brands')
+  })
+
+  it('collapses same-title daily tiers (Silvana "Select Products") into one range block', () => {
+    render(
+      <DealCard
+        dispensary={makeDispensary({ name: 'The Vault - Silvana' })}
+        deals={[
+          view({ type: 'daily', description: '45% off Select Products', discountPct: 45, startTime: null, endTime: null }, 'Active today', null),
+          view({ type: 'daily', description: '40% Off Select Products', discountPct: 40, startTime: null, endTime: null }, 'Active today', null),
+          view({ type: 'daily', description: '35% Off Select Products', discountPct: 35, startTime: null, endTime: null }, 'Active today', null),
+          view({ type: 'daily', description: '25% Off Select Products', discountPct: 25, startTime: null, endTime: null }, 'Active today', null),
+          view({ type: 'daily', description: '20% Off All Cannabis Items', discountPct: 20, startTime: null, endTime: null }, 'Active today', null),
+        ]}
+        gasCostText="$3.63"
+      />,
+    )
+
+    const card = screen.getByRole('article')
+    // four "Select Products" tiers collapse to one 25–45% block; the distinct
+    // "All Cannabis Items" deal stays its own block → 2 blocks total
+    expect(card.querySelectorAll('.gma-deal-block')).toHaveLength(2)
+    expect(within(card).getByText('25–45%')).toBeInTheDocument()
+    expect(within(card).getByText('20%')).toBeInTheDocument()
+    expect(within(card).getAllByText('Select Products', { selector: '.gma-deal-block__title' })).toHaveLength(1)
+    expect(within(card).getByText('All Cannabis Items')).toBeInTheDocument()
   })
 
   it('renders a malformed-time deal without window, countdown, or NaN text', () => {

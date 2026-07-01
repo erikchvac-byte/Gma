@@ -1,4 +1,5 @@
-import type { Dispensary } from '../types'
+import type { Deal, Dispensary } from '../types'
+import { dealIcons, type DealIconName } from './dealIcons'
 
 // The three chip filters map to the real Deal.type field (ADR-030 has no
 // product-category field). 'all' is the default and a pure passthrough.
@@ -159,4 +160,113 @@ export function discountTier(pct: number | null): DiscountTier | null {
   if (pct >= 30) return 'high'
   if (pct >= 15) return 'mid'
   return 'low'
+}
+
+// One deal plus its upstream-computed display strings. windowText/countdown are
+// computed in DealFeed (null means "render nothing" — e.g. malformed times).
+export interface DealView {
+  deal: Deal
+  windowText: string | null
+  countdown: string | null
+}
+
+// title falls back to the deal's kind when ingest suppressed its description
+// (sanitizeDescription can blank non-compliant retailer copy to ''). Daily deals
+// are already labelled by their meta ('Daily deal · …'), so a blank one omits the
+// title rather than doubling the label; happy hours keep the label because their
+// meta is only a time window. badgeRendering: when the percent badge shows this
+// deal's magnitude, drop any leading "N% off" the scraped description embeds so
+// the card doesn't stutter it (ADR-046). Badge-anchored — never strip when nothing
+// else shows the figure. If stripping empties the title, fall through to the kind
+// fallback (NOT the raw description — that would re-introduce the stutter).
+export function dealTitle(deal: Deal, badgeRendering: boolean): string | null {
+  const kindFallback = deal.type === 'happy_hour' ? 'Happy hour' : null
+  if (!deal.description || deal.description.trim() === '') return kindFallback
+  const base = badgeRendering
+    ? stripDiscountPrefix(deal.description, deal.discountPct as number)
+    : deal.description
+  const cleaned = stripCrossLocationTag(base)
+  return cleaned !== '' ? cleaned : kindFallback
+}
+
+// metadata line: the happy-hour window, or a daily label + status. null when a
+// happy hour has no parseable window (then only the title renders).
+export function dealMeta(deal: Deal, windowText: string | null): string | null {
+  if (deal.type === 'happy_hour') return windowText
+  return `Daily deal · ${windowText ?? 'Active today'}`
+}
+
+// One rendered row in a store card. Deals that resolve to the SAME title + meta
+// collapse into one block (see buildDealBlocks): pctLabel is then a range.
+export interface DealBlock {
+  // 'N%' (single tier / exact-dup) | 'min–max%' (collapsed tiers) | null (no discount)
+  pctLabel: string | null
+  // font-weight ramp, taken from the group's MAX percent
+  tier: DiscountTier | null
+  title: string | null
+  meta: string | null
+  icons: DealIconName[]
+  // stable React key
+  key: string
+}
+
+// Resolve a store's deals into render-ready blocks, COLLAPSING deals that share a
+// title + meta into one (ADR: Silvana "redundant Select Products" cleanup). A store
+// commonly posts several "N% Off Select Products" tiers — or a layered "…- Y% Off
+// Brands" set — that differ only in percent; stacked verbatim they read as near-clone
+// rows. We group by the computed display identity (type + title + meta, so a daily
+// never merges with a happy hour and different windows stay apart) and show the
+// spread as one "min–max%" figure. A single tier still shows "N%"; exact duplicates
+// dedupe to one. Group order follows first appearance (deals arrive pre-sorted).
+export function buildDealBlocks(views: DealView[]): DealBlock[] {
+  interface Group {
+    title: string | null
+    meta: string | null
+    iconSubject: string
+    pcts: number[]
+    keyBits: string
+  }
+  const order: Group[] = []
+  const byKey = new Map<string, Group>()
+  for (const { deal, windowText } of views) {
+    // Layered "Up to X% Off Sale - Y% Off <subject>" tiers (ADR-049) badge the TIER
+    // figure Y and title the subject only — resolve it before title/tier so it takes
+    // precedence over the multi-tier strip guard.
+    const layered = resolveLayeredSale(deal.description)
+    const pct = layered ? layered.pct : deal.discountPct
+    const tier = discountTier(pct)
+    const title = layered ? layered.title : dealTitle(deal, tier !== null)
+    const meta = dealMeta(deal, windowText)
+    const iconSubject = layered ? layered.title : deal.description
+    const groupKey = `${deal.type}|${title ?? ''}|${meta ?? ''}`
+    let group = byKey.get(groupKey)
+    if (!group) {
+      group = {
+        title,
+        meta,
+        iconSubject,
+        pcts: [],
+        keyBits: `${deal.type}|${deal.description}|${deal.startTime ?? ''}|${deal.endTime ?? ''}`,
+      }
+      byKey.set(groupKey, group)
+      order.push(group)
+    }
+    // only positive finite percents contribute a figure (matches discountTier)
+    if (typeof pct === 'number' && Number.isFinite(pct) && pct > 0) group.pcts.push(pct)
+  }
+  return order.map((group, i) => {
+    const distinct = [...new Set(group.pcts)].sort((a, b) => b - a) // high → low
+    const max = distinct[0]
+    const min = distinct[distinct.length - 1]
+    const pctLabel =
+      distinct.length === 0 ? null : distinct.length === 1 ? `${max}%` : `${min}–${max}%`
+    return {
+      pctLabel,
+      tier: discountTier(max ?? null),
+      title: group.title,
+      meta: group.meta,
+      icons: dealIcons(group.iconSubject),
+      key: `${group.keyBits}|${i}`,
+    }
+  })
 }
