@@ -127,3 +127,63 @@ export interface Disparity {
   spreadPct: number
   storesCarrying: DisparityStore[]
 }
+
+// --- Deal→SKU scope bridge (deal-sku-bridge story) --------------------------------
+// The one relationship the data model was missing: which in-store SKUs a free-text
+// banner actually covers, and when. A read-only THIRD consumer joining the two
+// deliberately decoupled pipelines (ADR-043/053) — Deal banners live in data.json,
+// ProductRecords in products.json, on separate cadences. These types add NO field to
+// Deal / ProductRecord / ProductsFile and touch NO write path (mirrors the A1 matcher).
+//
+// HONESTY (fix6-basePrice-verdict.md): a banner `discountPct` is a flat storewide/brand
+// promo rate with NO per-item signal. A link is EXPLANATORY + TEMPORAL — "this banner
+// covers these SKUs, on these days/times" — NEVER a savings computation. The observed
+// `specialPrice` on a ProductRecord stays the price-of-record; the bridge sits beside it.
+
+// The 3 categories the product scrapes actually cover (DEFAULT_PRODUCT_CATEGORIES).
+// Banners targeting anything else (Edibles/Drinks/Topicals…) are real but out-of-catalog
+// → classified `unsupported-category`, counted, linked to nothing.
+export type ScrapedCategory = 'Flower' | 'Vaporizers' | 'Pre-Rolls'
+
+// A banner's inferred product scope (AC1). Exactly one kind. Ambiguity resolves to
+// `unresolved`, NEVER silently to storewide. `brand` is classified-and-deferred (this
+// deliverable does not attempt brand matching).
+export type DealScope =
+  | { kind: 'storewide' }
+  | { kind: 'category'; category: ScrapedCategory; weightGrams: number | null }
+  | { kind: 'unsupported-category'; targeted: string }
+  | { kind: 'brand' }
+  | { kind: 'unresolved' }
+
+// One inferred link: a banner (identified by its within-store index + description) to the
+// same store's SKUs it covers (AC2), carrying the deal's day/time window (AC3) so a
+// consumer can answer "is SKU X on a banner deal right now" with the SAME logic as
+// filterActiveDeals. `productIds` are ProductRecord.productId within `dispensaryId`.
+export interface DealScopeLink {
+  dispensaryId: string
+  dealIndex: number
+  dealDescription: string
+  scope: DealScope
+  productIds: string[]
+  // Temporal inheritance from the deal (AC3) — mirror of filterActiveDeals' inputs.
+  daysValid: string[]
+  startTime: string | null
+  endTime: string | null
+}
+
+// Bookkeeping so nothing is silently dropped (AC5) — same discipline as MatchReport.
+// Every deal lands in exactly one counter; unplaceable scopes are counted, never fanned
+// out storewide.
+export interface DealScopeReport {
+  links: DealScopeLink[]
+  totalDeals: number
+  storewideCount: number
+  categoryCount: number
+  linkedSkuCount: number // total productIds across all links (with multiplicity)
+  // The counted, un-linked buckets (AC4c/AC4d).
+  unsupportedCategoryCount: number
+  brandCount: number
+  unresolvedCount: number
+  // A deal whose scope resolved but matched ZERO in-store SKUs — distinct from unresolved.
+  zeroMatchCount: number
+}

@@ -24,7 +24,7 @@ import type {
 
 // Per-record flags that poison weight-based comparison. A record carrying ANY of these
 // is dropped from disparity output (and counted in the report).
-const EXCLUDED_FLAGS = new Set(['weight-mismatch', 'unparseable-weight', 'unparseable-pack'])
+export const EXCLUDED_FLAGS = new Set(['weight-mismatch', 'unparseable-weight', 'unparseable-pack'])
 
 function r2(x: number): number {
   return Math.round(x * 100) / 100
