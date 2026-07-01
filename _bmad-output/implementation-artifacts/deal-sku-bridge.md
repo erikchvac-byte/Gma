@@ -52,7 +52,7 @@ If those three constraints can't hold, stop and raise it — do not widen scope 
 - [x] Task 4 — Tests (AC: all)
   - [x] `server/utils/dealScope.test.ts`: real banner strings ("50% off Ounces", "40% Storewide", "15% Off Edibles + Drinks", "20% OFF ALL ONLINE ORDERS", a brand-named banner) → correct scope class; storewide-ambiguity → `unresolved`; unsupported category counted not linked.
   - [x] Integration test (mirror `server/integration/weedmapsMatcher.test.ts`): fixture deals + fixture products → expected links + report buckets; assert NO storewide fan-out on ambiguous text; assert flagged products excluded on weight-qualified scope.
-- [ ] Task 5 — (Optional) route (AC: 7) — only if Erik confirms. **DEFERRED pending Erik's decision** (AC7 is explicitly optional/gated). Library + tests shipped; route not built.
+- [x] Task 5 — (Optional) route (AC: 7) — **Erik confirmed 2026-07-01 (option B).** Built private read-only `GET /api/value/deal-scope` in `server/routes/valueRoute.ts` (sibling of `disparitiesRoute`), wired in `server/index.ts`, mirroring the `/api/value/disparities` posture. Reads RAW deals (NOT `filterActiveDeals`) so links keep their temporal window for `isDealScopeLinkActive`; fail-soft on both file reads. +3 route tests. Live against committed data: 52 deals → 16 links (buckets sum to 52).
 
 ## Dev Notes
 
@@ -100,13 +100,13 @@ claude-opus-4-8 (BMad dev-story workflow)
 
 ### Completion Notes List
 
-- **AC1–AC6 fully implemented, AC7 deferred to Erik (optional/gated).** Shipped the read-only library + types + tests; no route built.
+- **AC1–AC7 fully implemented.** AC7 (private route) confirmed + built by Erik 2026-07-01 (option B). Shipped the read-only library + types + private route + tests.
 - **Scope parser (`parseDealScope`)** — pure over the `Deal` only (never sees a product/price/discount → a scope can't encode a per-item saving, honesty gate 1). Classification order is deliberate: out-of-catalog cue → scraped category (pre-roll before flower, mirroring `_weedmaps.ts` `CATEGORY_RULES`) → explicit storewide → deferred brand stub → `unresolved`. Out-of-catalog wins over "all" so "all edibles" is edibles-scoped, never a storewide fan-out. Weights come only from `canonicalWeightGrams('1oz')` / `('1/8oz')` → 28g / 3.5g (inherits ADR-054 fractional-oz snap; no re-implemented weight parsing).
 - **Linker (`buildDealScopeLinks`)** — mirrors `crossStoreValue.ts`: pre-groups products by store, links only within the same `dispensaryId`, counts every deal into exactly one scope-class bucket, and reports `zeroMatchCount` (resolved-but-no-SKU) as distinct from `unresolvedCount`. Storewide links all *priced* SKUs and INCLUDES flag-carrying records; the `EXCLUDED_FLAGS` drop applies ONLY to weight-qualified scopes (AC4b). `deal.discountPct` is intentionally never read.
 - **Temporal (`isDealScopeLinkActive`)** — AC6 forbids editing `filterActiveDeals.ts` and its `isDealActive` isn't exported, so the day/time logic (incl. overnight window + `everyday`) is a documented MIRROR that must stay in sync. Links carry the inherited `daysValid`/`startTime`/`endTime`.
 - **Decoupling preserved (AC6)** — zero change to `Deal`, `ProductRecord`, `ProductsFile`, `normalizeDeals`, `filterActiveDeals`, `/api/data`, `/api/ingest`, or any write path. New code is additive + read-only. Degrades to empty links (never throws) for a store with deals but no products.
 - **Validation** — 27 new tests (15 unit + 12 integration... 7 integration cases). Full server suite **384 passed** (was 357). `npm run build` (client + server `tsc` + copyData) clean.
-- **AC7 open question for Erik:** ship a private read-only `GET /api/value/deal-scope` (mirroring `valueRoute.ts`, reading `data.json` + `products.json`)? Library is route-ready. Not built without confirmation.
+- **AC7 (RESOLVED, built):** Erik chose option B — private read-only `GET /api/value/deal-scope` (`dealScopeRoute` in `valueRoute.ts`, mirroring `disparitiesRoute`, reading `data.json` + `products.json`). Private/internal only — no public page or schema.org markup (Phase 4, legal-gated). Uses RAW deals (not `filterActiveDeals`) so temporal windows survive for `isDealScopeLinkActive`.
 
 ### File List
 

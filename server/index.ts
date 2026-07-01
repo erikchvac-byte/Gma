@@ -8,7 +8,7 @@ import 'dotenv/config'
 import { dataRoute } from './routes/dataRoute.js'
 import { ingestRoute } from './routes/ingestRoute.js'
 import { productsRoute } from './routes/productsRoute.js'
-import { disparitiesRoute } from './routes/valueRoute.js'
+import { disparitiesRoute, dealScopeRoute } from './routes/valueRoute.js'
 import { refreshGasPrice } from './utils/refreshGasPrice.js'
 
 const app = express()
@@ -38,6 +38,9 @@ app.get('/api/products', productsRoute)
 // Private/internal surface — derived live from products.json; additive and decoupled
 // from /api/data exactly like /api/products. No public SSR page (Phase 4, legal-gated).
 app.get('/api/value/disparities', disparitiesRoute)
+// Deal→SKU scope bridge (ADR-070). Same private/decoupled posture: joins data.json +
+// products.json read-only; no public page/markup (Phase 4, legal-gated).
+app.get('/api/value/deal-scope', dealScopeRoute)
 
 // In production this single service also serves the built React client, so
 // gmaslist.com hits one origin for both the app and its API.
