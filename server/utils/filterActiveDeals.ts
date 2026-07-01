@@ -7,7 +7,11 @@ function parseTimeToMinutes(time: string): number {
   return hours * 60 + minutes
 }
 
-function isDealActive(deal: Deal, now: Date): boolean {
+// Exported for reuse by read-only temporal consumers (e.g. the deal→SKU bridge's
+// isDealScopeLinkActive) so the day/time-window logic lives in ONE place. Accepts just
+// the temporal subset it reads — a full Deal satisfies it, so filterActiveDeals below is
+// unchanged. The day/time LOGIC (overnight window, 'everyday') is intentionally untouched.
+export function isDealActive(deal: Pick<Deal, 'daysValid' | 'startTime' | 'endTime'>, now: Date): boolean {
   const today = DAY_NAMES[now.getDay()]
   const dayMatches = (day: string) => deal.daysValid.includes('everyday') || deal.daysValid.includes(day)
 
