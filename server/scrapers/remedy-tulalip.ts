@@ -43,7 +43,8 @@ export function parse(html: string): Deal[] {
 
   $('li.el-item').each((_, el) => {
     const title = $(el).find('.el-title').text().replace(/\s+/g, ' ').trim()
-    const contentRaw = $(el).find('.el-content').text().replace(/\s+/g, ' ').trim()
+    const contentEl = $(el).find('.el-content')
+    const contentRaw = contentEl.text().replace(/\s+/g, ' ').trim()
     const combined = `${title} ${contentRaw}`
 
     // Only deal cards carry "NN% Off"; this skips nav/footer/other el-items.
@@ -54,11 +55,27 @@ export function parse(html: string): Deal[] {
     const daysValid = parseDays(title)
 
     // Description: prefer the content when it carries the offer ("15% Off …");
-    // otherwise the title (happy-hour / group cards put the offer in the title).
-    // Trim trailing fine print after the first bullet, plus trailing :/*.
+    // otherwise the title states the offer (happy-hour / group cards). Trim
+    // trailing fine print after the first bullet, plus trailing :/*.
     const content = contentRaw.split('•')[0].trim()
     const titleClean = title.replace(/[:\s*]+$/, '').trim()
-    const description = /\d+\s*%/.test(content) ? content : titleClean
+    let description: string
+    if (/\d+\s*%/.test(content)) {
+      description = content
+    } else {
+      // Title carries the offer; the content (when present) qualifies it. A real
+      // <li> list names who/what the offer applies to — e.g. the customer groups
+      // "Military Veterans, Tribal Members, Wisdom (50+)" — and would otherwise be
+      // dropped, leaving a card that promises a list it never shows. Capture those
+      // items onto the title. Ignore bulleted fine print (starts with •) and
+      // empty/emphasis-only content (happy-hour's "*complete before 8am" caveat).
+      const items = contentEl
+        .find('li')
+        .map((_, li) => $(li).text().replace(/\s+/g, ' ').trim())
+        .get()
+        .filter((t) => t !== '' && !t.startsWith('•'))
+      description = items.length > 0 ? `${titleClean}: ${items.join(', ')}` : titleClean
+    }
 
     deals.push({
       type: window ? 'happy_hour' : 'daily',

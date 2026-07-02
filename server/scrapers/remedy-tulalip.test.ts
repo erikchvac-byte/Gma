@@ -86,6 +86,25 @@ describe('remedy-tulalip parse()', () => {
     }
   })
 
+  it('captures the customer-group list onto the group card description', () => {
+    // The card title promises "the Following Customer Groups" but the names live
+    // in the .el-content <li> list; without capture the card would show nothing.
+    const group = deals.find((d) => /Customer Groups/i.test(d.description))
+    expect(group).toBeDefined()
+    expect(group!.description).toBe(
+      '10% Off Everyday for the Following Customer Groups (with Proof of Valid ID): ' +
+        'Military Veterans, Tribal Members, Wisdom (50+)',
+    )
+    expect(group).toMatchObject({ type: 'daily', discountPct: 10, daysValid: ['everyday'] })
+  })
+
+  it('does not append fine-print content to the happy-hour title', () => {
+    // The 7–8am card's content is an <em> caveat with no <li> list — description
+    // must stay the clean title, not gain the fine print.
+    const hh = deals.find((d) => d.type === 'happy_hour')
+    expect(hh!.description).toBe('20% Off Your Purchase Everyday from 7-8am')
+  })
+
   it('AC6: empty / malformed / deal-free HTML yields [] (no throw)', () => {
     expect(parse('')).toEqual([])
     expect(parse('<html><body><p>no deals here</p></body></html>')).toEqual([])
