@@ -199,13 +199,18 @@ export function dealMeta(deal: Deal, windowText: string | null): string | null {
 // One rendered row in a store card. Deals that resolve to the SAME title + meta
 // collapse into one block (see buildDealBlocks): pctLabel is then a range.
 export interface DealBlock {
-  // 'N%' (single tier / exact-dup) | 'min–max%' (collapsed tiers) | null (no discount)
+  // 'N%' (single tier / exact-dup) | 'min–max%' (collapsed tiers) | null (no discount
+  // figure, OR a BOGO — which renders its own badge instead of a percent)
   pctLabel: string | null
   // font-weight ramp, taken from the group's MAX percent
   tier: DiscountTier | null
   title: string | null
   meta: string | null
   icons: DealIconName[]
+  // Buy-one-get-one (Dutchie specialType 'bogo'): renders a distinct "BOGO" badge in
+  // place of the flat "N% off" magnitude, which would over-state the deal. The percent
+  // (if any) stays in the title text since the numeric badge is suppressed.
+  isBogo: boolean
   // stable React key
   key: string
 }
@@ -224,21 +229,26 @@ export function buildDealBlocks(views: DealView[]): DealBlock[] {
     meta: string | null
     iconSubject: string
     pcts: number[]
+    isBogo: boolean
     keyBits: string
   }
   const order: Group[] = []
   const byKey = new Map<string, Group>()
   for (const { deal, windowText } of views) {
+    // A BOGO renders a "BOGO" badge, not a flat percent — so its title keeps the
+    // percent (badgeRendering=false) since no numeric badge will show it.
+    const isBogo = deal.specialType === 'bogo'
     // Layered "Up to X% Off Sale - Y% Off <subject>" tiers (ADR-049) badge the TIER
     // figure Y and title the subject only — resolve it before title/tier so it takes
     // precedence over the multi-tier strip guard.
     const layered = resolveLayeredSale(deal.description)
     const pct = layered ? layered.pct : deal.discountPct
     const tier = discountTier(pct)
-    const title = layered ? layered.title : dealTitle(deal, tier !== null)
+    const title = layered ? layered.title : dealTitle(deal, !isBogo && tier !== null)
     const meta = dealMeta(deal, windowText)
     const iconSubject = layered ? layered.title : deal.description
-    const groupKey = `${deal.type}|${title ?? ''}|${meta ?? ''}`
+    // isBogo joins the identity so a bogo never collapses into a same-titled flat sale.
+    const groupKey = `${deal.type}|${isBogo ? 'bogo' : 'sale'}|${title ?? ''}|${meta ?? ''}`
     let group = byKey.get(groupKey)
     if (!group) {
       group = {
@@ -246,13 +256,15 @@ export function buildDealBlocks(views: DealView[]): DealBlock[] {
         meta,
         iconSubject,
         pcts: [],
+        isBogo,
         keyBits: `${deal.type}|${deal.description}|${deal.startTime ?? ''}|${deal.endTime ?? ''}`,
       }
       byKey.set(groupKey, group)
       order.push(group)
     }
-    // only positive finite percents contribute a figure (matches discountTier)
-    if (typeof pct === 'number' && Number.isFinite(pct) && pct > 0) group.pcts.push(pct)
+    // only positive finite percents contribute a figure (matches discountTier); a BOGO
+    // suppresses the numeric badge entirely, so its percent never joins the label.
+    if (!isBogo && typeof pct === 'number' && Number.isFinite(pct) && pct > 0) group.pcts.push(pct)
   }
   return order.map((group, i) => {
     const distinct = [...new Set(group.pcts)].sort((a, b) => b - a) // high → low
@@ -266,6 +278,7 @@ export function buildDealBlocks(views: DealView[]): DealBlock[] {
       title: group.title,
       meta: group.meta,
       icons: dealIcons(group.iconSubject),
+      isBogo: group.isBogo,
       key: `${group.keyBits}|${i}`,
     }
   })

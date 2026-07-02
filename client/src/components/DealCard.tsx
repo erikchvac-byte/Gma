@@ -105,10 +105,13 @@ export default function DealCard({ dispensary, deals, gasCostText }: DealCardPro
             a collapsed block's pctLabel is a "min–max%" range (buildDealBlocks) */}
         {buildDealBlocks(deals).map((block) => (
           <div key={block.key} className="gma-deal-block">
+            {/* BOGO renders its own badge instead of a percent (a bogo shown as a flat
+                "N% off" over-states it); the percent, if any, stays in the title text. */}
+            {block.isBogo && <span className="gma-deal-block__bogo">BOGO</span>}
             {/* discount magnitude in the amber discount accent (ADR-041: full
                 opacity, weight-only ramp); null discount → no figure / no "off".
                 pctLabel is "N%" for a single tier, "min–max%" when collapsed. */}
-            {block.pctLabel !== null && block.tier !== null && (
+            {!block.isBogo && block.pctLabel !== null && block.tier !== null && (
               <>
                 <span className={`gma-deal-block__pct gma-deal-block__pct--${block.tier}`}>
                   {block.pctLabel}

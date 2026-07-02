@@ -42,7 +42,12 @@ export function dutchieRequest(storeId: string): ScrapeRequest {
 // never a throw.
 interface DutchieSpecialCard {
   menuDisplayName?: string
+  // Provider-authored body text. Empty/null on ~21 of 22 live cards sampled
+  // 2026-07-02; captured into Deal.providerNote when present (see transformSpecials).
   menuDisplayDescription?: string
+  // The special "kind": almost always 'sale', occasionally 'bogo' (buy-one-get-one).
+  // We surface a distinct BOGO badge for the latter (a bogo rendered as a flat "N%
+  // off" over-states it — investigation 2026-07-02).
   specialType?: string
   // recurringSchedule holds time-of-day / recurrence when a special is timed, but
   // it was null on every live card sampled (no live timed special exists yet), so
@@ -118,6 +123,11 @@ export function transformSpecials(intercepted: Intercepted[]): Deal[] {
     const description = (card?.menuDisplayDescription ?? '').toString().replace(/\s+/g, ' ').trim()
     const text = `${name} ${description}`
 
+    // Capture the provider's "kind" only when it deviates from the default flat sale,
+    // so data.json isn't littered with "sale" on every deal. Currently 'bogo' is the
+    // only value we act on downstream; others are carried verbatim for future use.
+    const specialType = (card?.specialType ?? '').toString().trim().toLowerCase()
+
     const days = parseDays(text)
     deals.push({
       type: 'daily',
@@ -126,6 +136,10 @@ export function transformSpecials(intercepted: Intercepted[]): Deal[] {
       startTime: null,
       endTime: null,
       daysValid: days.length > 0 ? days : ['everyday'],
+      // both fields are omitted when empty (below) — sanitizeDescription re-cleans
+      // providerNote at the normalizeDeals chokepoint; here we pass the raw body.
+      ...(specialType && specialType !== 'sale' ? { specialType } : {}),
+      ...(description ? { providerNote: description } : {}),
     })
   }
   return deals

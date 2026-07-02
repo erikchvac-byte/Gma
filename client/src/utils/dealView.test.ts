@@ -368,4 +368,40 @@ describe('buildDealBlocks', () => {
     expect(blocks).toHaveLength(1)
     expect(blocks[0].icons.length).toBeGreaterThan(0)
   })
+
+  it('flags a BOGO: no percent badge, and the title KEEPS its percent text', () => {
+    const bogo: DealView = {
+      deal: makeDeal({
+        type: 'daily',
+        description: '40% Off Online Orders Sun,Tues,Thurs Min $80',
+        discountPct: 40,
+        specialType: 'bogo',
+      }),
+      windowText: 'Active today',
+      countdown: null,
+    }
+    const [block] = buildDealBlocks([bogo])
+    expect(block.isBogo).toBe(true)
+    expect(block.pctLabel).toBeNull() // numeric badge suppressed → "BOGO" renders instead
+    expect(block.tier).toBeNull()
+    // percent stays in the title since the badge no longer shows it
+    expect(block.title).toBe('40% Off Online Orders Sun,Tues,Thurs Min $80')
+  })
+
+  it('does not collapse a BOGO into a same-titled flat sale', () => {
+    const mk = (specialType?: string): DealView => ({
+      deal: makeDeal({ type: 'daily', description: '40% Off Storewide', discountPct: 40, specialType }),
+      windowText: 'Active today',
+      countdown: null,
+    })
+    const blocks = buildDealBlocks([mk('bogo'), mk(undefined)])
+    expect(blocks).toHaveLength(2)
+    expect(blocks.some((b) => b.isBogo)).toBe(true)
+    expect(blocks.some((b) => !b.isBogo)).toBe(true)
+  })
+
+  it('non-BOGO blocks report isBogo false', () => {
+    const [block] = buildDealBlocks([daily('40% Off Your Entire Order!', 40)])
+    expect(block.isBogo).toBe(false)
+  })
 })

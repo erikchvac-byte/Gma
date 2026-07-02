@@ -58,7 +58,17 @@ function isUsableDeal(item: unknown): item is Deal {
 // sanitizeDescription. A suppressed description blanks only that field; the deal is
 // kept, so this never falsely trips the caller's empty-deals (stale) contract.
 export function normalizeDeals(deals: Deal[]): Deal[] {
-  return deals
-    .filter(isUsableDeal)
-    .map((deal) => ({ ...deal, description: sanitizeDescription(deal.description) }))
+  return deals.filter(isUsableDeal).map((deal) => {
+    const out: Deal = { ...deal, description: sanitizeDescription(deal.description) }
+    // providerNote is third-party body text (captured for investigation, not yet
+    // displayed) — sanitize it on its OWN so a blocked term in the note can never
+    // suppress the visible `description`. Drop the field when it sanitizes to '' (the
+    // common case: absent, empty, or blocklisted) so data.json stays uncluttered.
+    if (out.providerNote !== undefined) {
+      const note = sanitizeDescription(out.providerNote)
+      if (note) out.providerNote = note
+      else delete out.providerNote
+    }
+    return out
+  })
 }

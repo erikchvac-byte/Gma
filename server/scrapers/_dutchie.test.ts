@@ -21,6 +21,17 @@ const VALID_DAYS = new Set([
   'everyday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday',
 ])
 
+// Wrap raw cards in the live GetSpecialMenuCards intercept shape pickSpecials reads.
+function specialsIntercept(cards: unknown[]): Intercepted[] {
+  return [
+    {
+      url: 'graphql?operationName=GetSpecialMenuCards',
+      status: 200,
+      data: { data: { getSpecialMenuCards: { menuCards: cards } } },
+    },
+  ]
+}
+
 describe('dutchieEmbedUrl / dutchieRequest', () => {
   it('builds the embed URL from a store id', () => {
     expect(dutchieEmbedUrl('abc123')).toBe('https://dutchie.com/embedded-menu/abc123')
@@ -124,6 +135,39 @@ describe('transformSpecials', () => {
 
   it('returns [] when there are no specials at all', () => {
     expect(transformSpecials([])).toEqual([])
+  })
+})
+
+describe('transformSpecials — specialType & providerNote (capture 2026-07-02)', () => {
+  it('captures a bogo specialType and the raw menuDisplayDescription as providerNote', () => {
+    const [d] = transformSpecials(
+      specialsIntercept([
+        {
+          menuDisplayName: '40% Off Online Orders Sun,Tues,Thurs Min $80',
+          specialType: 'bogo',
+          menuDisplayDescription: 'Order ahead online for your deals!',
+        },
+      ]),
+    )
+    expect(d.specialType).toBe('bogo')
+    expect(d.providerNote).toBe('Order ahead online for your deals!')
+  })
+
+  it('lowercases the specialType', () => {
+    const [d] = transformSpecials(
+      specialsIntercept([{ menuDisplayName: 'Buy 1 Get 1 10% off', specialType: 'BOGO' }]),
+    )
+    expect(d.specialType).toBe('bogo')
+  })
+
+  it('omits specialType for a plain sale and providerNote for an empty body', () => {
+    const [d] = transformSpecials(
+      specialsIntercept([
+        { menuDisplayName: '50% off Ounces', specialType: 'sale', menuDisplayDescription: '  ' },
+      ]),
+    )
+    expect(d.specialType).toBeUndefined()
+    expect(d.providerNote).toBeUndefined()
   })
 })
 

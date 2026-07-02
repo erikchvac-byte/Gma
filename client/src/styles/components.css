@@ -479,6 +479,23 @@ article.gma-card::before {
   font-size: 13px;
   color: var(--text-muted);
 }
+/* BOGO badge — fills the discount slot for a buy-one-get-one special, where a flat
+   "N% off" would over-state the deal (the percent stays in the title). Discount-
+   semantic amber like the figure it replaces, but pill-shaped + lettered so it can
+   never read as a magnitude. */
+.gma-deal-block__bogo {
+  flex: none;
+  align-self: start;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.03em;
+  line-height: 1;
+  color: var(--discount);
+  border: var(--border-hairline) solid var(--discount);
+  border-radius: var(--radius-full);
+  padding: var(--space-1) var(--space-2);
+}
 .gma-deal-block__body {
   display: flex;
   flex-direction: column;

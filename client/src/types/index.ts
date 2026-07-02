@@ -5,6 +5,16 @@ export interface Deal {
   startTime: string | null
   endTime: string | null
   daysValid: string[]
+  // The provider's special "kind" when it is NOT the default flat `sale` (Dutchie
+  // GetSpecialMenuCards.specialType). Currently only `bogo` (buy-one-get-one) is
+  // acted on — it renders a distinct BOGO badge instead of a flat "N% off" that
+  // would over-state the deal. Omitted for plain sales and non-Dutchie sources.
+  specialType?: string
+  // Raw provider-authored body text (Dutchie GetSpecialMenuCards.menuDisplayDescription),
+  // sanitized like `description` but NOT displayed yet — captured to study how often /
+  // what stores populate it before deciding to surface it (investigation 2026-07-02).
+  // Omitted when the provider left it empty (the overwhelming majority of cards).
+  providerNote?: string
 }
 
 // Per-store ingest health (ADR-034 Goal B), derived server-side from

@@ -276,6 +276,30 @@ describe('DealCard', () => {
     expect(card.textContent).not.toContain('Off Brands')
   })
 
+  it('renders a BOGO badge (not a "N% off") for a bogo special, keeping the percent in the title', () => {
+    render(
+      <DealCard
+        dispensary={makeDispensary({ name: 'Salish Coast' })}
+        deals={[
+          view(
+            { type: 'daily', description: '40% Off Online Orders Sun,Tues,Thurs Min $80', discountPct: 40, specialType: 'bogo', startTime: null, endTime: null },
+            'Active today',
+            null,
+          ),
+        ]}
+        gasCostText="$3.63"
+      />,
+    )
+
+    const card = screen.getByRole('article')
+    // the BOGO badge replaces the amber "40% off" magnitude…
+    expect(within(card).getByText('BOGO', { selector: '.gma-deal-block__bogo' })).toBeInTheDocument()
+    expect(card.querySelector('.gma-deal-block__pct')).toBeNull()
+    expect(within(card).queryByText('off', { selector: '.gma-deal-block__off' })).toBeNull()
+    // …and the percent stays visible in the title text (not stripped)
+    expect(byFullText('40% Off Online Orders Sun,Tues,Thurs Min $80', '.gma-deal-block__title')).toBeInTheDocument()
+  })
+
   it('collapses same-title daily tiers (Silvana "Select Products") into one range block', () => {
     render(
       <DealCard

@@ -81,4 +81,29 @@ describe('normalizeDeals', () => {
     expect(result).toHaveLength(1) // deal kept — only the copy is blanked
     expect(result[0].description).toBe('')
   })
+
+  it('passes specialType through untouched', () => {
+    const [result] = normalizeDeals([valid({ specialType: 'bogo' })])
+    expect(result.specialType).toBe('bogo')
+  })
+
+  it('sanitizes providerNote independently of the description', () => {
+    const [result] = normalizeDeals([
+      valid({ description: '40% Off', providerNote: 'Order ahead <b>online</b> 🔥' }),
+    ])
+    expect(result.description).toBe('40% Off')
+    expect(result.providerNote).toBe('Order ahead online')
+  })
+
+  it('drops providerNote when it is empty or blocklisted — WITHOUT blanking the description', () => {
+    // a blocked term in the (not-displayed) note must not suppress the visible copy
+    const [blocked] = normalizeDeals([
+      valid({ description: '40% Off Flower', providerNote: 'cures anxiety' }),
+    ])
+    expect(blocked.description).toBe('40% Off Flower') // intact
+    expect(blocked.providerNote).toBeUndefined() // note dropped, not merged in
+
+    const [empty] = normalizeDeals([valid({ description: '40% Off', providerNote: '   ' })])
+    expect(empty.providerNote).toBeUndefined()
+  })
 })
