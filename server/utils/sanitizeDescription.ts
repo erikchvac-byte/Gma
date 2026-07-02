@@ -11,7 +11,13 @@
 // (replaced with '') so DealCard renders the deal with badge + discount + window
 // only. The deal itself is never dropped.
 
-const MAX_LENGTH = 80
+// Hygiene/display cap on republished retailer copy — NOT a legal limit (the WAC
+// protection is the blocklist below, which runs on the full text regardless of
+// length). Raised 80 -> 160 (operator decision 2026-07-02) so legitimately long
+// descriptions survive intact, e.g. Remedy's "…Following Customer Groups (with
+// Proof of Valid ID): Military Veterans, Tribal Members, Wisdom (50+)" (124 chars),
+// which the old 80-cap chopped right after "ID):".
+const MAX_LENGTH = 160
 
 // Operator-maintained. Matched as WHOLE WORDS (word boundaries) and
 // case-insensitively, so legit cannabis vocabulary is not false-flagged:
@@ -88,7 +94,7 @@ export function sanitizeDescription(raw: unknown): string {
     .trim()
 
   if (cleaned === '') return ''
-  // Check the FULL cleaned text before truncating -- a blocked term past char 80
+  // Check the FULL cleaned text before truncating -- a blocked term past the cap
   // must still suppress the whole description.
   if (containsBlockedTerm(cleaned)) return ''
   if (cleaned.length <= MAX_LENGTH) return cleaned

@@ -22,13 +22,25 @@ describe('sanitizeDescription', () => {
 
   it('truncates over-length copy on a word boundary (no mid-word cut)', () => {
     const long =
-      'Premium indoor flower grown locally and cured slowly for an exceptionally smooth finish'
+      'Premium indoor flower grown locally and cured slowly for an exceptionally smooth ' +
+      'finish that lingers on the palate long after the very last unhurried exhale fades'
+    expect(long.length).toBeGreaterThan(160)
     const out = sanitizeDescription(long)
-    expect(out.length).toBeLessThanOrEqual(80)
+    expect(out.length).toBeLessThanOrEqual(160)
     expect(long.startsWith(out)).toBe(true)
     expect(out.endsWith(' ')).toBe(false)
     // last word is whole, not chopped
     expect(out.split(' ').pop()).not.toBe('')
+  })
+
+  it('keeps a long-but-legit description intact under the 160 cap', () => {
+    // Remedy's customer-group card: 124 chars, well within the raised cap — the
+    // group names must survive (the old 80-cap chopped them after "ID):").
+    const groups =
+      '10% Off Everyday for the Following Customer Groups (with Proof of Valid ID): ' +
+      'Military Veterans, Tribal Members, Wisdom (50+)'
+    expect(groups.length).toBeLessThanOrEqual(160)
+    expect(sanitizeDescription(groups)).toBe(groups)
   })
 
   it('suppresses (returns "") a description with a therapeutic-claim term', () => {
