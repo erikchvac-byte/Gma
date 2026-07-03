@@ -2,7 +2,7 @@
 
 **Date:** 2026-06-28
 **Type:** Exploration / synthesis (no defect). Builds a single actionable plan from the existing investigation corpus.
-**Inputs (read, not re-derived):** `deal-source-data-inventory.md`, `menu-pricing-source-inventory.md`, `weedmaps-source-data-inventory.md`, `value-analysis-2026-06-24.md`, `fix6-basePrice-verdict.md`, `FIXES.md`, `monetization-ad-revenue-investigation.md` (+ linked `spec_seo-crawler-visibility`, `unverifyed-dispensary-findings.md`).
+**Inputs (read, not re-derived):** `deal-source-data-inventory.md`, `menu-pricing-source-inventory.md`, `weedmaps-source-data-inventory.md`, `value-analysis-2026-06-24.md`, `fix6-basePrice-verdict.md`, `FIXES.md`, `monetization-ad-revenue-investigation.md` (+ linked `spec_seo-crawler-visibility`, `dispensary-recon-98274-2026-06-28.md` — moved 2026-07-02 from repo-root `unverifyed-dispensary-findings.md`).
 
 ---
 

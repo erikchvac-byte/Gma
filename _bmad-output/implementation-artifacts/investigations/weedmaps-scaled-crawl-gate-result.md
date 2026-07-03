@@ -57,4 +57,4 @@ technically GO.
 ## References
 - Plan: `ai-search-data-strategy-investigation.md` (Phase 2 line 123, gate line 112)
 - Source profile: `weedmaps-source-data-inventory.md`
-- Store slugs: `unverifyed-dispensary-findings.md` (12 WA scrapeable stores)
+- Store slugs: `dispensary-recon-98274-2026-06-28.md` (12 WA scrapeable stores; formerly repo-root `unverifyed-dispensary-findings.md`)

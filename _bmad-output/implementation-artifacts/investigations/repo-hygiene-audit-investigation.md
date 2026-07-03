@@ -82,7 +82,7 @@ Twelve claims from a prior adversarial review, registered as H1–H12 (full text
 
 ### Deduction 1: The audit is reliable on tree mechanics, unreliable on project history
 **Based on:** Findings 2, 3, 4, 10 (refutations) vs 1, 6, 7, 8, 9, 11 (confirmations).
-**Reasoning:** Every claim checkable from `git status` alone verified; every claim requiring knowledge of ADR.md, merged commits, or sibling docs was wrong or overstated. The auditor read the dirty tree but not the repo's decision record.
+**Reasoning:** Every claim checkable from `git status` alone verified; the claims that failed (H3, H4, H5, H11) all failed for lack of ADR.md, merged-commit, or sibling-doc knowledge (H10 shows cross-doc claims *can* hold — the pattern is about where the errors concentrated, not a strict dichotomy). The auditor read the dirty tree but not the repo's decision record.
 **Conclusion:** Treat the audit as a hygiene TODO list, not as evidence of process failure — the process artifacts (ADRs, shipped commits, companion analyses) largely exist; the *stale pointers to them* are the real defect class.
 
 ## Hypothesized Paths

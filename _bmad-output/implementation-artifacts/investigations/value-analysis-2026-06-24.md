@@ -1,5 +1,13 @@
 # Value Analysis — Derivations from Live Data (2026-06-24)
 
+> **Status banner (2026-07-02):** partially superseded. `FIXES.md` (adversarial review, same
+> folder) invalidates §1's banner-derived discount input, and `fix6-basePrice-verdict.md`
+> further kills product-special % as a break-even input — only price-vs-own-history (FIXES #2)
+> yields an honest discount. The "1,665 products with ≥2 observations" figure below is
+> debunked: all 5,469 obs fell in one ~52-min window. **The `data-snapshots/` files referenced
+> below were never committed and are absent from the repo** — numbers are NOT currently
+> reproducible (FIXES #7 remains open).
+
 What we can derive **right now** from data already gathered, with the raw snapshots
 preserved so every number is reproducible.
 

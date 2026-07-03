@@ -3,7 +3,7 @@
 **Date:** 2026-06-28
 **Scope:** Read-only recon + **live verification** of Weedmaps as a candidate deal/product source. Establishes whether Weedmaps product data is scrapeable without a browser, and maps the exact fields available per product. NOT a plan, recommendation, or feasibility judgment to ship.
 
-**Context:** Triggered by `unverifyed-dispensary-findings.md` (web-research pass proposing Weedmaps as a static-HTML scrape source). This doc verifies that file's central technical claim against the live site. Weedmaps is **not** currently wired into this repo — today's sources are 20 Dutchie embeds + 1 static site (`remedy-tulalip`); see `deal-source-data-inventory.md`.
+**Context:** Triggered by `dispensary-recon-98274-2026-06-28.md` (née repo-root `unverifyed-dispensary-findings.md`; web-research pass proposing Weedmaps as a static-HTML scrape source). This doc verifies that file's central technical claim against the live site. Weedmaps is **not** currently wired into this repo — today's sources are 20 Dutchie embeds + 1 static site (`remedy-tulalip`); see `deal-source-data-inventory.md`.
 
 **Method / provenance:**
 - **Live-probed this session:** plain HTTP `GET` (curl, custom desktop UA, follow-redirects) of `https://weedmaps.com/dispensaries/western-bud-skagit-valley-wa` — **no browser, no JS execution.**
@@ -14,7 +14,7 @@
 
 ## VERDICT — central claim CONFIRMED
 
-`unverifyed-dispensary-findings.md` claimed "Weedmaps renders full product data in static HTML." **True for this store.** A plain `GET` returns **HTTP 200, 782 KB**, with product data present two ways:
+`dispensary-recon-98274-2026-06-28.md` claimed "Weedmaps renders full product data in static HTML." **True for this store.** A plain `GET` returns **HTTP 200, 782 KB**, with product data present two ways:
 
 1. **Server-rendered DOM cards** — 24 cards with real `data-testid` hooks (`menu-item-title`, `menu-item-brand`, `menu-item-category`, `price`, `weight-label`, rating). CSS class names are build-hashed (`gvOpbK`…) → **brittle scrape target.**
 2. **`__NEXT_DATA__` JSON blob** (~369 KB) — React Query dehydrated cache at `props.dehydratedState.queries[].state.data.data.menuItems`. **Clean, stable scrape target — prefer this over the DOM.**
@@ -87,7 +87,7 @@ Provenance: live `__NEXT_DATA__` from `western-bud-skagit-valley-wa`, fetched **
 
 ---
 
-## FIELD-CLAIM RECONCILIATION vs `unverifyed-dispensary-findings.md`
+## FIELD-CLAIM RECONCILIATION vs `dispensary-recon-98274-2026-06-28.md`
 
 | findings-file claim | live verdict |
 |---|---|
@@ -125,7 +125,7 @@ Provenance: live `__NEXT_DATA__` from `western-bud-skagit-valley-wa`, fetched **
 ---
 
 ## Key references
-- `unverifyed-dispensary-findings.md` (repo root) — the web-research pass this doc verifies
+- `dispensary-recon-98274-2026-06-28.md` (this folder; moved 2026-07-02 from repo-root `unverifyed-dispensary-findings.md`) — the web-research pass this doc verifies
 - `_bmad-output/implementation-artifacts/investigations/deal-source-data-inventory.md` — existing Dutchie + static source inventory (TYPE 1 / TYPE 2)
 - `_bmad-output/implementation-artifacts/investigations/fix6-basePrice-verdict.md` — value-engine gap this source could fill
 - `server/scrapers/remedy-tulalip.ts` — existing `static-html` axios/cheerio pattern (closest fetch analogue)

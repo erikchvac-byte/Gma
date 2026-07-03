@@ -27,7 +27,7 @@ so that the cross-store value matcher (A1, ADR-062/063) compares the **same SKU 
 
 **Gate — CLEARED 2026-06-29:** `investigations/weedmaps-scaled-crawl-gate-result.md`. The plan's prerequisite scaled-crawl/rate-limit test passed (23/23 requests served real menu JSON, zero PerimeterX/DataDome/captcha challenges, no 429/403, even under a 1s-apart burst). Weedmaps is technically GO as a private source. **Carry the gate's caveats:** crawl shallowly + throttled + nightly; full-traversal volume is not proven; re-probe from the CI/datacenter IP before trusting a production cron.
 
-**Source profile:** `investigations/weedmaps-source-data-inventory.md` — confirmed field map of one `menuItems[]` object. **Store slugs:** `unverifyed-dispensary-findings.md` (12 verified WA scrapeable stores).
+**Source profile:** `investigations/weedmaps-source-data-inventory.md` — confirmed field map of one `menuItems[]` object. **Store slugs:** `investigations/dispensary-recon-98274-2026-06-28.md` (12 verified WA scrapeable stores; formerly repo-root `unverifyed-dispensary-findings.md`).
 
 ### Why this is private-only (stays on the safe side of the legal line)
 Like the matcher, this story produces a **private dataset only** — Weedmaps data lands in `products.json` and feeds the private `/api/value/disparities`. No public surfacing, no redistribution of raw menus. Public SSR pages remain **Phase 4**, gated on WSLCB/counsel review. This story is engineering-only and does not touch the legal gates.
@@ -99,7 +99,7 @@ New files under `server/scrapers/` (+ `__fixtures__/`), `server/scripts/`, `.git
 - [Source: investigations/ai-search-data-strategy-investigation.md] — Phase 2 definition (line 123), B2 cross-source reconciliation (line 62)
 - [Source: investigations/weedmaps-scaled-crawl-gate-result.md] — gate cleared + caveats
 - [Source: investigations/weedmaps-source-data-inventory.md] — field map, JSON path, captured sample
-- [Source: unverifyed-dispensary-findings.md] — 12 WA store slugs + overlap notes
+- [Source: investigations/dispensary-recon-98274-2026-06-28.md] — 12 WA store slugs + overlap notes (formerly repo-root `unverifyed-dispensary-findings.md`)
 - [Source: server/scrapers/_dutchieProducts.ts] — transform/retry pattern to mirror
 - [Source: server/scripts/scrapeProductsRun.ts] — orchestrator to extend
 - [Source: ADR-062 / ADR-063] — the matcher this feeds (do not modify)

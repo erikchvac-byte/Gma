@@ -1,5 +1,15 @@
 # Deferred Work
 
+## DEFERRED — from review of spec-repo-hygiene-closeout (2026-07-02)
+
+Surfaced by the 3-reviewer pass on the hygiene closeout; all pre-existing content defects in docs the closeout merely committed, or policy calls needing Erik:
+
+- **Lockfile floating-range drift policy** — `.gitattributes` cures only the CRLF branch; the next time a floating dev dep (e.g. `concurrently ^9.0.0`) publishes, `package-lock.json` re-dirties with *real* drift (same mechanism as the bump committed 2026-07-02; `scrape-ingest.yml:175-178` documents the CI-side variant). Pick a policy: accept-and-commit the churn as it appears, or pin exact versions.
+- **GmasINCOlist provenance comments dangle** — `client/src/utils/dealIconAssets.ts:3`, `client/src/components/AgeGate.tsx:13`, and `ADR.md:572` cite `GmasINCOlist/`, which now lives at `C:\Users\erikc\Dev\Happy-assets\` (moved 2026-07-02). Comment-only edits were out of the closeout's "no code changes" boundary; append "(now Dev/Happy-assets)" when next touching those files.
+- **Monetization docs internal nits (pre-existing, 2026-06-23):** the summary and research docs number the same options differently (licensing #6 vs #7, donations 7 vs 8, white-label 8 vs 9) — "Option N" citations are ambiguous; and `monetization-ad-revenue-investigation.md` grades Hypothesis 1 "Confirmed (qualified)" while its own confirm-condition (live primary-source re-check) is marked not done.
+- **`docs/seo-ai-crawler-visibility-plan.md` store-count drift** — says "21 WA stores" twice and "20 stores" once; current registry is 20 (ADR-056). Fix the two 21s when next editing the plan.
+- **`data-snapshots/` never existed in-repo** — `value-analysis-2026-06-24.md` + `FIXES.md` anchor reproducibility on snapshot files absent from repo and disk (now flagged in the value-analysis status banner). If the snapshots still exist anywhere, commit them; otherwise FIXES #7 (save scripts + inputs next to analyses) is the standing rule.
+
 ## DEFERRED — Weedmaps accrual freshness alerting (from Phase-3 residential-ingest review, 2026-06-29)
 
 Blind + edge reviewers of `spec-weedmaps-residential-ingest` flagged that the residential nightly runner can stall **silently for weeks** (residential IP also starts 406-ing, Node/git falls off the Scheduled-Task PATH, or the scrape otherwise stops appending) while every run reports green — and the CI `alert-gate` (`server/scripts/alertGate.ts`) deliberately **excludes** weedmaps. v1 mitigation shipped: a runner PATH preflight + a `last-success.txt` heartbeat under the worktree's `.weedmaps-ingest\` (stale timestamp = stall). **Deferred:** real alerting — e.g. extend `alertGate`/a small heartbeat-age check to red a run (or notify) when weedmaps observations haven't advanced in N days. Gated on Erik wanting active monitoring vs. periodic manual heartbeat inspection.

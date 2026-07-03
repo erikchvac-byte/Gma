@@ -13,5 +13,6 @@ server/out/
 *.key
 
 # Raw image/art drops live in C:\Users\erikc\Dev\Happy-assets, not the repo (24MB+ JPEG batches)
-GmasINCOlist/
-Area icon image.jpg
+# Anchored to root so a future curated subset (e.g. client/src/assets/...) is never silently skipped
+/GmasINCOlist/
+/Area icon image.jpg

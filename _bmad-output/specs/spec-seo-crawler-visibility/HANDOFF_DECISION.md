@@ -30,7 +30,7 @@ Phase 0b needs legal sign-off that is **not an engineering decision**. A whole-h
 workflow walk into 0b and either stall or *guess* a compliance interpretation — on a WA cannabis
 site. Fence off anything gated on an outside ruling. Proposed carve:
 - **Epic A** — Make the site indexable (0a + 1 + 1a). The ~90%. Pure engineering, hand whole.
-- **Epic B** — Age-gate content exposure (0b). **BLOCKED** on legal; don't create stories yet.
+- **Epic B** — Age-gate content exposure (0b). **BLOCKED** on legal; don't create stories yet. *(Since unblocked — ADR-066, 2026-06-30.)*
 - **Epic C** — Measure (Phase 6). Pull forward right behind A so you can see if A worked.
 - **Epic D** — Long tail (2, 3, 4, 5). Low priority. Phase 5 is outside the repo.
 
@@ -38,7 +38,7 @@ Open question he raised → answered by the code trace below.
 
 ### 💻 Amelia (Dev) — "~6 dev stories + 1 legal-blocked + 2 non-code tasks."
 - **0a** — one story. `server/index.ts`. AC: `GET /` returns `Content-Length > 50KB` w/ snapshot JSON in HTML. Ship first.
-- **0b** — hard gate, do NOT bundle. Status `blocked: legal`. Bundling = shipping indexable cannabis content behind an unreviewed gate.
+- **0b** — hard gate, do NOT bundle. Status `blocked: legal`. Bundling = shipping indexable cannabis content behind an unreviewed gate. *(Since unblocked — ADR-066, 2026-06-30.)*
 - **Phase 1** — split: `1-static` (robots/sitemap/meta/OG/JSON-LD in `client/public` + `client/index.html`, no 0a dep) and `1a-routes` (`/store/<slug>` in `server/index.ts`, depends on 0a).
 - **Phase 2** — one story (`server/routes/ingestRoute.ts` → `data/data.json`). **Thin AC:** field names/schema shape not specified. Pin exact keys before dev.
 - **Phase 3** — folds into `1-static` (same `robots.txt`). Merge.
@@ -102,7 +102,8 @@ All three agents agree on the spine. Granularity differs (Winston: 3 lean epics;
   - Story 1.1: **Phase 0a** server content delivery (`server/index.ts`). AC: `Content-Length > 50KB`,
     snapshot JSON inside `#root`, CI freshness guard-rail test. *No legal dependency — ships now.*
   - Story 1.2: **Phase 0b** AgeGate mount-but-visually-gate. **Status: `blocked: legal` (WAC 314-55-155).**
-    Do not enter workflow until legal answers the open question.
+    Do not enter workflow until legal answers the open question. *(Since unblocked — ADR-066, 2026-06-30,
+    resolved the legal question; 1.2 is now schedulable on its engineering merits.)*
 - **Epic 2 — Discoverability** (depends on 0a)
   - Story 2.1: `1-static` — robots.txt + sitemap.xml + meta/OG/Twitter + JSON-LD LocalBusiness (also absorbs Phase 3). No 0a dep; can parallel.
   - Story 2.2: `1a-routes` — stable `/store/<slug>` routes (`server/index.ts`). Depends on 0a.
