@@ -760,3 +760,113 @@ describe('DealFeed', () => {
     )
   })
 })
+
+// CAP-1 + CAP-2: a non-stale store whose lastFetchedAt is older than DEAL_EXPIRY_MS
+// (24h) has its cached deals treated as expired. It is NOT dropped — it renders in
+// place with "No current deals", keeping its distance position, while a fresh store
+// is unaffected. System time is 2026-06-10 23:00 (see beforeEach).
+describe('DealFeed — stale deal expiry (CAP-1/CAP-2)', () => {
+  // own fake-timer setup (sibling describe → does not inherit the main one). Pins
+  // "now" to 2026-06-10 23:00 so the lastFetchedAt ages below are deterministic.
+  beforeEach(() => {
+    localStorage.clear()
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date(2026, 5, 10, 23, 0))
+  })
+  afterEach(() => {
+    vi.useRealTimers()
+    vi.clearAllMocks()
+  })
+
+  it('expires a >24h-old store to "No current deals" while a fresh store shows its deal', () => {
+    const expired: Dispensary = {
+      ...makeDispensary('old', 'Stale Cannabis', [makeDeal({ description: 'OLD JUNE SALE', discountPct: 40 })]),
+      lastFetchedAt: '2026-06-08T07:00:00', // ~2.7 days old → expired
+    }
+    const fresh: Dispensary = {
+      ...makeDispensary('new', 'Fresh Cannabis', [makeDeal({ description: 'Fresh Daily Deal', discountPct: 20 })]),
+      lastFetchedAt: '2026-06-10T20:00:00', // 3h old → live
+    }
+    mockUseDeals.mockReturnValue({ data: withData([expired, fresh]), isLoading: false, error: null })
+    render(<DealFeed />)
+
+    // expired store still present, but its cached deal is suppressed
+    expect(screen.getByText('No current deals')).toBeInTheDocument()
+    expect(screen.queryByText('OLD JUNE SALE')).not.toBeInTheDocument()
+    // fresh store unaffected
+    expect(screen.getByText('Fresh Daily Deal')).toBeInTheDocument()
+    // neither store dropped: both cards render
+    expect(screen.getByRole('link', { name: /Stale Cannabis/ })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Fresh Cannabis/ })).toBeInTheDocument()
+  })
+
+  it('keeps an expired store in its nearest-first distance position (not sorted lower)', () => {
+    const nearExpired: Dispensary = {
+      ...makeDispensary('near', 'Near Expired', [makeDeal({ description: 'gone' })]),
+      lastFetchedAt: '2026-06-01T07:00:00',
+      distanceMiles: 2,
+    }
+    const farFresh: Dispensary = {
+      ...makeDispensary('far', 'Far Fresh', [makeDeal({ description: 'here' })]),
+      lastFetchedAt: '2026-06-10T20:00:00',
+      distanceMiles: 40,
+    }
+    mockUseDeals.mockReturnValue({ data: withData([farFresh, nearExpired]), isLoading: false, error: null })
+    render(<DealFeed />)
+
+    const names = screen.getAllByRole('heading', { level: 2 }).map((h) => h.textContent)
+    // nearer expired store still sorts first despite having no current deals
+    expect(names[0]).toMatch(/Near Expired/)
+    expect(names[1]).toMatch(/Far Fresh/)
+  })
+
+  // Ask-First decision D-chip: expired "No current deals" cards are shown only in
+  // the unfiltered feed; a deal-type chip narrows to active deals of that type.
+  it('hides expired cards under a deal-type chip and shows the empty state when nothing matches', () => {
+    const expired: Dispensary = {
+      ...makeDispensary('old', 'Stale Cannabis', [makeDeal({ type: 'daily', description: 'OLD SALE' })]),
+      lastFetchedAt: '2026-06-01T07:00:00',
+    }
+    mockUseDeals.mockReturnValue({ data: withData([expired]), isLoading: false, error: null })
+    render(<DealFeed />)
+
+    // unfiltered: the expired card shows
+    expect(screen.getByText('No current deals')).toBeInTheDocument()
+    // switch to the Happy hours chip → expired store drops, honest empty state returns
+    fireEvent.click(screen.getByRole('button', { name: 'Happy hours' }))
+    expect(screen.queryByText('No current deals')).not.toBeInTheDocument()
+    expect(screen.getByText('No active deals right now')).toBeInTheDocument()
+  })
+
+  it('does not surface a store with NO cached deals as an empty "No current deals" card', () => {
+    const neverIngested: Dispensary = {
+      // stale:false but never ingested (empty deals, epoch-ish timestamp) — nothing
+      // to expire, so it must stay invisible exactly as before this feature
+      ...makeDispensary('ghost', 'Ghost Cannabis', []),
+      lastFetchedAt: '2026-06-01T07:00:00',
+    }
+    mockUseDeals.mockReturnValue({ data: withData([neverIngested]), isLoading: false, error: null })
+    render(<DealFeed />)
+
+    expect(screen.queryByText('No current deals')).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /Ghost Cannabis/ })).not.toBeInTheDocument()
+    expect(screen.getByText('No active deals right now')).toBeInTheDocument()
+  })
+
+  // AC3: a store already flagged stale:true stays in the "sources unavailable"
+  // count and is NEVER rendered as a "No current deals" card (the stale drop runs
+  // before the expiry split — pins that ordering against future refactors).
+  it('keeps a stale:true store in the unavailable count, not as a "No current deals" card', () => {
+    const staleStore: Dispensary = {
+      ...makeDispensary('down', 'Down Cannabis', [makeDeal({ description: 'old deal' })]),
+      stale: true,
+      lastFetchedAt: '2026-06-01T07:00:00',
+    }
+    mockUseDeals.mockReturnValue({ data: withData([staleStore]), isLoading: false, error: null })
+    render(<DealFeed />)
+
+    expect(screen.queryByText('No current deals')).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /Down Cannabis/ })).not.toBeInTheDocument()
+    expect(screen.getByText('1 source unavailable')).toBeInTheDocument()
+  })
+})

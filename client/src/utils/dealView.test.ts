@@ -7,6 +7,8 @@ import {
   stripCrossLocationTag,
   resolveLayeredSale,
   buildDealBlocks,
+  areDealsExpired,
+  DEAL_EXPIRY_MS,
   type DealView,
 } from './dealView'
 import type { Deal, Dispensary } from '../types'
@@ -403,5 +405,44 @@ describe('buildDealBlocks', () => {
   it('non-BOGO blocks report isBogo false', () => {
     const [block] = buildDealBlocks([daily('40% Off Your Entire Order!', 40)])
     expect(block.isBogo).toBe(false)
+  })
+})
+
+// CAP-1: display-only store-level expiry derived from lastFetchedAt. The three
+// required cases (just-inside kept, just-outside expired, never-ingested expired)
+// plus the boundary, malformed, and clock-skew rows from the spec's I/O matrix.
+describe('areDealsExpired', () => {
+  const now = new Date('2026-07-02T12:00:00Z')
+  const ago = (ms: number) => new Date(now.getTime() - ms).toISOString()
+
+  it('keeps a store just INSIDE the threshold (age = 24h − 1min)', () => {
+    expect(areDealsExpired(ago(DEAL_EXPIRY_MS - 60_000), now)).toBe(false)
+  })
+
+  it('expires a store just OUTSIDE the threshold (age = 24h + 1min)', () => {
+    expect(areDealsExpired(ago(DEAL_EXPIRY_MS + 60_000), now)).toBe(true)
+  })
+
+  it('expires a never-ingested store (missing/empty/non-string timestamp)', () => {
+    expect(areDealsExpired('', now)).toBe(true)
+    expect(areDealsExpired(undefined, now)).toBe(true)
+    expect(areDealsExpired(null, now)).toBe(true)
+    expect(areDealsExpired(12345, now)).toBe(true)
+  })
+
+  it('keeps a store EXACTLY at the threshold (inclusive-kept, mirrors deriveStoreStatus)', () => {
+    expect(areDealsExpired(ago(DEAL_EXPIRY_MS), now)).toBe(false)
+  })
+
+  it('expires a malformed (unparseable) timestamp — fail-open', () => {
+    expect(areDealsExpired('not-a-date', now)).toBe(true)
+  })
+
+  it('keeps a future timestamp (clock skew) — treated as fresh', () => {
+    expect(areDealsExpired(new Date(now.getTime() + 60_000).toISOString(), now)).toBe(false)
+  })
+
+  it('DEAL_EXPIRY_MS is 24h and independent of the 3h freshness window', () => {
+    expect(DEAL_EXPIRY_MS).toBe(24 * 60 * 60 * 1000)
   })
 })

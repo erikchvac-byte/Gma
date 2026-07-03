@@ -563,3 +563,36 @@ describe('DealCard', () => {
     expect(row).toHaveAttribute('aria-label', 'Special pricing')
   })
 })
+
+// CAP-2: an expired store is handed an EMPTY deals list by DealFeed. It must keep
+// its identity/trip info but show "No current deals" instead of stale deal blocks.
+describe('DealCard — expired store (no current deals)', () => {
+  it('shows "No current deals" and keeps name, link, address, and distance pill', () => {
+    render(
+      <DealCard
+        dispensary={makeDispensary({ address: '123 Main St, Marysville' })}
+        deals={[]}
+        gasCostText="$3.63"
+      />,
+    )
+
+    expect(screen.getByText('No current deals')).toBeInTheDocument()
+    // trip/identity preserved
+    expect(screen.getByRole('link', { name: /Alpha Greens/ })).toHaveAttribute(
+      'href',
+      'https://example.com/a',
+    )
+    expect(screen.getByText('123 Main St, Marysville')).toBeInTheDocument()
+    expect(byFullText('12.4 mi')).toBeInTheDocument()
+  })
+
+  it('renders no deal blocks, no discount figure, and no "active today" status', () => {
+    const { container } = render(
+      <DealCard dispensary={makeDispensary({})} deals={[]} gasCostText={null} />,
+    )
+
+    expect(container.querySelector('.gma-deal-grid')).toBeNull()
+    expect(container.querySelector('.gma-deal-block')).toBeNull()
+    expect(screen.queryByText('active today')).not.toBeInTheDocument()
+  })
+})

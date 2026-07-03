@@ -29,6 +29,11 @@ function isLinkableUrl(url: string): boolean {
 // Purely presentational: receives data and computed values as props.
 // No fetching, no intervals, no hooks.
 export default function DealCard({ dispensary, deals, gasCostText }: DealCardProps) {
+  // CAP-2: an expired store (its cached deals timed out per DEAL_EXPIRY_MS,
+  // signalled by DealFeed passing an empty deals list) keeps its identity and
+  // trip info but shows a "No current deals" state instead of stale deal blocks —
+  // never silently dropped. Its urgency/border stay neutral (no live countdown).
+  const isExpired = deals.length === 0
   // one store-level urgency badge — reports time, never a verdict (ADR-009).
   // The card's accent border is driven from the same signal so border and
   // badge can never disagree (urgent only when a live countdown exists).
@@ -83,9 +88,12 @@ export default function DealCard({ dispensary, deals, gasCostText }: DealCardPro
         {gasCostText !== null && (
           <span className="gma-gas-line"><Icon name="fuel" size={13} /> {gasCostText}</span>
         )}
-        {/* status: live happy hour → red pulse badge + countdown; else neutral */}
+        {/* status: expired store → neutral "No current deals"; live happy hour →
+            red pulse badge + countdown; else neutral "active today" */}
         <div className="gma-dealcard__status">
-          {urgency.variant === 'urgent' ? (
+          {isExpired ? (
+            <span className="gma-daily-badge">No current deals</span>
+          ) : urgency.variant === 'urgent' ? (
             <>
               <span className="gma-happy-badge">
                 <span className="gma-pulse-dot" aria-hidden="true" />
@@ -99,7 +107,10 @@ export default function DealCard({ dispensary, deals, gasCostText }: DealCardPro
         </div>
       </div>
       {/* deals are plain divs, not list items: the feed keeps one listitem per
-          STORE (the card), so nesting <li> here would inflate that count */}
+          STORE (the card), so nesting <li> here would inflate that count.
+          Suppressed entirely for an expired store — its status line already
+          says "No current deals" and there are no deals to render (CAP-2). */}
+      {!isExpired && (
       <div className="gma-deal-grid">
         {/* deals that resolve to the same title + meta collapse into one block;
             a collapsed block's pctLabel is a "min–max%" range (buildDealBlocks) */}
@@ -151,6 +162,7 @@ export default function DealCard({ dispensary, deals, gasCostText }: DealCardPro
           </div>
         ))}
       </div>
+      )}
     </Card>
   )
 }

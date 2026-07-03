@@ -23,7 +23,9 @@ const oneDispensary: ApiDataResponse = {
       lat: 48.0803,
       lng: -122.1862,
       stale: false,
-      lastFetchedAt: '2026-06-10T07:00:00',
+      // fresh relative to now so the store is NOT display-expired (DEAL_EXPIRY_MS);
+      // App tests run on the real clock, so a fixed 2026 date would age past 24h.
+      lastFetchedAt: new Date().toISOString(),
       deals: [
         { type: 'daily', description: 'a deal', discountPct: 30, startTime: null, endTime: null, daysValid: ['everyday'] },
       ],

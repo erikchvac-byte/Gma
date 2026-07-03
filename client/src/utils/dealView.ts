@@ -162,6 +162,31 @@ export function discountTier(pct: number | null): DiscountTier | null {
   return 'low'
 }
 
+// Display-only time bound on ADR-026 last-known-good. `lastFetchedAt` is refreshed
+// (by applyIngest/runScrapers) ONLY on a non-empty scrape, so a store whose most
+// recent good ingest is older than this has almost certainly ended its promotion —
+// re-serving its cached deals as active would be an Honest-Math violation (ADR-007/009;
+// investigation 2026-07-02: Happy Time - Mount Vernon showed a June sale on Jul 2, ~37h
+// after its last good scrape, provider now serving zero specials). 24h ⇒ a full day of
+// empty/failed scrapes. This is a PRESENTATION bound only — the cached deals stay in
+// data.json and reappear on the next good scrape. Deliberately independent of
+// STORE_FRESHNESS_WINDOW_MS (3h, ok|stale display) and the alertGate persistent-stale
+// window (6h, ops alert); tune the display-expiry boundary here alone.
+export const DEAL_EXPIRY_MS = 24 * 60 * 60 * 1000
+
+// True when a store's cached deals should be treated as EXPIRED and NOT rendered as
+// active (CAP-1). The display twin of server deriveStoreStatus: same defensive parse
+// and fail-open — a missing/empty/malformed/never-ingested timestamp has no evidence
+// of a fresh menu, so it expires (returns true). A future timestamp (clock skew) is
+// treated as fresh. Boundary is inclusive-kept (`age <= DEAL_EXPIRY_MS` renders as
+// today), mirroring deriveStoreStatus's `<=`, so exactly-at-threshold is not expired.
+export function areDealsExpired(lastFetchedAt: unknown, now: Date = new Date()): boolean {
+  if (typeof lastFetchedAt !== 'string' || lastFetchedAt.trim() === '') return true
+  const fetchedMs = Date.parse(lastFetchedAt)
+  if (Number.isNaN(fetchedMs)) return true
+  return now.getTime() - fetchedMs > DEAL_EXPIRY_MS
+}
+
 // One deal plus its upstream-computed display strings. windowText/countdown are
 // computed in DealFeed (null means "render nothing" — e.g. malformed times).
 export interface DealView {
