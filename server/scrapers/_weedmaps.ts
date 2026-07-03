@@ -237,6 +237,13 @@ function transformOne(it: WmMenuItem): RawProduct | null {
     // reconciliation is skipped here because weightField is null).
     weightField: null,
     netWeightMg: num(it.price?.complianceNetMg),
+    // Potency/effects/subcategory extraction is Dutchie-only for now (spec-potency-
+    // extraction: Weedmaps potency is explicitly out of scope) — stated as null, not read.
+    thc: null,
+    cbd: null,
+    totalTerpenes: null,
+    effects: null,
+    subcategory: null,
     options,
   }
 }

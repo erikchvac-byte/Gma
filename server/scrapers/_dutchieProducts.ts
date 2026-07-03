@@ -1,6 +1,6 @@
 import { postScrape, type Intercepted, type ScrapeRequest } from '../utils/scraperClient.js'
 import { dutchieEmbedUrl } from './_dutchie.js'
-import type { RawProduct, RawProductOption } from '../types/index.js'
+import type { PotencyRange, RawProduct, RawProductOption } from '../types/index.js'
 
 // Decoupled Dutchie PRODUCT / menu-pricing scraper (SPEC-dutchie-product-pricing,
 // ADR-053). This module is ADDITIVE and fully separate from the specials/deals path
@@ -65,6 +65,15 @@ interface RawDutchieProduct {
   Options?: string[]
   recSpecialPrices?: (number | null)[]
   POSMetaData?: { children?: PosChild[] }
+  // Provider-stated enrichment (spec-potency-extraction). NOTE: the legacy scalar
+  // `THC`/`CBD` fields also exist in the payload but their unit is undocumented —
+  // deliberately NOT read (Ask-First in the spec); only the self-describing
+  // `{unit, range}` shape is trusted.
+  THCContent?: { unit?: string | null; range?: unknown } | null
+  CBDContent?: { unit?: string | null; range?: unknown } | null
+  totalTerpenes?: number | null
+  effects?: Record<string, unknown> | null
+  subcategory?: string | null
 }
 
 // Collect EVERY FilteredProducts response's products[] and assemble the full menu
@@ -86,6 +95,37 @@ export function pickProducts(intercepted: Intercepted[]): RawDutchieProduct[] {
     }
   }
   return [...byId.values()]
+}
+
+// ProductPotency ({unit, range}) → PotencyRange, or null when unusable. The unit is
+// stored VERBATIM (trimmed), never converted (Honest Math): a valid range without a
+// unit is null — a number stripped of its stated unit lies. A single-point range
+// collapses to low === high; a non-finite OR negative entry (impossible potency under
+// any unit) poisons the whole figure as malformed.
+export function potency(raw: { unit?: string | null; range?: unknown } | null | undefined): PotencyRange | null {
+  if (!raw || typeof raw.unit !== 'string') return null
+  const unit = raw.unit.trim()
+  if (unit === '') return null
+  if (!Array.isArray(raw.range) || raw.range.length === 0) return null
+  const nums = raw.range.map(num)
+  if (nums.some((v) => v === null || v < 0)) return null
+  const values = nums as number[]
+  return { unit, low: Math.min(...values), high: Math.max(...values) }
+}
+
+// effects → verbatim name→score map with non-finite values dropped; null when the
+// payload has no usable entries (empty object stays indistinguishable from absent).
+// Built via entries + Object.fromEntries (own-property defines) so a provider key
+// like '__proto__' — an own property when the payload comes from JSON.parse — is
+// STORED rather than silently swallowed by a plain `out[k] =` assignment.
+export function effectsMap(raw: Record<string, unknown> | null | undefined): Record<string, number> | null {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null
+  const entries: [string, number][] = []
+  for (const [k, v] of Object.entries(raw)) {
+    const n = num(v)
+    if (n !== null) entries.push([k, n])
+  }
+  return entries.length > 0 ? Object.fromEntries(entries) : null
 }
 
 // measurements.netWeight → total milligrams (or null). Unit is explicit in the
@@ -136,6 +176,8 @@ export function transformProducts(
       }
     })
 
+    const subcategory = typeof p.subcategory === 'string' && p.subcategory.trim() !== '' ? p.subcategory.trim() : null
+
     out.push({
       productId,
       name,
@@ -145,6 +187,11 @@ export function transformProducts(
       special,
       weightField: num(p.weight),
       netWeightMg: netWeightMg(p),
+      thc: potency(p.THCContent),
+      cbd: potency(p.CBDContent),
+      totalTerpenes: num(p.totalTerpenes),
+      effects: effectsMap(p.effects),
+      subcategory,
       options,
     })
   }

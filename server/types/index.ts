@@ -35,10 +35,21 @@ export interface RawProductOption {
   quantityAvailable: number | null
 }
 
+// A potency figure as the provider states it (spec-potency-extraction). `unit` is
+// stored VERBATIM ('PERCENTAGE', 'MILLIGRAMS', …) and never converted — a number
+// without its stated unit lies (Honest Math, ADR-007/009). A single-point payload
+// range collapses to low === high.
+export interface PotencyRange {
+  unit: string
+  low: number
+  high: number
+}
+
 // One product as extracted from a FilteredProducts response (CAP-1/CAP-2),
 // before normalization. `weightField` is the raw, unit-unresolved `weight`
 // (a validation signal only — see CAP-5); `netWeightMg` is measurements.netWeight
-// in MILLIGRAMS when present.
+// in MILLIGRAMS when present. Potency/effects/subcategory are provider-stated
+// enrichment (spec-potency-extraction) — null whenever absent or malformed.
 export interface RawProduct {
   productId: string
   name: string
@@ -48,6 +59,15 @@ export interface RawProduct {
   special: boolean
   weightField: number | null
   netWeightMg: number | null
+  thc: PotencyRange | null
+  cbd: PotencyRange | null
+  // Provider-stated scalar whose unit is UNDOCUMENTED by the source (unlike
+  // THCContent/CBDContent there is no self-describing alternative). Collected
+  // verbatim as the only way to accrue it; do NOT compare across stores until the
+  // unit is established empirically (review decision 2026-07-03).
+  totalTerpenes: number | null
+  effects: Record<string, number> | null
+  subcategory: string | null
   options: RawProductOption[]
 }
 
@@ -77,6 +97,11 @@ export interface ProductObservation {
 // history (CAP-6). `packCount` is parsed from `name` (null = unparseable);
 // `flags` records normalization caveats (e.g. 'unparseable-pack',
 // 'unparseable-weight', 'weight-mismatch') so a bad parse is never silent.
+// Potency/effects/subcategory are RECORD-LEVEL descriptive identity — refreshed
+// to the latest scrape like `name`/`brand`, deliberately NOT per-observation
+// (spec-potency-extraction design note): listing-stable data on a file that
+// grows daily. Optional (`?`) because committed pre-potency records lack them
+// until the next scrape's identity refresh backfills.
 export interface ProductRecord {
   productId: string
   dispensaryId: string
@@ -85,6 +110,11 @@ export interface ProductRecord {
   brand: string | null
   strainType: string | null
   packCount: number | null
+  thc?: PotencyRange | null
+  cbd?: PotencyRange | null
+  totalTerpenes?: number | null
+  effects?: Record<string, number> | null
+  subcategory?: string | null
   flags: string[]
   history: ProductObservation[]
 }

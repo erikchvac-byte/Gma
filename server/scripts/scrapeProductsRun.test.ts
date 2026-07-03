@@ -16,6 +16,11 @@ function raw(over: Partial<RawProduct> = {}): RawProduct {
     special: true,
     weightField: 1000,
     netWeightMg: 2000,
+    thc: null,
+    cbd: null,
+    totalTerpenes: null,
+    effects: null,
+    subcategory: null,
     options: [{ option: '2g', basePrice: 8, specialPrice: 4, quantityAvailable: 25 }],
     ...over,
   }

@@ -152,6 +152,13 @@ export function normalizeProduct(
     brand: raw.brand,
     strainType: raw.strainType,
     packCount,
+    // Provider-stated enrichment: pure pass-through, no parsing or flag logic here
+    // (extraction/validation lives in the scraper chokepoint — spec-potency-extraction).
+    thc: raw.thc,
+    cbd: raw.cbd,
+    totalTerpenes: raw.totalTerpenes,
+    effects: raw.effects,
+    subcategory: raw.subcategory,
     flags,
     history: [observation],
   }

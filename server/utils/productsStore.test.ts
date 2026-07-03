@@ -89,6 +89,30 @@ describe('applyProductObservations (append-only history, CAP-6)', () => {
     expect(getProduct(first, 'kushmart-north', 'p1')!.history).toHaveLength(1) // unchanged
   })
 
+  it('backfills potency/enrichment onto a pre-potency record via identity refresh (zero migration)', () => {
+    // The committed dataset predates spec-potency-extraction: records lack the new
+    // fields entirely. The next scrape's identity refresh must add them while the
+    // observation history stays intact — that spread IS the migration.
+    const prePotency = applyProductObservations(empty, [record({ at: 'T1' })], 'T1')
+    expect(getProduct(prePotency, 'kushmart-north', 'p1')!.thc).toBeUndefined()
+
+    const enriched = {
+      ...record({ basePrice: 6, at: 'T2' }),
+      thc: { unit: 'PERCENTAGE', low: 21, high: 22 },
+      cbd: null,
+      totalTerpenes: null,
+      effects: { relaxed: 9 },
+      subcategory: 'singles',
+    }
+    const merged = applyProductObservations(prePotency, [enriched], 'T2')
+    const p = getProduct(merged, 'kushmart-north', 'p1')!
+    expect(p.thc).toEqual({ unit: 'PERCENTAGE', low: 21, high: 22 })
+    expect(p.effects).toEqual({ relaxed: 9 })
+    expect(p.subcategory).toBe('singles')
+    expect(p.history).toHaveLength(2) // history untouched by the backfill
+    expect(p.history.map((h) => h.options[0].basePrice)).toEqual([8, 6])
+  })
+
   it('refreshes descriptive identity to the latest scrape while preserving history', () => {
     const first = applyProductObservations(empty, [record({ at: 'T1' })], 'T1')
     const renamed = { ...record({ basePrice: 6, at: 'T2' }), flags: ['weight-mismatch'] }
