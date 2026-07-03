@@ -37,6 +37,15 @@ export interface StoreGroup {
   deals: Deal[]
 }
 
+// Nearest-first store ordering: distanceMiles ascending, undistanced stores last
+// (treated as Infinity — ADR-043). Exported so DealFeed can merge expired-store
+// groups (which bypass groupDealsByStore) into the same distance order without
+// duplicating the rule. Array.prototype.sort is stable, so equal-distance ties keep
+// their incoming (best-deal) order.
+export function byDistanceMiles(a: StoreGroup, b: StoreGroup): number {
+  return (a.dispensary.distanceMiles ?? Infinity) - (b.dispensary.distanceMiles ?? Infinity)
+}
+
 // One card per store: run the same global deal sort, then group rows by
 // dispensary. A Map preserves first-appearance order, so within equal distances
 // stores keep their best (highest-priority) deal order. The final stable sort by
@@ -55,7 +64,5 @@ export function groupDealsByStore(dispensaries: Dispensary[], now: Date): StoreG
     if (group) group.deals.push(deal)
     else groups.set(dispensary.id, { dispensary, deals: [deal] })
   }
-  return [...groups.values()].sort(
-    (a, b) => (a.dispensary.distanceMiles ?? Infinity) - (b.dispensary.distanceMiles ?? Infinity),
-  )
+  return [...groups.values()].sort(byDistanceMiles)
 }

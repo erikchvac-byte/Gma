@@ -10,8 +10,8 @@ import { useDeals } from '../hooks/useDeals'
 import { useLocalStorage } from '../hooks/useLocalStorage'
 import { useNow } from '../hooks/useNow'
 import { hasValidTimedWindow, isDealActive, minutesUntilEnd } from '../utils/dealTime'
-import { groupDealsByStore } from '../utils/sortDeals'
-import { filterByType, type DealTypeSelection } from '../utils/dealView'
+import { groupDealsByStore, byDistanceMiles, type StoreGroup } from '../utils/sortDeals'
+import { areDealsExpired, filterByType, type DealTypeSelection } from '../utils/dealView'
 import { formatCountdown, formatLastUpdated, formatTimeOfDay } from '../utils/formatTime'
 import { formatGasCost, isPositiveFinite, roundTripGasCost } from '../utils/gasCost'
 import { applyUserDistance } from '../utils/withUserDistance'
@@ -110,16 +110,44 @@ export default function DealFeed({ mpg = null, location = null }: DealFeedProps)
     (dispensary) =>
       dispensary.distanceMiles === undefined || dispensary.distanceMiles <= maxDistance,
   )
-  // expiry filter runs BEFORE sortDeals so expired deals never reach the
+  // CAP-1: store-level DISPLAY expiry (ADR-026 last-known-good time bound). A
+  // non-stale store whose last non-empty ingest (lastFetchedAt) is older than
+  // DEAL_EXPIRY_MS has almost certainly ended its promotion — treat its cached
+  // deals as expired rather than active. Split here, AFTER the stale drop above,
+  // so a `stale` store stays in the "sources unavailable" count and only
+  // non-stale-but-time-expired stores become "No current deals" cards (CAP-2).
+  const liveDispensaries = nearbyDispensaries.filter((d) => !areDealsExpired(d.lastFetchedAt, now))
+  // An "expired" card only makes sense for a store that actually has cached deals
+  // to suppress — a never-ingested/empty store has nothing to expire and stays
+  // out of the feed exactly as before (guards the deriveStoreStatus 'failed' case
+  // from surfacing as an empty card). Expired cards are also shown ONLY in the
+  // unfiltered feed: a deal-type chip narrows to ACTIVE deals of that type, which
+  // an expired store has none of, so under any chip it drops (and a chip that
+  // matches nothing correctly falls through to the "No active deals" empty state).
+  // [Ask-First decision D-chip: hide expired under a chip — Erik may revisit.]
+  const expiredDispensaries =
+    dealType === 'all'
+      ? nearbyDispensaries.filter((d) => areDealsExpired(d.lastFetchedAt, now) && d.deals.length > 0)
+      : []
+  // per-deal time expiry runs BEFORE sortDeals so expired deals never reach the
   // comparator's overnight-wrap heuristic
-  const activeDispensaries = nearbyDispensaries.map((dispensary) => ({
+  const activeDispensaries = liveDispensaries.map((dispensary) => ({
     ...dispensary,
     deals: dispensary.deals.filter((deal) => isDealActive(deal, now)),
   }))
   // chip filter runs in-memory after expiry, before grouping — a store with no
   // deals matching the active chip yields no group and drops from the feed
   const typedDispensaries = filterByType(activeDispensaries, dealType)
-  const storeGroups = groupDealsByStore(typedDispensaries, now)
+  const liveGroups = groupDealsByStore(typedDispensaries, now)
+  // CAP-2: expired stores are NOT dropped — they render in place with a "No
+  // current deals" state (empty deals drives DealCard's expired branch). They
+  // bypass groupDealsByStore (which discards zero-deal stores) and merge into the
+  // same nearest-first distance order so an expired store keeps its position.
+  const expiredGroups: StoreGroup[] = expiredDispensaries.map((dispensary) => ({
+    dispensary,
+    deals: [],
+  }))
+  const storeGroups = [...liveGroups, ...expiredGroups].sort(byDistanceMiles)
   const lastUpdated = formatLastUpdated(data.meta.lastScraperRun)
 
   // MPG now comes ONLY from the user's chosen vehicle — the hardcoded
