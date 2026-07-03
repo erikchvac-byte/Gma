@@ -6,7 +6,9 @@ import type { Intercepted } from '../utils/scraperClient.js'
 import {
   DEFAULT_PRODUCT_CATEGORIES,
   dutchieProductsRequest,
+  effectsMap,
   pickProducts,
+  potency,
   scrapeDutchieProducts,
   transformProducts,
 } from './_dutchieProducts.js'
@@ -165,6 +167,148 @@ describe('transformProducts (extraction + price alignment, CAP-1/CAP-2)', () => 
 
   it('returns [] for no intercepts', () => {
     expect(transformProducts([])).toEqual([])
+  })
+})
+
+describe('potency (ProductPotency → PotencyRange, spec-potency-extraction)', () => {
+  it('maps a two-point range with its verbatim unit', () => {
+    expect(potency({ unit: 'PERCENTAGE', range: [21, 22] })).toEqual({
+      unit: 'PERCENTAGE',
+      low: 21,
+      high: 22,
+    })
+  })
+
+  it('collapses a single-point range to low === high', () => {
+    expect(potency({ unit: 'PERCENTAGE', range: [18] })).toEqual({
+      unit: 'PERCENTAGE',
+      low: 18,
+      high: 18,
+    })
+  })
+
+  it('normalizes a reversed range to min/max', () => {
+    expect(potency({ unit: 'PERCENTAGE', range: [22, 21] })).toEqual({
+      unit: 'PERCENTAGE',
+      low: 21,
+      high: 22,
+    })
+  })
+
+  it('stores a non-percentage unit VERBATIM, never converted', () => {
+    expect(potency({ unit: 'MILLIGRAMS', range: [100] })).toEqual({
+      unit: 'MILLIGRAMS',
+      low: 100,
+      high: 100,
+    })
+  })
+
+  it('is null when the payload field is absent or null', () => {
+    expect(potency(null)).toBeNull()
+    expect(potency(undefined)).toBeNull()
+  })
+
+  it('is null for a valid range WITHOUT a unit — a number stripped of its unit lies', () => {
+    expect(potency({ range: [20, 21] })).toBeNull()
+    expect(potency({ unit: '  ', range: [20, 21] })).toBeNull()
+    expect(potency({ unit: null, range: [20, 21] })).toBeNull()
+  })
+
+  it('is null when the range is missing, empty, non-array, or carries a non-finite entry', () => {
+    expect(potency({ unit: 'PERCENTAGE' })).toBeNull()
+    expect(potency({ unit: 'PERCENTAGE', range: [] })).toBeNull()
+    expect(potency({ unit: 'PERCENTAGE', range: '21-22' })).toBeNull()
+    expect(potency({ unit: 'PERCENTAGE', range: ['high', null] })).toBeNull()
+    expect(potency({ unit: 'PERCENTAGE', range: [21, NaN] })).toBeNull()
+  })
+
+  it('trims the stored unit so downstream comparisons cannot split on whitespace', () => {
+    expect(potency({ unit: ' PERCENTAGE ', range: [21] })).toEqual({
+      unit: 'PERCENTAGE',
+      low: 21,
+      high: 21,
+    })
+  })
+
+  it('is null when any range entry is negative — impossible potency under any unit', () => {
+    expect(potency({ unit: 'PERCENTAGE', range: [-3] })).toBeNull()
+    expect(potency({ unit: 'PERCENTAGE', range: [21, -1] })).toBeNull()
+  })
+})
+
+describe('effectsMap (spec-potency-extraction)', () => {
+  it('keeps finite-valued entries verbatim and drops junk values', () => {
+    expect(effectsMap({ relaxed: 9, sleepy: 8, vibe: 'chill', gap: null })).toEqual({
+      relaxed: 9,
+      sleepy: 8,
+    })
+  })
+
+  it('is null when absent, non-object, or nothing usable survives', () => {
+    expect(effectsMap(null)).toBeNull()
+    expect(effectsMap(undefined)).toBeNull()
+    expect(effectsMap({})).toBeNull()
+    expect(effectsMap({ vibe: 'chill' })).toBeNull()
+  })
+
+  it('stores a JSON-sourced __proto__ key instead of silently swallowing it', () => {
+    // JSON.parse makes '__proto__' an OWN property; a plain `out[k] =` assignment
+    // would invoke the prototype setter and drop the entry without trace.
+    const raw = JSON.parse('{"__proto__": 9, "relaxed": 8}') as Record<string, unknown>
+    const mapped = effectsMap(raw)!
+    expect(Object.getOwnPropertyDescriptor(mapped, '__proto__')?.value).toBe(9)
+    expect(mapped.relaxed).toBe(8)
+  })
+})
+
+describe('transformProducts potency/effects/subcategory extraction', () => {
+  it('extracts the live fixture enrichment fields', () => {
+    const [prod] = transformProducts([page(fixtureProduct)])
+    expect(prod.thc).toEqual({ unit: 'PERCENTAGE', low: 21, high: 22 })
+    expect(prod.cbd).toEqual({ unit: 'PERCENTAGE', low: 0.04, high: 0.05 })
+    expect(prod.effects).toEqual({ relaxed: 9, painRelief: 7, sleepy: 8, happy: 8, euphoric: 8 })
+    expect(prod.subcategory).toBe('singles')
+    expect(prod.totalTerpenes).toBeNull() // null in the fixture — stays null, never guessed
+  })
+
+  it('degrades every enrichment field to null on a product without them (never throws)', () => {
+    const [prod] = transformProducts([page(spaceKush)])
+    expect(prod.thc).toBeNull()
+    expect(prod.cbd).toBeNull()
+    expect(prod.totalTerpenes).toBeNull()
+    expect(prod.effects).toBeNull()
+    expect(prod.subcategory).toBeNull()
+  })
+
+  it('coerces subcategory and totalTerpenes defensively', () => {
+    const enriched = { ...spaceKush, subcategory: '  ', totalTerpenes: 1.5 }
+    const [prod] = transformProducts([page(enriched)])
+    expect(prod.subcategory).toBeNull() // whitespace-only is not a subcategory
+    expect(prod.totalTerpenes).toBe(1.5)
+  })
+})
+
+describe('full pipeline: transform → normalize → merge (AC2, spec-potency-extraction)', () => {
+  it('carries fixture potency end-to-end into a merged record with intact history', async () => {
+    const { normalizeProduct } = await import('../utils/normalizeProduct.js')
+    const { applyProductObservations, getProduct } = await import('../utils/productsStore.js')
+
+    const [rawProd] = transformProducts([page(fixtureProduct)])
+    const rec = normalizeProduct(rawProd, 'kushmart-north', '2026-07-03T00:00:00.000Z')
+
+    // Prior committed state: same product, pre-potency schema (fields absent), one observation.
+    const { thc: _t, cbd: _c, totalTerpenes: _tt, effects: _e, subcategory: _s, ...prePotency } = {
+      ...rec,
+      history: [{ ...rec.history[0], observedAt: '2026-07-02T00:00:00.000Z' }],
+    }
+    const prior = applyProductObservations({ lastUpdated: '', products: {} }, [prePotency], 'T1')
+
+    const merged = applyProductObservations(prior, [rec], 'T2')
+    const p = getProduct(merged, 'kushmart-north', rec.productId)!
+    expect(p.thc).toEqual({ unit: 'PERCENTAGE', low: 21, high: 22 })
+    expect(p.cbd).toEqual({ unit: 'PERCENTAGE', low: 0.04, high: 0.05 })
+    expect(p.subcategory).toBe('singles')
+    expect(p.history).toHaveLength(2) // prior observation preserved, new one appended
   })
 })
 

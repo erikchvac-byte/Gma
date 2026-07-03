@@ -14,6 +14,11 @@ function preRoll(over: Partial<RawProduct> = {}): RawProduct {
     special: true,
     weightField: 1000, // per-unit mg
     netWeightMg: 2000, // total mg
+    thc: null,
+    cbd: null,
+    totalTerpenes: null,
+    effects: null,
+    subcategory: null,
     options: [{ option: '2g', basePrice: 8, specialPrice: 4, quantityAvailable: 25 }],
     ...over,
   }
@@ -48,6 +53,37 @@ describe('parseGrams', () => {
     ['weird', null],
   ])('parses %j → %j', (option, expected) => {
     expect(parseGrams(option)).toBe(expected)
+  })
+})
+
+describe('normalizeProduct — potency/effects/subcategory pass-through (spec-potency-extraction)', () => {
+  it('carries provider-stated enrichment onto the record verbatim, adding no flags', () => {
+    const rec = normalizeProduct(
+      preRoll({
+        thc: { unit: 'PERCENTAGE', low: 21, high: 22 },
+        cbd: { unit: 'PERCENTAGE', low: 0.04, high: 0.05 },
+        totalTerpenes: 2.1,
+        effects: { relaxed: 9, sleepy: 8 },
+        subcategory: 'singles',
+      }),
+      'kushmart-north',
+      AT,
+    )
+    expect(rec.thc).toEqual({ unit: 'PERCENTAGE', low: 21, high: 22 })
+    expect(rec.cbd).toEqual({ unit: 'PERCENTAGE', low: 0.04, high: 0.05 })
+    expect(rec.totalTerpenes).toBe(2.1)
+    expect(rec.effects).toEqual({ relaxed: 9, sleepy: 8 })
+    expect(rec.subcategory).toBe('singles')
+    expect(rec.flags).toEqual([]) // enrichment is descriptive, never a normalization caveat
+  })
+
+  it('keeps nulls null — absence is stated, never guessed', () => {
+    const rec = normalizeProduct(preRoll(), 'kushmart-north', AT)
+    expect(rec.thc).toBeNull()
+    expect(rec.cbd).toBeNull()
+    expect(rec.totalTerpenes).toBeNull()
+    expect(rec.effects).toBeNull()
+    expect(rec.subcategory).toBeNull()
   })
 })
 
@@ -139,6 +175,11 @@ describe('normalizeProduct — flower / vape use $/gram only (CAP-5)', () => {
     special: true,
     weightField: 1000,
     netWeightMg: null,
+    thc: null,
+    cbd: null,
+    totalTerpenes: null,
+    effects: null,
+    subcategory: null,
     options: [
       { option: '1g', basePrice: 11, specialPrice: 5.5, quantityAvailable: 4 },
       { option: '3.5g', basePrice: 35, specialPrice: 17.5, quantityAvailable: 2 },

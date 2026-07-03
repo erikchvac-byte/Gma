@@ -37,6 +37,11 @@ function dutchieOgChem(over: Partial<RawProduct> = {}): RawProduct {
     special: false,
     weightField: null,
     netWeightMg: null,
+    thc: null,
+    cbd: null,
+    totalTerpenes: null,
+    effects: null,
+    subcategory: null,
     options: [{ option: '2g', basePrice: 14, specialPrice: null, quantityAvailable: 6 }],
     ...over,
   }

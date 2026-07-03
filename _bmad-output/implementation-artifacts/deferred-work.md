@@ -1,5 +1,19 @@
 # Deferred Work
 
+## DEFERRED — Collection fixes #2 and #3 (split from data-collection-audit quick-dev, 2026-07-03)
+
+Source: `investigations/data-collection-audit-2026-07-03.md` + `products-data-first-look-2026-07-03.md`. Erik split the three collection fixes; **#1 (potency extraction) taken now** via `spec-potency-extraction`. Remaining:
+
+- **#2 — Category expansion:** widen `DEFAULT_PRODUCT_CATEGORIES` (`server/scrapers/_dutchieProducts.ts`) beyond Flower/Vaporizers/Pre-Rolls — Edibles/Concentrates already arrive in the FilteredProducts payload and are dropped in `transformProducts`. Design questions to settle in the spec: edibles are mg-THC-based so $/gram is dishonest for them (unit economics need an edible-appropriate basis — likely $/mg once potency lands, which is why this comes AFTER #1); weight-parse flags/matcher honesty gates (`EXCLUDED_FLAGS`) need review for non-weight categories; payload/products.json size growth on the daily commit-back. Weedmaps `normalizeCategory` has the same launch-category constraint.
+- **#3 — Deal-banner history snapshot:** data.json is overwritten by each hourly ingest, so deal history has NO retention ("new promotions today" is unanswerable — audit §14). Persist a snapshot of each store's deals (e.g. append-only committed file à la products.json, or snapshot-before-overwrite in the ingest path) without touching the Deal contract or `/api/data`. Entirely separate subsystem from #1/#2.
+
+## DEFERRED — from review of spec-potency-extraction (2026-07-03)
+
+Surfaced by the 3-reviewer pass; both are policy calls, not drive-by fixes. Erik was AFK at the review checkpoint — the shipped semantics are the spec-as-approved defaults, renegotiable:
+
+- **Potency magnitude sanity bounds** — `potency()` now rejects negatives (impossible under any unit) but any positive finite value commits as truth, so the known POS-typo class ("21.5% entered as 2150") is served verbatim by `/api/products` with no flag. A guard needs a unit-aware policy (PERCENTAGE ≤ 100 is obvious; MILLIGRAMS bounds are not) — decide once real out-of-range values appear in the accrued data.
+- **Enrichment retention on provider glitch (null-clobber)** — record-level `thc`/`cbd`/etc. refresh to the latest scrape like `name`/`brand`, so one scrape with a missing/malformed `THCContent` overwrites known potency with `null` until the payload heals (both hunters' top finding). Kept deliberately: honest-null mirrors the latest payload, scrapes are daily so a glitch heals in ~a day. If accrued data shows real field-level flakiness, add keep-last-known-on-null (or a glitch flag) in `applyProductObservations` — note that changes merge semantics and needs Erik's sign-off.
+
 ## DEFERRED — from review of spec-repo-hygiene-closeout (2026-07-02)
 
 Surfaced by the 3-reviewer pass on the hygiene closeout; all pre-existing content defects in docs the closeout merely committed, or policy calls needing Erik:

@@ -149,6 +149,11 @@ describe('cross-source match-key equality (AC3 — the wiring proof)', () => {
       special: false,
       weightField: null,
       netWeightMg: null,
+      thc: null,
+      cbd: null,
+      totalTerpenes: null,
+      effects: null,
+      subcategory: null,
       options: [{ option: '2g', basePrice: 14, specialPrice: null, quantityAvailable: 6 }],
     }
     const wmKey = deriveMatchKey(normalizeProduct(wmRaw, 'western-bud-burlington', now))
