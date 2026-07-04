@@ -178,5 +178,48 @@ describe('buildMatchReport — counts (AC5)', () => {
     expect(report.totalRecords).toBe(3)
     expect(report.unmatchedCount).toBe(1)
     expect(report.excludedFlagCount).toBe(1)
+    expect(report.nonComparableCategoryCount).toBe(0)
+  })
+})
+
+describe('buildMatchReport — non-weight-based categories (spec-category-expansion)', () => {
+  // An edible's option label states mg-THC, not product weight — normalizeProduct
+  // leaves weightGrams null, and the matcher must not re-parse "100mg" into a
+  // phantom 0.1g weight bucket.
+  const edibleOpt = opt({ option: '100mg', weightGrams: null, basePrice: 25, pricePerGram: null })
+  const edible = (dispensaryId: string, productId: string) =>
+    rec({ dispensaryId, productId, category: 'Edible', name: 'Wyld Raspberry Gummies', brand: 'Wyld' }, [edibleOpt])
+
+  it('emits NO disparity for the same edible at two stores; counts both records', () => {
+    const f = file(edible('store-a', 'a'), edible('store-b', 'b'))
+    const report = buildMatchReport(f)
+    expect(report.disparities).toHaveLength(0)
+    expect(report.nonComparableCategoryCount).toBe(2)
+  })
+
+  it('a FLAGGED edible counts as non-comparable, not excluded-flag (gate 5 before gate 1)', () => {
+    // Gate order is a scope statement: the record's category disqualifies it before
+    // its data quality is ever judged. A future reordering must not double-count.
+    const flagged = rec(
+      { dispensaryId: 'store-a', productId: 'a', category: 'Edible', flags: ['weight-mismatch'] },
+      [edibleOpt],
+    )
+    const report = buildMatchReport(file(flagged))
+    expect(report.nonComparableCategoryCount).toBe(1)
+    expect(report.excludedFlagCount).toBe(0)
+    expect(report.totalRecords).toBe(1)
+  })
+
+  it('a Concentrate IS weight-compared like any weight-based category', () => {
+    const conc = (dispensaryId: string, productId: string, basePrice: number) =>
+      rec(
+        { dispensaryId, productId, category: 'Concentrate', name: 'GG4 Live Resin', brand: 'Oleum' },
+        [opt({ option: '1g', basePrice })],
+      )
+    const ds = buildDisparities(file(conc('store-a', 'a', 30), conc('store-b', 'b', 24)))
+    expect(ds).toHaveLength(1)
+    expect(ds[0].category).toBe('Concentrate')
+    expect(ds[0].lowPrice).toBe(24)
+    expect(ds[0].weightGrams).toBe(1)
   })
 })

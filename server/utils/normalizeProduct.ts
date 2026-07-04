@@ -16,6 +16,13 @@ import type { ProductObservation, ProductOptionObservation, ProductRecord, RawPr
 const PRE_ROLL = 'Pre-Rolls'
 const GRAMS_PER_OZ = 28.3495
 
+// Categories whose option labels state a true product weight ("1g", "3.5g", "1/8oz"),
+// making grams parsing and $/gram math honest. Edible is deliberately ABSENT: its
+// labels ("100mg") state cannabinoid content, not weight — parsing them as grams
+// would store a false weight and a wildly inflated $/gram (spec-category-expansion).
+// Single-sourced here; the disparity matcher gates on this same set.
+export const WEIGHT_BASED_CATEGORIES = new Set(['Flower', 'Vaporizers', 'Pre-Rolls', 'Concentrate'])
+
 // Round to cents so stored $/g and $/item are clean and comparable.
 function r2(x: number): number {
   return Math.round(x * 100) / 100
@@ -82,6 +89,11 @@ export function normalizeProduct(
   observedAt: string,
 ): ProductRecord {
   const isPreRoll = raw.category === PRE_ROLL
+  // Non-weight-based categories (Edible) get NO weight parse and NO per-gram figures —
+  // n/a, not a defect (mirrors pricePerItem staying null for non-pre-rolls), so no
+  // 'unparseable-weight' flag either. Option labels are stored verbatim; an honest
+  // $/mg basis is derivation-engine work (spec-category-expansion).
+  const weightBased = WEIGHT_BASED_CATEGORIES.has(raw.category)
   const parsedPack = parsePackCount(raw.name)
   const flags: string[] = []
 
@@ -95,8 +107,8 @@ export function normalizeProduct(
   if (isPreRoll && parsedPack === null) flags.push('assumed-single')
 
   const options: ProductOptionObservation[] = raw.options.map((o) => {
-    const weightGrams = parseGrams(o.option)
-    if (weightGrams === null && !flags.includes('unparseable-weight')) {
+    const weightGrams = weightBased ? parseGrams(o.option) : null
+    if (weightBased && weightGrams === null && !flags.includes('unparseable-weight')) {
       flags.push('unparseable-weight')
     }
     return {

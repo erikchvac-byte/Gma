@@ -62,8 +62,20 @@ describe('normalizeCategory (Weedmaps edgeCategory → Dutchie vocabulary, AC3)'
   it('maps a Vape/Cartridge ancestor to Vaporizers', () => {
     expect(normalizeCategory({ name: 'Cartridges', slug: 'cartridges', ancestors: [{ name: 'Vape', slug: 'vape-pens' }] })).toBe('Vaporizers')
   })
-  it('returns null for out-of-vocab (Edibles) and for empty', () => {
-    expect(normalizeCategory({ name: 'Gummies', slug: 'gummies', ancestors: [{ name: 'Edibles', slug: 'edibles' }] })).toBeNull()
+  it('maps an Edibles ancestor to Edible (spec-category-expansion)', () => {
+    expect(normalizeCategory({ name: 'Gummies', slug: 'gummies', ancestors: [{ name: 'Edibles', slug: 'edibles' }] })).toBe('Edible')
+  })
+  it('maps a Concentrates ancestor to Concentrate', () => {
+    expect(normalizeCategory({ name: 'Live Resin', slug: 'live-resin', ancestors: [{ name: 'Concentrates', slug: 'concentrates' }] })).toBe('Concentrate')
+  })
+  it('a cartridge filed under a Concentrates ancestor STAYS Vaporizers (rule order)', () => {
+    expect(normalizeCategory({ name: 'Cartridges', slug: 'cartridges', ancestors: [{ name: 'Concentrates', slug: 'concentrates' }] })).toBe('Vaporizers')
+  })
+  it('an Edibles-ancestor item with a launch word in its sub-slug stays Edible (no weight-based misfile)', () => {
+    expect(normalizeCategory({ name: 'Flower-Infused Honey', slug: 'flower-infused-honey', ancestors: [{ name: 'Edibles', slug: 'edibles' }] })).toBe('Edible')
+  })
+  it('returns null for out-of-vocab (Topicals) and for empty', () => {
+    expect(normalizeCategory({ name: 'Balm', slug: 'balm', ancestors: [{ name: 'Topicals', slug: 'topicals' }] })).toBeNull()
     expect(normalizeCategory(undefined)).toBeNull()
   })
 })
@@ -88,9 +100,9 @@ describe('transformWeedmapsProducts (menuItems → RawProduct, AC2)', () => {
   const products = transformWeedmapsProducts(items())
   const byName = (n: string) => products.find((p) => p.name === n)
 
-  it('drops out-of-vocab products (the WYLD edible)', () => {
-    expect(byName('Marionberry Gummies')).toBeUndefined()
-    expect(products).toHaveLength(4) // golden pineapple, og chem, galactic glue, limonada
+  it('keeps the WYLD edible as Edible (spec-category-expansion)', () => {
+    expect(byName('Marionberry Gummies')?.category).toBe('Edible')
+    expect(products).toHaveLength(5) // golden pineapple, og chem, galactic glue, limonada + gummies
   })
 
   it('strips the "| Sub-Category" suffix down to the strain name', () => {
@@ -170,16 +182,16 @@ describe('fetchWeedmapsMenu (throttled static GET, injected, fail-soft)', () => 
       getFn,
       categorySlugs: [],
     })
-    expect(products.length).toBe(4)
+    expect(products.length).toBe(5) // incl. the WYLD edible (spec-category-expansion)
   })
 
   it('dedupes products across landing + category subpages (by productId)', async () => {
     const getFn = async () => ({ data: fixtureHtml })
     const products = await fetchWeedmapsMenu('western-bud-skagit-valley-wa', {
       getFn,
-      categorySlugs: ['flower'], // same fixture served twice → still 4 unique
+      categorySlugs: ['flower'], // same fixture served twice → still 5 unique
     })
-    expect(products.length).toBe(4)
+    expect(products.length).toBe(5)
   })
 
   it('degrades to [] when every page throws (network/challenge), never throws', async () => {
@@ -199,6 +211,6 @@ describe('fetchWeedmapsMenu (throttled static GET, injected, fail-soft)', () => 
       return { data: fixtureHtml }
     }
     const products = await fetchWeedmapsMenu('partial', { getFn, categorySlugs: ['flower'] })
-    expect(products.length).toBe(4)
+    expect(products.length).toBe(5)
   })
 })

@@ -114,6 +114,15 @@ export function deriveMatchKey(rec: ProductRecord): MatchKeyResult {
   if (!brand && !token) {
     return { unmatched: 'no brand and no usable name signal' }
   }
-  const key = [brand, token, norm(rec.strainType), norm(rec.category)].join('|')
+  const parts = [brand, token, norm(rec.strainType), norm(rec.category)]
+  // Concentrate form (live resin vs distillate vs RSO…) often lives ONLY in
+  // `subcategory` — the same brand+strain across forms would otherwise collapse to one
+  // key and emit a FALSE disparity (a $15 distillate "beating" a $45 live resin is not
+  // a saving, it's a different product). Keyed for Concentrate ONLY so every committed
+  // key for the original categories is unchanged. A null subcategory keys as '' —
+  // null-with-null still matches; null-vs-stated splits, which only ever UNDER-matches
+  // (the safe bias, ADR-062). (spec-category-expansion)
+  if (rec.category === 'Concentrate') parts.push(norm(rec.subcategory))
+  const key = parts.join('|')
   return { key }
 }

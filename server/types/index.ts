@@ -170,9 +170,13 @@ export interface Disparity {
 // covers these SKUs, on these days/times" — NEVER a savings computation. The observed
 // `specialPrice` on a ProductRecord stays the price-of-record; the bridge sits beside it.
 
-// The 3 categories the product scrapes actually cover (DEFAULT_PRODUCT_CATEGORIES).
-// Banners targeting anything else (Edibles/Drinks/Topicals…) are real but out-of-catalog
-// → classified `unsupported-category`, counted, linked to nothing.
+// The 3 BANNER-LINKABLE categories — the only categories the deal-scope bridge emits
+// cues for and links to. Collection is now wider (DEFAULT_PRODUCT_CATEGORIES includes
+// Edible + Concentrate, spec-category-expansion), and Concentrate even has an honest
+// weight axis — but banner-linking either newcomer is a deliberate FUTURE decision
+// (see deferred-work), not implied by collection. Records outside this set are never
+// linked (any path, incl. storewide); banners targeting them stay `unsupported-category`
+// or `unresolved`, counted, linked to nothing.
 export type ScrapedCategory = 'Flower' | 'Vaporizers' | 'Pre-Rolls'
 
 // A banner's inferred product scope (AC1). Exactly one kind. Ambiguity resolves to

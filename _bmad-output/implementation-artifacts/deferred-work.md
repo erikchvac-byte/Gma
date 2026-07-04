@@ -1,5 +1,13 @@
 # Deferred Work
 
+## DEFERRED — Banner-linking Edible/Concentrate + concentrate banner cues (from review of spec-category-expansion, 2026-07-04)
+
+Collection fix #2 shipped Edible/Concentrate COLLECTION; the deal-scope bridge deliberately does NOT link them (`BANNER_LINKABLE_CATEGORIES` in `dealScope.ts` pins the pre-expansion output). Deferred decisions, surfaced by the 3-reviewer pass:
+
+- **Concentrate banner cues:** `parseDealScope` has no concentrate-family words. Today "30% off all concentrates" → `unresolved` (counted, linked to nothing — honest but blind, even though the category is now populated). Options when taken up: add a `category: 'Concentrate'` cue (requires widening `ScrapedCategory` + link rules) or at minimum add wax/dab/shatter/rosin/concentrate to `UNSUPPORTED_CUES` so the report buckets them by name.
+- **Pre-existing false-friend (NOT introduced by fix #2):** "concentrate ounces $99" trips the `isOunce` cue → classified Flower@28g and linked to the store's Flower 28g SKUs. Existed before this change; fix alongside the concentrate cue work.
+- **Edible banner linking:** stays `unsupported-category` until an honest per-item/$-mg basis exists (derivation engine).
+
 ## DEFERRED — Collection fixes #2 and #3 (split from data-collection-audit quick-dev, 2026-07-03)
 
 Source: `investigations/data-collection-audit-2026-07-03.md` + `products-data-first-look-2026-07-03.md`. Erik split the three collection fixes; **#1 (potency extraction) taken now** via `spec-potency-extraction`. Remaining:

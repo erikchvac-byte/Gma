@@ -1,4 +1,5 @@
 import { canonicalWeightGrams, deriveMatchKey } from './productMatchKey.js'
+import { WEIGHT_BASED_CATEGORIES } from './normalizeProduct.js'
 import type {
   Disparity,
   DisparityStore,
@@ -21,6 +22,9 @@ import type {
 //     never a discount %, which fix6 proved carries no per-item signal.
 //  4. A reported sold-out offer (quantityAvailable <= 0) is excluded from the price
 //     comparison — an unbuyable price must not set the headline low or inflate spread.
+//  5. Non-weight-based categories (Edible) never enter weight-keyed groups: their option
+//     labels state mg-THC, not product weight, so a "weightGrams" row built from them
+//     would lie. Counted, never silent (spec-category-expansion; $/mg is derivation work).
 
 // Per-record flags that poison weight-based comparison. A record carrying ANY of these
 // is dropped from disparity output (and counted in the report).
@@ -49,6 +53,9 @@ export interface MatchReport {
   totalRecords: number
   unmatchedCount: number
   excludedFlagCount: number
+  // records whose category has no honest weight axis (Edible) — collected but never
+  // weight-compared (gate 5)
+  nonComparableCategoryCount: number
   // records that contributed ≥1 priced option to a group (whether or not it reached ≥2 stores)
   placedRecords: number
 }
@@ -60,9 +67,16 @@ export function buildMatchReport(file: ProductsFile): MatchReport {
   const groups = new Map<string, Group>()
   let unmatchedCount = 0
   let excludedFlagCount = 0
+  let nonComparableCategoryCount = 0
   let placedRecords = 0
 
   for (const rec of records) {
+    // Gate 5: no honest weight axis for this category (see header). Checked first —
+    // it is a scope statement about the category, not a data-quality defect.
+    if (!WEIGHT_BASED_CATEGORIES.has(rec.category)) {
+      nonComparableCategoryCount++
+      continue
+    }
     // Gate 1: drop records whose weight is flagged untrustworthy.
     if (rec.flags.some((f) => EXCLUDED_FLAGS.has(f))) {
       excludedFlagCount++
@@ -144,6 +158,7 @@ export function buildMatchReport(file: ProductsFile): MatchReport {
     totalRecords: records.length,
     unmatchedCount,
     excludedFlagCount,
+    nonComparableCategoryCount,
     placedRecords,
   }
 }
