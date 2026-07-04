@@ -600,6 +600,14 @@ article.gma-card::before {
   color: var(--text-muted);
 }
 .gma-location-bar__editor { display: grid; gap: var(--space-3); }
+/* Erik's location-pin art (resized webp, not redrawn) — replaces the old
+   map-pin stroke glyph everywhere distance/location is signposted. Rounded
+   tile treatment matches .gma-deal-icon so the art family reads as one set. */
+.gma-location-pin {
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  flex: none;
+}
 
 /* persistent top-of-feed vehicle bar (CAP-5) — paired with the location bar */
 .gma-vehicle-bar {
