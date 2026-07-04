@@ -16,7 +16,6 @@ const ICONS = {
   'arrow-right': '<path d="M5 12h14"></path>\n  <path d="m12 5 7 7-7 7"></path>',
   search: '<circle cx="11" cy="11" r="8"></circle>\n  <path d="m21 21-4.3-4.3"></path>',
   'sliders-horizontal': '<line x1="21" x2="14" y1="4" y2="4"></line>\n  <line x1="10" x2="3" y1="4" y2="4"></line>\n  <line x1="21" x2="12" y1="12" y2="12"></line>\n  <line x1="8" x2="3" y1="12" y2="12"></line>\n  <line x1="21" x2="16" y1="20" y2="20"></line>\n  <line x1="12" x2="3" y1="20" y2="20"></line>\n  <line x1="14" x2="14" y1="2" y2="6"></line>\n  <line x1="8" x2="8" y1="10" y2="14"></line>\n  <line x1="16" x2="16" y1="18" y2="22"></line>',
-  car: '<path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"></path>\n  <circle cx="7" cy="17" r="2"></circle>\n  <path d="M9 17h6"></path>\n  <circle cx="17" cy="17" r="2"></circle>',
   'shield-check': '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path>\n  <path d="m9 12 2 2 4-4"></path>',
 
   // --- Deal-category glyphs (ADR pending): one per "item" named in a deal's

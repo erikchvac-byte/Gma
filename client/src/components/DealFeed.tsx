@@ -11,7 +11,15 @@ import { useLocalStorage } from '../hooks/useLocalStorage'
 import { useNow } from '../hooks/useNow'
 import { hasValidTimedWindow, isDealActive, minutesUntilEnd } from '../utils/dealTime'
 import { groupDealsByStore, byDistanceMiles, type StoreGroup } from '../utils/sortDeals'
-import { areDealsExpired, filterByType, type DealTypeSelection } from '../utils/dealView'
+import { areDealsExpired, buildDealBlocks, filterByType, type DealTypeSelection } from '../utils/dealView'
+import {
+  ROTATING_ICON_NAMES,
+  ROTATING_ICON_POOLS,
+  buildIconSequence,
+  mulberry32,
+  type RotatingIconName,
+  type RotatingIconSrcs,
+} from '../utils/dealIconPools'
 import { formatCountdown, formatLastUpdated, formatTimeOfDay } from '../utils/formatTime'
 import { formatGasCost, isPositiveFinite, roundTripGasCost } from '../utils/gasCost'
 import { applyUserDistance } from '../utils/withUserDistance'
@@ -61,6 +69,10 @@ export default function DealFeed({ mpg = null, location = null }: DealFeedProps)
   // chip filter — in-memory only (mirrors the distance filter), not persisted;
   // 'all' is the default so the feed opens unfiltered
   const [dealType, setDealType] = useState<DealTypeSelection>('all')
+  // one seed for the visit: the rotating icon pools (dealIconPools) must deal
+  // the SAME images on every render — this feed re-renders each second via
+  // useNow — while a fresh visit gets a fresh shuffle
+  const [iconSeed] = useState(() => Math.floor(Math.random() * 0xffffffff))
   // same use-site validation pattern as MPG: stored value counts only as a
   // whole number of miles within the slider's range; anything else falls back
   // to DEFAULT_DISTANCE_MILES (50)
@@ -150,6 +162,46 @@ export default function DealFeed({ mpg = null, location = null }: DealFeedProps)
   const storeGroups = [...liveGroups, ...expiredGroups].sort(byDistanceMiles)
   const lastUpdated = formatLastUpdated(data.meta.lastScraperRun)
 
+  // build each store's DealView list once — the same array drives both the
+  // rotation counting below and the card render, so they can never disagree
+  const storeViews = storeGroups.map(({ dispensary, deals }) => ({
+    dispensary,
+    views: deals.map((deal) => ({
+      deal,
+      windowText: windowText(deal),
+      countdown: countdownText(deal, now),
+    })),
+  }))
+  // Rotating sale-tag pools (dealIconPools): count each rotating family's glyph
+  // occurrences per store in feed reading order, then deal every store its
+  // slice of one feed-wide, seed-stable shuffled sequence — the no-repeat cycle
+  // spans cards, and re-renders replay the identical assignment.
+  const countsByStore = storeViews.map(({ views }) => {
+    const counts: Partial<Record<RotatingIconName, number>> = {}
+    for (const block of buildDealBlocks(views))
+      for (const name of block.icons)
+        if (name in ROTATING_ICON_POOLS) {
+          const family = name as RotatingIconName
+          counts[family] = (counts[family] ?? 0) + 1
+        }
+    return counts
+  })
+  const rotatingByStore: RotatingIconSrcs[] = countsByStore.map(() => ({}))
+  ROTATING_ICON_NAMES.forEach((family, familyIndex) => {
+    const total = countsByStore.reduce((sum, counts) => sum + (counts[family] ?? 0), 0)
+    const sequence = buildIconSequence(
+      ROTATING_ICON_POOLS[family],
+      total,
+      mulberry32(iconSeed + familyIndex),
+    )
+    let offset = 0
+    countsByStore.forEach((counts, storeIndex) => {
+      const n = counts[family] ?? 0
+      rotatingByStore[storeIndex][family] = sequence.slice(offset, offset + n)
+      offset += n
+    })
+  })
+
   // MPG now comes ONLY from the user's chosen vehicle — the hardcoded
   // national-average default (ADR-003/013) was removed. No vehicle selected →
   // null → no gas line (Honest Math: never a gas figure on a guessed MPG).
@@ -172,17 +224,14 @@ export default function DealFeed({ mpg = null, location = null }: DealFeedProps)
         </Notice>
       ) : (
         <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 'var(--gap-feed)' }}>
-          {storeGroups.map(({ dispensary, deals }) => (
+          {storeViews.map(({ dispensary, views }, storeIndex) => (
             // one listitem per STORE; deals are grouped inside the card
             <li key={dispensary.id}>
               <DealCard
                 dispensary={dispensary}
-                deals={deals.map((deal) => ({
-                  deal,
-                  windowText: windowText(deal),
-                  countdown: countdownText(deal, now),
-                }))}
+                deals={views}
                 gasCostText={gasCostText(dispensary.distanceMiles)}
+                rotatingIconSrcs={rotatingByStore[storeIndex]}
               />
             </li>
           ))}

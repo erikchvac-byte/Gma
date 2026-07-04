@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { KeyboardEvent as ReactKeyboardEvent } from 'react'
 import { useFuelEconomy } from '../hooks/useFuelEconomy'
 import { Icon, IconButton, Notice, Select } from './ui'
+import carArt from '../assets/location-icons/car.webp'
 
 interface VehicleSelectorProps {
   open: boolean
@@ -132,9 +133,7 @@ export default function VehicleSelector({ open, onClose, mpg, label, onMpgChange
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-            <span aria-hidden="true" style={{ color: 'var(--accent)' }}>
-              <Icon name="car" size={20} />
-            </span>
+            <img src={carArt} alt="" aria-hidden="true" width={22} height={22} className="gma-location-pin" />
             <h2 style={{ fontSize: 'var(--text-lg)', fontWeight: 'var(--weight-semibold)', margin: 0 }}>
               Your vehicle
             </h2>
