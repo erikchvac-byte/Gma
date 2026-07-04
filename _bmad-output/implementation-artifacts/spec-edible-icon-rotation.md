@@ -2,7 +2,7 @@
 title: 'Edible deal-icon rotation pool (11 images, shuffled cycles, no repeats)'
 type: 'feature'
 created: '2026-07-04'
-status: 'in-progress'
+status: 'done'
 context: []
 baseline_commit: 'adc396b3540e84bcd83418ef04061fcfae3843fa'
 ---
@@ -50,18 +50,24 @@ baseline_commit: 'adc396b3540e84bcd83418ef04061fcfae3843fa'
 
 ## Tasks & Acceptance
 
-**Execution:**
-- [ ] `client/src/assets/deal-icons/edibles/edible-01.webp` … `edible-11.webp` -- convert the 11 `edds` JPEGs with the ADR-067 ImageMagick recipe -- same visual tile treatment as shipped icons (verify `magick` is on PATH first; HALT if missing)
-- [ ] `client/src/utils/edibleIconPool.ts` -- NEW: import the 11 assets as `EDIBLE_POOL_SRCS`; export `mulberry32(seed)` seeded PRNG + `buildEdibleIconSequence(count, rng): string[]` — concatenated Fisher-Yates shuffles of the pool, so any 11-window aligned chunk has no repeats and each cycle's order differs; generation is prefix-stable (growing `count` never changes earlier entries)
-- [ ] `client/src/components/DealFeed.tsx` -- hold a seed in `useState(() => …)` (stable for the mount, new each visit); after `storeGroups`, build each store's `DealView[]` once, count `'edible'` occurrences via `buildDealBlocks`, slice the sequence into a per-store `edibleIconSrcs` array, pass as new `DealCard` prop
-- [ ] `client/src/components/DealCard.tsx` -- accept `edibleIconSrcs: string[]` (default `[]`); while mapping `block.icons`, an `'edible'` name takes the next unconsumed src (render-scope counter), falling back to `DEAL_ICON_SRC.edible` on underflow; all other names unchanged
-- [ ] `client/src/utils/edibleIconPool.test.ts` -- NEW: no repeats within each 11-chunk; all 11 used before any reuse; cycles differ under a real rng; prefix stability; count 0; count > 22
-- [ ] `client/src/components/DealCard.test.tsx` -- edible icon renders the provided src; underflow falls back to legacy src; non-edible icons untouched
+**Execution:** *(module generalized to `dealIconPools.ts` when Erik added the bud family mid-flight)*
+- [x] `client/src/assets/deal-icons/edibles/edible-01.webp` … `edible-11.webp` -- 11 `edds` JPEGs converted with the ADR-067 ImageMagick recipe (edible-09 needed `-fuzz 2%` + own-bg padding: white lollipop stick on off-white was erased by the standard 10% fuzz)
+- [x] `client/src/assets/deal-icons/buds/bud-01.webp` … `bud-04.webp` -- 4 `BUDS FLOWER ICONS` JPEGs, same recipe (scope added by Erik)
+- [x] `client/src/utils/dealIconPools.ts` -- NEW: family-keyed `ROTATING_ICON_POOLS` (`edible`, `bud`) + `mulberry32(seed)` + `buildIconSequence(pool, count, rng)` — concatenated Fisher-Yates shuffles, aligned pool-sized windows repeat-free, prefix-stable
+- [x] `client/src/components/DealFeed.tsx` -- per-mount seed via `useState(() => …)`; builds each store's `DealView[]` once, counts rotating-family occurrences via `buildDealBlocks`, slices feed-wide per-family sequences into a per-store `rotatingIconSrcs` prop
+- [x] `client/src/components/DealCard.tsx` -- accepts `rotatingIconSrcs?: RotatingIconSrcs`; rotating names consume srcs in block reading order (render-scope counters), underflow falls back to `DEAL_ICON_SRC[name]`; non-pool names unchanged
+- [x] `client/src/utils/dealIconPools.test.ts` -- NEW: pool sizes/distinctness; empty pool/count 0; window distinctness past two cycles; cycle reshuffle; prefix stability; seed determinism
+- [x] `client/src/components/DealCard.test.tsx` -- rotation srcs consumed in block order (edible+bud); underflow fallback; non-pool family (vape) never rotates
 
 **Acceptance Criteria:**
 - Given 11+ edible deals in the feed, when the page renders, then no edible image repeats before all 11 have appeared, and the next cycle's order differs from the first (per-mount shuffle).
 - Given an open page, when the countdown clock re-renders the feed each second, then every edible deal's image is identical to the previous render.
 - Given a deal matched as `drink` (or any non-edible family), when rendered, then it shows its existing dedicated icon — never a pool image.
+
+## Spec Change Log
+
+- 2026-07-04 (during implementation): Erik expanded scope — same rotation for the `bud` family (4 images, `BUDS FLOWER ICONS`); pool mechanism generalized to `dealIconPools.ts` instead of edible-specific. KEEP: seeded per-mount PRNG + prefix-stable sequence (the anti-flicker design).
+- 2026-07-04 (same session, related fix riding this branch): PR #58's squash had silently dropped its car-art commit (`VehicleBar`/`VehicleSelector` still on the stroke glyph); `e1e1be6` cherry-picked so Erik's miles-slider car art ships with this PR. Not part of this spec's frozen intent — recorded here for PR traceability.
 
 ## Verification
 
