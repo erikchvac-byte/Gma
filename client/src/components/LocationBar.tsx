@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import LocationInput from './LocationInput'
-import { Button, Icon } from './ui'
+import { Button } from './ui'
+import pinArt from '../assets/location-icons/pin.webp'
 import type { LocationStatus } from '../hooks/useLocation'
 import type { UserLocation } from '../types'
 
@@ -47,7 +48,7 @@ export default function LocationBar({
     <section className="gma-location-bar" aria-label="Your location">
       <div className="gma-location-bar__row">
         <span className="gma-location-bar__label">
-          <Icon name="map-pin" size={16} />
+          <img src={pinArt} alt="" aria-hidden="true" width={18} height={18} className="gma-location-pin" />
           {summary ?? 'No location set — distances and gas costs are hidden'}
         </span>
         {location !== null && (

@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react'
 import type { CSSProperties, KeyboardEvent as ReactKeyboardEvent } from 'react'
 import LocationInput from './LocationInput'
-import { Button, Icon } from './ui'
+import { Button } from './ui'
+import pinArt from '../assets/location-icons/pin.webp'
 import type { LocationStatus } from '../hooks/useLocation'
 
 interface LocationOnboardingProps {
@@ -59,9 +60,15 @@ export default function LocationOnboarding({
       style={overlayStyle}
     >
       <div style={cardStyle}>
-        <span aria-hidden="true" style={tileStyle}>
-          <Icon name="map-pin" size={28} />
-        </span>
+        <img
+          src={pinArt}
+          alt=""
+          aria-hidden="true"
+          width={56}
+          height={56}
+          style={tileStyle}
+          className="gma-location-pin"
+        />
         <h1 id="loc-onboard-heading" style={headingStyle}>
           Where are you?
         </h1>
@@ -106,15 +113,11 @@ const cardStyle: CSSProperties = {
   borderRadius: 'var(--radius-2xl)',
 }
 
+// the art carries its own background, so the tile just rounds the corners
 const tileStyle: CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
   width: 56,
   height: 56,
   borderRadius: 'var(--radius-lg)',
-  background: 'var(--accent-soft)',
-  color: 'var(--accent)',
 }
 
 const headingStyle: CSSProperties = {

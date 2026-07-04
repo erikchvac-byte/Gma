@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
-import { Button, Icon, Notice, TextField } from './ui'
+import { Button, Notice, TextField } from './ui'
+import pinArt from '../assets/location-icons/pin.webp'
 import type { LocationStatus } from '../hooks/useLocation'
 
 interface LocationInputProps {
@@ -63,7 +64,9 @@ export default function LocationInput({ status, onUseGps, onZipSubmit }: Locatio
           variant="primary"
           onClick={handleUseGps}
           disabled={locating}
-          iconLeft={<Icon name="map-pin" size={16} />}
+          iconLeft={
+            <img src={pinArt} alt="" aria-hidden="true" width={16} height={16} className="gma-location-pin" />
+          }
           className="gma-location-input__gps"
         >
           {locating ? 'Locating…' : 'Use my location'}
