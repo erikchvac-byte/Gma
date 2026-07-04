@@ -1,6 +1,7 @@
 import { render, screen, within } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
 import DealCard, { type DealView } from './DealCard'
+import { DEAL_ICON_SRC } from '../utils/dealIconAssets'
 import type { Deal, Dispensary } from '../types'
 
 const makeDeal = (overrides: Partial<Deal>): Deal => ({
@@ -542,6 +543,66 @@ describe('DealCard', () => {
     // four items named → four glyphs, in the order the text spells them
     expect(row?.querySelectorAll('img')).toHaveLength(4)
     expect(row).toHaveAttribute('aria-label', 'Concentrates, Flower, Pre-rolls, Vapes')
+  })
+
+  it('renders rotating-pool srcs for edible and bud glyphs, consumed in block order', () => {
+    const { container } = render(
+      <DealCard
+        dispensary={makeDispensary({})}
+        deals={[
+          view({ type: 'daily', description: '20% Off Edibles', discountPct: 20, startTime: null, endTime: null }, 'Active today', null),
+          view({ type: 'daily', description: '25% Off Gummies and Flower', discountPct: 25, startTime: null, endTime: null }, 'Active today', null),
+        ]}
+        gasCostText={null}
+        rotatingIconSrcs={{ edible: ['pool-edible-a.webp', 'pool-edible-b.webp'], bud: ['pool-bud-a.webp'] }}
+      />,
+    )
+
+    const srcs = Array.from(container.querySelectorAll('.gma-deal-icon')).map((img) =>
+      img.getAttribute('src'),
+    )
+    // block 1: edible → first edible src; block 2: gummies (edible) then flower
+    // (bud) → second edible src, first bud src
+    expect(srcs).toEqual(['pool-edible-a.webp', 'pool-edible-b.webp', 'pool-bud-a.webp'])
+  })
+
+  it('falls back to the legacy single art when the pool srcs underflow or are absent', () => {
+    const { container } = render(
+      <DealCard
+        dispensary={makeDispensary({})}
+        deals={[
+          view({ type: 'daily', description: '20% Off Edibles', discountPct: 20, startTime: null, endTime: null }, 'Active today', null),
+          view({ type: 'daily', description: '25% Off Gummies', discountPct: 25, startTime: null, endTime: null }, 'Active today', null),
+        ]}
+        gasCostText={null}
+        // only ONE src supplied for TWO edible glyphs; no card renders broken
+        rotatingIconSrcs={{ edible: ['pool-edible-a.webp'] }}
+      />,
+    )
+
+    const srcs = Array.from(container.querySelectorAll('.gma-deal-icon')).map((img) =>
+      img.getAttribute('src'),
+    )
+    expect(srcs[0]).toBe('pool-edible-a.webp')
+    // underflow → legacy edible.webp asset, never undefined/broken
+    expect(srcs[1]).toBe(DEAL_ICON_SRC.edible)
+    expect(srcs[1]).toBeTruthy()
+  })
+
+  it('never rotates a non-pool family — vape keeps its dedicated art even with pools supplied', () => {
+    const { container } = render(
+      <DealCard
+        dispensary={makeDispensary({})}
+        deals={[
+          view({ type: 'daily', description: '30% Off Vapes', discountPct: 30, startTime: null, endTime: null }, 'Active today', null),
+        ]}
+        gasCostText={null}
+        rotatingIconSrcs={{ edible: ['pool-edible-a.webp'], bud: ['pool-bud-a.webp'] }}
+      />,
+    )
+
+    const img = container.querySelector('.gma-deal-icon')
+    expect(img?.getAttribute('src')).toBe(DEAL_ICON_SRC.vape)
   })
 
   it('tags a deal that names no product with the single special-pricing glyph', () => {

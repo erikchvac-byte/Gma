@@ -1,8 +1,12 @@
 import type { Dispensary } from '../types'
 import { Card, Icon } from './ui'
 import { buildDealBlocks, storeUrgencyBadge, type DealView } from '../utils/dealView'
-import { DEAL_ICON_LABEL } from '../utils/dealIcons'
+import { DEAL_ICON_LABEL, type DealIconName } from '../utils/dealIcons'
 import { DEAL_ICON_SRC, BOGO_BADGE_SRC } from '../utils/dealIconAssets'
+import { ROTATING_ICON_POOLS, type RotatingIconName, type RotatingIconSrcs } from '../utils/dealIconPools'
+
+// a family rotates iff it has a pool; non-pool names keep their single art
+const isRotating = (name: DealIconName): name is RotatingIconName => name in ROTATING_ICON_POOLS
 
 export type { DealView }
 
@@ -13,6 +17,11 @@ export interface DealCardProps {
   // pre-formatted '$X.XX' from gasCost.ts; per-store (the trip), shown once.
   // null → distance-only trip chip
   gasCostText: string | null
+  // rotation-pool srcs for this card's rotating glyphs (edible, bud), one per
+  // occurrence in block reading order (assigned feed-wide by DealFeed so the
+  // no-repeat cycle spans cards). Consumed in order; underflow falls back to
+  // the family's legacy single art rather than a broken img.
+  rotatingIconSrcs?: RotatingIconSrcs
 }
 
 // url is a required field but not validated upstream (scraped/ingested data) —
@@ -28,7 +37,20 @@ function isLinkableUrl(url: string): boolean {
 
 // Purely presentational: receives data and computed values as props.
 // No fetching, no intervals, no hooks.
-export default function DealCard({ dispensary, deals, gasCostText }: DealCardProps) {
+export default function DealCard({ dispensary, deals, gasCostText, rotatingIconSrcs = {} }: DealCardProps) {
+  // next unconsumed pool src per family; render-scoped so every render replays
+  // the same assignment (the srcs themselves are stable — DealFeed derives them
+  // from a per-mount seed)
+  const nextRotating: Partial<Record<RotatingIconName, number>> = {}
+  const iconSrc = (name: DealIconName): string => {
+    if (isRotating(name)) {
+      const i = nextRotating[name] ?? 0
+      nextRotating[name] = i + 1
+      const src = rotatingIconSrcs[name]?.[i]
+      if (src !== undefined) return src
+    }
+    return DEAL_ICON_SRC[name]
+  }
   // CAP-2: an expired store (its cached deals timed out per DEAL_EXPIRY_MS,
   // signalled by DealFeed passing an empty deals list) keeps its identity and
   // trip info but shows a "No current deals" state instead of stale deal blocks —
@@ -158,7 +180,7 @@ export default function DealCard({ dispensary, deals, gasCostText }: DealCardPro
                   <img
                     key={name}
                     className="gma-deal-icon"
-                    src={DEAL_ICON_SRC[name]}
+                    src={iconSrc(name)}
                     alt=""
                     width={28}
                     height={28}
