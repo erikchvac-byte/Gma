@@ -2,7 +2,7 @@ import type { Dispensary } from '../types'
 import { Card, Icon } from './ui'
 import { buildDealBlocks, storeUrgencyBadge, type DealView } from '../utils/dealView'
 import { DEAL_ICON_LABEL } from '../utils/dealIcons'
-import { DEAL_ICON_SRC } from '../utils/dealIconAssets'
+import { DEAL_ICON_SRC, BOGO_BADGE_SRC } from '../utils/dealIconAssets'
 
 export type { DealView }
 
@@ -117,8 +117,17 @@ export default function DealCard({ dispensary, deals, gasCostText }: DealCardPro
         {buildDealBlocks(deals).map((block) => (
           <div key={block.key} className="gma-deal-block">
             {/* BOGO renders its own badge instead of a percent (a bogo shown as a flat
-                "N% off" over-states it); the percent, if any, stays in the title text. */}
-            {block.isBogo && <span className="gma-deal-block__bogo">BOGO</span>}
+                "N% off" over-states it); the percent, if any, stays in the title text.
+                The badge is Erik's BOGO art; alt keeps the accessible name "BOGO". */}
+            {block.isBogo && (
+              <img
+                className="gma-deal-block__bogo"
+                src={BOGO_BADGE_SRC}
+                alt="BOGO"
+                width={28}
+                height={28}
+              />
+            )}
             {/* discount magnitude in the amber discount accent (ADR-041: full
                 opacity, weight-only ramp); null discount → no figure / no "off".
                 pctLabel is "N%" for a single tier, "min–max%" when collapsed. */}

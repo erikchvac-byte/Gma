@@ -292,8 +292,9 @@ describe('DealCard', () => {
     )
 
     const card = screen.getByRole('article')
-    // the BOGO badge replaces the amber "40% off" magnitude…
-    expect(within(card).getByText('BOGO', { selector: '.gma-deal-block__bogo' })).toBeInTheDocument()
+    // the BOGO badge (Erik's art, accessible name "BOGO") replaces the amber "40% off" magnitude…
+    const badge = within(card).getByAltText('BOGO')
+    expect(badge).toHaveClass('gma-deal-block__bogo')
     expect(card.querySelector('.gma-deal-block__pct')).toBeNull()
     expect(within(card).queryByText('off', { selector: '.gma-deal-block__off' })).toBeNull()
     // …and the percent stays visible in the title text (not stripped)

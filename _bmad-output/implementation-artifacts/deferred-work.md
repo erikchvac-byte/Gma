@@ -9,7 +9,7 @@ Source: `investigations/data-collection-audit-2026-07-03.md` + `products-data-fi
 
 ## DEFERRED — from review of spec-potency-extraction (2026-07-03)
 
-Surfaced by the 3-reviewer pass; both are policy calls, not drive-by fixes. Erik was AFK at the review checkpoint — the shipped semantics are the spec-as-approved defaults, renegotiable:
+Surfaced by the 3-reviewer pass; both are policy calls, not drive-by fixes. Erik was AFK at the review checkpoint — the shipped semantics were the spec-as-approved defaults. **RATIFIED by Erik 2026-07-03 ("keep both"): totalTerpenes stays collected-verbatim/unit-undocumented, and honest-null overwrite stays.** The two escalation triggers below remain live (act only if accrued data shows out-of-range values / field-level flakiness):
 
 - **Potency magnitude sanity bounds** — `potency()` now rejects negatives (impossible under any unit) but any positive finite value commits as truth, so the known POS-typo class ("21.5% entered as 2150") is served verbatim by `/api/products` with no flag. A guard needs a unit-aware policy (PERCENTAGE ≤ 100 is obvious; MILLIGRAMS bounds are not) — decide once real out-of-range values appear in the accrued data.
 - **Enrichment retention on provider glitch (null-clobber)** — record-level `thc`/`cbd`/etc. refresh to the latest scrape like `name`/`brand`, so one scrape with a missing/malformed `THCContent` overwrites known potency with `null` until the payload heals (both hunters' top finding). Kept deliberately: honest-null mirrors the latest payload, scrapes are daily so a glitch heals in ~a day. If accrued data shows real field-level flakiness, add keep-last-known-on-null (or a glitch flag) in `applyProductObservations` — note that changes merge semantics and needs Erik's sign-off.
