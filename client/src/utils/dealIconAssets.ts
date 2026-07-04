@@ -17,6 +17,7 @@ import tincture from '../assets/deal-icons/tincture.webp'
 import storeWide from '../assets/deal-icons/store-wide.webp'
 import priceDrop from '../assets/deal-icons/price-drop.webp'
 import specialPricing from '../assets/deal-icons/special-pricing.webp'
+import bogoBadge from '../assets/deal-icons/bogo.webp'
 
 export const DEAL_ICON_SRC: Record<DealIconName, string> = {
   bud,
@@ -34,3 +35,8 @@ export const DEAL_ICON_SRC: Record<DealIconName, string> = {
   'price-drop': priceDrop,
   'special-pricing': specialPricing,
 }
+
+// The BOGO badge is NOT a DealIconName — it replaces the discount figure in the
+// deal block (DealCard), not the per-item tag row. Same provenance as the rest:
+// Erik's art, resized only.
+export const BOGO_BADGE_SRC: string = bogoBadge
