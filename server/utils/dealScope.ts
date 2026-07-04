@@ -35,10 +35,12 @@ import type { Deal, Dispensary } from '../../client/src/types/index.js'
 // a bare category / storewide banner still covers a flag-carrying record, its weight just
 // isn't asserted.
 
-// Out-of-catalog category cues. A banner naming any of these targets products we do NOT
-// scrape (value-analysis §4) → classified `unsupported-category`, counted, linked to
-// nothing. This wins even over a storewide word ("all edibles" is edibles-scoped, not
-// storewide) so we never fan an out-of-catalog banner across the whole flower menu.
+// Non-linkable category cues. A banner naming any of these targets products outside the
+// banner-linkable set → classified `unsupported-category`, counted, linked to nothing.
+// (Edibles ARE collected since spec-category-expansion, but stay non-linkable: no honest
+// weight/per-item basis yet — deliberate under-linking.) This wins even over a storewide
+// word ("all edibles" is edibles-scoped, not storewide) so we never fan such a banner
+// across the whole flower menu.
 const UNSUPPORTED_CUES: RegExp[] = [
   /\bedibles?\b/,
   /\bgummies?\b/,
@@ -137,9 +139,22 @@ function hasPricedOptionAtWeight(rec: ProductRecord, weightGrams: number): boole
   })
 }
 
+// The categories a banner may link to — exactly the ScrapedCategory set. products.json
+// now also carries Edible/Concentrate records (spec-category-expansion), but they stay
+// NON-linkable in EVERY path including storewide: without this filter a "20% off entire
+// store" banner would silently sweep every edible SKU into productIds/linkedSkuCount,
+// changing the bridge's output as a side effect of collection widening. Banner-linking
+// the new categories is a deliberate future decision (deferred-work), not an accident.
+const BANNER_LINKABLE_CATEGORIES: ReadonlySet<string> = new Set<ScrapedCategory>([
+  'Flower',
+  'Vaporizers',
+  'Pre-Rolls',
+])
+
 // The SKUs a resolved scope covers WITHIN one store (AC2). Same-store only — the caller
 // passes just this store's records. Returns productIds; empty ⇒ caller flags zero-match.
-function matchStoreProducts(scope: DealScope, storeProducts: ProductRecord[]): string[] {
+function matchStoreProducts(scope: DealScope, allStoreProducts: ProductRecord[]): string[] {
+  const storeProducts = allStoreProducts.filter((r) => BANNER_LINKABLE_CATEGORIES.has(r.category))
   if (scope.kind === 'storewide') {
     // All of the store's priced SKUs. Flag-carrying records ARE included: a storewide
     // banner covers them, we just don't assert their weight (AC4b is weight-scoped only).

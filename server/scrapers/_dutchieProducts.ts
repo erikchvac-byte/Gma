@@ -13,9 +13,12 @@ import type { PotencyRange, RawProduct, RawProductOption } from '../types/index.
 // _bmad-output/implementation-artifacts/investigations/menu-pricing-source-inventory.md
 // and the real fixture __fixtures__/dutchie-products.json).
 
-// Launch scope is three weight/pack-based categories (spec Assumptions). Anything
-// else (Edible, Concentrate) is dropped at extraction — out of launch scope.
-export const DEFAULT_PRODUCT_CATEGORIES = ['Pre-Rolls', 'Flower', 'Vaporizers'] as const
+// Collection scope: the five `type` values confirmed in the live FilteredProducts
+// capture (2026-06-24). Launch was the three weight/pack-based categories; Edible +
+// Concentrate added by spec-category-expansion (collection fix #2, audit gap G2).
+// Weight-based unit economics apply only to a subset — see WEIGHT_BASED_CATEGORIES
+// in normalizeProduct.ts (Edible is collected verbatim with no per-gram math).
+export const DEFAULT_PRODUCT_CATEGORIES = ['Pre-Rolls', 'Flower', 'Vaporizers', 'Edible', 'Concentrate'] as const
 
 // Request preset for the PRODUCT menu: same browser tier + GraphQL interception as
 // the specials request, but waits specifically for the FilteredProducts op. Like the

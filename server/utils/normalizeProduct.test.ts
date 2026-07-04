@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { normalizeProduct, parseGrams, parsePackCount } from './normalizeProduct.js'
+import { normalizeProduct, parseGrams, parsePackCount, WEIGHT_BASED_CATEGORIES } from './normalizeProduct.js'
+import { DEFAULT_PRODUCT_CATEGORIES } from '../scrapers/_dutchieProducts.js'
 import type { RawProduct } from '../types/index.js'
 
 const AT = '2026-06-24T12:00:00.000Z'
@@ -202,5 +203,96 @@ describe('normalizeProduct — flower / vape use $/gram only (CAP-5)', () => {
     )
     expect(rec.flags).toContain('unparseable-weight')
     expect(rec.history[0].options[0].pricePerGram).toBeNull()
+  })
+})
+
+describe('category set coupling (guard rail, spec-category-expansion)', () => {
+  // The two sets are coupled by convention across files; a pluralization typo or a
+  // future 6th collected category must fail HERE, not silently route every record
+  // to nonComparableCategoryCount.
+  it('every weight-based category is a collected category', () => {
+    const collected = new Set<string>(DEFAULT_PRODUCT_CATEGORIES)
+    for (const c of WEIGHT_BASED_CATEGORIES) expect(collected).toContain(c)
+  })
+
+  it('Edible is collected but deliberately NOT weight-based', () => {
+    expect([...DEFAULT_PRODUCT_CATEGORIES]).toContain('Edible')
+    expect(WEIGHT_BASED_CATEGORIES.has('Edible')).toBe(false)
+  })
+})
+
+describe('normalizeProduct — Edible / Concentrate basis (spec-category-expansion)', () => {
+  const edible: RawProduct = {
+    productId: 'wyld-1',
+    name: 'Wyld Raspberry Gummies 100mg',
+    category: 'Edible',
+    brand: 'Wyld',
+    strainType: null,
+    special: false,
+    weightField: null,
+    netWeightMg: null,
+    thc: { unit: 'MILLIGRAMS', low: 100, high: 100 },
+    cbd: null,
+    totalTerpenes: null,
+    effects: null,
+    subcategory: 'gummies',
+    options: [{ option: '100mg', basePrice: 25, specialPrice: null, quantityAvailable: 10 }],
+  }
+
+  it('an edible gets NO weight parse and NO per-gram figures — "100mg" is mg-THC, not weight', () => {
+    const rec = normalizeProduct(edible, 'store', AT)
+    const o = rec.history[0].options[0]
+    expect(o.option).toBe('100mg') // label stored verbatim, nothing lost
+    expect(o.weightGrams).toBeNull() // NOT 0.1 — that would be a false weight
+    expect(o.pricePerGram).toBeNull()
+    expect(o.specialPricePerGram).toBeNull()
+    expect(o.pricePerItem).toBeNull() // per-item stays pre-roll-only, unchanged
+    expect(o.basePrice).toBe(25) // price itself is collected as-is
+  })
+
+  it('an edible is NOT flagged unparseable-weight — weight is n/a, not a defect', () => {
+    const rec = normalizeProduct(edible, 'store', AT)
+    expect(rec.flags).toEqual([])
+    expect(rec.thc).toEqual({ unit: 'MILLIGRAMS', low: 100, high: 100 }) // potency accrues
+  })
+
+  it('an edible pack count still parses from the name; $/item stays null (pre-roll-only)', () => {
+    const rec = normalizeProduct({ ...edible, name: 'Gummies 10pk' }, 'store', AT)
+    expect(rec.packCount).toBe(10)
+    expect(rec.flags).not.toContain('assumed-single') // pre-roll rule does not leak
+    expect(rec.history[0].options[0].pricePerItem).toBeNull()
+  })
+
+  it('a concentrate is weight-based: full $/gram math, labels are true weights', () => {
+    const rec = normalizeProduct(
+      {
+        ...edible,
+        productId: 'oleum-1',
+        name: 'GG4 Live Resin',
+        category: 'Concentrate',
+        brand: 'Oleum',
+        thc: null,
+        subcategory: 'live-resin',
+        options: [{ option: '1g', basePrice: 30, specialPrice: 24, quantityAvailable: 6 }],
+      },
+      'store',
+      AT,
+    )
+    expect(rec.flags).toEqual([])
+    const o = rec.history[0].options[0]
+    expect(o).toMatchObject({ weightGrams: 1, pricePerGram: 30, specialPricePerGram: 24 })
+  })
+
+  it('a concentrate with an unparseable label IS flagged — weight was expected', () => {
+    const rec = normalizeProduct(
+      {
+        ...edible,
+        category: 'Concentrate',
+        options: [{ option: 'each', basePrice: 30, specialPrice: null, quantityAvailable: 1 }],
+      },
+      'store',
+      AT,
+    )
+    expect(rec.flags).toContain('unparseable-weight')
   })
 })

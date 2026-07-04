@@ -148,14 +148,49 @@ describe('transformProducts (extraction + price alignment, CAP-1/CAP-2)', () => 
     expect(prod.options[0].basePrice).toBe(11)
   })
 
-  it('drops out-of-launch-scope categories (Edible / Concentrate)', () => {
-    const edible = { _id: 'e1', Name: 'Gummies', type: 'Edible', Options: ['10mg'] }
-    const concentrate = { _id: 'c1', Name: 'Wax', type: 'Concentrate', Options: ['1g'] }
-    expect(transformProducts([page(edible, concentrate)])).toEqual([])
+  it('keeps Edible and Concentrate products (spec-category-expansion)', () => {
+    // Live-shaped per the capture's field table: type is singular, options carry
+    // an mg label (Edible) / true-weight label (Concentrate).
+    const edible = {
+      _id: 'e1',
+      Name: 'Wyld Raspberry Gummies 100mg',
+      type: 'Edible',
+      brandName: 'Wyld',
+      Options: ['100mg'],
+      POSMetaData: { children: [{ option: '100mg', price: 25, quantityAvailable: 10 }] },
+    }
+    const concentrate = {
+      _id: 'c1',
+      Name: 'GG4 Live Resin',
+      type: 'Concentrate',
+      brandName: 'Oleum',
+      Options: ['1g'],
+      POSMetaData: { children: [{ option: '1g', price: 30, quantityAvailable: 6 }] },
+    }
+    const products = transformProducts([page(edible, concentrate)])
+    expect(products.map((p) => p.category).sort()).toEqual(['Concentrate', 'Edible'])
+    // option labels come through VERBATIM — nothing is parsed away at extraction
+    expect(products.find((p) => p.category === 'Edible')!.options).toEqual([
+      { option: '100mg', basePrice: 25, specialPrice: null, quantityAvailable: 10 },
+    ])
+    expect(products.find((p) => p.category === 'Concentrate')!.options).toEqual([
+      { option: '1g', basePrice: 30, specialPrice: null, quantityAvailable: 6 },
+    ])
   })
 
-  it('keeps exactly the three launch categories', () => {
-    expect([...DEFAULT_PRODUCT_CATEGORIES]).toEqual(['Pre-Rolls', 'Flower', 'Vaporizers'])
+  it('still drops categories outside the collection scope (never confirmed in payload)', () => {
+    const topical = { _id: 't1', Name: 'CBD Balm', type: 'Topicals', Options: ['1oz'] }
+    expect(transformProducts([page(topical)])).toEqual([])
+  })
+
+  it('keeps exactly the five collected categories', () => {
+    expect([...DEFAULT_PRODUCT_CATEGORIES]).toEqual([
+      'Pre-Rolls',
+      'Flower',
+      'Vaporizers',
+      'Edible',
+      'Concentrate',
+    ])
   })
 
   it('skips products with no id, no name, or no options (never throws)', () => {

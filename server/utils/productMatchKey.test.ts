@@ -87,6 +87,37 @@ describe('strainToken', () => {
   })
 })
 
+describe('deriveMatchKey — Concentrate form keying (spec-category-expansion)', () => {
+  const conc = (subcategory: string | null) =>
+    rec({ category: 'Concentrate', name: 'GG4', brand: 'Oleum', subcategory })
+
+  it('splits the same brand+strain across concentrate FORMS — a $15 distillate never "beats" a $45 live resin', () => {
+    const liveResin = deriveMatchKey(conc('live-resin'))
+    const distillate = deriveMatchKey(conc('distillate'))
+    expect('key' in liveResin && 'key' in distillate).toBe(true)
+    expect(liveResin).not.toEqual(distillate)
+  })
+
+  it('matches concentrates across stores when both state the same form', () => {
+    expect(deriveMatchKey(conc('live-resin'))).toEqual(
+      deriveMatchKey(rec({ ...conc('live-resin'), dispensaryId: 'store-b', productId: 'p2' })),
+    )
+  })
+
+  it('null-subcategory concentrates still match each other (under-match is the safe bias)', () => {
+    expect(deriveMatchKey(conc(null))).toEqual(
+      deriveMatchKey(rec({ ...conc(null), dispensaryId: 'store-b' })),
+    )
+    expect(deriveMatchKey(conc(null))).not.toEqual(deriveMatchKey(conc('live-resin')))
+  })
+
+  it('non-Concentrate keys IGNORE subcategory — every committed key is unchanged', () => {
+    expect(deriveMatchKey(rec({ subcategory: 'premium-flower' }))).toEqual(
+      deriveMatchKey(rec({ subcategory: null })),
+    )
+  })
+})
+
 describe('deriveMatchKey', () => {
   it('produces the SAME key for the same product at different stores', () => {
     const a = deriveMatchKey(rec({ dispensaryId: 'store-a', name: 'Libre Cannabis Flower GG4' }))

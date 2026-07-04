@@ -26,12 +26,13 @@ const BASE = 'https://weedmaps.com/dispensaries'
 const USER_AGENT =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
 
-// Launch scope: the same three weight/pack categories the Dutchie product scraper keeps
-// (DEFAULT_PRODUCT_CATEGORIES). Anything else is dropped at extraction. The shallow category
+// Collection scope: the same categories the Dutchie product scraper keeps
+// (DEFAULT_PRODUCT_CATEGORIES — widened to Edible/Concentrate by spec-category-expansion).
+// Anything else is dropped at extraction. The shallow category
 // subpages we crawl (gate caveat #1: do NOT exhaustively paginate the 1,500-product catalog).
 // These are best-effort hints — the bare dispensary landing already returns a menu slice, and
 // every page degrades to [] on a miss, so a wrong/redirecting slug is harmless.
-const DEFAULT_CATEGORY_SLUGS = ['flower', 'pre-roll', 'vape-pens'] as const
+const DEFAULT_CATEGORY_SLUGS = ['flower', 'pre-roll', 'vape-pens', 'edibles', 'concentrates'] as const
 
 // Coerce an unknown to a finite number or null (prices arrive as numbers but stay defensive
 // against nulls / drift). Mirrors `_dutchieProducts.num`.
@@ -128,8 +129,18 @@ type LaunchCategory = (typeof DEFAULT_PRODUCT_CATEGORIES)[number]
 const CATEGORY_RULES: { match: RegExp; category: LaunchCategory }[] = [
   // pre-roll BEFORE flower (an "infused pre-roll" ancestor must not fall through to Flower)
   { match: /pre[-\s]?roll/, category: 'Pre-Rolls' },
+  // edible BEFORE vape/flower: an Edibles-ancestor item whose sub-slug carries a launch
+  // word ("flower-infused honey") must not be misfiled weight-based — its mg label would
+  // then parse as a false weight, the exact corruption the Edible basis rule prevents.
+  // Word-bounded so a token merely CONTAINING the cue ("incredibles") cannot trip it.
+  // (spec-category-expansion; the root ancestor word is always in the haystack, and
+  // out-of-vocab still drops — under-matching is the safe bias, ADR-062.)
+  { match: /\bedibles?\b/, category: 'Edible' },
   { match: /vape|vapor|cartridge|\bcart\b|\bpen/, category: 'Vaporizers' },
   { match: /flower/, category: 'Flower' },
+  // concentrate stays AFTER vape so a "cartridge" filed under a Concentrates ancestor
+  // keeps mapping to Vaporizers.
+  { match: /\bconcentrates?\b/, category: 'Concentrate' },
 ]
 
 function categoryHaystack(edge: WmMenuItem['edgeCategory']): string {

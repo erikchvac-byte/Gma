@@ -79,6 +79,10 @@ describe('buildDealScopeLinks (deal→SKU bridge)', () => {
     rec('flowerUnpriced', 'kushmart-north', 'Flower', [{ option: '28g', price: null }]),
     // A different store's ounce — must NEVER be linked to a kushmart deal.
     rec('otherOunce', 'other-store', 'Flower', [{ option: '28g', price: 50 }]),
+    // Collected-but-not-banner-linkable categories (spec-category-expansion): priced,
+    // same-store — the ONLY thing keeping them out of links is the category filter.
+    rec('edible100', 'kushmart-north', 'Edible', [{ option: '100mg', price: 25 }]),
+    rec('conc1g', 'kushmart-north', 'Concentrate', [{ option: '1g', price: 30 }]),
   ])
 
   it('weight-qualified ounce scope links ONLY same-store 28g flower, excludes flagged/unpriced/other-store', () => {
@@ -105,6 +109,8 @@ describe('buildDealScopeLinks (deal→SKU bridge)', () => {
     expect(report.links).toHaveLength(1)
     // flagged record IS covered by storewide (AC4b flag-exclusion is weight-scoped only);
     // only the unpriced record and the other store drop out.
+    // edible100 + conc1g are priced and same-store, yet NOT swept in: collection
+    // widening must not silently widen the bridge (BANNER_LINKABLE_CATEGORIES).
     expect(report.links[0].productIds.sort()).toEqual(
       ['flower28', 'flower35', 'flowerFlagged', 'vape1g'].sort(),
     )
