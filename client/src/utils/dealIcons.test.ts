@@ -91,6 +91,9 @@ describe('dealIcons', () => {
     it('shatter outranks dabs when both are named (one concentrate glyph)', () => {
       expect(dealIcons('30% off Shatter and Wax')).toEqual(['shatter'])
     })
+    it('"Shatterday" is a shatter deal', () => {
+      expect(dealIcons('Shatterday')).toEqual(['shatter'])
+    })
     it('wax alone still → dabs', () => {
       expect(dealIcons('30% off Wax')).toEqual(['dabs'])
     })
@@ -110,12 +113,38 @@ describe('dealIcons', () => {
     })
   })
 
+  describe('order-scope deals — whole-order discounts get the store-wide glyph', () => {
+    it.each([
+      '50% off Online Orders',
+      '40% Off Online Orders Sun,Tues,Thurs Min $80',
+      '45% OFF ALL ONLINE ORDERS',
+      '20% Off Your Purchase Everyday from 7-8am',
+      '25% Off Items Purchased to Max Out Your Legal Limit*',
+      '20% Off Single Purchases Greater Than $100',
+      '10% Off Everyday for the Following Customer Groups (with Proof of Valid ID)',
+    ])('%s → store-wide only', (desc) => {
+      expect(dealIcons(desc)).toEqual(['store-wide'])
+    })
+
+    it('a named product keeps its own icon — "purchases" of a product is not order-scope', () => {
+      expect(dealIcons('20% off vape purchases')).toEqual(['vape'])
+    })
+  })
+
+  describe('firecrackers + sparklers are infused pre-rolls', () => {
+    it('July 4th Sale *30 PERCENT OFF FIRECRACKERS+SPARKLERS* → joint', () => {
+      expect(dealIcons('July 4th Sale *30 PERCENT OFF FIRECRACKERS+SPARKLERS*')).toEqual([
+        'joint-single',
+      ])
+    })
+  })
+
   describe('fixed-dollar price → price-drop (alongside product)', () => {
     it('$50 ounce → bud + price-drop', () => {
       expect(dealIcons('$50 Crossroads Ounce')).toEqual(['bud', 'price-drop'])
     })
     it('a spend threshold is NOT a price drop', () => {
-      expect(dealIcons('20% Off Single Purchases Greater Than $100')).toEqual(['special-pricing'])
+      expect(dealIcons('20% Off Rotating Brands When You Spend $100')).toEqual(['special-pricing'])
     })
   })
 
@@ -124,10 +153,8 @@ describe('dealIcons', () => {
       '50% off Select Brands',
       '15% Off Rotating Brands',
       '25% Off Select Products',
-      '50% off Online Orders',
       'To-Go Tuesday',
-      '25% Off Items Purchased to Max Out Your Legal Limit*',
-      '10% Off Everyday for the Following Customer Groups (with Proof of Valid ID)',
+      'July Glass Sale *30% OFF GLASS*', // no glassware icon exists yet — honest fallback
     ])('%s → special-pricing', (desc) => {
       expect(dealIcons(desc)).toEqual(['special-pricing'])
     })
