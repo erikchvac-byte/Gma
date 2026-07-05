@@ -9,6 +9,9 @@ import jointDouble from '../assets/deal-icons/joint-double.webp'
 import jointTriple from '../assets/deal-icons/joint-triple.webp'
 import concentrate from '../assets/deal-icons/concentrate.webp'
 import dabs from '../assets/deal-icons/dabs.webp'
+// shatter has no legacy single asset — the family is new (split from dabs);
+// its first pool image doubles as the underflow fallback
+import shatter from '../assets/deal-icons/shatter/shatter-01.webp'
 import diamond from '../assets/deal-icons/diamond.webp'
 import vape from '../assets/deal-icons/vape.webp'
 import edible from '../assets/deal-icons/edible.webp'
@@ -26,6 +29,7 @@ export const DEAL_ICON_SRC: Record<DealIconName, string> = {
   'joint-triple': jointTriple,
   concentrate,
   dabs,
+  shatter,
   diamond,
   vape,
   edible,

@@ -1,5 +1,3 @@
-import type { IconName } from '../components/ui/Icon'
-
 // The glyphs a deal can carry — one per "item" named in its "X% off ___" blank
 // (Erik's model: the text always spells the item; every item gets its icon, in
 // the order the text names them). A subset of IconName so each maps 1:1 to an
@@ -14,6 +12,7 @@ export type DealIconName =
   | 'joint-triple'
   | 'concentrate'
   | 'dabs'
+  | 'shatter'
   | 'diamond'
   | 'vape'
   | 'edible'
@@ -23,25 +22,10 @@ export type DealIconName =
   | 'price-drop'
   | 'special-pricing'
 
-// Compile-time proof every DealIconName is a real Icon (a typo here fails the
-// build, not silently renders nothing).
-const _assertIcons: Record<DealIconName, IconName> = {
-  bud: 'bud',
-  'joint-single': 'joint-single',
-  'joint-double': 'joint-double',
-  'joint-triple': 'joint-triple',
-  concentrate: 'concentrate',
-  dabs: 'dabs',
-  diamond: 'diamond',
-  vape: 'vape',
-  edible: 'edible',
-  drink: 'drink',
-  tincture: 'tincture',
-  'store-wide': 'store-wide',
-  'price-drop': 'price-drop',
-  'special-pricing': 'special-pricing',
-}
-void _assertIcons
+// (The old `_assertIcons` Record proving each name had an Icon.tsx SVG glyph is
+// retired: deal tags render Erik's art via DEAL_ICON_SRC, whose Record typing —
+// like DEAL_ICON_LABEL below — already fails the build on a missing name, and
+// newer families like 'shatter' never had an SVG glyph to assert against.)
 
 // Human label per glyph, for the accessible name of the icon row (a sighted
 // scanner reads the picture; a screen-reader user gets the words).
@@ -52,6 +36,7 @@ export const DEAL_ICON_LABEL: Record<DealIconName, string> = {
   'joint-triple': 'Pre-rolls (3-pack)',
   concentrate: 'Concentrates',
   dabs: 'Dabs',
+  shatter: 'Shatter',
   diamond: 'Diamonds',
   vape: 'Vapes',
   edible: 'Edibles',
@@ -87,8 +72,9 @@ interface Family {
 
 // Concentrate sub-forms, most-specific first — only ONE concentrate glyph emits.
 const CONCENTRATE_FAMILIES: readonly Family[] = [
+  { name: 'shatter', re: /\bshatter\b/i },
   { name: 'diamond', re: /\bdiamonds?\b|\blive resin\b|\bresin\b/i },
-  { name: 'dabs', re: /\bdabs?\b|\bshatter\b|\bwax\b|\bbudder\b|\bbadder\b|\bsauce\b|\bsugar\b|\brosin\b/i },
+  { name: 'dabs', re: /\bdabs?\b|\bwax\b|\bbudder\b|\bbadder\b|\bsauce\b|\bsugar\b|\brosin\b/i },
   { name: 'concentrate', re: /\bconcentrates?\b|\bextracts?\b|\brso\b/i },
 ]
 
