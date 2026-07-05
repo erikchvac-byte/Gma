@@ -698,6 +698,15 @@ Build-time verification (when implemented): fixture snapshot-test per store *sha
 **Consequences**: Generic-tag fallthrough drops 22 → ~12 live deals; the remainder ("Select Products/Brands", "Rotating Brands", glass, membership) genuinely name no product, so the tag is honest there. Firecracker-as-edible (the homemade cracker snack) is a theoretical false friend; retail listings use the term for infused pre-rolls.
 **Testing**: 10 new/updated cases in `dealIcons.test.ts` (order-scope table incl. all four live online-orders strings, Shatterday, firecrackers, vape-purchases guard, glass stays generic); full client suite 540 green; full `npm run build` clean.
 
+### ADR-075: Glass (paraphernalia) icon family — 4-art rotation pool
+**Status**: Accepted
+**Date**: 2026-07-05
+**Context**: ADR-074 left "July Glass Sale *30% OFF GLASS*" on the generic sale-tag because no glassware art existed. Erik supplied 4 pieces (`Happy-assets/GmasINCOlist/Store sale tags/Glass sale icons/`) and asked they rotate "like we do with the randoming, use them all."
+**Decision**: New `glass` `DealIconName` (label "Glassware") + PRODUCT_FAMILIES entry `\bglass(?:ware)?\b|\bbongs?\b|\bdab rigs?\b|\bwater pipes?\b|\bhand pipes?\b` — bare "pipes"/"rigs" deliberately excluded as too ambiguous. Two collision guards: FALSE_FRIENDS gains `glass house` (Glass House Farms is a flower brand), and the dabs regex gains a lookahead `\bdabs?\b(?!\s?rigs?\b)` so "dab rigs" reads as glassware, not a dab product. Assets: 4 webps at `client/src/assets/deal-icons/glass/glass-01..04.webp` (bong, spoon pipe, two twisted-pipe tiles) via the ADR-067 recipe + `-quality 55` (gradient tiles compressed 9–24KB → 1.3–3.4KB; all <4KB so Vite inlines them as data URIs — verify deploys by bundle content). Rotation: one `ROTATING_ICON_POOLS.glass` entry (ADR-073 mechanism, zero mechanism change); `glass-01` doubles as the underflow fallback in `DEAL_ICON_SRC`, same pattern as shatter.
+**Rationale**: Only honest way to icon a paraphernalia sale is dedicated glassware art; the pool mechanism was built to take new families as data.
+**Consequences**: Generic-tag fallthrough drops another deal (~12 → ~11). ADR-074's "glass stays generic" note is superseded.
+**Testing**: 5 new matcher cases (GLASS sale, glassware, bongs, water pipes + dab rigs → glass only; Glass House brand → bud) + pool-shape assertions updated. Full client suite 544 green; full `npm run build` clean.
+
 ---
 
 ## Technical Constraints
@@ -773,6 +782,7 @@ Build-time verification (when implemented): fixture snapshot-test per store *sha
 
 | Date | Change |
 |------|--------|
+| 2026-07-05 | **ADR-075 added — glass paraphernalia icon family.** Erik's 4 glass arts (bong/spoon/2 twisted pipes) wired as a rotation pool; matcher gains `glass` family with `glass house` false-friend + `dab rigs` lookahead guards. July Glass Sale now shows real art. 544 client tests green; build clean. |
 | 2026-07-05 | **ADR-074 added — deal-icon fallthrough reduction.** Generic sale-tag was on 22/45 unique live deals; matcher now sends whole-order deals (online orders / your purchase / legal-limit / spend-threshold / customer-group) to the store-wide globe, "Shatterday" to shatter, firecrackers+sparklers to joint. Glass stays generic pending Erik-supplied glassware art. 540 client tests green; full build clean. |
 | 2026-07-04 | **ADR-073 amended — vape ×3 + shatter ×2 rotation pools; shatter split from dabs into its own matcher family** (most-specific-first, `Shatter and Wax` → shatter only; `_assertIcons` retired). 532 client tests green; full build clean. |
 | 2026-07-04 | **ADR-073 added — rotating sale-tag art pools (edible ×11, bud ×4), via bmad-quick-dev.** Erik's `edds` + `BUDS FLOWER ICONS` art resized (ADR-067 pipeline) into seed-stable shuffled rotation: no repeats until a pool exhausts, fresh shuffle each cycle, stable across the feed's per-second re-renders (`mulberry32` seed per mount). Same PR cherry-picks PR #58's squash-dropped car-art commit `e1e1be6` (VehicleBar/VehicleSelector were still on the stroke glyph — squash-fileset failure mode repeated). 530 client tests green; full build clean. |

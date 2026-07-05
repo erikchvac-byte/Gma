@@ -154,9 +154,23 @@ describe('dealIcons', () => {
       '15% Off Rotating Brands',
       '25% Off Select Products',
       'To-Go Tuesday',
-      'July Glass Sale *30% OFF GLASS*', // no glassware icon exists yet — honest fallback
     ])('%s → special-pricing', (desc) => {
       expect(dealIcons(desc)).toEqual(['special-pricing'])
+    })
+  })
+
+  describe('glass — paraphernalia family (Erik art 2026-07-05)', () => {
+    it.each([
+      'July Glass Sale *30% OFF GLASS*',
+      '20% off Glassware',
+      '25% off Bongs',
+      '15% off Water Pipes and Dab Rigs',
+    ])('%s → glass', (desc) => {
+      expect(dealIcons(desc)).toEqual(['glass'])
+    })
+
+    it('"Glass House" flower brand is not glassware', () => {
+      expect(dealIcons('30% off Glass House Farms Flower')).toEqual(['bud'])
     })
   })
 
