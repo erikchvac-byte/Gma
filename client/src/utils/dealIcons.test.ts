@@ -85,8 +85,14 @@ describe('dealIcons', () => {
     it('live resin → diamond', () => {
       expect(dealIcons('30% off Live Resin')).toEqual(['diamond'])
     })
-    it('shatter → dabs', () => {
-      expect(dealIcons('30% off Shatter')).toEqual(['dabs'])
+    it('shatter → shatter (its own family, split from dabs — Erik 2026-07-04)', () => {
+      expect(dealIcons('30% off Shatter')).toEqual(['shatter'])
+    })
+    it('shatter outranks dabs when both are named (one concentrate glyph)', () => {
+      expect(dealIcons('30% off Shatter and Wax')).toEqual(['shatter'])
+    })
+    it('wax alone still → dabs', () => {
+      expect(dealIcons('30% off Wax')).toEqual(['dabs'])
     })
     it('generic concentrates → concentrate', () => {
       expect(dealIcons('30% off Concentrates')).toEqual(['concentrate'])

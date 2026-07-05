@@ -20,6 +20,11 @@ import bud01 from '../assets/deal-icons/buds/bud-01.webp'
 import bud02 from '../assets/deal-icons/buds/bud-02.webp'
 import bud03 from '../assets/deal-icons/buds/bud-03.webp'
 import bud04 from '../assets/deal-icons/buds/bud-04.webp'
+import vape01 from '../assets/deal-icons/vapes/vape-01.webp'
+import vape02 from '../assets/deal-icons/vapes/vape-02.webp'
+import vape03 from '../assets/deal-icons/vapes/vape-03.webp'
+import shatter01 from '../assets/deal-icons/shatter/shatter-01.webp'
+import shatter02 from '../assets/deal-icons/shatter/shatter-02.webp'
 
 export const ROTATING_ICON_POOLS = {
   edible: [
@@ -36,6 +41,8 @@ export const ROTATING_ICON_POOLS = {
     edible11,
   ],
   bud: [bud01, bud02, bud03, bud04],
+  vape: [vape01, vape02, vape03],
+  shatter: [shatter01, shatter02],
 } as const satisfies Record<string, readonly string[]>
 
 // The DealIconNames that rotate. `keyof` keeps this in lockstep with the pools

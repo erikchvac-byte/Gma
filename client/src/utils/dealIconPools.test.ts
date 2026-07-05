@@ -7,15 +7,17 @@ import {
 } from './dealIconPools'
 
 describe('ROTATING_ICON_POOLS', () => {
-  it('holds 11 distinct edible assets and 4 distinct bud assets', () => {
-    expect(ROTATING_ICON_POOLS.edible).toHaveLength(11)
-    expect(new Set(ROTATING_ICON_POOLS.edible).size).toBe(11)
-    expect(ROTATING_ICON_POOLS.bud).toHaveLength(4)
-    expect(new Set(ROTATING_ICON_POOLS.bud).size).toBe(4)
+  it('holds distinct assets per pool: edible x11, bud x4, vape x3, shatter x2', () => {
+    const sizes = { edible: 11, bud: 4, vape: 3, shatter: 2 } as const
+    for (const [family, size] of Object.entries(sizes)) {
+      const pool = ROTATING_ICON_POOLS[family as keyof typeof sizes]
+      expect(pool).toHaveLength(size)
+      expect(new Set(pool).size).toBe(size)
+    }
   })
 
   it('exposes exactly the rotating family names', () => {
-    expect(ROTATING_ICON_NAMES.sort()).toEqual(['bud', 'edible'])
+    expect(ROTATING_ICON_NAMES.sort()).toEqual(['bud', 'edible', 'shatter', 'vape'])
   })
 })
 
