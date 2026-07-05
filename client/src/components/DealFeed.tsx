@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import DealCard from './DealCard'
-import DealTypeFilter from './DealTypeFilter'
+import DealCategoryFilter from './DealCategoryFilter'
 import DistanceFilter, {
   DEFAULT_DISTANCE_MILES,
   MAX_DISTANCE_MILES,
@@ -11,7 +11,13 @@ import { useLocalStorage } from '../hooks/useLocalStorage'
 import { useNow } from '../hooks/useNow'
 import { hasValidTimedWindow, isDealActive, minutesUntilEnd } from '../utils/dealTime'
 import { groupDealsByStore, byDistanceMiles, type StoreGroup } from '../utils/sortDeals'
-import { areDealsExpired, buildDealBlocks, filterByType, type DealTypeSelection } from '../utils/dealView'
+import {
+  areDealsExpired,
+  buildDealBlocks,
+  categoriesPresent,
+  filterByCategory,
+  type DealCategory,
+} from '../utils/dealView'
 import {
   ROTATING_ICON_NAMES,
   ROTATING_ICON_POOLS,
@@ -66,9 +72,9 @@ export default function DealFeed({ mpg = null, location = null }: DealFeedProps)
     'gma_distance_miles',
     DEFAULT_DISTANCE_MILES,
   )
-  // chip filter — in-memory only (mirrors the distance filter), not persisted;
-  // 'all' is the default so the feed opens unfiltered
-  const [dealType, setDealType] = useState<DealTypeSelection>('all')
+  // icon-bar category filter — in-memory only (mirrors the distance filter),
+  // not persisted; null is the default so the feed opens unfiltered
+  const [selectedCategory, setSelectedCategory] = useState<DealCategory | null>(null)
   // one seed for the visit: the rotating icon pools (dealIconPools) must deal
   // the SAME images on every render — this feed re-renders each second via
   // useNow — while a fresh visit gets a fresh shuffle
@@ -129,27 +135,44 @@ export default function DealFeed({ mpg = null, location = null }: DealFeedProps)
   // so a `stale` store stays in the "sources unavailable" count and only
   // non-stale-but-time-expired stores become "No current deals" cards (CAP-2).
   const liveDispensaries = nearbyDispensaries.filter((d) => !areDealsExpired(d.lastFetchedAt, now))
-  // An "expired" card only makes sense for a store that actually has cached deals
-  // to suppress — a never-ingested/empty store has nothing to expire and stays
-  // out of the feed exactly as before (guards the deriveStoreStatus 'failed' case
-  // from surfacing as an empty card). Expired cards are also shown ONLY in the
-  // unfiltered feed: a deal-type chip narrows to ACTIVE deals of that type, which
-  // an expired store has none of, so under any chip it drops (and a chip that
-  // matches nothing correctly falls through to the "No active deals" empty state).
-  // [Ask-First decision D-chip: hide expired under a chip — Erik may revisit.]
-  const expiredDispensaries =
-    dealType === 'all'
-      ? nearbyDispensaries.filter((d) => areDealsExpired(d.lastFetchedAt, now) && d.deals.length > 0)
-      : []
   // per-deal time expiry runs BEFORE sortDeals so expired deals never reach the
   // comparator's overnight-wrap heuristic
   const activeDispensaries = liveDispensaries.map((dispensary) => ({
     ...dispensary,
     deals: dispensary.deals.filter((deal) => isDealActive(deal, now)),
   }))
-  // chip filter runs in-memory after expiry, before grouping — a store with no
-  // deals matching the active chip yields no group and drops from the feed
-  const typedDispensaries = filterByType(activeDispensaries, dealType)
+  // The icon bar shows ONLY categories at least one on-page store carries, from
+  // the pre-filter active set — so pressing an icon never removes the others.
+  const presentCategories = categoriesPresent(activeDispensaries)
+  // If the selected category left the page (its last deal expired, or the
+  // radius slider dropped its last store), CLEAR the selection — a mere
+  // derived mask would leave the state dormant and silently re-engage the
+  // filter when the category returns. Render-phase adjustment (React's
+  // "adjusting state when props change" pattern); the effective `category`
+  // below keeps THIS render consistent before the cleared state lands.
+  if (selectedCategory !== null && !presentCategories.includes(selectedCategory)) {
+    setSelectedCategory(null)
+  }
+  const category =
+    selectedCategory !== null && presentCategories.includes(selectedCategory)
+      ? selectedCategory
+      : null
+  // An "expired" card only makes sense for a store that actually has cached deals
+  // to suppress — a never-ingested/empty store has nothing to expire and stays
+  // out of the feed exactly as before (guards the deriveStoreStatus 'failed' case
+  // from surfacing as an empty card). Expired cards are also shown ONLY in the
+  // unfiltered feed: a category icon narrows to ACTIVE deals of that category,
+  // which an expired store has none of, so under any selection it drops. (A
+  // selection can never empty the feed: its icon only renders while ≥1 active
+  // deal matches, and the clear above removes it the moment that stops.)
+  // [Ask-First decision D-chip: hide expired under a selection — Erik may revisit.]
+  const expiredDispensaries =
+    category === null
+      ? nearbyDispensaries.filter((d) => areDealsExpired(d.lastFetchedAt, now) && d.deals.length > 0)
+      : []
+  // category filter runs in-memory after expiry, before grouping — a store with
+  // no deals in the selected category yields no group and drops from the feed
+  const typedDispensaries = filterByCategory(activeDispensaries, category)
   const liveGroups = groupDealsByStore(typedDispensaries, now)
   // CAP-2: expired stores are NOT dropped — they render in place with a "No
   // current deals" state (empty deals drives DealCard's expired branch). They
@@ -217,7 +240,11 @@ export default function DealFeed({ mpg = null, location = null }: DealFeedProps)
   return (
     <section aria-label="Deal feed" style={feedStyle}>
       <DistanceFilter value={maxDistance} onChange={setStoredDistance} />
-      <DealTypeFilter selected={dealType} onSelect={setDealType} />
+      <DealCategoryFilter
+        categories={presentCategories}
+        selected={category}
+        onSelect={setSelectedCategory}
+      />
       {storeGroups.length === 0 ? (
         <Notice variant="muted" role="status" aria-live="polite">
           No active deals right now

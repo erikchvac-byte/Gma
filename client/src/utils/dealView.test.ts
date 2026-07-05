@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import {
-  filterByType,
+  dealCategories,
+  categoriesPresent,
+  filterByCategory,
   storeUrgencyBadge,
   discountTier,
   stripDiscountPrefix,
@@ -33,34 +35,83 @@ const makeDispensary = (id: string, deals: Deal[]): Dispensary => ({
   deals,
 })
 
-describe('filterByType', () => {
-  const stores = [
-    makeDispensary('a', [
-      makeDeal({ type: 'happy_hour', description: 'hh' }),
-      makeDeal({ type: 'daily', description: 'd' }),
-    ]),
-    makeDispensary('b', [makeDeal({ type: 'daily', description: 'only daily' })]),
-  ]
-
-  it('returns the same array reference for "all" (pure passthrough)', () => {
-    expect(filterByType(stores, 'all')).toBe(stores)
+describe('dealCategories', () => {
+  it('maps a deal to its card-glyph categories via the same matcher', () => {
+    expect(dealCategories(makeDeal({ description: '20% off vapes and edibles' }))).toEqual([
+      'vape',
+      'edible',
+    ])
   })
 
-  it('keeps only happy_hour deals and leaves daily-only stores empty', () => {
-    const result = filterByType(stores, 'happy_hour')
-    expect(result[0].deals.map((d) => d.description)).toEqual(['hh'])
-    // store b has no happy hours → emptied (drops out at grouping time)
+  it('collapses every pre-roll pack variant into joint-single', () => {
+    expect(dealCategories(makeDeal({ description: '2-pack joints' }))).toEqual(['joint-single'])
+    expect(dealCategories(makeDeal({ description: 'triple pre-rolls' }))).toEqual(['joint-single'])
+    expect(dealCategories(makeDeal({ description: 'joints' }))).toEqual(['joint-single'])
+  })
+
+  it('uses the layered-sale tier subject, matching buildDealBlocks icons', () => {
+    expect(
+      dealCategories(makeDeal({ description: 'Up to 50% Off Sale - 40% Off Vape Brands' })),
+    ).toEqual(['vape'])
+  })
+
+  it('returns nothing for a blank description (no icon → no category)', () => {
+    expect(dealCategories(makeDeal({ description: '' }))).toEqual([])
+  })
+})
+
+describe('categoriesPresent', () => {
+  it('collects categories across all stores in canonical bar order', () => {
+    const stores = [
+      makeDispensary('a', [makeDeal({ description: '10% off edibles' })]),
+      makeDispensary('b', [makeDeal({ description: '20% off flower and vapes' })]),
+    ]
+    // bud < vape < edible in CATEGORY_ORDER, regardless of store order
+    expect(categoriesPresent(stores)).toEqual(['bud', 'vape', 'edible'])
+  })
+
+  it('lists a category once no matter how many deals carry it', () => {
+    const stores = [
+      makeDispensary('a', [
+        makeDeal({ description: '10% off gummies' }),
+        makeDeal({ description: '15% off chocolates' }),
+      ]),
+    ]
+    expect(categoriesPresent(stores)).toEqual(['edible'])
+  })
+
+  it('returns empty for stores whose deals carry no icons', () => {
+    expect(categoriesPresent([makeDispensary('a', [makeDeal({ description: '' })])])).toEqual([])
+  })
+})
+
+describe('filterByCategory', () => {
+  const stores = [
+    makeDispensary('a', [
+      makeDeal({ description: '20% off vapes' }),
+      makeDeal({ description: '10% off gummies' }),
+    ]),
+    makeDispensary('b', [makeDeal({ description: '30% off flower' })]),
+  ]
+
+  it('returns the same array reference for null (pure passthrough)', () => {
+    expect(filterByCategory(stores, null)).toBe(stores)
+  })
+
+  it('keeps only matching deals and leaves non-carrying stores empty', () => {
+    const result = filterByCategory(stores, 'vape')
+    expect(result[0].deals.map((d) => d.description)).toEqual(['20% off vapes'])
+    // store b has no vape deals → emptied (drops out at grouping time)
     expect(result[1].deals).toEqual([])
   })
 
-  it('keeps only daily deals', () => {
-    const result = filterByType(stores, 'daily')
-    expect(result[0].deals.map((d) => d.description)).toEqual(['d'])
-    expect(result[1].deals.map((d) => d.description)).toEqual(['only daily'])
+  it('matches any pack variant under the collapsed pre-roll category', () => {
+    const prStores = [makeDispensary('a', [makeDeal({ description: '25% off 3-pack pre-rolls' })])]
+    expect(filterByCategory(prStores, 'joint-single')[0].deals).toHaveLength(1)
   })
 
   it('does not mutate the input dispensaries', () => {
-    filterByType(stores, 'happy_hour')
+    filterByCategory(stores, 'vape')
     expect(stores[0].deals).toHaveLength(2)
   })
 })

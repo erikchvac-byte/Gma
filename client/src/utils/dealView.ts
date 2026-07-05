@@ -1,22 +1,80 @@
 import type { Deal, Dispensary } from '../types'
 import { dealIcons, type DealIconName } from './dealIcons'
 
-// The three chip filters map to the real Deal.type field (ADR-030 has no
-// product-category field). 'all' is the default and a pure passthrough.
-export type DealTypeSelection = 'all' | 'happy_hour' | 'daily'
-
 // Discount magnitude is encoded with the single amber discount accent (ADR-041)
 // at a stepped font-weight — these tiers drive that, never a second hue.
 export type DiscountTier = 'high' | 'mid' | 'low'
 
+// A filter-bar category: the card glyph vocabulary (dealIcons) with the three
+// pre-roll pack variants collapsed into one — pack count is deal-level detail,
+// not a shoppable category. Scope tags (store-wide / price-drop /
+// special-pricing) ARE categories here, per Erik's explicit call.
+export type DealCategory = Exclude<DealIconName, 'joint-double' | 'joint-triple'>
+
+// Fixed canonical bar order, so the bar never reshuffles as deals come and go.
+// Record-typed (like DEAL_ICON_LABEL) so adding a DealIconName without slotting
+// it here fails the build — an unlisted category would otherwise be silently
+// unfilterable, since categoriesPresent filters through this list. Insertion
+// order of non-numeric string keys is spec-guaranteed, so the Record IS the order.
+const CATEGORY_POSITION: Record<DealCategory, null> = {
+  bud: null,
+  'joint-single': null,
+  concentrate: null,
+  dabs: null,
+  shatter: null,
+  diamond: null,
+  vape: null,
+  edible: null,
+  drink: null,
+  tincture: null,
+  glass: null,
+  'store-wide': null,
+  'price-drop': null,
+  'special-pricing': null,
+}
+export const CATEGORY_ORDER = Object.keys(CATEGORY_POSITION) as readonly DealCategory[]
+
+// Collapse a card glyph to its bar category (pre-roll pack variants → one).
+function toCategory(name: DealIconName): DealCategory {
+  return name === 'joint-double' || name === 'joint-triple' ? 'joint-single' : name
+}
+
+// The categories one deal carries — the SAME matcher (dealIcons) on the SAME
+// subject text buildDealBlocks uses (layered-sale title when present), so the
+// filter bar and the card tags can never disagree. De-duped after collapsing.
+export function dealCategories(deal: Deal): DealCategory[] {
+  const subject = resolveLayeredSale(deal.description)?.title ?? deal.description
+  const categories: DealCategory[] = []
+  for (const name of dealIcons(subject)) {
+    const category = toCategory(name)
+    if (!categories.includes(category)) categories.push(category)
+  }
+  return categories
+}
+
+// Categories present anywhere in the page's active deals, in canonical order.
+// Drives which icons the filter bar renders — an icon only shows when at least
+// one on-page store carries a deal in that category.
+export function categoriesPresent(dispensaries: Dispensary[]): DealCategory[] {
+  const present = new Set<DealCategory>()
+  for (const dispensary of dispensaries)
+    for (const deal of dispensary.deals)
+      for (const category of dealCategories(deal)) present.add(category)
+  return CATEGORY_ORDER.filter((category) => present.has(category))
+}
+
 // In-memory filter mirroring DealFeed's distance filter — zero network.
-// Returns each store with its deals narrowed to the selection; empty stores
-// drop out downstream when groupDealsByStore yields no group for them.
-export function filterByType(dispensaries: Dispensary[], sel: DealTypeSelection): Dispensary[] {
-  if (sel === 'all') return dispensaries
+// null = passthrough (no category selected). Returns each store with its deals
+// narrowed to those carrying the selection; empty stores drop out downstream
+// when groupDealsByStore yields no group for them.
+export function filterByCategory(
+  dispensaries: Dispensary[],
+  sel: DealCategory | null,
+): Dispensary[] {
+  if (sel === null) return dispensaries
   return dispensaries.map((dispensary) => ({
     ...dispensary,
-    deals: dispensary.deals.filter((deal) => deal.type === sel),
+    deals: dispensary.deals.filter((deal) => dealCategories(deal).includes(sel)),
   }))
 }
 

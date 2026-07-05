@@ -250,7 +250,7 @@ article.gma-card::before {
 .gma-range__ticks { display: flex; justify-content: space-between; font: var(--font-caption); color: var(--text-muted); }
 
 /* ---------------------------------------------------------------
-   Deal-type chips — horizontal scroll filter row
+   Category filter bar — horizontal scroll row of icon chips
    --------------------------------------------------------------- */
 .gma-chips {
   display: flex;
@@ -261,28 +261,25 @@ article.gma-card::before {
   padding: var(--space-1) 0; /* room for the focus ring */
 }
 .gma-chips::-webkit-scrollbar { display: none; }
-.gma-chip {
+/* Icon chip: a toggle button wrapping one .gma-deal-icon tile — each family's
+   canonical card art (DEAL_ICON_SRC), so the bar reads as the cards' tag
+   vocabulary. The padding widens the tap target beyond the 28px tile. */
+.gma-icon-chip {
   flex: none;
-  font-family: var(--font-sans);
-  font-size: var(--text-sm);
-  font-weight: var(--weight-medium);
-  line-height: 1;
-  white-space: nowrap;
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-full);
-  border: var(--border-hairline) solid var(--border-strong);
+  display: inline-flex;
+  padding: var(--space-1);
+  border: 0;
   background: transparent;
-  color: var(--text-body);
+  border-radius: var(--radius-md);
   cursor: pointer;
   transition: var(--transition-control);
 }
-.gma-chip:hover { border-color: var(--accent); }
-.gma-chip:focus-visible { outline: none; box-shadow: var(--ring); }
-/* active chip: filled pink, inverted text (fg is --bg, never white) */
-.gma-chip[aria-pressed="true"] {
-  background: var(--accent);
-  color: var(--text-on-primary);
+.gma-icon-chip:hover .gma-deal-icon { border-color: var(--accent); }
+.gma-icon-chip:focus-visible { outline: none; box-shadow: var(--ring); }
+/* pressed chip: the tile rings in the accent (same token the old text chips filled with) */
+.gma-icon-chip[aria-pressed="true"] .gma-deal-icon {
   border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent);
 }
 
 /* ---------------------------------------------------------------
