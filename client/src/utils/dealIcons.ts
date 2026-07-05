@@ -18,6 +18,7 @@ export type DealIconName =
   | 'edible'
   | 'drink'
   | 'tincture'
+  | 'glass'
   | 'store-wide'
   | 'price-drop'
   | 'special-pricing'
@@ -42,6 +43,7 @@ export const DEAL_ICON_LABEL: Record<DealIconName, string> = {
   edible: 'Edibles',
   drink: 'Drinks',
   tincture: 'Tinctures',
+  glass: 'Glassware',
   'store-wide': 'Store-wide',
   'price-drop': 'Price drop',
   'special-pricing': 'Special pricing',
@@ -55,6 +57,7 @@ export const DEAL_ICON_LABEL: Record<DealIconName, string> = {
 const FALSE_FRIENDS: readonly RegExp[] = [
   /join the joint/gi,
   /\bcookies\b/gi, // the brand; an actual cookie edible would read "cookie"/"brownie"
+  /\bglass house\b/gi, // Glass House Farms is a flower brand, not glassware
 ]
 
 // Exclusion clauses negate what follows ("(Excluding Capsules)", "excludes
@@ -75,7 +78,8 @@ const CONCENTRATE_FAMILIES: readonly Family[] = [
   { name: 'shatter', re: /\bshatter(?:day)?s?\b/i }, // "Shatterday" is a shatter deal
 
   { name: 'diamond', re: /\bdiamonds?\b|\blive resin\b|\bresin\b/i },
-  { name: 'dabs', re: /\bdabs?\b|\bwax\b|\bbudder\b|\bbadder\b|\bsauce\b|\bsugar\b|\brosin\b/i },
+  // "dab rig(s)" is glassware (the glass family), not a dab — hence the lookahead
+  { name: 'dabs', re: /\bdabs?\b(?!\s?rigs?\b)|\bwax\b|\bbudder\b|\bbadder\b|\bsauce\b|\bsugar\b|\brosin\b/i },
   { name: 'concentrate', re: /\bconcentrates?\b|\bextracts?\b|\brso\b/i },
 ]
 
@@ -86,6 +90,9 @@ const PRODUCT_FAMILIES: readonly Family[] = [
   { name: 'edible', re: /\bedibles?\b|\bgummies\b|\bgummy\b|\bchocolates?\b|\blollipops?\b|\bbrownies?\b|\bchews?\b/i },
   { name: 'drink', re: /\bdrinks?\b|\bbeverages?\b|\bsodas?\b|\bseltzers?\b|\blemonade\b/i },
   { name: 'tincture', re: /\btinctures?\b|\btopicals?\b|\bcapsules?\b|\bsalves?\b|\bbalms?\b/i },
+  // Paraphernalia, not a cannabis product — a "GLASS" sale is bongs/pipes/rigs.
+  // Bare "pipes"/"rigs" stay out (too ambiguous); glass sales spell it "glass".
+  { name: 'glass', re: /\bglass(?:ware)?\b|\bbongs?\b|\bdab rigs?\b|\bwater pipes?\b|\bhand pipes?\b/i },
 ]
 
 // Whole-store scope — exclusive: when a deal is the whole store, listing each

@@ -17,6 +17,9 @@ import vape from '../assets/deal-icons/vape.webp'
 import edible from '../assets/deal-icons/edible.webp'
 import drink from '../assets/deal-icons/drink.webp'
 import tincture from '../assets/deal-icons/tincture.webp'
+// glass has no legacy single asset either — same pattern as shatter: the
+// family is new and its first pool image doubles as the underflow fallback
+import glass from '../assets/deal-icons/glass/glass-01.webp'
 import storeWide from '../assets/deal-icons/store-wide.webp'
 import priceDrop from '../assets/deal-icons/price-drop.webp'
 import specialPricing from '../assets/deal-icons/special-pricing.webp'
@@ -35,6 +38,7 @@ export const DEAL_ICON_SRC: Record<DealIconName, string> = {
   edible,
   drink,
   tincture,
+  glass,
   'store-wide': storeWide,
   'price-drop': priceDrop,
   'special-pricing': specialPricing,
