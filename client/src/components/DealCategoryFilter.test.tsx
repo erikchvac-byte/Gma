@@ -21,6 +21,14 @@ describe('DealCategoryFilter', () => {
     expect(img).toHaveAttribute('src', DEAL_ICON_SRC.vape)
   })
 
+  it('shows the visible title under each icon (it IS the accessible name)', () => {
+    render(<DealCategoryFilter categories={['bud']} selected={null} onSelect={() => {}} />)
+    const button = screen.getByRole('button', { name: 'Flower' })
+    // name comes from rendered text, not an aria-label shadowing it
+    expect(button).not.toHaveAttribute('aria-label')
+    expect(button.querySelector('.gma-icon-chip__label')).toHaveTextContent('Flower')
+  })
+
   it('marks only the selected category pressed', () => {
     render(
       <DealCategoryFilter categories={['vape', 'edible']} selected="edible" onSelect={() => {}} />,

@@ -63,18 +63,32 @@ export function categoriesPresent(dispensaries: Dispensary[]): DealCategory[] {
   return CATEGORY_ORDER.filter((category) => present.has(category))
 }
 
+// The scope tags — deal-level qualifiers, not products. Everything else in
+// DealCategory names a shoppable product family.
+const SCOPE_TAGS: readonly DealCategory[] = ['store-wide', 'price-drop', 'special-pricing']
+
 // In-memory filter mirroring DealFeed's distance filter — zero network.
 // null = passthrough (no category selected). Returns each store with its deals
-// narrowed to those carrying the selection; empty stores drop out downstream
+// narrowed to those matching the selection; empty stores drop out downstream
 // when groupDealsByStore yields no group for them.
+// Store-wide WILDCARD (Erik, 2026-07-05): a "25% off everything" deal applies
+// to every product the store sells, so it matches under any PRODUCT selection
+// — otherwise a store whose only deal is store-wide would vanish when the user
+// presses Vapes, hiding a deal that does discount vapes. Scope selections
+// (store-wide / price-drop / special-pricing) stay exact: pressing Price drop
+// must not surface percent-off-everything deals.
 export function filterByCategory(
   dispensaries: Dispensary[],
   sel: DealCategory | null,
 ): Dispensary[] {
   if (sel === null) return dispensaries
+  const wildcardApplies = !SCOPE_TAGS.includes(sel)
   return dispensaries.map((dispensary) => ({
     ...dispensary,
-    deals: dispensary.deals.filter((deal) => dealCategories(deal).includes(sel)),
+    deals: dispensary.deals.filter((deal) => {
+      const categories = dealCategories(deal)
+      return categories.includes(sel) || (wildcardApplies && categories.includes('store-wide'))
+    }),
   }))
 }
 

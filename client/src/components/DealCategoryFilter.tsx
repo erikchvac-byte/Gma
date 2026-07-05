@@ -23,12 +23,11 @@ export default function DealCategoryFilter({
   return (
     <div className="gma-chips" role="group" aria-label="Filter deals by category">
       {categories.map((category) => (
+        // the visible title IS the accessible name (no aria-label shadowing it)
         <button
           key={category}
           type="button"
           className="gma-icon-chip"
-          title={DEAL_ICON_LABEL[category]}
-          aria-label={DEAL_ICON_LABEL[category]}
           aria-pressed={selected === category}
           onClick={() => onSelect(selected === category ? null : category)}
         >
@@ -39,6 +38,7 @@ export default function DealCategoryFilter({
             width={28}
             height={28}
           />
+          <span className="gma-icon-chip__label">{DEAL_ICON_LABEL[category]}</span>
         </button>
       ))}
     </div>

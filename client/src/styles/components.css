@@ -261,26 +261,42 @@ article.gma-card::before {
   padding: var(--space-1) 0; /* room for the focus ring */
 }
 .gma-chips::-webkit-scrollbar { display: none; }
-/* Icon chip: a toggle button wrapping one .gma-deal-icon tile — each family's
-   canonical card art (DEAL_ICON_SRC), so the bar reads as the cards' tag
-   vocabulary. The padding widens the tap target beyond the 28px tile. */
+/* Icon chip: a toggle button stacking one .gma-deal-icon tile over its bold
+   title — each family's canonical card art (DEAL_ICON_SRC), so the bar reads
+   as the cards' tag vocabulary. The padding widens the tap target. */
 .gma-icon-chip {
   flex: none;
   display: inline-flex;
-  padding: var(--space-1);
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
   border: 0;
   background: transparent;
   border-radius: var(--radius-md);
   cursor: pointer;
   transition: var(--transition-control);
 }
+/* the visible title doubles as the accessible name — bold and readable per
+   Erik ("easy on the eyes"), never truncated (the row scrolls instead) */
+.gma-icon-chip__label {
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-sm);
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--text-body);
+  transition: var(--transition-control);
+}
 .gma-icon-chip:hover .gma-deal-icon { border-color: var(--accent); }
+.gma-icon-chip:hover .gma-icon-chip__label { color: var(--text-strong); }
 .gma-icon-chip:focus-visible { outline: none; box-shadow: var(--ring); }
-/* pressed chip: the tile rings in the accent (same token the old text chips filled with) */
+/* pressed chip: the tile rings in the accent and the title takes it too */
 .gma-icon-chip[aria-pressed="true"] .gma-deal-icon {
   border-color: var(--accent);
   box-shadow: 0 0 0 2px var(--accent);
 }
+.gma-icon-chip[aria-pressed="true"] .gma-icon-chip__label { color: var(--accent); }
 
 /* ---------------------------------------------------------------
    Deal card — Arcade (ADR-041). Header: store name + pink distance

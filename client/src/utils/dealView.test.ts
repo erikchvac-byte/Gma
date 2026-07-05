@@ -110,6 +110,26 @@ describe('filterByCategory', () => {
     expect(filterByCategory(prStores, 'joint-single')[0].deals).toHaveLength(1)
   })
 
+  // store-wide wildcard: "25% off everything" applies to every product, so the
+  // deal matches any PRODUCT selection — but scope selections stay exact
+  it('matches a store-wide deal under every product selection (wildcard)', () => {
+    const swStores = [makeDispensary('a', [makeDeal({ description: '25% off everything' })])]
+    expect(filterByCategory(swStores, 'vape')[0].deals).toHaveLength(1)
+    expect(filterByCategory(swStores, 'edible')[0].deals).toHaveLength(1)
+    expect(filterByCategory(swStores, 'store-wide')[0].deals).toHaveLength(1)
+  })
+
+  it('does not wildcard a store-wide deal into scope selections (price drop / specials)', () => {
+    const swStores = [makeDispensary('a', [makeDeal({ description: '25% off everything' })])]
+    expect(filterByCategory(swStores, 'price-drop')[0].deals).toEqual([])
+    expect(filterByCategory(swStores, 'special-pricing')[0].deals).toEqual([])
+  })
+
+  it('keeps the store-wide selection itself exact (product deals do not match it)', () => {
+    expect(filterByCategory(stores, 'store-wide')[0].deals).toEqual([])
+    expect(filterByCategory(stores, 'store-wide')[1].deals).toEqual([])
+  })
+
   it('does not mutate the input dispensaries', () => {
     filterByCategory(stores, 'vape')
     expect(stores[0].deals).toHaveLength(2)

@@ -17,9 +17,11 @@ import vape from '../assets/deal-icons/vape.webp'
 import edible from '../assets/deal-icons/edible.webp'
 import drink from '../assets/deal-icons/drink.webp'
 import tincture from '../assets/deal-icons/tincture.webp'
-// glass has no legacy single asset either — same pattern as shatter: the
-// family is new and its first pool image doubles as the underflow fallback
-import glass from '../assets/deal-icons/glass/glass-01.webp'
+// glass has no legacy single asset either — same pattern as shatter: one pool
+// image doubles as the canonical art / underflow fallback. glass-02 (spoon
+// pipe on white), not glass-01: Erik found the green-bong-on-green-tile muddy
+// at 28px, and the filter bar wears this canonical art.
+import glass from '../assets/deal-icons/glass/glass-02.webp'
 import storeWide from '../assets/deal-icons/store-wide.webp'
 import priceDrop from '../assets/deal-icons/price-drop.webp'
 import specialPricing from '../assets/deal-icons/special-pricing.webp'
