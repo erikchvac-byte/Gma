@@ -400,82 +400,125 @@ describe('DealFeed', () => {
     expect(item.textContent).not.toContain('to get there')
   })
 
-  describe('deal-type chip filter', () => {
-    // fixed clock is 23:00, so a 20:00–23:30 happy hour is live (countdown 0:30)
+  describe('category icon filter bar', () => {
     const mixed = () =>
       withData([
-        makeDispensary('hh', 'HH Only', [
-          makeDeal({ type: 'happy_hour', description: 'hh only deal', startTime: '20:00', endTime: '23:30' }),
-        ]),
-        makeDispensary('daily', 'Daily Only', [makeDeal({ type: 'daily', description: 'daily only deal' })]),
+        makeDispensary('vape', 'Vape Only', [makeDeal({ description: '20% off vapes' })]),
+        makeDispensary('edible', 'Edible Only', [makeDeal({ description: '10% off gummies' })]),
         makeDispensary('both', 'Both Kinds', [
-          makeDeal({ type: 'happy_hour', description: 'both hh deal', startTime: '20:00', endTime: '23:30' }),
-          makeDeal({ type: 'daily', description: 'both daily deal' }),
+          makeDeal({ description: '20% off vape carts' }),
+          makeDeal({ description: '15% off edibles' }),
         ]),
       ])
 
-    it('defaults to "All deals" and shows every store', () => {
+    it('shows only the icons of categories present on the page, none pressed by default', () => {
       mockUseDeals.mockReturnValue({ data: mixed(), isLoading: false, error: null })
       render(<DealFeed />)
 
-      expect(screen.getByRole('button', { name: 'All deals' })).toHaveAttribute('aria-pressed', 'true')
+      const bar = screen.getByRole('group', { name: 'Filter deals by category' })
+      expect(within(bar).getAllByRole('button')).toHaveLength(2)
+      expect(within(bar).getByRole('button', { name: 'Vapes' })).toHaveAttribute('aria-pressed', 'false')
+      expect(within(bar).getByRole('button', { name: 'Edibles' })).toHaveAttribute('aria-pressed', 'false')
+      // no store carries flower → no bud icon in the bar
+      expect(within(bar).queryByRole('button', { name: 'Flower' })).not.toBeInTheDocument()
+      // the old Deal.type chips are gone
+      expect(screen.queryByRole('button', { name: 'All deals' })).not.toBeInTheDocument()
       expect(screen.getAllByRole('listitem')).toHaveLength(3)
     })
 
-    it('filters to happy hours, dropping daily-only stores, with no network request', () => {
+    it('filters to the clicked category, dropping non-carrying stores, with no network request', () => {
       const fetchSpy = vi.spyOn(window, 'fetch')
       mockUseDeals.mockReturnValue({ data: mixed(), isLoading: false, error: null })
       render(<DealFeed />)
 
-      fireEvent.click(screen.getByRole('button', { name: 'Happy hours' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Vapes' }))
 
+      expect(screen.getByRole('button', { name: 'Vapes' })).toHaveAttribute('aria-pressed', 'true')
       expect(screen.getAllByRole('listitem')).toHaveLength(2)
-      expect(screen.getByText('HH Only')).toBeInTheDocument()
+      expect(screen.getByText('Vape Only')).toBeInTheDocument()
       expect(screen.getByText('Both Kinds')).toBeInTheDocument()
-      expect(screen.queryByText('Daily Only')).not.toBeInTheDocument()
-      // the mixed store hides its daily deal under the happy-hours chip
-      expect(screen.queryByText('both daily deal')).not.toBeInTheDocument()
+      expect(screen.queryByText('Edible Only')).not.toBeInTheDocument()
+      // the mixed store hides its edible deal under the vape selection
+      // (the title renders as 'edibles' once the badge strips its '15% off')
+      expect(screen.queryByText('edibles')).not.toBeInTheDocument()
       expect(fetchSpy).not.toHaveBeenCalled()
     })
 
-    it('filters to daily deals, dropping happy-hour-only stores', () => {
+    it('keeps every icon in the bar while one is pressed (presence is pre-filter)', () => {
       mockUseDeals.mockReturnValue({ data: mixed(), isLoading: false, error: null })
       render(<DealFeed />)
 
-      fireEvent.click(screen.getByRole('button', { name: 'Daily deals' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Vapes' }))
 
-      expect(screen.getAllByRole('listitem')).toHaveLength(2)
-      expect(screen.getByText('Daily Only')).toBeInTheDocument()
-      expect(screen.getByText('Both Kinds')).toBeInTheDocument()
-      expect(screen.queryByText('HH Only')).not.toBeInTheDocument()
+      // the edible icon must not vanish just because vape is selected
+      expect(screen.getByRole('button', { name: 'Edibles' })).toHaveAttribute('aria-pressed', 'false')
     })
 
-    it('restores all stores when switching back to "All deals"', () => {
+    it('restores the full feed when the pressed icon is clicked again', () => {
       mockUseDeals.mockReturnValue({ data: mixed(), isLoading: false, error: null })
       render(<DealFeed />)
 
-      fireEvent.click(screen.getByRole('button', { name: 'Happy hours' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Vapes' }))
       expect(screen.getAllByRole('listitem')).toHaveLength(2)
-      fireEvent.click(screen.getByRole('button', { name: 'All deals' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Vapes' }))
+      expect(screen.getByRole('button', { name: 'Vapes' })).toHaveAttribute('aria-pressed', 'false')
       expect(screen.getAllByRole('listitem')).toHaveLength(3)
     })
 
-    it('shows the empty state but keeps chips usable when a filter empties the feed', () => {
+    it('renders no bar at all when no active deal carries a category tag', () => {
+      mockUseDeals.mockReturnValue({
+        data: withData([makeDispensary('a', 'Dealless Dispensary', [])]),
+        isLoading: false,
+        error: null,
+      })
+      render(<DealFeed />)
+
+      expect(screen.queryByRole('group', { name: 'Filter deals by category' })).not.toBeInTheDocument()
+    })
+
+    it('clears a selection whose category leaves the page (icon gone → full feed, not stuck-empty)', () => {
+      // the vape deal's happy hour ends at 23:30; the fixed clock starts at 23:00
       mockUseDeals.mockReturnValue({
         data: withData([
-          makeDispensary('daily', 'Daily Only', [makeDeal({ type: 'daily', description: 'daily only deal' })]),
+          makeDispensary('vape', 'Vape Only', [
+            makeDeal({ type: 'happy_hour', description: '20% off vapes', startTime: '20:00', endTime: '23:30' }),
+          ]),
+          makeDispensary('edible', 'Edible Only', [makeDeal({ description: '10% off gummies' })]),
         ]),
         isLoading: false,
         error: null,
       })
       render(<DealFeed />)
 
-      fireEvent.click(screen.getByRole('button', { name: 'Happy hours' }))
-      expect(screen.getByText('No active deals right now')).toBeInTheDocument()
-      expect(screen.queryByRole('listitem')).not.toBeInTheDocument()
+      fireEvent.click(screen.getByRole('button', { name: 'Vapes' }))
+      expect(screen.getAllByRole('listitem')).toHaveLength(1)
 
-      fireEvent.click(screen.getByRole('button', { name: 'All deals' }))
-      expect(screen.getByText('Daily Only')).toBeInTheDocument()
+      // tick past the happy hour's end — the page's last vape deal expires
+      act(() => {
+        vi.advanceTimersByTime(45 * 60 * 1000)
+      })
+
+      // its icon left the bar and the selection is treated as cleared
+      expect(screen.queryByRole('button', { name: 'Vapes' })).not.toBeInTheDocument()
+      expect(screen.getByText('Edible Only')).toBeInTheDocument()
+
+      // the category returns (a refetch lands an all-day vape deal) — the
+      // CLEARED selection must not resurrect and silently re-narrow the feed
+      mockUseDeals.mockReturnValue({
+        data: withData([
+          makeDispensary('vape', 'Vape Only', [makeDeal({ description: '20% off vapes' })]),
+          makeDispensary('edible', 'Edible Only', [makeDeal({ description: '10% off gummies' })]),
+        ]),
+        isLoading: false,
+        error: null,
+      })
+      act(() => {
+        vi.advanceTimersByTime(60 * 1000) // one useNow tick → re-render on new data
+      })
+
+      expect(screen.getByRole('button', { name: 'Vapes' })).toHaveAttribute('aria-pressed', 'false')
+      expect(screen.getAllByRole('listitem')).toHaveLength(2)
+      expect(screen.getByText('Edible Only')).toBeInTheDocument()
     })
   })
 
@@ -821,21 +864,27 @@ describe('DealFeed — stale deal expiry (CAP-1/CAP-2)', () => {
   })
 
   // Ask-First decision D-chip: expired "No current deals" cards are shown only in
-  // the unfiltered feed; a deal-type chip narrows to active deals of that type.
-  it('hides expired cards under a deal-type chip and shows the empty state when nothing matches', () => {
+  // the unfiltered feed; a category selection narrows to active deals of that
+  // category, which an expired store by definition has none of.
+  it('hides expired cards while a category icon is selected', () => {
     const expired: Dispensary = {
-      ...makeDispensary('old', 'Stale Cannabis', [makeDeal({ type: 'daily', description: 'OLD SALE' })]),
+      ...makeDispensary('old', 'Stale Cannabis', [makeDeal({ description: 'OLD SALE' })]),
       lastFetchedAt: '2026-06-01T07:00:00',
     }
-    mockUseDeals.mockReturnValue({ data: withData([expired]), isLoading: false, error: null })
+    const fresh: Dispensary = {
+      ...makeDispensary('new', 'Fresh Cannabis', [makeDeal({ description: '20% off vapes' })]),
+      lastFetchedAt: '2026-06-10T20:00:00',
+    }
+    mockUseDeals.mockReturnValue({ data: withData([expired, fresh]), isLoading: false, error: null })
     render(<DealFeed />)
 
     // unfiltered: the expired card shows
     expect(screen.getByText('No current deals')).toBeInTheDocument()
-    // switch to the Happy hours chip → expired store drops, honest empty state returns
-    fireEvent.click(screen.getByRole('button', { name: 'Happy hours' }))
+    // select the vape icon → expired store drops, only the fresh match remains
+    fireEvent.click(screen.getByRole('button', { name: 'Vapes' }))
     expect(screen.queryByText('No current deals')).not.toBeInTheDocument()
-    expect(screen.getByText('No active deals right now')).toBeInTheDocument()
+    expect(screen.queryByText(/Stale Cannabis/)).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Fresh Cannabis/ })).toBeInTheDocument()
   })
 
   it('does not surface a store with NO cached deals as an empty "No current deals" card', () => {
