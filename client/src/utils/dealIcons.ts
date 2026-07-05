@@ -72,7 +72,8 @@ interface Family {
 
 // Concentrate sub-forms, most-specific first — only ONE concentrate glyph emits.
 const CONCENTRATE_FAMILIES: readonly Family[] = [
-  { name: 'shatter', re: /\bshatter\b/i },
+  { name: 'shatter', re: /\bshatter(?:day)?s?\b/i }, // "Shatterday" is a shatter deal
+
   { name: 'diamond', re: /\bdiamonds?\b|\blive resin\b|\bresin\b/i },
   { name: 'dabs', re: /\bdabs?\b|\bwax\b|\bbudder\b|\bbadder\b|\bsauce\b|\bsugar\b|\brosin\b/i },
   { name: 'concentrate', re: /\bconcentrates?\b|\bextracts?\b|\brso\b/i },
@@ -91,8 +92,18 @@ const PRODUCT_FAMILIES: readonly Family[] = [
 // product would contradict it. Wins over every product family.
 const STORE_WIDE = /\bstore\s?wide\b|\bentire (?:order|purchase|store)\b|\ball (?:cannabis|products|items)\b|\beverything\b|\bwhole store\b|\bsite\s?wide\b/i
 
-// Pre-roll presence and its pack-count variant.
-const PRE_ROLL = /\bpre.?rolls?\b|\bjoints?\b/i
+// Order-scope deals — the discount applies to the whole order/purchase, not a
+// named product ("40% Off Online Orders", "20% Off Your Purchase", "Items
+// Purchased to Max Out Your Legal Limit", spend thresholds, customer-group
+// discounts). Product-agnostic, so the store-wide glyph is the honest one.
+// Kept narrow on purpose: a bare "purchases" would wrongly swallow
+// "20% off vape purchases".
+const ORDER_SCOPE =
+  /\bonline orders?\b|\byour purchase\b|\bitems purchased\b|\bsingle purchases?\b|\bcustomer groups?\b/i
+
+// Pre-roll presence and its pack-count variant. Firecrackers and sparklers are
+// infused pre-roll products (July-4th naming), not fireworks or edibles.
+const PRE_ROLL = /\bpre.?rolls?\b|\bjoints?\b|\bfirecrackers?\b|\bsparklers?\b/i
 const PACK_TRIPLE = /\btriple\b|\b3\s?-?\s?(?:pk|pack)\b/i
 const PACK_DOUBLE = /\bdouble\b|\b2\s?-?\s?(?:pk|pack)\b/i
 
@@ -113,8 +124,8 @@ export function dealIcons(description: string | null | undefined): DealIconName[
   let text = description.replace(EXCLUSION_CLAUSE, ' ')
   for (const ff of FALSE_FRIENDS) text = text.replace(ff, ' ')
 
-  // Whole-store deals are exclusive.
-  if (STORE_WIDE.test(text)) return ['store-wide']
+  // Whole-store and whole-order deals are exclusive.
+  if (STORE_WIDE.test(text) || ORDER_SCOPE.test(text)) return ['store-wide']
 
   // Collect every product family the text names, tagged with where it first
   // appears, so we can emit them in reading order (matches the spelled-out list).
