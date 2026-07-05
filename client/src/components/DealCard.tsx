@@ -1,5 +1,6 @@
 import type { Dispensary } from '../types'
-import { Card, Icon } from './ui'
+import { Card } from './ui'
+import gasPumpArt from '../assets/location-icons/gas-pump.webp'
 import { buildDealBlocks, storeUrgencyBadge, type DealView } from '../utils/dealView'
 import { DEAL_ICON_LABEL, type DealIconName } from '../utils/dealIcons'
 import { DEAL_ICON_SRC, BOGO_BADGE_SRC } from '../utils/dealIconAssets'
@@ -108,7 +109,10 @@ export default function DealCard({ dispensary, deals, gasCostText, rotatingIconS
         </div>
         {/* gas line — omitted entirely when round-trip cost can't be computed */}
         {gasCostText !== null && (
-          <span className="gma-gas-line"><Icon name="fuel" size={13} /> {gasCostText}</span>
+          <span className="gma-gas-line">
+            <img src={gasPumpArt} alt="" width={40} height={40} className="gma-gas-line__icon" />
+            {gasCostText}
+          </span>
         )}
         {/* status: expired store → neutral "No current deals"; live happy hour →
             red pulse badge + countdown; else neutral "active today" */}

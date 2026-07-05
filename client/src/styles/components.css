@@ -254,7 +254,7 @@ article.gma-card::before {
    --------------------------------------------------------------- */
 .gma-chips {
   display: flex;
-  gap: var(--space-2);
+  gap: var(--space-3);
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
@@ -373,7 +373,7 @@ article.gma-card::before {
   display: inline-flex;
   align-items: center;
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 24px;
   color: var(--accent);
   background: var(--fill-distance);
   border: var(--border-hairline) solid var(--fill-distance-border);
@@ -382,10 +382,14 @@ article.gma-card::before {
   white-space: nowrap;
   font-variant-numeric: tabular-nums slashed-zero;
 }
-/* gas: the "what it costs to get there" half — pink figure line (spec: 12.5px) */
+/* gas: the "what it costs to get there" half — pink figure line (spec 12.5px,
+   doubled to 25px per Erik 2026-07-05 with the distance pill for readability) */
 .gma-gas-line {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
   font-family: var(--font-mono);
-  font-size: 12.5px;
+  font-size: 25px;
   color: var(--accent);
   font-variant-numeric: tabular-nums slashed-zero;
 }
