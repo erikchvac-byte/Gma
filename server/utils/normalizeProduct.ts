@@ -150,6 +150,18 @@ export function normalizeProduct(
     }
   }
 
+  // Multi-option pack guard (audit 2026-07-05 Finding 2). The reconciliation above only
+  // runs for SINGLE-option products, so a multi-option pack (packCount > 1) whose option
+  // labels are PER-UNIT weights ("1g" per joint in a 2-pack) computes a wrong $/g with no
+  // flag — there is no single netWeight to reconcile each option against. We cannot know
+  // per-option whether the label is per-unit or total, so we FLAG rather than silently
+  // trust; 'unreconciled-pack' is in EXCLUDED_FLAGS so the disparity engine drops it like a
+  // single-option weight-mismatch. Honest multi-option SIZE LADDERS (packCount null or 1,
+  // e.g. Flower 1g/3.5g/7g) are untouched — packCount > 1 is the exact discriminator.
+  if (weightBased && raw.options.length > 1 && packCount !== null && packCount > 1) {
+    flags.push('unreconciled-pack')
+  }
+
   const observation: ProductObservation = {
     observedAt,
     special: raw.special,

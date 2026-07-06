@@ -12,9 +12,10 @@ import type {
 // carried by ≥2 distinct stores. Never mutates anything, never touches Deal/data.json.
 //
 // HONESTY GATES (the integrity that IS the product's moat — value-analysis §4, fix6):
-//  1. Records flagged weight-mismatch / unparseable-weight / unparseable-pack are
-//     EXCLUDED entirely — their weight is untrustworthy, so any comparison built on it
-//     would lie (AC3/AC5).
+//  1. Records flagged weight-mismatch / unparseable-weight / unparseable-pack /
+//     unreconciled-pack are EXCLUDED entirely — their weight is untrustworthy, so any
+//     comparison built on it would lie (AC3/AC5). 'unreconciled-pack' marks a multi-option
+//     pack whose per-unit vs total weight could not be reconciled (audit 2026-07-05 Finding 2).
 //  2. Only the SAME canonical weight is compared (an eighth to an eighth). The engine
 //     never compares across weights and never builds a whole-catalog $/gram leaderboard
 //     (that structurally surfaces trim every time — forbidden, AC4).
@@ -28,7 +29,12 @@ import type {
 
 // Per-record flags that poison weight-based comparison. A record carrying ANY of these
 // is dropped from disparity output (and counted in the report).
-export const EXCLUDED_FLAGS = new Set(['weight-mismatch', 'unparseable-weight', 'unparseable-pack'])
+export const EXCLUDED_FLAGS = new Set([
+  'weight-mismatch',
+  'unparseable-weight',
+  'unparseable-pack',
+  'unreconciled-pack',
+])
 
 function r2(x: number): number {
   return Math.round(x * 100) / 100
