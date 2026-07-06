@@ -296,3 +296,102 @@ describe('normalizeProduct — Edible / Concentrate basis (spec-category-expansi
     expect(rec.flags).toContain('unparseable-weight')
   })
 })
+
+describe('normalizeProduct — multi-option pack guard (audit 2026-07-05 Finding 2)', () => {
+  it('flags a multi-option per-unit PACK (packCount > 1) as unreconciled-pack', () => {
+    // "Fire Bros 2 Pack": per-unit "1g" label on a 2-pack computes $12/g when 2×1g=2g → true
+    // $6/g. Multi-option skips single-option reconciliation, so it must be flagged, not trusted.
+    const rec = normalizeProduct(
+      preRoll({
+        name: 'Fire Bros | NYC Vapor | Pre-Roll 2 Pack',
+        weightField: null,
+        netWeightMg: null,
+        options: [
+          { option: '1g', basePrice: 12, specialPrice: null, quantityAvailable: 5 },
+          { option: '1/4oz', basePrice: 12, specialPrice: null, quantityAvailable: 3 },
+        ],
+      }),
+      'store',
+      AT,
+    )
+    expect(rec.packCount).toBe(2)
+    expect(rec.flags).toContain('unreconciled-pack')
+  })
+
+  it('does NOT flag an honest single-joint size ladder (packCount 1)', () => {
+    // A single joint offered at 1g OR 1/4oz — each label is a true total weight, honest.
+    const rec = normalizeProduct(
+      preRoll({
+        name: 'Aloha Botanics', // no pack word → assumed single
+        weightField: null,
+        netWeightMg: null,
+        options: [
+          { option: '1g', basePrice: 5, specialPrice: null, quantityAvailable: 5 },
+          { option: '1/4oz', basePrice: 35, specialPrice: null, quantityAvailable: 3 },
+        ],
+      }),
+      'store',
+      AT,
+    )
+    expect(rec.packCount).toBe(1)
+    expect(rec.flags).not.toContain('unreconciled-pack')
+  })
+
+  it('does NOT flag a multi-option Flower size ladder (packCount null)', () => {
+    const rec = normalizeProduct(
+      {
+        productId: 'sk',
+        name: 'Space Kush Flower',
+        category: 'Flower',
+        brand: 'Galaxy',
+        strainType: 'Hybrid',
+        special: true,
+        weightField: null,
+        netWeightMg: null,
+        thc: null,
+        cbd: null,
+        totalTerpenes: null,
+        effects: null,
+        subcategory: null,
+        options: [
+          { option: '1g', basePrice: 11, specialPrice: null, quantityAvailable: 4 },
+          { option: '3.5g', basePrice: 35, specialPrice: null, quantityAvailable: 2 },
+          { option: '7g', basePrice: 60, specialPrice: null, quantityAvailable: 1 },
+        ],
+      },
+      'store',
+      AT,
+    )
+    expect(rec.packCount).toBeNull()
+    expect(rec.flags).not.toContain('unreconciled-pack')
+  })
+
+  it('does NOT flag a non-weight-based multi-option pack (Edible, packCount 20)', () => {
+    // packCount > 1 but not weight-based → no $/g to corrupt; already category-excluded.
+    const rec = normalizeProduct(
+      {
+        productId: 'chew-1',
+        name: '1:1 Assorted Fruit Chews 20pk',
+        category: 'Edible',
+        brand: 'Chews',
+        strainType: null,
+        special: false,
+        weightField: null,
+        netWeightMg: null,
+        thc: null,
+        cbd: null,
+        totalTerpenes: null,
+        effects: null,
+        subcategory: 'gummies',
+        options: [
+          { option: '100mg', basePrice: 20, specialPrice: null, quantityAvailable: 5 },
+          { option: '200mg', basePrice: 35, specialPrice: null, quantityAvailable: 2 },
+        ],
+      },
+      'store',
+      AT,
+    )
+    expect(rec.packCount).toBe(20)
+    expect(rec.flags).not.toContain('unreconciled-pack')
+  })
+})

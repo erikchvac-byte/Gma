@@ -101,6 +101,16 @@ describe('buildDisparities — honesty gates', () => {
     expect(buildDisparities(f)).toHaveLength(0)
   })
 
+  it('EXCLUDES records carrying unreconciled-pack and counts them (audit 2026-07-05 Finding 2)', () => {
+    const f = file(
+      rec({ dispensaryId: 'store-a', productId: 'a', flags: ['unreconciled-pack'] }, [opt({ basePrice: 10 })]),
+      rec({ dispensaryId: 'store-b', productId: 'b' }, [opt({ basePrice: 15 })]),
+    )
+    const report = buildMatchReport(f)
+    expect(report.disparities).toHaveLength(0) // store-a dropped → only store-b left
+    expect(report.excludedFlagCount).toBe(1)
+  })
+
   it('compares like-for-like only: different weights never form one disparity (AC4)', () => {
     const f = file(
       rec({ dispensaryId: 'store-a', productId: 'a' }, [opt({ option: '1g', basePrice: 10 }), opt({ option: '3.5g', basePrice: 30 })]),
