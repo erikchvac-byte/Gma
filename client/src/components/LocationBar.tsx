@@ -48,7 +48,7 @@ export default function LocationBar({
     <section className="gma-location-bar" aria-label="Your location">
       <div className="gma-location-bar__row">
         <span className="gma-location-bar__label">
-          <img src={pinArt} alt="" aria-hidden="true" width={18} height={18} className="gma-location-pin" />
+          <img src={pinArt} alt="" aria-hidden="true" width={36} height={36} className="gma-location-pin" />
           {summary ?? 'No location set — distances and gas costs are hidden'}
         </span>
         {location !== null && (

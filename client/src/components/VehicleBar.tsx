@@ -23,7 +23,7 @@ export default function VehicleBar({ mpg, label, onOpen }: VehicleBarProps) {
     <section className="gma-vehicle-bar" aria-label="Your vehicle">
       <div className="gma-vehicle-bar__row">
         <span className="gma-vehicle-bar__label">
-          <img src={carArt} alt="" aria-hidden="true" width={18} height={18} className="gma-location-pin" />
+          <img src={carArt} alt="" aria-hidden="true" width={36} height={36} className="gma-location-pin" />
           {summary}
         </span>
         <Button variant={hasVehicle ? 'ghost' : 'secondary'} size="sm" onClick={onOpen}>
