@@ -113,7 +113,7 @@ describe('dealIcons', () => {
     })
   })
 
-  describe('order-scope deals — whole-order discounts get the store-wide glyph', () => {
+  describe('order-scope deals — whole-order discounts get their own online-order glyph', () => {
     it.each([
       '50% off Online Orders',
       '40% Off Online Orders Sun,Tues,Thurs Min $80',
@@ -122,8 +122,8 @@ describe('dealIcons', () => {
       '25% Off Items Purchased to Max Out Your Legal Limit*',
       '20% Off Single Purchases Greater Than $100',
       '10% Off Everyday for the Following Customer Groups (with Proof of Valid ID)',
-    ])('%s → store-wide only', (desc) => {
-      expect(dealIcons(desc)).toEqual(['store-wide'])
+    ])('%s → online-order only', (desc) => {
+      expect(dealIcons(desc)).toEqual(['online-order'])
     })
 
     it('a named product keeps its own icon — "purchases" of a product is not order-scope', () => {

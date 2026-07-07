@@ -23,6 +23,7 @@ import tincture from '../assets/deal-icons/tincture.webp'
 // at 28px, and the filter bar wears this canonical art.
 import glass from '../assets/deal-icons/glass/glass-02.webp'
 import storeWide from '../assets/deal-icons/store-wide.webp'
+import onlineOrder from '../assets/deal-icons/online-order.webp'
 import priceDrop from '../assets/deal-icons/price-drop.webp'
 import specialPricing from '../assets/deal-icons/special-pricing.webp'
 import bogoBadge from '../assets/deal-icons/bogo.webp'
@@ -42,6 +43,7 @@ export const DEAL_ICON_SRC: Record<DealIconName, string> = {
   tincture,
   glass,
   'store-wide': storeWide,
+  'online-order': onlineOrder,
   'price-drop': priceDrop,
   'special-pricing': specialPricing,
 }
