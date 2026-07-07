@@ -37,6 +37,7 @@ $logDir       = Join-Path $WorktreePath '.dutchie-ingest'
 $lockFile     = Join-Path $logDir 'run.lock'
 $logFile      = Join-Path $logDir ('ingest-{0}.log' -f (Get-Date -Format 'yyyyMMdd'))
 $uvicornLog   = Join-Path $logDir 'uvicorn.log'
+$uvicornErr   = Join-Path $logDir 'uvicorn.err.log'
 $heartbeat    = Join-Path $logDir 'last-success.txt'
 
 function Write-Log([string]$msg) {
@@ -90,7 +91,7 @@ try {
     # 2. Boot the scraper service (background) and wait for /health.
     $uvicorn = Start-Process -FilePath 'python' `
         -ArgumentList @('-m', 'uvicorn', 'api.server:app', '--host', '127.0.0.1', '--port', "$Port") `
-        -WorkingDirectory $scraperDir -PassThru -NoNewWindow -RedirectStandardError $uvicornLog -RedirectStandardOutput $uvicornLog
+        -WorkingDirectory $scraperDir -PassThru -NoNewWindow -RedirectStandardError $uvicornErr -RedirectStandardOutput $uvicornLog
     $healthy = $false
     for ($i = 0; $i -lt 30; $i++) {
         Start-Sleep -Seconds 1
