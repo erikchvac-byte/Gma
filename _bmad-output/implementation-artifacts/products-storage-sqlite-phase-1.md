@@ -4,7 +4,7 @@ baseline_commit: 91bdfad765d7bd11f21964e040cad71f76ffc22f
 
 # Story: ADR-077 Phase 1 — Products dataset → local SQLite substrate (kill the git wall)
 
-Status: review
+Status: done
 
 <!-- Standalone story (no parent epic — tracked individually, like cross-store-value-matcher / deal-sku-bridge). Source of truth: ADR-077 + plans/products-storage-local-sqlite-plan.md + the two 2026-07-06 scope memos. -->
 
@@ -56,6 +56,25 @@ so that the **GitHub file-size wall (~50 MB warning ~2026-07-23, ~100 MB hard bl
 - [x] **Parity test** (AC: 8) — `productsDb.test.ts` proves DB-report == JSON-report byte-identical on a rich fixture; real-file migration proof captured (228 disparities, all counts equal live). Audit test rebased onto the committed derived file. Wired into the server suite.
 - [x] **Update ADR.md** — ADR-077 status → Phase 1 implemented; schema + driver + resolved decisions recorded; change-log entry added.
 
+### Review Findings
+
+- [x] [Review][Patch] Derivation fail-soft can silently push empty facts to prod, overwriting live disparities/deal-scope on gmaslist.com [server/utils/productsDb.ts:341-352, server/scripts/deriveFactsRun.ts, scripts/derive-facts-local.ps1] — fixed: `readProductsFromDbPath` now throws instead of swallowing; `deriveFacts()` refuses to overwrite a previously-populated derived file with a zero-record result. Tests: `deriveFactsRun.test.ts`.
+- [x] [Review][Patch] AC8 regression gate has no automated parity test for `buildDealScopeLinks` — only `buildMatchReport` is asserted in `productsDb.test.ts` [server/utils/productsDb.test.ts] — fixed: added the DB-vs-JSON `buildDealScopeLinks` byte-equality test.
+- [x] [Review][Patch] "Idempotent" importer destroys accrued history if re-run after the DB has since accrued nightly observations — DROP TABLE runs outside the transaction, before the CLI's post-commit count assertion [server/utils/productsDb.ts:164-166, server/scripts/importProductsToSqlite.ts] — fixed: `runImport` refuses to re-import against a DB that already has observations unless `--force` is passed. Tests: `importProductsToSqlite.test.ts`.
+- [x] [Review][Patch] No `PRAGMA journal_mode=WAL`/`busy_timeout` — three independent local processes writing the same DB will throw `SQLITE_BUSY` with zero retry [server/utils/productsDb.ts:83-88] — fixed: `openProductsDb` now sets WAL + a 5s busy_timeout.
+- [x] [Review][Patch] `readDerived` doesn't validate response shape — array or wrong-shaped-but-valid JSON passes through instead of degrading to the safe empty shape AC5 promises [server/routes/valueRoute.ts:47-56] — fixed: `hasExpectedShape` rejects arrays and objects missing the expected keys. Tests: `valueRoute.test.ts`.
+- [x] [Review][Patch] `crossStoreValue.audit.test.ts` throws an unclear `TypeError` instead of a clean assertion failure when the derived file is absent — only the first `it()` checks `present` [server/utils/crossStoreValue.audit.test.ts] — fixed: the remaining three `it()` blocks now guard on `present`.
+- [x] [Review][Patch] `bindProduct` unconditionally upserts product metadata even when the observation insert was a no-op duplicate — a degraded retry scrape can overwrite good metadata [server/utils/productsDb.ts:220-233] — fixed: metadata is only refreshed when `(product_key, observedAt)` is genuinely new. Test added to `productsDb.test.ts`.
+- [x] [Review][Patch] First-run setup throws an unguided native error if the DB's parent directory doesn't exist yet — no `mkdirSync` before `openProductsDb` [server/scripts/importProductsToSqlite.ts, server/utils/productsDb.ts:83] — fixed: `openProductsDb` now `mkdirSync`s the parent dir (skipped for `:memory:`).
+- [x] [Review][Patch] `scrape-dutchie-local.ps1` doesn't surface uvicorn's log output on health-check failure (the retired CI workflow did) and its cleanup only stops the direct PID, not orphaned Playwright/Chromium children [scripts/scrape-dutchie-local.ps1] — fixed: logs both uvicorn streams on failure; cleanup now uses `taskkill /T /F` to kill the whole process tree.
+- [x] [Review][Patch] Duplicate `import` of `DEFAULT_PRODUCTS_DB_PATH` from `productsDb.js` in two separate statements [server/scripts/importProductsToSqlite.ts] — fixed: combined into one import statement.
+- [x] [Review][Defer] `DEFAULT_PRODUCTS_DB_PATH` code-level fallback lives inside the git worktree, contradicting the "always outside the worktree" invariant [server/utils/productsDb.ts] — deferred, pre-existing: all three shipped `.ps1` runners always pass `PRODUCTS_DB_PATH` explicitly, so this default is never hit through the real operational path
+- [x] [Review][Defer] Whole-table `SELECT *` on every derive run reproduces unbounded memory growth, just moved from Render to the home machine [server/utils/productsDb.ts:298-330] — deferred, pre-existing: story's own Dev Notes explicitly scope time-range indices/hardening to Phase 2
+- [x] [Review][Defer] No alerting on runner heartbeat files / Scheduled Task silent failure [scripts/*-local.ps1] — deferred, pre-existing: already tracked as its own backlog story `derivation-1-8-derivation-run-freshness-health-alerting`
+- [x] [Review][Defer] Push-retry logic can't distinguish a real git conflict from a persistent auth/network failure, silently retrying forever [scripts/derive-facts-local.ps1, scripts/scrape-dutchie-local.ps1] — deferred, pre-existing: same pattern already shipped in `scrape-weedmaps-local.ps1`, not introduced by this diff
+- [x] [Review][Defer] Lock-acquisition TOCTOU race (Test-Path + Set-Content, not atomic) and Windows PID-reuse false-positive on stale-lock detection [scripts/*-local.ps1] — deferred, pre-existing: inherited from the already-shipped `scrape-weedmaps-local.ps1` pattern, low real-world probability given staggered cron scheduling
+- [x] [Review][Defer] `PRODUCT_KEY`'s `::` separator has no collision guard against IDs containing the literal substring [server/utils/productsDb.ts:37] — deferred, theoretical: dispensaryId is internally controlled, productId is empirically alphanumeric/UUID-like in both source APIs
+
 ## Dev Notes
 
 ### Files to touch (all read at implementation time — grounded)
@@ -105,7 +124,7 @@ claude-opus-4-8 (Claude Code, bmad-dev-story)
 - Migration parity (real 21.7 MB file): 5,219 records / 33,169 observations both sides; 0 duplicate `(product_key, observedAt)` pairs (UNIQUE index safe).
 - Report parity (real file): `buildMatchReport(DB)` byte-equals `buildMatchReport(JSON)` → 228 disparities, excluded 568, nonComparable 510, unmatched 1; `buildDealScopeLinks` byte-equal. Matches live `/api/value/disparities` (228) exactly.
 - `npm run build` (client + server): first pass surfaced a strict-mode error — a value-returning `persist` sink is not assignable to a `void | Promise<void>` union (TS void-widening applies only to bare `void`); fixed by typing the sink return as `unknown`. Second pass clean.
-- Server suite: 449 tests / 37 files green.
+- Server suite: 449 tests / 37 files green (459 / 39 after the 2026-07-07 review-fix pass).
 
 ### Completion Notes List
 - **Driver:** `node:sqlite` (built-in) chosen over `better-sqlite3` — decision documented in ADR-077 + story task 1.
@@ -131,15 +150,24 @@ New:
 - `docs/products-local-sqlite-ingest.md` — runbook
 
 Modified:
-- `server/routes/valueRoute.ts` — read derived files, fail-soft (no request-time compute)
-- `server/routes/valueRoute.test.ts` — fail-soft coverage
+- `server/routes/valueRoute.ts` — read derived files, fail-soft (no request-time compute); review-fix: `readDerived` shape validation
+- `server/routes/valueRoute.test.ts` — fail-soft coverage; review-fix: wrong-shape/array test cases
 - `server/index.ts` — dropped `/api/products` route + import
 - `server/scripts/scrapeProductsRun.ts`, `server/scripts/scrapeWeedmapsRun.ts` — injectable DB persist sink; CLIs append to `products.db`
 - `server/scripts/scrapeProductsRun.test.ts` — DB persist wiring test
-- `server/utils/crossStoreValue.audit.test.ts` — rebased onto committed derived file
+- `server/utils/crossStoreValue.audit.test.ts` — rebased onto committed derived file; review-fix: null-guard the remaining `it()` blocks
+- `server/utils/productsDb.ts` — review-fix: WAL/busy_timeout, `mkdirSync` parent dir, `readProductsFromDbPath` throws instead of swallowing, `appendObservations` metadata-clobber guard
+- `server/utils/productsDb.test.ts` — review-fix: deal-scope parity test (AC8 gap), metadata-clobber-guard test
+- `server/scripts/importProductsToSqlite.ts` — review-fix: `--force` guard against destructive re-import, combined duplicate import
+- `server/scripts/deriveFactsRun.ts` — review-fix: zero-collapse regression guard before overwriting derived facts
 - `scripts/scrape-weedmaps-local.ps1` — rewired from JSON commit-back to DB append
+- `scripts/scrape-dutchie-local.ps1` — review-fix: surface uvicorn logs on health-check failure, kill process tree on cleanup
 - `.gitignore` — ignore `products.db`
 - `ADR.md` — ADR-077 Phase 1 status + schema/driver/decisions + change log
+
+New (review-fix):
+- `server/scripts/deriveFactsRun.test.ts` — regression-guard tests
+- `server/scripts/importProductsToSqlite.test.ts` — `--force` guard tests
 
 Deleted:
 - `server/data/products.json` — the file-size wall (backed up to `~/GmaS-data/` first)
@@ -148,3 +176,4 @@ Deleted:
 
 ### Change Log
 - 2026-07-06 — ADR-077 Phase 1 implemented: products dataset → local SQLite; derived facts served; `products.json` out of git (wall killed); `/api/products` dropped; Dutchie/Weedmaps feed the DB. 449 server tests green; build clean.
+- 2026-07-07 — Code review (3-layer adversarial): 10 patch findings fixed (derivation fail-soft data-loss risk, missing AC8 deal-scope parity test, destructive importer re-run, no WAL/busy_timeout, `readDerived` shape validation, audit-test null crash, metadata-clobber on duplicate retry, missing first-run mkdir, uvicorn log/process-tree cleanup, duplicate import), 6 deferred (pre-existing patterns / already-tracked backlog items), 5 dismissed as noise after verification. 459 server tests green (+10); `npm run build` clean (client + server).

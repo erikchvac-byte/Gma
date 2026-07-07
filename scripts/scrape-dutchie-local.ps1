@@ -100,7 +100,14 @@ try {
             if ($r.StatusCode -eq 200) { $healthy = $true; break }
         } catch { }
     }
-    if (-not $healthy) { Write-Log 'ERROR: scraper-svc failed to become healthy -- aborting'; exit 1 }
+    if (-not $healthy) {
+        Write-Log 'ERROR: scraper-svc failed to become healthy -- aborting'
+        Write-Log '--- uvicorn.log ---'
+        if (Test-Path $uvicornLog) { Get-Content $uvicornLog | ForEach-Object { Write-Log $_ } }
+        Write-Log '--- uvicorn.err.log ---'
+        if (Test-Path $uvicornErr) { Get-Content $uvicornErr | ForEach-Object { Write-Log $_ } }
+        exit 1
+    }
     Write-Log 'scraper-svc healthy'
 
     # 3. Scrape straight into the local DB. Fail-soft: partial records are already persisted.
@@ -121,7 +128,9 @@ try {
 }
 finally {
     if ($uvicorn -and -not $uvicorn.HasExited) {
-        try { Stop-Process -Id $uvicorn.Id -Force -ErrorAction SilentlyContinue } catch { }
+        # Playwright launches headless Chromium as a child of uvicorn -- killing only the
+        # parent PID can orphan it. /T kills the whole process tree.
+        try { & taskkill /PID $uvicorn.Id /T /F 2>$null | Out-Null } catch { }
     }
     Remove-Item -Path $lockFile -ErrorAction SilentlyContinue
     Write-Log '=== dutchie local ingest end ==='

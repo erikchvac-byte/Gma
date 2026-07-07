@@ -5,12 +5,14 @@ import path from 'node:path'
 import { canonicalWeightGrams } from './productMatchKey.js'
 import { parseGrams, parsePackCount } from './normalizeProduct.js'
 import type { MatchReport } from './crossStoreValue.js'
+import type { DerivedEnvelope } from './derivedEnvelope.js'
 
 // Phase 0 verification (AC5), rebased onto ADR-077. The raw products.json left git for local
 // SQLite, so this audit now runs over the COMMITTED DERIVED disparities.json — the real,
 // deployed value output (produced by deriveFactsRun from the home DB). It still asserts the
 // honesty invariants against reality, not synthetic fixtures. The raw-record exclusion-gate
 // equivalence it used to prove is fully unit-covered in crossStoreValue.test.ts (gate 1).
+// derivation-1.1: the committed file is envelope-shaped; the report itself lives under `.data`.
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const DERIVED_DISPARITIES = path.join(__dirname, '../data/derived/disparities.json')
@@ -18,7 +20,7 @@ const DERIVED_DISPARITIES = path.join(__dirname, '../data/derived/disparities.js
 describe('Phase 0 audit — committed derived disparities.json (ADR-077)', () => {
   const present = existsSync(DERIVED_DISPARITIES)
   const report: MatchReport | null = present
-    ? (JSON.parse(readFileSync(DERIVED_DISPARITIES, 'utf-8')) as MatchReport)
+    ? (JSON.parse(readFileSync(DERIVED_DISPARITIES, 'utf-8')) as DerivedEnvelope<MatchReport>).data
     : null
 
   it('the committed derived facts exist and were actually derived from a populated dataset', () => {
@@ -27,11 +29,13 @@ describe('Phase 0 audit — committed derived disparities.json (ADR-077)', () =>
   })
 
   it('the dataset actually exercises the exclusion gate (flagged records counted)', () => {
+    if (!present) return // covered by the previous it(); avoid a null-deref crash on a fresh checkout
     // Non-vacuous audit: real committed data carries excluded-flag records (568 as of writing).
     expect(report!.excludedFlagCount).toBeGreaterThan(0)
   })
 
   it('counts every unplaceable record (nothing hidden)', () => {
+    if (!present) return // covered by the first it(); avoid a null-deref crash on a fresh checkout
     expect(report!.unmatchedCount).toBeGreaterThanOrEqual(0)
     expect(report!.excludedFlagCount).toBeGreaterThanOrEqual(0)
     expect(report!.nonComparableCategoryCount).toBeGreaterThanOrEqual(0)
@@ -40,6 +44,7 @@ describe('Phase 0 audit — committed derived disparities.json (ADR-077)', () =>
   })
 
   it('every emitted disparity is well-formed and like-for-like', () => {
+    if (!present) return // covered by the first it(); avoid a null-deref crash on a fresh checkout
     for (const d of report!.disparities) {
       expect(d.storesCarrying.length).toBeGreaterThanOrEqual(2)
       const ids = d.storesCarrying.map((s) => s.dispensaryId)
