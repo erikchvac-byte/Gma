@@ -382,14 +382,15 @@ article.gma-card::before {
   white-space: nowrap;
   font-variant-numeric: tabular-nums slashed-zero;
 }
-/* gas: the "what it costs to get there" half — pink figure line (spec 12.5px,
-   doubled to 25px per Erik 2026-07-05 with the distance pill for readability) */
+/* gas: the "what it costs to get there" half — mono figure line. Sized to 15px
+   (design "Current App" 2026-07-06): the distance pill stays the large 24px
+   figure; the gas cost tucks under it as a quiet secondary line. */
 .gma-gas-line {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
   font-family: var(--font-mono);
-  font-size: 25px;
+  font-size: 15px;
   color: var(--accent);
   font-variant-numeric: tabular-nums slashed-zero;
 }
