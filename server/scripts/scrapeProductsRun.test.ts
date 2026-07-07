@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { runProductScrape } from './scrapeProductsRun.js'
 import { readProducts } from '../utils/productsStore.js'
+import { persistObservationsToDb, openProductsDb, readProductsFile } from '../utils/productsDb.js'
 import type { RawProduct } from '../types/index.js'
 
 function raw(over: Partial<RawProduct> = {}): RawProduct {
@@ -89,5 +90,25 @@ describe('runProductScrape (commit-back scrape, CAP-4/CAP-6)', () => {
     const out = await runProductScrape({ stores: ['nope'], registry: {}, productsPath, now: 'T1' })
     expect(out.ok).toBe(false)
     expect(out.results.nope).toBe('error')
+  })
+
+  // ADR-077 AC7: the injectable persist sink feeds the local SQLite DB instead of JSON.
+  it('feeds observations into products.db via the DB persist sink', async () => {
+    const dbPath = path.join(dir, 'products.db')
+    const registry = { 'store-a': async () => [raw()] }
+    const out = await runProductScrape({
+      stores: ['store-a'],
+      registry,
+      now: 'T1',
+      persist: (records, n) => persistObservationsToDb(records, n, dbPath),
+    })
+    expect(out.recordsWritten).toBe(1)
+
+    const db = openProductsDb(dbPath)
+    const p = readProductsFile(db).products['store-a::p1']
+    db.close()
+    expect(p).toBeDefined()
+    expect(p.packCount).toBe(2)
+    expect(p.history.at(-1)!.options[0].pricePerItem).toBe(4)
   })
 })
