@@ -191,28 +191,6 @@
       ]
     },
     {
-      "matchKey": "phat panda|line platinum trophy wife|hybrid|flower@3.5g",
-      "displayName": "Trophy Wife Platinum Line",
-      "category": "Flower",
-      "weightGrams": 3.5,
-      "lowPrice": 15,
-      "highPrice": 36,
-      "spread": 21,
-      "spreadPct": 1.4,
-      "storesCarrying": [
-        {
-          "dispensaryId": "hangar-420-west",
-          "price": 15,
-          "quantityAvailable": 7
-        },
-        {
-          "dispensaryId": "cannazone-old-hwy-99",
-          "price": 36,
-          "quantityAvailable": 7
-        }
-      ]
-    },
-    {
       "matchKey": "|apple jack|concentrate|vaporizers@1g",
       "displayName": "Apple Jack",
       "category": "Vaporizers",
@@ -468,11 +446,6 @@
           "quantityAvailable": 12
         },
         {
-          "dispensaryId": "2020-solutions-north-bellingham",
-          "price": 22.4,
-          "quantityAvailable": 1
-        },
-        {
           "dispensaryId": "cannazone-old-hwy-99",
           "price": 30,
           "quantityAvailable": 6
@@ -534,6 +507,28 @@
       ]
     },
     {
+      "matchKey": "super fog|cloud diamonds jef liquid plus rainbow twisted|sativa hybrid|vaporizers@1g",
+      "displayName": "TWISTED Liquid Diamonds 1g Jefé Plus - Rainbow Cloud",
+      "category": "Vaporizers",
+      "weightGrams": 1,
+      "lowPrice": 30.25,
+      "highPrice": 60,
+      "spread": 29.75,
+      "spreadPct": 0.98,
+      "storesCarrying": [
+        {
+          "dispensaryId": "hangar-420-everett",
+          "price": 30.25,
+          "quantityAvailable": 6
+        },
+        {
+          "dispensaryId": "hangar-420-west",
+          "price": 60,
+          "quantityAvailable": 1
+        }
+      ]
+    },
+    {
       "matchKey": "torus|chai latte|n a|flower@3.5g",
       "displayName": "Chai Latte 3.5g Flower (Torus)",
       "category": "Flower",
@@ -550,34 +545,12 @@
         },
         {
           "dispensaryId": "hangar-420-everett",
-          "price": 70,
+          "price": 38.5,
           "quantityAvailable": 1
         },
         {
           "dispensaryId": "hangar-420-west",
           "price": 70,
-          "quantityAvailable": 2
-        }
-      ]
-    },
-    {
-      "matchKey": "phat panda|doughp line platinum|hybrid|flower@3.5g",
-      "displayName": "Doughp Platinum Line 3.5g Flower (Phat Panda)",
-      "category": "Flower",
-      "weightGrams": 3.5,
-      "lowPrice": 21,
-      "highPrice": 40,
-      "spread": 19,
-      "spreadPct": 0.9,
-      "storesCarrying": [
-        {
-          "dispensaryId": "local-roots-everett-128th",
-          "price": 21,
-          "quantityAvailable": 5
-        },
-        {
-          "dispensaryId": "hangar-420-west",
-          "price": 40,
           "quantityAvailable": 2
         }
       ]
@@ -730,7 +703,7 @@
         {
           "dispensaryId": "kush21-everett-evergreen",
           "price": 28,
-          "quantityAvailable": 9
+          "quantityAvailable": 8
         },
         {
           "dispensaryId": "salish-coast-cannabis",
@@ -800,6 +773,336 @@
           "dispensaryId": "kaleafa-oak-harbor",
           "price": 55,
           "quantityAvailable": null
+        }
+      ]
+    },
+    {
+      "matchKey": "old mcdonald s farm|cake cream ice omf|n a|flower@28g",
+      "displayName": "OMF Ice Cream Cake",
+      "category": "Flower",
+      "weightGrams": 28,
+      "lowPrice": 33,
+      "highPrice": 60,
+      "spread": 27,
+      "spreadPct": 0.82,
+      "storesCarrying": [
+        {
+          "dispensaryId": "hangar-420-west",
+          "price": 33,
+          "quantityAvailable": 2
+        },
+        {
+          "dispensaryId": "hangar-420-everett",
+          "price": 60,
+          "quantityAvailable": 1
+        }
+      ]
+    },
+    {
+      "matchKey": "torus|pink runtz|n a|flower@3.5g",
+      "displayName": "TORUS Pink Runtz 3.5g",
+      "category": "Flower",
+      "weightGrams": 3.5,
+      "lowPrice": 38.5,
+      "highPrice": 70,
+      "spread": 31.5,
+      "spreadPct": 0.82,
+      "storesCarrying": [
+        {
+          "dispensaryId": "hangar-420-everett",
+          "price": 38.5,
+          "quantityAvailable": 2
+        },
+        {
+          "dispensaryId": "hangar-420-west",
+          "price": 70,
+          "quantityAvailable": 1
+        }
+      ]
+    },
+    {
+      "matchKey": "old mcdonald s farm|daddy grand omf purple|n a|flower@3.5g",
+      "displayName": "OMF Grand Daddy Purple",
+      "category": "Flower",
+      "weightGrams": 3.5,
+      "lowPrice": 8.25,
+      "highPrice": 15,
+      "spread": 6.75,
+      "spreadPct": 0.82,
+      "storesCarrying": [
+        {
+          "dispensaryId": "hangar-420-west",
+          "price": 8.25,
+          "quantityAvailable": 5
+        },
+        {
+          "dispensaryId": "hangar-420-everett",
+          "price": 15,
+          "quantityAvailable": 1
+        }
+      ]
+    },
+    {
+      "matchKey": "old mcdonald s farm|boof omf super|n a|flower@3.5g",
+      "displayName": "OMF Super Boof",
+      "category": "Flower",
+      "weightGrams": 3.5,
+      "lowPrice": 8.25,
+      "highPrice": 15,
+      "spread": 6.75,
+      "spreadPct": 0.82,
+      "storesCarrying": [
+        {
+          "dispensaryId": "hangar-420-west",
+          "price": 8.25,
+          "quantityAvailable": 5
+        },
+        {
+          "dispensaryId": "hangar-420-everett",
+          "price": 15,
+          "quantityAvailable": 1
+        }
+      ]
+    },
+    {
+      "matchKey": "old mcdonald s farm|boof omf super|n a|flower@28g",
+      "displayName": "OMF Super Boof",
+      "category": "Flower",
+      "weightGrams": 28,
+      "lowPrice": 33,
+      "highPrice": 60,
+      "spread": 27,
+      "spreadPct": 0.82,
+      "storesCarrying": [
+        {
+          "dispensaryId": "hangar-420-west",
+          "price": 33,
+          "quantityAvailable": 2
+        },
+        {
+          "dispensaryId": "hangar-420-everett",
+          "price": 60,
+          "quantityAvailable": 3
+        }
+      ]
+    },
+    {
+      "matchKey": "old mcdonald s farm|omf tangie|n a|flower@7g",
+      "displayName": "OMF Tangie",
+      "category": "Flower",
+      "weightGrams": 7,
+      "lowPrice": 13.75,
+      "highPrice": 25,
+      "spread": 11.25,
+      "spreadPct": 0.82,
+      "storesCarrying": [
+        {
+          "dispensaryId": "hangar-420-west",
+          "price": 13.75,
+          "quantityAvailable": 3
+        },
+        {
+          "dispensaryId": "hangar-420-everett",
+          "price": 25,
+          "quantityAvailable": 1
+        }
+      ]
+    },
+    {
+      "matchKey": "old mcdonald s farm|omf tangie|n a|flower@28g",
+      "displayName": "OMF Tangie",
+      "category": "Flower",
+      "weightGrams": 28,
+      "lowPrice": 33,
+      "highPrice": 60,
+      "spread": 27,
+      "spreadPct": 0.82,
+      "storesCarrying": [
+        {
+          "dispensaryId": "hangar-420-west",
+          "price": 33,
+          "quantityAvailable": 3
+        },
+        {
+          "dispensaryId": "hangar-420-everett",
+          "price": 60,
+          "quantityAvailable": 2
+        }
+      ]
+    },
+    {
+      "matchKey": "torus|blue zoap|n a|flower@3.5g",
+      "displayName": "TORUS Blue Zoap 3.5g",
+      "category": "Flower",
+      "weightGrams": 3.5,
+      "lowPrice": 38.5,
+      "highPrice": 70,
+      "spread": 31.5,
+      "spreadPct": 0.82,
+      "storesCarrying": [
+        {
+          "dispensaryId": "hangar-420-everett",
+          "price": 38.5,
+          "quantityAvailable": 1
+        },
+        {
+          "dispensaryId": "hangar-420-west",
+          "price": 70,
+          "quantityAvailable": 1
+        }
+      ]
+    },
+    {
+      "matchKey": "skord|payton pie s|n a|flower@3.5g",
+      "displayName": "SKORD Payton's Pie 3.5g",
+      "category": "Flower",
+      "weightGrams": 3.5,
+      "lowPrice": 33,
+      "highPrice": 60,
+      "spread": 27,
+      "spreadPct": 0.82,
+      "storesCarrying": [
+        {
+          "dispensaryId": "hangar-420-everett",
+          "price": 33,
+          "quantityAvailable": 7
+        },
+        {
+          "dispensaryId": "hangar-420-west",
+          "price": 60,
+          "quantityAvailable": 1
+        }
+      ]
+    },
+    {
+      "matchKey": "lifted|batch blue lift lobster small|n a|flower@3.5g",
+      "displayName": "LIFT Blue Lobster Small Batch 3.5g",
+      "category": "Flower",
+      "weightGrams": 3.5,
+      "lowPrice": 55,
+      "highPrice": 100,
+      "spread": 45,
+      "spreadPct": 0.82,
+      "storesCarrying": [
+        {
+          "dispensaryId": "hangar-420-everett",
+          "price": 55,
+          "quantityAvailable": 14
+        },
+        {
+          "dispensaryId": "hangar-420-west",
+          "price": 100,
+          "quantityAvailable": 1
+        }
+      ]
+    },
+    {
+      "matchKey": "skord|animal ceramic cocktail|n a|vaporizers@1g",
+      "displayName": "SKORD Animal Cocktail Ceramic Cartridge 1g",
+      "category": "Vaporizers",
+      "weightGrams": 1,
+      "lowPrice": 33,
+      "highPrice": 60,
+      "spread": 27,
+      "spreadPct": 0.82,
+      "storesCarrying": [
+        {
+          "dispensaryId": "hangar-420-everett",
+          "price": 33,
+          "quantityAvailable": 8
+        },
+        {
+          "dispensaryId": "hangar-420-west",
+          "price": 60,
+          "quantityAvailable": 5
+        }
+      ]
+    },
+    {
+      "matchKey": "skord|dark rainbow|n a|flower@3.5g",
+      "displayName": "SKORD Dark Rainbow 3.5g",
+      "category": "Flower",
+      "weightGrams": 3.5,
+      "lowPrice": 33,
+      "highPrice": 60,
+      "spread": 27,
+      "spreadPct": 0.82,
+      "storesCarrying": [
+        {
+          "dispensaryId": "hangar-420-everett",
+          "price": 33,
+          "quantityAvailable": 8
+        },
+        {
+          "dispensaryId": "hangar-420-west",
+          "price": 60,
+          "quantityAvailable": 10
+        }
+      ]
+    },
+    {
+      "matchKey": "jams|bho concentrate panama red|n a|concentrate|jam@1g",
+      "displayName": "JAMS Panama Red BHO Concentrate 1g",
+      "category": "Concentrate",
+      "weightGrams": 1,
+      "lowPrice": 6.6,
+      "highPrice": 12,
+      "spread": 5.4,
+      "spreadPct": 0.82,
+      "storesCarrying": [
+        {
+          "dispensaryId": "hangar-420-everett",
+          "price": 6.6,
+          "quantityAvailable": 3
+        },
+        {
+          "dispensaryId": "hangar-420-west",
+          "price": 12,
+          "quantityAvailable": 1
+        }
+      ]
+    },
+    {
+      "matchKey": "viking cannabis|face gas|indica|flower@3.5g",
+      "displayName": "Gas Face - 3.5g",
+      "category": "Flower",
+      "weightGrams": 3.5,
+      "lowPrice": 22.5,
+      "highPrice": 40,
+      "spread": 17.5,
+      "spreadPct": 0.78,
+      "storesCarrying": [
+        {
+          "dispensaryId": "salish-coast-cannabis",
+          "price": 22.5,
+          "quantityAvailable": 5
+        },
+        {
+          "dispensaryId": "hangar-420-everett",
+          "price": 40,
+          "quantityAvailable": 1
+        }
+      ]
+    },
+    {
+      "matchKey": "super fog|baja blazed ion tank twisted|hybrid|vaporizers@1g",
+      "displayName": "TWISTED 1g Ion Tank - Baja Blazed",
+      "category": "Vaporizers",
+      "weightGrams": 1,
+      "lowPrice": 22.5,
+      "highPrice": 40,
+      "spread": 17.5,
+      "spreadPct": 0.78,
+      "storesCarrying": [
+        {
+          "dispensaryId": "salish-coast-cannabis",
+          "price": 22.5,
+          "quantityAvailable": 5
+        },
+        {
+          "dispensaryId": "cannazone-old-hwy-99",
+          "price": 40,
+          "quantityAvailable": 6
         }
       ]
     },
@@ -1010,6 +1313,28 @@
       ]
     },
     {
+      "matchKey": "super fog|edition fc jef limited plus strawberry striker twisted|sativa hybrid|vaporizers@1g",
+      "displayName": "TWISTED 1G Jefé Plus - Strawberry Striker (FC Super Fog Limited Edition)",
+      "category": "Vaporizers",
+      "weightGrams": 1,
+      "lowPrice": 33.75,
+      "highPrice": 55,
+      "spread": 21.25,
+      "spreadPct": 0.63,
+      "storesCarrying": [
+        {
+          "dispensaryId": "salish-coast-cannabis",
+          "price": 33.75,
+          "quantityAvailable": 9
+        },
+        {
+          "dispensaryId": "hangar-420-everett",
+          "price": 55,
+          "quantityAvailable": 7
+        }
+      ]
+    },
+    {
       "matchKey": "phat panda|firecracker raspberry skywalker|indica|pre rolls@1g",
       "displayName": "Raspberry Skywalker Infused Firecracker (Phat Panda)",
       "category": "Pre-Rolls",
@@ -1140,6 +1465,28 @@
       ]
     },
     {
+      "matchKey": "full spec|cadet liquid live resin runtz white|hybrid|vaporizers@1g",
+      "displayName": "White Runtz - Cadet Liquid Live Resin- Cartridge - 1g",
+      "category": "Vaporizers",
+      "weightGrams": 1,
+      "lowPrice": 19.25,
+      "highPrice": 30,
+      "spread": 10.75,
+      "spreadPct": 0.56,
+      "storesCarrying": [
+        {
+          "dispensaryId": "hangar-420-everett",
+          "price": 19.25,
+          "quantityAvailable": 2
+        },
+        {
+          "dispensaryId": "starbuds-bellingham",
+          "price": 30,
+          "quantityAvailable": 3
+        }
+      ]
+    },
+    {
       "matchKey": "|j mama s|indica|flower@3.5g",
       "displayName": "Mama J's",
       "category": "Flower",
@@ -1184,24 +1531,24 @@
       ]
     },
     {
-      "matchKey": "thrills|cookies flavorstrains tropicana|sativa|vaporizers@1g",
-      "displayName": "Tropicana Cookies - FlavorStrains - Cartridge - 1g",
+      "matchKey": "full spec|cadet liquid live macmosa resin|hybrid|vaporizers@1g",
+      "displayName": "MACMosa - Cadet Liquid Live Resin- Cartridge - 1g",
       "category": "Vaporizers",
       "weightGrams": 1,
-      "lowPrice": 20,
+      "lowPrice": 19.5,
       "highPrice": 30,
-      "spread": 10,
-      "spreadPct": 0.5,
+      "spread": 10.5,
+      "spreadPct": 0.54,
       "storesCarrying": [
         {
-          "dispensaryId": "2020-solutions-north-bellingham",
-          "price": 20,
-          "quantityAvailable": 4
+          "dispensaryId": "salish-coast-cannabis",
+          "price": 19.5,
+          "quantityAvailable": 2
         },
         {
-          "dispensaryId": "hangar-420-everett",
+          "dispensaryId": "starbuds-bellingham",
           "price": 30,
-          "quantityAvailable": 1
+          "quantityAvailable": 5
         }
       ]
     },
@@ -1232,20 +1579,42 @@
       "displayName": "SBW Funky Fresh Infused Hash Cannon 2g",
       "category": "Concentrate",
       "weightGrams": 2,
-      "lowPrice": 20,
-      "highPrice": 30,
-      "spread": 10,
+      "lowPrice": 11,
+      "highPrice": 16.5,
+      "spread": 5.5,
       "spreadPct": 0.5,
       "storesCarrying": [
         {
           "dispensaryId": "hangar-420-everett",
-          "price": 20,
+          "price": 11,
           "quantityAvailable": 1
         },
         {
           "dispensaryId": "hangar-420-west",
-          "price": 30,
+          "price": 16.5,
           "quantityAvailable": 4
+        }
+      ]
+    },
+    {
+      "matchKey": "super fog|blueberry extract high jef loud muffin plus terpene|indica|vaporizers@1g",
+      "displayName": "LOUD High Terpene Extract 1g Jefé Plus - Blueberry Muffin",
+      "category": "Vaporizers",
+      "weightGrams": 1,
+      "lowPrice": 37.5,
+      "highPrice": 56,
+      "spread": 18.5,
+      "spreadPct": 0.49,
+      "storesCarrying": [
+        {
+          "dispensaryId": "salish-coast-cannabis",
+          "price": 37.5,
+          "quantityAvailable": 9
+        },
+        {
+          "dispensaryId": "hangar-420-everett",
+          "price": 56,
+          "quantityAvailable": 1
         }
       ]
     },
@@ -1299,6 +1668,33 @@
       ]
     },
     {
+      "matchKey": "|khalifa kush|indica|flower@3.5g",
+      "displayName": "Khalifa Kush Flower",
+      "category": "Flower",
+      "weightGrams": 3.5,
+      "lowPrice": 37.1,
+      "highPrice": 55,
+      "spread": 17.9,
+      "spreadPct": 0.48,
+      "storesCarrying": [
+        {
+          "dispensaryId": "kaleafa-oak-harbor",
+          "price": 37.1,
+          "quantityAvailable": null
+        },
+        {
+          "dispensaryId": "remedy-tulalip",
+          "price": 50,
+          "quantityAvailable": null
+        },
+        {
+          "dispensaryId": "2020-solutions-pacific-highway",
+          "price": 55,
+          "quantityAvailable": null
+        }
+      ]
+    },
+    {
       "matchKey": "|hybrid khalifa mints|indica|flower@3.5g",
       "displayName": "Khalifa Mints - 3.5g Hybrid",
       "category": "Flower",
@@ -1322,6 +1718,28 @@
           "dispensaryId": "2020-solutions-pacific-highway",
           "price": 55,
           "quantityAvailable": null
+        }
+      ]
+    },
+    {
+      "matchKey": "super fog|cannabinoids down jef plus targeted turn vibes|thc|vaporizers@1g",
+      "displayName": "VIBES Targeted Cannabinoids 1g Jefé Plus - Turn Down",
+      "category": "Vaporizers",
+      "weightGrams": 1,
+      "lowPrice": 27.5,
+      "highPrice": 40,
+      "spread": 12.5,
+      "spreadPct": 0.45,
+      "storesCarrying": [
+        {
+          "dispensaryId": "hangar-420-everett",
+          "price": 27.5,
+          "quantityAvailable": 2
+        },
+        {
+          "dispensaryId": "the-joint-everett",
+          "price": 40,
+          "quantityAvailable": 4
         }
       ]
     },
@@ -1363,13 +1781,13 @@
       "spreadPct": 0.43,
       "storesCarrying": [
         {
-          "dispensaryId": "2020-solutions-pacific-highway",
+          "dispensaryId": "2020-solutions-north-bellingham",
           "price": 56,
           "quantityAvailable": null
         },
         {
-          "dispensaryId": "2020-solutions-north-bellingham",
-          "price": 56,
+          "dispensaryId": "210-cannabis-arlington",
+          "price": 60,
           "quantityAvailable": null
         },
         {
@@ -1591,6 +2009,28 @@
       ]
     },
     {
+      "matchKey": "|khalifa kush sky violet|indica|flower@3.5g",
+      "displayName": "Violet Sky: Flower (3.5g) - Khalifa Kush",
+      "category": "Flower",
+      "weightGrams": 3.5,
+      "lowPrice": 37.1,
+      "highPrice": 50,
+      "spread": 12.9,
+      "spreadPct": 0.35,
+      "storesCarrying": [
+        {
+          "dispensaryId": "kaleafa-oak-harbor",
+          "price": 37.1,
+          "quantityAvailable": null
+        },
+        {
+          "dispensaryId": "remedy-tulalip",
+          "price": 50,
+          "quantityAvailable": null
+        }
+      ]
+    },
+    {
       "matchKey": "|maui wowie|concentrate|vaporizers@1g",
       "displayName": "Maui Wowie - 0.5g Cartridge",
       "category": "Vaporizers",
@@ -1701,28 +2141,6 @@
       ]
     },
     {
-      "matchKey": "viking cannabis|face gas|indica|flower@3.5g",
-      "displayName": "Gas Face - 3.5g",
-      "category": "Flower",
-      "weightGrams": 3.5,
-      "lowPrice": 30,
-      "highPrice": 40,
-      "spread": 10,
-      "spreadPct": 0.33,
-      "storesCarrying": [
-        {
-          "dispensaryId": "salish-coast-cannabis",
-          "price": 30,
-          "quantityAvailable": 5
-        },
-        {
-          "dispensaryId": "hangar-420-everett",
-          "price": 40,
-          "quantityAvailable": 1
-        }
-      ]
-    },
-    {
       "matchKey": "mwah|peach perfection|n a|vaporizers@1g",
       "displayName": "MWAH - Peach Perfection Disposable Cart 1G",
       "category": "Vaporizers",
@@ -1811,46 +2229,24 @@
       ]
     },
     {
-      "matchKey": "super fog|card edition fc fire jef limited plus red|hybrid|vaporizers@1g",
-      "displayName": "FIRE 1G Jefé Plus - Red Card (FC Super Fog Limited Edition)",
+      "matchKey": "|aio cherry hybrid limeade slush|concentrate|vaporizers@1g",
+      "displayName": "Cherry Limeade Slush (Hybrid) - 1g AIO",
       "category": "Vaporizers",
       "weightGrams": 1,
-      "lowPrice": 45,
-      "highPrice": 60,
-      "spread": 15,
+      "lowPrice": 33.75,
+      "highPrice": 45,
+      "spread": 11.25,
       "spreadPct": 0.33,
       "storesCarrying": [
         {
-          "dispensaryId": "the-joint-everett",
+          "dispensaryId": "northwind-anacortes",
+          "price": 33.75,
+          "quantityAvailable": null
+        },
+        {
+          "dispensaryId": "remedy-tulalip",
           "price": 45,
-          "quantityAvailable": 15
-        },
-        {
-          "dispensaryId": "hangar-420-west",
-          "price": 60,
-          "quantityAvailable": 4
-        }
-      ]
-    },
-    {
-      "matchKey": "super fog|baja blazed ion tank twisted|hybrid|vaporizers@1g",
-      "displayName": "TWISTED 1g Ion Tank - Baja Blazed",
-      "category": "Vaporizers",
-      "weightGrams": 1,
-      "lowPrice": 30,
-      "highPrice": 40,
-      "spread": 10,
-      "spreadPct": 0.33,
-      "storesCarrying": [
-        {
-          "dispensaryId": "salish-coast-cannabis",
-          "price": 30,
-          "quantityAvailable": 6
-        },
-        {
-          "dispensaryId": "cannazone-old-hwy-99",
-          "price": 40,
-          "quantityAvailable": 6
+          "quantityAvailable": null
         }
       ]
     },
@@ -1867,12 +2263,12 @@
         {
           "dispensaryId": "kushmart-north",
           "price": 7.5,
-          "quantityAvailable": 9
+          "quantityAvailable": 8
         },
         {
           "dispensaryId": "kush21-everett-evergreen",
           "price": 10,
-          "quantityAvailable": 16
+          "quantityAvailable": 14
         }
       ]
     },
@@ -1894,28 +2290,6 @@
         {
           "dispensaryId": "kush21-everett-evergreen",
           "price": 170,
-          "quantityAvailable": 2
-        }
-      ]
-    },
-    {
-      "matchKey": "thrills|flavorstrains jelly strawberry|hybrid|vaporizers@1g",
-      "displayName": "Strawberry Jelly - FlavorStrains - Cartridge - 1g",
-      "category": "Vaporizers",
-      "weightGrams": 1,
-      "lowPrice": 20,
-      "highPrice": 26,
-      "spread": 6,
-      "spreadPct": 0.3,
-      "storesCarrying": [
-        {
-          "dispensaryId": "2020-solutions-pacific-highway",
-          "price": 20,
-          "quantityAvailable": 4
-        },
-        {
-          "dispensaryId": "the-joint-everett",
-          "price": 26,
           "quantityAvailable": 2
         }
       ]
@@ -1961,28 +2335,6 @@
           "dispensaryId": "local-roots-everett-128th",
           "price": 12.5,
           "quantityAvailable": 5
-        }
-      ]
-    },
-    {
-      "matchKey": "super fog|cannabinoids down jef plus targeted turn vibes|thc|vaporizers@1g",
-      "displayName": "VIBES Targeted Cannabinoids 1g Jefé Plus - Turn Down",
-      "category": "Vaporizers",
-      "weightGrams": 1,
-      "lowPrice": 40,
-      "highPrice": 50,
-      "spread": 10,
-      "spreadPct": 0.25,
-      "storesCarrying": [
-        {
-          "dispensaryId": "the-joint-everett",
-          "price": 40,
-          "quantityAvailable": 4
-        },
-        {
-          "dispensaryId": "hangar-420-everett",
-          "price": 50,
-          "quantityAvailable": 2
         }
       ]
     },
@@ -2087,12 +2439,12 @@
         {
           "dispensaryId": "2020-solutions-pacific-highway",
           "price": 20.8,
-          "quantityAvailable": 22
+          "quantityAvailable": 19
         },
         {
           "dispensaryId": "2020-solutions-north-bellingham",
           "price": 25.6,
-          "quantityAvailable": 7
+          "quantityAvailable": 4
         }
       ]
     },
@@ -2119,50 +2471,6 @@
       ]
     },
     {
-      "matchKey": "super fog|diamonds jef lemon liquid loopz plus twisted|sativa hybrid|vaporizers@1g",
-      "displayName": "TWISTED Liquid Diamonds 1g Jefé Plus - Lemon Loopz",
-      "category": "Vaporizers",
-      "weightGrams": 1,
-      "lowPrice": 45,
-      "highPrice": 55,
-      "spread": 10,
-      "spreadPct": 0.22,
-      "storesCarrying": [
-        {
-          "dispensaryId": "salish-coast-cannabis",
-          "price": 45,
-          "quantityAvailable": 2
-        },
-        {
-          "dispensaryId": "hangar-420-everett",
-          "price": 55,
-          "quantityAvailable": 2
-        }
-      ]
-    },
-    {
-      "matchKey": "super fog|edition fc jef limited plus strawberry striker twisted|sativa hybrid|vaporizers@1g",
-      "displayName": "TWISTED 1G Jefé Plus - Strawberry Striker (FC Super Fog Limited Edition)",
-      "category": "Vaporizers",
-      "weightGrams": 1,
-      "lowPrice": 45,
-      "highPrice": 55,
-      "spread": 10,
-      "spreadPct": 0.22,
-      "storesCarrying": [
-        {
-          "dispensaryId": "salish-coast-cannabis",
-          "price": 45,
-          "quantityAvailable": 9
-        },
-        {
-          "dispensaryId": "hangar-420-everett",
-          "price": 55,
-          "quantityAvailable": 7
-        }
-      ]
-    },
-    {
       "matchKey": "full spec|dirty elite girl liquid live resin|sativa|vaporizers@1g",
       "displayName": "Dirty Girl - Elite Liquid Live Resin Cartridge - 1g",
       "category": "Vaporizers",
@@ -2181,6 +2489,28 @@
           "dispensaryId": "hangar-420-west",
           "price": 44,
           "quantityAvailable": 1
+        }
+      ]
+    },
+    {
+      "matchKey": "thrills|cookies flavorstrains tropicana|sativa|vaporizers@1g",
+      "displayName": "Tropicana Cookies - FlavorStrains - Cartridge - 1g",
+      "category": "Vaporizers",
+      "weightGrams": 1,
+      "lowPrice": 16.5,
+      "highPrice": 20,
+      "spread": 3.5,
+      "spreadPct": 0.21,
+      "storesCarrying": [
+        {
+          "dispensaryId": "hangar-420-everett",
+          "price": 16.5,
+          "quantityAvailable": 1
+        },
+        {
+          "dispensaryId": "2020-solutions-north-bellingham",
+          "price": 20,
+          "quantityAvailable": 4
         }
       ]
     },
@@ -2229,6 +2559,28 @@
       ]
     },
     {
+      "matchKey": "phat panda|bong buddies line platinum trophy wife|indica|flower@2g",
+      "displayName": "Trophy Wife Platinum Line Bong Buddies",
+      "category": "Flower",
+      "weightGrams": 2,
+      "lowPrice": 7.5,
+      "highPrice": 9,
+      "spread": 1.5,
+      "spreadPct": 0.2,
+      "storesCarrying": [
+        {
+          "dispensaryId": "cannazone-old-hwy-99",
+          "price": 7.5,
+          "quantityAvailable": 8
+        },
+        {
+          "dispensaryId": "local-roots-everett-128th",
+          "price": 9,
+          "quantityAvailable": 3
+        }
+      ]
+    },
+    {
       "matchKey": "lavish|rainbow slushee|hybrid|flower@28g",
       "displayName": "Lavish: Rainbow Slushee",
       "category": "Flower",
@@ -2269,6 +2621,28 @@
           "dispensaryId": "evolve-cannabis-bellingham",
           "price": 22.8,
           "quantityAvailable": 4
+        }
+      ]
+    },
+    {
+      "matchKey": "phat panda|line platinum trophy wife|hybrid|flower@3.5g",
+      "displayName": "Trophy Wife Platinum Line",
+      "category": "Flower",
+      "weightGrams": 3.5,
+      "lowPrice": 15,
+      "highPrice": 18,
+      "spread": 3,
+      "spreadPct": 0.2,
+      "storesCarrying": [
+        {
+          "dispensaryId": "hangar-420-west",
+          "price": 15,
+          "quantityAvailable": 7
+        },
+        {
+          "dispensaryId": "cannazone-old-hwy-99",
+          "price": 18,
+          "quantityAvailable": 7
         }
       ]
     },
@@ -2385,19 +2759,19 @@
       "displayName": "PJ Miracle Alien Cookies Elevated THC Cured Resin Cart 1g",
       "category": "Vaporizers",
       "weightGrams": 1,
-      "lowPrice": 63,
-      "highPrice": 75,
-      "spread": 12,
+      "lowPrice": 34.65,
+      "highPrice": 41.25,
+      "spread": 6.6,
       "spreadPct": 0.19,
       "storesCarrying": [
         {
           "dispensaryId": "hangar-420-west",
-          "price": 63,
+          "price": 34.65,
           "quantityAvailable": 3
         },
         {
           "dispensaryId": "hangar-420-everett",
-          "price": 75,
+          "price": 41.25,
           "quantityAvailable": 6
         }
       ]
@@ -2420,29 +2794,7 @@
         {
           "dispensaryId": "kush21-everett-evergreen",
           "price": 28,
-          "quantityAvailable": 17
-        }
-      ]
-    },
-    {
-      "matchKey": "full spec|cadet liquid live resin runtz white|hybrid|vaporizers@1g",
-      "displayName": "White Runtz - Cadet Liquid Live Resin- Cartridge - 1g",
-      "category": "Vaporizers",
-      "weightGrams": 1,
-      "lowPrice": 30,
-      "highPrice": 35,
-      "spread": 5,
-      "spreadPct": 0.17,
-      "storesCarrying": [
-        {
-          "dispensaryId": "starbuds-bellingham",
-          "price": 30,
-          "quantityAvailable": 3
-        },
-        {
-          "dispensaryId": "hangar-420-everett",
-          "price": 35,
-          "quantityAvailable": 2
+          "quantityAvailable": 16
         }
       ]
     },
@@ -2611,28 +2963,6 @@
       ]
     },
     {
-      "matchKey": "full spec|cadet liquid live macmosa resin|hybrid|vaporizers@1g",
-      "displayName": "MACMosa - Cadet Liquid Live Resin- Cartridge - 1g",
-      "category": "Vaporizers",
-      "weightGrams": 1,
-      "lowPrice": 26,
-      "highPrice": 30,
-      "spread": 4,
-      "spreadPct": 0.15,
-      "storesCarrying": [
-        {
-          "dispensaryId": "salish-coast-cannabis",
-          "price": 26,
-          "quantityAvailable": 3
-        },
-        {
-          "dispensaryId": "starbuds-bellingham",
-          "price": 30,
-          "quantityAvailable": 5
-        }
-      ]
-    },
-    {
       "matchKey": "|cbg pacific sunshine|indica|flower@1g",
       "displayName": "Pacific Sunshine CBG",
       "category": "Flower",
@@ -2687,68 +3017,24 @@
       ]
     },
     {
-      "matchKey": "super fog|blueberry extract high jef loud muffin plus terpene|indica|vaporizers@1g",
-      "displayName": "LOUD High Terpene Extract 1g Jefé Plus - Blueberry Muffin",
+      "matchKey": "super fog|diamonds jef lemon liquid loopz plus twisted|sativa hybrid|vaporizers@1g",
+      "displayName": "TWISTED Liquid Diamonds 1g Jefé Plus - Lemon Loopz",
       "category": "Vaporizers",
       "weightGrams": 1,
-      "lowPrice": 50,
-      "highPrice": 56,
-      "spread": 6,
+      "lowPrice": 30.25,
+      "highPrice": 33.75,
+      "spread": 3.5,
       "spreadPct": 0.12,
       "storesCarrying": [
         {
+          "dispensaryId": "hangar-420-everett",
+          "price": 30.25,
+          "quantityAvailable": 2
+        },
+        {
           "dispensaryId": "salish-coast-cannabis",
-          "price": 50,
-          "quantityAvailable": 9
-        },
-        {
-          "dispensaryId": "hangar-420-everett",
-          "price": 56,
-          "quantityAvailable": 1
-        }
-      ]
-    },
-    {
-      "matchKey": "|khalifa kush|indica|flower@3.5g",
-      "displayName": "Khalifa Kush Flower",
-      "category": "Flower",
-      "weightGrams": 3.5,
-      "lowPrice": 50,
-      "highPrice": 55,
-      "spread": 5,
-      "spreadPct": 0.1,
-      "storesCarrying": [
-        {
-          "dispensaryId": "remedy-tulalip",
-          "price": 50,
-          "quantityAvailable": null
-        },
-        {
-          "dispensaryId": "2020-solutions-pacific-highway",
-          "price": 55,
-          "quantityAvailable": null
-        }
-      ]
-    },
-    {
-      "matchKey": "super fog|cloud diamonds jef liquid plus rainbow twisted|sativa hybrid|vaporizers@1g",
-      "displayName": "TWISTED Liquid Diamonds 1g Jefé Plus - Rainbow Cloud",
-      "category": "Vaporizers",
-      "weightGrams": 1,
-      "lowPrice": 55,
-      "highPrice": 60,
-      "spread": 5,
-      "spreadPct": 0.09,
-      "storesCarrying": [
-        {
-          "dispensaryId": "hangar-420-everett",
-          "price": 55,
-          "quantityAvailable": 6
-        },
-        {
-          "dispensaryId": "hangar-420-west",
-          "price": 60,
-          "quantityAvailable": 1
+          "price": 33.75,
+          "quantityAvailable": 2
         }
       ]
     },
@@ -2765,12 +3051,34 @@
         {
           "dispensaryId": "kushmart-north",
           "price": 11.5,
-          "quantityAvailable": 19
+          "quantityAvailable": 17
         },
         {
           "dispensaryId": "kush21-everett-evergreen",
           "price": 12.5,
           "quantityAvailable": 3
+        }
+      ]
+    },
+    {
+      "matchKey": "super fog|card edition fc fire jef limited plus red|hybrid|vaporizers@1g",
+      "displayName": "FIRE 1G Jefé Plus - Red Card (FC Super Fog Limited Edition)",
+      "category": "Vaporizers",
+      "weightGrams": 1,
+      "lowPrice": 33,
+      "highPrice": 36,
+      "spread": 3,
+      "spreadPct": 0.09,
+      "storesCarrying": [
+        {
+          "dispensaryId": "hangar-420-west",
+          "price": 33,
+          "quantityAvailable": 3
+        },
+        {
+          "dispensaryId": "the-joint-everett",
+          "price": 36,
+          "quantityAvailable": 14
         }
       ]
     },
@@ -2819,6 +3127,50 @@
       ]
     },
     {
+      "matchKey": "|lemon pastries|indica|flower@3.5g",
+      "displayName": "Lemon Pastries",
+      "category": "Flower",
+      "weightGrams": 3.5,
+      "lowPrice": 33,
+      "highPrice": 35,
+      "spread": 2,
+      "spreadPct": 0.06,
+      "storesCarrying": [
+        {
+          "dispensaryId": "northwind-anacortes",
+          "price": 33,
+          "quantityAvailable": null
+        },
+        {
+          "dispensaryId": "a-greener-today-lynnwood",
+          "price": 35,
+          "quantityAvailable": null
+        }
+      ]
+    },
+    {
+      "matchKey": "phat panda|doughp line platinum|hybrid|flower@3.5g",
+      "displayName": "Doughp Platinum Line 3.5g Flower (Phat Panda)",
+      "category": "Flower",
+      "weightGrams": 3.5,
+      "lowPrice": 21,
+      "highPrice": 22,
+      "spread": 1,
+      "spreadPct": 0.05,
+      "storesCarrying": [
+        {
+          "dispensaryId": "local-roots-everett-128th",
+          "price": 21,
+          "quantityAvailable": 5
+        },
+        {
+          "dispensaryId": "hangar-420-west",
+          "price": 22,
+          "quantityAvailable": 2
+        }
+      ]
+    },
+    {
       "matchKey": "|kiwi sherbet|concentrate|concentrate|@1g",
       "displayName": "Kiwi Sherbet",
       "category": "Concentrate",
@@ -2853,7 +3205,7 @@
         {
           "dispensaryId": "kush21-everett-evergreen",
           "price": 23,
-          "quantityAvailable": 5
+          "quantityAvailable": 4
         },
         {
           "dispensaryId": "local-roots-everett-128th",
@@ -2863,46 +3215,24 @@
       ]
     },
     {
-      "matchKey": "pagoda|boof cherry super|n a|flower@28g",
-      "displayName": "Super Boof Cherry 28g Flower (Pagoda)",
-      "category": "Flower",
-      "weightGrams": 28,
-      "lowPrice": 87.5,
-      "highPrice": 90,
-      "spread": 2.5,
-      "spreadPct": 0.03,
+      "matchKey": "thrills|flavorstrains jelly strawberry|hybrid|vaporizers@1g",
+      "displayName": "Strawberry Jelly - FlavorStrains - Cartridge - 1g",
+      "category": "Vaporizers",
+      "weightGrams": 1,
+      "lowPrice": 20,
+      "highPrice": 20.8,
+      "spread": 0.8,
+      "spreadPct": 0.04,
       "storesCarrying": [
         {
-          "dispensaryId": "local-roots-everett-128th",
-          "price": 87.5,
-          "quantityAvailable": 1
+          "dispensaryId": "2020-solutions-pacific-highway",
+          "price": 20,
+          "quantityAvailable": 4
         },
         {
-          "dispensaryId": "kush21-everett-evergreen",
-          "price": 90,
-          "quantityAvailable": 6
-        }
-      ]
-    },
-    {
-      "matchKey": "pagoda|m47|hybrid|flower@28g",
-      "displayName": "M47 28g Flower (Pagoda Ounce)",
-      "category": "Flower",
-      "weightGrams": 28,
-      "lowPrice": 87.5,
-      "highPrice": 90,
-      "spread": 2.5,
-      "spreadPct": 0.03,
-      "storesCarrying": [
-        {
-          "dispensaryId": "local-roots-everett-128th",
-          "price": 87.5,
-          "quantityAvailable": 1
-        },
-        {
-          "dispensaryId": "kush21-everett-evergreen",
-          "price": 90,
-          "quantityAvailable": 3
+          "dispensaryId": "the-joint-everett",
+          "price": 20.8,
+          "quantityAvailable": 2
         }
       ]
     },
@@ -2990,7 +3320,7 @@
         {
           "dispensaryId": "local-roots-everett-128th",
           "price": 10,
-          "quantityAvailable": 4
+          "quantityAvailable": 3
         }
       ]
     },
@@ -3035,6 +3365,50 @@
           "dispensaryId": "kush21-everett-evergreen",
           "price": 25,
           "quantityAvailable": 10
+        }
+      ]
+    },
+    {
+      "matchKey": "pagoda|boof cherry super|n a|flower@28g",
+      "displayName": "Super Boof Cherry 28g Flower (Pagoda)",
+      "category": "Flower",
+      "weightGrams": 28,
+      "lowPrice": 87.5,
+      "highPrice": 87.5,
+      "spread": 0,
+      "spreadPct": 0,
+      "storesCarrying": [
+        {
+          "dispensaryId": "local-roots-everett-128th",
+          "price": 87.5,
+          "quantityAvailable": 1
+        },
+        {
+          "dispensaryId": "kush21-everett-evergreen",
+          "price": 87.5,
+          "quantityAvailable": 6
+        }
+      ]
+    },
+    {
+      "matchKey": "pagoda|m47|hybrid|flower@28g",
+      "displayName": "M47 28g Flower (Pagoda Ounce)",
+      "category": "Flower",
+      "weightGrams": 28,
+      "lowPrice": 87.5,
+      "highPrice": 87.5,
+      "spread": 0,
+      "spreadPct": 0,
+      "storesCarrying": [
+        {
+          "dispensaryId": "local-roots-everett-128th",
+          "price": 87.5,
+          "quantityAvailable": 1
+        },
+        {
+          "dispensaryId": "kush21-everett-evergreen",
+          "price": 87.5,
+          "quantityAvailable": 3
         }
       ]
     },
@@ -3127,177 +3501,23 @@
       ]
     },
     {
-      "matchKey": "old mcdonald s farm|cake cream ice omf|n a|flower@28g",
-      "displayName": "OMF Ice Cream Cake",
-      "category": "Flower",
-      "weightGrams": 28,
-      "lowPrice": 60,
-      "highPrice": 60,
-      "spread": 0,
-      "spreadPct": 0,
-      "storesCarrying": [
-        {
-          "dispensaryId": "hangar-420-everett",
-          "price": 60,
-          "quantityAvailable": 1
-        },
-        {
-          "dispensaryId": "hangar-420-west",
-          "price": 60,
-          "quantityAvailable": 2
-        }
-      ]
-    },
-    {
-      "matchKey": "torus|pink runtz|n a|flower@3.5g",
-      "displayName": "TORUS Pink Runtz 3.5g",
-      "category": "Flower",
-      "weightGrams": 3.5,
-      "lowPrice": 70,
-      "highPrice": 70,
-      "spread": 0,
-      "spreadPct": 0,
-      "storesCarrying": [
-        {
-          "dispensaryId": "hangar-420-everett",
-          "price": 70,
-          "quantityAvailable": 2
-        },
-        {
-          "dispensaryId": "hangar-420-west",
-          "price": 70,
-          "quantityAvailable": 1
-        }
-      ]
-    },
-    {
-      "matchKey": "old mcdonald s farm|daddy grand omf purple|n a|flower@3.5g",
-      "displayName": "OMF Grand Daddy Purple",
-      "category": "Flower",
-      "weightGrams": 3.5,
-      "lowPrice": 15,
-      "highPrice": 15,
-      "spread": 0,
-      "spreadPct": 0,
-      "storesCarrying": [
-        {
-          "dispensaryId": "hangar-420-everett",
-          "price": 15,
-          "quantityAvailable": 1
-        },
-        {
-          "dispensaryId": "hangar-420-west",
-          "price": 15,
-          "quantityAvailable": 5
-        }
-      ]
-    },
-    {
-      "matchKey": "old mcdonald s farm|boof omf super|n a|flower@3.5g",
-      "displayName": "OMF Super Boof",
-      "category": "Flower",
-      "weightGrams": 3.5,
-      "lowPrice": 15,
-      "highPrice": 15,
-      "spread": 0,
-      "spreadPct": 0,
-      "storesCarrying": [
-        {
-          "dispensaryId": "hangar-420-everett",
-          "price": 15,
-          "quantityAvailable": 1
-        },
-        {
-          "dispensaryId": "hangar-420-west",
-          "price": 15,
-          "quantityAvailable": 5
-        }
-      ]
-    },
-    {
-      "matchKey": "old mcdonald s farm|boof omf super|n a|flower@28g",
-      "displayName": "OMF Super Boof",
-      "category": "Flower",
-      "weightGrams": 28,
-      "lowPrice": 60,
-      "highPrice": 60,
-      "spread": 0,
-      "spreadPct": 0,
-      "storesCarrying": [
-        {
-          "dispensaryId": "hangar-420-everett",
-          "price": 60,
-          "quantityAvailable": 3
-        },
-        {
-          "dispensaryId": "hangar-420-west",
-          "price": 60,
-          "quantityAvailable": 2
-        }
-      ]
-    },
-    {
-      "matchKey": "old mcdonald s farm|omf tangie|n a|flower@7g",
-      "displayName": "OMF Tangie",
-      "category": "Flower",
-      "weightGrams": 7,
-      "lowPrice": 25,
-      "highPrice": 25,
-      "spread": 0,
-      "spreadPct": 0,
-      "storesCarrying": [
-        {
-          "dispensaryId": "hangar-420-everett",
-          "price": 25,
-          "quantityAvailable": 1
-        },
-        {
-          "dispensaryId": "hangar-420-west",
-          "price": 25,
-          "quantityAvailable": 3
-        }
-      ]
-    },
-    {
-      "matchKey": "old mcdonald s farm|omf tangie|n a|flower@28g",
-      "displayName": "OMF Tangie",
-      "category": "Flower",
-      "weightGrams": 28,
-      "lowPrice": 60,
-      "highPrice": 60,
-      "spread": 0,
-      "spreadPct": 0,
-      "storesCarrying": [
-        {
-          "dispensaryId": "hangar-420-everett",
-          "price": 60,
-          "quantityAvailable": 2
-        },
-        {
-          "dispensaryId": "hangar-420-west",
-          "price": 60,
-          "quantityAvailable": 3
-        }
-      ]
-    },
-    {
       "matchKey": "viking cannabis|face gas vc|n a|flower@7g",
-      "displayName": "VC Gas Face",
+      "displayName": "VC Gas Face 7g",
       "category": "Flower",
       "weightGrams": 7,
-      "lowPrice": 75,
-      "highPrice": 75,
+      "lowPrice": 41.25,
+      "highPrice": 41.25,
       "spread": 0,
       "spreadPct": 0,
       "storesCarrying": [
         {
           "dispensaryId": "hangar-420-everett",
-          "price": 75,
+          "price": 41.25,
           "quantityAvailable": 1
         },
         {
           "dispensaryId": "hangar-420-west",
-          "price": 75,
+          "price": 41.25,
           "quantityAvailable": 3
         }
       ]
@@ -3316,28 +3536,6 @@
           "dispensaryId": "hangar-420-everett",
           "price": 70,
           "quantityAvailable": 7
-        },
-        {
-          "dispensaryId": "hangar-420-west",
-          "price": 70,
-          "quantityAvailable": 1
-        }
-      ]
-    },
-    {
-      "matchKey": "torus|blue zoap|n a|flower@3.5g",
-      "displayName": "TORUS Blue Zoap 3.5g",
-      "category": "Flower",
-      "weightGrams": 3.5,
-      "lowPrice": 70,
-      "highPrice": 70,
-      "spread": 0,
-      "spreadPct": 0,
-      "storesCarrying": [
-        {
-          "dispensaryId": "hangar-420-everett",
-          "price": 70,
-          "quantityAvailable": 1
         },
         {
           "dispensaryId": "hangar-420-west",
@@ -3387,72 +3585,6 @@
           "dispensaryId": "hangar-420-west",
           "price": 15,
           "quantityAvailable": 2
-        }
-      ]
-    },
-    {
-      "matchKey": "skord|payton pie s|n a|flower@3.5g",
-      "displayName": "SKORD Payton's Pie 3.5g",
-      "category": "Flower",
-      "weightGrams": 3.5,
-      "lowPrice": 60,
-      "highPrice": 60,
-      "spread": 0,
-      "spreadPct": 0,
-      "storesCarrying": [
-        {
-          "dispensaryId": "hangar-420-west",
-          "price": 60,
-          "quantityAvailable": 1
-        },
-        {
-          "dispensaryId": "hangar-420-everett",
-          "price": 60,
-          "quantityAvailable": 7
-        }
-      ]
-    },
-    {
-      "matchKey": "lifted|batch blue lift lobster small|n a|flower@3.5g",
-      "displayName": "LIFT Blue Lobster Small Batch 3.5g",
-      "category": "Flower",
-      "weightGrams": 3.5,
-      "lowPrice": 100,
-      "highPrice": 100,
-      "spread": 0,
-      "spreadPct": 0,
-      "storesCarrying": [
-        {
-          "dispensaryId": "hangar-420-west",
-          "price": 100,
-          "quantityAvailable": 1
-        },
-        {
-          "dispensaryId": "hangar-420-everett",
-          "price": 100,
-          "quantityAvailable": 14
-        }
-      ]
-    },
-    {
-      "matchKey": "skord|animal ceramic cocktail|n a|vaporizers@1g",
-      "displayName": "SKORD Animal Cocktail Ceramic Cartridge 1g",
-      "category": "Vaporizers",
-      "weightGrams": 1,
-      "lowPrice": 60,
-      "highPrice": 60,
-      "spread": 0,
-      "spreadPct": 0,
-      "storesCarrying": [
-        {
-          "dispensaryId": "hangar-420-west",
-          "price": 60,
-          "quantityAvailable": 5
-        },
-        {
-          "dispensaryId": "hangar-420-everett",
-          "price": 60,
-          "quantityAvailable": 8
         }
       ]
     },
@@ -3518,7 +3650,7 @@
         {
           "dispensaryId": "2020-solutions-pacific-highway",
           "price": 12.8,
-          "quantityAvailable": 2
+          "quantityAvailable": 1
         }
       ]
     },
@@ -3623,7 +3755,7 @@
         {
           "dispensaryId": "2020-solutions-north-bellingham",
           "price": 12.8,
-          "quantityAvailable": 6
+          "quantityAvailable": 5
         },
         {
           "dispensaryId": "2020-solutions-pacific-highway",
@@ -3695,6 +3827,94 @@
           "dispensaryId": "2020-solutions-pacific-highway",
           "price": 104,
           "quantityAvailable": 1
+        }
+      ]
+    },
+    {
+      "matchKey": "good vibe tribe|drink pink|sativa|flower@3.5g",
+      "displayName": "Pink Drink",
+      "category": "Flower",
+      "weightGrams": 3.5,
+      "lowPrice": 12.8,
+      "highPrice": 12.8,
+      "spread": 0,
+      "spreadPct": 0,
+      "storesCarrying": [
+        {
+          "dispensaryId": "2020-solutions-north-bellingham",
+          "price": 12.8,
+          "quantityAvailable": 6
+        },
+        {
+          "dispensaryId": "2020-solutions-pacific-highway",
+          "price": 12.8,
+          "quantityAvailable": 5
+        }
+      ]
+    },
+    {
+      "matchKey": "good vibe tribe|drink pink|sativa|flower@7g",
+      "displayName": "Pink Drink",
+      "category": "Flower",
+      "weightGrams": 7,
+      "lowPrice": 22.4,
+      "highPrice": 22.4,
+      "spread": 0,
+      "spreadPct": 0,
+      "storesCarrying": [
+        {
+          "dispensaryId": "2020-solutions-north-bellingham",
+          "price": 22.4,
+          "quantityAvailable": 8
+        },
+        {
+          "dispensaryId": "2020-solutions-pacific-highway",
+          "price": 22.4,
+          "quantityAvailable": 2
+        }
+      ]
+    },
+    {
+      "matchKey": "good vibe tribe|drink pink|sativa|flower@14g",
+      "displayName": "Pink Drink",
+      "category": "Flower",
+      "weightGrams": 14,
+      "lowPrice": 41.6,
+      "highPrice": 41.6,
+      "spread": 0,
+      "spreadPct": 0,
+      "storesCarrying": [
+        {
+          "dispensaryId": "2020-solutions-north-bellingham",
+          "price": 41.6,
+          "quantityAvailable": 9
+        },
+        {
+          "dispensaryId": "2020-solutions-pacific-highway",
+          "price": 41.6,
+          "quantityAvailable": 7
+        }
+      ]
+    },
+    {
+      "matchKey": "good vibe tribe|drink pink|sativa|flower@28g",
+      "displayName": "Pink Drink",
+      "category": "Flower",
+      "weightGrams": 28,
+      "lowPrice": 68,
+      "highPrice": 68,
+      "spread": 0,
+      "spreadPct": 0,
+      "storesCarrying": [
+        {
+          "dispensaryId": "2020-solutions-north-bellingham",
+          "price": 68,
+          "quantityAvailable": 2
+        },
+        {
+          "dispensaryId": "2020-solutions-pacific-highway",
+          "price": 68,
+          "quantityAvailable": 5
         }
       ]
     },
@@ -3958,7 +4178,7 @@
         {
           "dispensaryId": "local-roots-everett-128th",
           "price": 15,
-          "quantityAvailable": 11
+          "quantityAvailable": 10
         }
       ]
     },
@@ -4063,7 +4283,7 @@
         {
           "dispensaryId": "2020-solutions-north-bellingham",
           "price": 11.2,
-          "quantityAvailable": 16
+          "quantityAvailable": 15
         },
         {
           "dispensaryId": "2020-solutions-pacific-highway",
@@ -4315,28 +4535,6 @@
       ]
     },
     {
-      "matchKey": "skord|dark rainbow|n a|flower@3.5g",
-      "displayName": "SKORD Dark Rainbow 3.5g",
-      "category": "Flower",
-      "weightGrams": 3.5,
-      "lowPrice": 60,
-      "highPrice": 60,
-      "spread": 0,
-      "spreadPct": 0,
-      "storesCarrying": [
-        {
-          "dispensaryId": "hangar-420-everett",
-          "price": 60,
-          "quantityAvailable": 8
-        },
-        {
-          "dispensaryId": "hangar-420-west",
-          "price": 60,
-          "quantityAvailable": 10
-        }
-      ]
-    },
-    {
       "matchKey": "dank czar|cherry paloma|hybrid|flower@3.5g",
       "displayName": "Cherry Paloma",
       "category": "Flower",
@@ -4398,7 +4596,7 @@
         {
           "dispensaryId": "2020-solutions-pacific-highway",
           "price": 30.4,
-          "quantityAvailable": 2
+          "quantityAvailable": 1
         }
       ]
     },
@@ -4887,6 +5085,50 @@
       ]
     },
     {
+      "matchKey": "gop|chem og|preroll|pre rolls@1g",
+      "displayName": "OG Chem",
+      "category": "Pre-Rolls",
+      "weightGrams": 1,
+      "lowPrice": 6,
+      "highPrice": 6,
+      "spread": 0,
+      "spreadPct": 0,
+      "storesCarrying": [
+        {
+          "dispensaryId": "2020-solutions-north-bellingham",
+          "price": 6,
+          "quantityAvailable": null
+        },
+        {
+          "dispensaryId": "2020-solutions-pacific-highway",
+          "price": 6,
+          "quantityAvailable": null
+        }
+      ]
+    },
+    {
+      "matchKey": "gop|bangers|preroll|pre rolls@5g",
+      "displayName": "Bangers",
+      "category": "Pre-Rolls",
+      "weightGrams": 5,
+      "lowPrice": 35,
+      "highPrice": 35,
+      "spread": 0,
+      "spreadPct": 0,
+      "storesCarrying": [
+        {
+          "dispensaryId": "2020-solutions-north-bellingham",
+          "price": 35,
+          "quantityAvailable": null
+        },
+        {
+          "dispensaryId": "2020-solutions-pacific-highway",
+          "price": 35,
+          "quantityAvailable": null
+        }
+      ]
+    },
+    {
       "matchKey": "|african mango|preroll|pre rolls@1g",
       "displayName": "African Mango",
       "category": "Pre-Rolls",
@@ -4997,6 +5239,50 @@
       ]
     },
     {
+      "matchKey": "emerald twist|emt maui wowie|sativa|pre rolls@5g",
+      "displayName": "EMT Pre-Roll Pack Maui Wowie 5pk 5g",
+      "category": "Pre-Rolls",
+      "weightGrams": 5,
+      "lowPrice": 14.4,
+      "highPrice": 14.4,
+      "spread": 0,
+      "spreadPct": 0,
+      "storesCarrying": [
+        {
+          "dispensaryId": "2020-solutions-pacific-highway",
+          "price": 14.4,
+          "quantityAvailable": 7
+        },
+        {
+          "dispensaryId": "2020-solutions-north-bellingham",
+          "price": 14.4,
+          "quantityAvailable": 6
+        }
+      ]
+    },
+    {
+      "matchKey": "skord|blue buds lime pie small|n a|flower@7g",
+      "displayName": "SKORD Blue Lime Pie Small Buds 7g",
+      "category": "Flower",
+      "weightGrams": 7,
+      "lowPrice": 55,
+      "highPrice": 55,
+      "spread": 0,
+      "spreadPct": 0,
+      "storesCarrying": [
+        {
+          "dispensaryId": "hangar-420-west",
+          "price": 55,
+          "quantityAvailable": 4
+        },
+        {
+          "dispensaryId": "hangar-420-everett",
+          "price": 55,
+          "quantityAvailable": 9
+        }
+      ]
+    },
+    {
       "matchKey": "honey tree flavored|cannabis doh extract high indica potency pure watermelon zkittles|indica|vaporizers@1g",
       "displayName": "Honey Tree | Watermelon Zkittles | Disposable | Flavored High Potency Pure Cannabis Extract | 1g | Indica (DOH)",
       "category": "Vaporizers",
@@ -5063,24 +5349,46 @@
       ]
     },
     {
-      "matchKey": "jams|bho concentrate panama red|n a|concentrate|jam@1g",
-      "displayName": "JAMS Panama Red BHO Concentrate 1g",
+      "matchKey": "ooowee|butter concentrate hydrocarbon owe truffle|n a|concentrate|@1g",
+      "displayName": "OWE Truffle Butter Hydrocarbon Concentrate 1g",
       "category": "Concentrate",
       "weightGrams": 1,
-      "lowPrice": 12,
-      "highPrice": 12,
+      "lowPrice": 8.8,
+      "highPrice": 8.8,
       "spread": 0,
       "spreadPct": 0,
       "storesCarrying": [
         {
           "dispensaryId": "hangar-420-everett",
-          "price": 12,
+          "price": 8.8,
           "quantityAvailable": 3
         },
         {
           "dispensaryId": "hangar-420-west",
-          "price": 12,
-          "quantityAvailable": 1
+          "price": 8.8,
+          "quantityAvailable": 25
+        }
+      ]
+    },
+    {
+      "matchKey": "ooowee|concentrate hydrocarbon oreos owe truffle|n a|concentrate|@1g",
+      "displayName": "OWE Truffle Oreos Hydrocarbon Concentrate 1g",
+      "category": "Concentrate",
+      "weightGrams": 1,
+      "lowPrice": 8.8,
+      "highPrice": 8.8,
+      "spread": 0,
+      "spreadPct": 0,
+      "storesCarrying": [
+        {
+          "dispensaryId": "hangar-420-everett",
+          "price": 8.8,
+          "quantityAvailable": 2
+        },
+        {
+          "dispensaryId": "hangar-420-west",
+          "price": 8.8,
+          "quantityAvailable": 25
         }
       ]
     },
@@ -5327,9 +5635,9 @@
       ]
     }
   ],
-  "totalRecords": 5219,
+  "totalRecords": 5354,
   "unmatchedCount": 1,
-  "excludedFlagCount": 568,
-  "nonComparableCategoryCount": 510,
-  "placedRecords": 4140
+  "excludedFlagCount": 573,
+  "nonComparableCategoryCount": 558,
+  "placedRecords": 4222
 }
