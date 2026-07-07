@@ -24,3 +24,6 @@ products.db-*
 # Anchored to root so a future curated subset (e.g. client/src/assets/...) is never silently skipped
 /GmasINCOlist/
 /Area icon image.jpg
+
+# GIMP working files — art source, never the repo (see file-size wall, ADR-077)
+*.xcf
