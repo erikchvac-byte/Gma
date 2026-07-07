@@ -34,14 +34,14 @@ export default function DisclaimerFooter({ showWaWarning = WA_WARNING_ENABLED }:
         gap: 'var(--space-2)',
       }}
     >
-      <Notice variant="muted">
+      <Notice>
         Deals are set by each retailer and may change without notice — verify in store. Gma's Helper
         is not affiliated with any dispensary and sells nothing.
       </Notice>
-      <Notice variant="muted">
+      <Notice>
         Gas costs are estimates based on average fuel prices and rated MPG.
       </Notice>
-      {showWaWarning && <Notice variant="muted">{WA_WARNING_TEXT}</Notice>}
+      {showWaWarning && <Notice>{WA_WARNING_TEXT}</Notice>}
     </footer>
   )
 }
