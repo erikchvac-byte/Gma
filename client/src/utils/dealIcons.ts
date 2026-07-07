@@ -20,6 +20,7 @@ export type DealIconName =
   | 'tincture'
   | 'glass'
   | 'store-wide'
+  | 'online-order'
   | 'price-drop'
   | 'special-pricing'
 
@@ -45,6 +46,7 @@ export const DEAL_ICON_LABEL: Record<DealIconName, string> = {
   tincture: 'Tinctures',
   glass: 'Glassware',
   'store-wide': 'Store-wide',
+  'online-order': 'Online orders',
   'price-drop': 'Price drop',
   'special-pricing': 'Special pricing',
 }
@@ -102,7 +104,8 @@ const STORE_WIDE = /\bstore\s?wide\b|\bentire (?:order|purchase|store)\b|\ball (
 // Order-scope deals — the discount applies to the whole order/purchase, not a
 // named product ("40% Off Online Orders", "20% Off Your Purchase", "Items
 // Purchased to Max Out Your Legal Limit", spend thresholds, customer-group
-// discounts). Product-agnostic, so the store-wide glyph is the honest one.
+// discounts). Product-agnostic, so its own 'online-order' glyph is the honest
+// one — distinct from 'store-wide' (Erik's art, not the storefront glyph).
 // Kept narrow on purpose: a bare "purchases" would wrongly swallow
 // "20% off vape purchases".
 const ORDER_SCOPE =
@@ -132,7 +135,8 @@ export function dealIcons(description: string | null | undefined): DealIconName[
   for (const ff of FALSE_FRIENDS) text = text.replace(ff, ' ')
 
   // Whole-store and whole-order deals are exclusive.
-  if (STORE_WIDE.test(text) || ORDER_SCOPE.test(text)) return ['store-wide']
+  if (STORE_WIDE.test(text)) return ['store-wide']
+  if (ORDER_SCOPE.test(text)) return ['online-order']
 
   // Collect every product family the text names, tagged with where it first
   // appears, so we can emit them in reading order (matches the spelled-out list).

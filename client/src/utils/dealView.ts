@@ -29,6 +29,7 @@ const CATEGORY_POSITION: Record<DealCategory, null> = {
   tincture: null,
   glass: null,
   'store-wide': null,
+  'online-order': null,
   'price-drop': null,
   'special-pricing': null,
 }
@@ -65,7 +66,12 @@ export function categoriesPresent(dispensaries: Dispensary[]): DealCategory[] {
 
 // The scope tags — deal-level qualifiers, not products. Everything else in
 // DealCategory names a shoppable product family.
-const SCOPE_TAGS: readonly DealCategory[] = ['store-wide', 'price-drop', 'special-pricing']
+const SCOPE_TAGS: readonly DealCategory[] = [
+  'store-wide',
+  'online-order',
+  'price-drop',
+  'special-pricing',
+]
 
 // In-memory filter mirroring DealFeed's distance filter — zero network.
 // null = passthrough (no category selected). Returns each store with its deals
