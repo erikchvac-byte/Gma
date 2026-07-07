@@ -1,6 +1,6 @@
 {
   "meta": {
-    "lastScraperRun": "2026-07-07T06:44:54.101Z",
+    "lastScraperRun": "2026-07-07T10:25:16.432Z",
     "gasPrice": 4.25,
     "gasPriceUpdatedAt": "2026-06-09T00:00:00.000Z"
   },
@@ -12,7 +12,7 @@
       "address": "9226 34th Avenue NE, Tulalip, WA 98271",
       "distanceMiles": 2.5,
       "stale": false,
-      "lastFetchedAt": "2026-07-07T06:44:54.101Z",
+      "lastFetchedAt": "2026-07-07T10:25:16.432Z",
       "deals": [
         {
           "type": "daily",
@@ -115,19 +115,8 @@
       "address": "8911 Evergreen Way, Everett, WA 98208",
       "distanceMiles": 9.8,
       "stale": false,
-      "lastFetchedAt": "2026-07-07T06:44:54.101Z",
+      "lastFetchedAt": "2026-07-07T10:25:16.432Z",
       "deals": [
-        {
-          "type": "daily",
-          "description": "50% off Storewide - Monday & Friday",
-          "discountPct": 50,
-          "startTime": null,
-          "endTime": null,
-          "daysValid": [
-            "monday",
-            "friday"
-          ]
-        },
         {
           "type": "daily",
           "description": "50% off Ounces",
@@ -193,7 +182,7 @@
       "address": "13224 Highway 99, Everett, WA 98204",
       "distanceMiles": 12.5,
       "stale": false,
-      "lastFetchedAt": "2026-07-07T06:44:54.101Z",
+      "lastFetchedAt": "2026-07-07T10:25:16.432Z",
       "deals": [
         {
           "type": "daily",
@@ -341,7 +330,7 @@
       "url": "https://thevaultcannabis.com/silvana/",
       "address": "1323 Pioneer Highway, Stanwood, WA 98292",
       "stale": false,
-      "lastFetchedAt": "2026-07-07T06:44:54.101Z",
+      "lastFetchedAt": "2026-07-07T10:25:16.432Z",
       "deals": [
         {
           "type": "daily",
@@ -403,7 +392,7 @@
       "url": "https://dutchie.com/dispensary/kushmart-north",
       "address": "6309 Evergreen Way, Everett, WA 98203",
       "stale": false,
-      "lastFetchedAt": "2026-07-07T06:44:54.101Z",
+      "lastFetchedAt": "2026-07-07T10:25:16.432Z",
       "deals": [
         {
           "type": "daily",
@@ -445,7 +434,7 @@
       "url": "https://mylocalroots.com/local-roots-everett-128th/",
       "address": "517 128th Street SW, Everett, WA 98204",
       "stale": false,
-      "lastFetchedAt": "2026-07-07T06:44:54.101Z",
+      "lastFetchedAt": "2026-07-07T10:25:16.432Z",
       "deals": [
         {
           "type": "daily",
@@ -552,7 +541,7 @@
       "url": "https://www.evolvewashington.com/",
       "address": "4712 Pacific Hwy, Bellingham, WA 98226",
       "stale": false,
-      "lastFetchedAt": "2026-07-07T06:44:54.101Z",
+      "lastFetchedAt": "2026-07-07T10:25:16.432Z",
       "deals": [
         {
           "type": "daily",
@@ -608,7 +597,7 @@
       "url": "https://dutchie.com/dispensary/2020-solutions-north-bellingham",
       "address": "1706 Mt Baker Hwy, Bellingham, WA 98226",
       "stale": false,
-      "lastFetchedAt": "2026-07-07T06:44:54.101Z",
+      "lastFetchedAt": "2026-07-07T10:25:16.432Z",
       "deals": [
         {
           "type": "daily",
@@ -630,7 +619,7 @@
       "url": "https://www.2020-solutions.com/locations/pacific-hwy-bellingham-dispensary",
       "address": "4770 Pacific Hwy, Bellingham, WA 98226",
       "stale": false,
-      "lastFetchedAt": "2026-07-07T06:44:54.101Z",
+      "lastFetchedAt": "2026-07-07T10:25:16.432Z",
       "deals": [
         {
           "type": "daily",
@@ -662,22 +651,21 @@
       "name": "Salish Coast Cannabis",
       "url": "https://salishcoastcannabis.com/",
       "address": "12947 Casino Drive, Anacortes, WA 98221",
-      "stale": true,
-      "lastFetchedAt": "2026-07-07T03:45:17.845Z",
+      "stale": false,
+      "lastFetchedAt": "2026-07-07T10:25:16.432Z",
       "deals": [
         {
           "type": "daily",
-          "description": "25% Off Online Order Mon,Wed,Fri,Sat",
-          "discountPct": 25,
+          "description": "40% Off Online Orders Sun,Tues,Thurs Min $80",
+          "discountPct": 40,
           "startTime": null,
           "endTime": null,
           "daysValid": [
-            "monday",
-            "wednesday",
-            "friday",
-            "saturday"
+            "sunday",
+            "tuesday",
+            "thursday"
           ],
-          "providerNote": "Order Online Monday, Wednesday, Friday & Saturday for 25% Off"
+          "specialType": "bogo"
         }
       ],
       "lat": 48.4564299,
