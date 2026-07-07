@@ -7,7 +7,6 @@ import { fileURLToPath } from 'node:url'
 import 'dotenv/config'
 import { dataRoute } from './routes/dataRoute.js'
 import { ingestRoute } from './routes/ingestRoute.js'
-import { productsRoute } from './routes/productsRoute.js'
 import { disparitiesRoute, dealScopeRoute } from './routes/valueRoute.js'
 import { refreshGasPrice } from './utils/refreshGasPrice.js'
 
@@ -29,17 +28,14 @@ app.get('/api/data', dataRoute)
 // service is read-only over data.json/the store and serves last-known-good.
 app.post('/api/ingest', ingestRoute)
 
-// Read-only product-pricing dataset (SPEC-dutchie-product-pricing CAP-4, ADR-053).
-// Additive and fully decoupled from /api/data — serves the committed longitudinal
-// products.json; never reads data.json or the deals contract.
-app.get('/api/products', productsRoute)
-
 // Read-only cross-store value/disparity dataset (SPEC ai-search-data-strategy A1).
-// Private/internal surface — derived live from products.json; additive and decoupled
-// from /api/data exactly like /api/products. No public SSR page (Phase 4, legal-gated).
+// Private/internal surface. ADR-077 Phase 1: served from the precomputed
+// server/data/derived/disparities.json (the raw products dataset left git for local SQLite);
+// additive and decoupled from /api/data. No public SSR page (Phase 4, legal-gated).
+// (/api/products was DROPPED in ADR-077 — Render serves only derived facts, not the raw blob.)
 app.get('/api/value/disparities', disparitiesRoute)
-// Deal→SKU scope bridge (ADR-070). Same private/decoupled posture: joins data.json +
-// products.json read-only; no public page/markup (Phase 4, legal-gated).
+// Deal→SKU scope bridge (ADR-070). Same private/decoupled posture; served from the precomputed
+// server/data/derived/deal-scope.json. No public page/markup (Phase 4, legal-gated).
 app.get('/api/value/deal-scope', dealScopeRoute)
 
 // In production this single service also serves the built React client, so

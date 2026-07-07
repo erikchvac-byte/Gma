@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-09
-last_updated: 2026-07-06 (products-storage-sqlite-phase-1 → ready-for-dev, ADR-077 Phase 1 story created)
+last_updated: 2026-07-06 (products-storage-sqlite-phase-1 → review; ADR-077 Phase 1 landed)
 project: Happy
 project_key: NOKEY
 tracking_system: file-system
@@ -95,6 +95,28 @@ development_status:
   weedmaps-source-wiring: done  # weedmaps-source-wiring.md — AI-search Phase 2: static Weedmaps fetch → __NEXT_DATA__ → RawProduct → existing normalizeProduct/persist → existing matcher (zero matcher change). 4 defaults + private-registry + One-Hit-Wonder-dropped resolutions; 11 stores (3 overlap reuse ids + 8 net-new private/WA-geocoded); _weedmaps.ts + weedmaps-stores.ts + scrapeWeedmapsRun.ts + scrape-weedmaps.yml (schedule DISABLED). 41 new tests, server suite 357 green, build clean, matcher/deals untouched. SHIPPED: PR #44 MERGED + DEPLOYED 2026-06-29. OPERATIONAL GATE RESOLVED → BLOCKED: workflow_dispatch re-probe (run 28406848309) = HTTP 406 on 44/44 from datacenter IP; schedule stays disabled (PR #45 hardens header), Phase 3 accrual needs a residential-IP ingestion path.
   deal-sku-bridge: done  # deal-sku-bridge.md — GOAL 1 missing relation (deal→SKU), from data-layer roundtable audit 2026-06-30. Read-only THIRD consumer (mirrors crossStoreValue.ts) inferring deal SCOPE from free-text description → links banner to same-store SKUs (storewide / category+weight via canonicalWeightGrams). Honesty-gated: NO banner-% savings (fix6), observed specialPrice stays price-of-record, unsupported-category/brand/unresolved counted-not-fanned-out. Preserves ADR-043/053 Deal↔Product decoupling (no Deal/ProductsFile write-path change). Note: motive narrowed after code-grounding — observed specialPrice already delivers reconciled price, so value is scope+temporal linkage, not a new discount number. AC1-7 done (ADR-070); AC7 private route GET /api/value/deal-scope built per Erik option B 2026-07-01 (raw deals so temporal windows survive; fail-soft; no UI). PR #53. Flip to done on merge.
 
-  # Storage re-architecture (ADR-077) — deadline-critical, no parent epic (tracked individually).
-  # Source: plans/products-storage-local-sqlite-plan.md + the two 2026-07-06 scope memos. HARD DEADLINE ~2026-07-23 (git 50MB wall).
-  products-storage-sqlite-phase-1: ready-for-dev  # products-storage-sqlite-phase-1.md — ADR-077 Phase 1: raw products.json → local SQLite on home machine; Render serves small derived facts only (disparities/deal-scope JSON), NEVER queries home DB. Kills the git file-size wall permanently at $0 + removes Render OOM risk + creates the query substrate the derivation-engine PRD (Tier 1) is gated on. 8 ACs incl. zero-loss import + parity test; 3 open decisions to resolve w/ Erik (Dutchie bridge-vs-local, /api/products fate, deal-scope freshness). Phase 0 (mtime-cache) = separate bmad-quick-dev track; Phase 2 = post-deadline hardening.
+  # ================================================================
+  # Derivation Engine (new product increment) — SEPARATE from the shipped Epics 1-6 above.
+  # Source: planning-artifacts/epics-derivation-engine.md + prds/prd-Happy-2026-07-06/.
+  # Epic keys are namespaced `epic-derivation-N` and stories `derivation-1-M-...` so they do
+  # NOT collide with the shipped numeric epics/stories. Only Epic 1 (Tier-1 facts) is decomposed.
+  # ================================================================
+
+  # Derivation Epic 1: Honest daily relational facts, served
+  epic-derivation-1: in-progress  # first story (1.0) exists → in-progress
+  products-storage-sqlite-phase-1: review  # Derivation Story 1.0 (ADR-077 Phase 1 substrate). HARD DEADLINE ~2026-07-23 (git 50MB wall). raw products.json → local SQLite on home machine; Render serves small derived facts only, NEVER queries home DB. Kills the file-size wall at $0 + creates the query substrate the Tier-1 facts are gated on. Golden-file parity test + intact-history migration are load-bearing ACs. Phase 0 (mtime-cache) + Phase 2 (hardening) = separate tracks. Story file: products-storage-sqlite-phase-1.md.
+  derivation-1-1-runner-served-artifact-envelope: backlog  # local runner (mirrors scrape-weedmaps-local.ps1) + honesty-envelope wrapper {data,excluded,coverage,generatedAt}; ports disparities + deal-scope as served files = pipeline oracle. FR1/2/3/5/7. Decision E, Gate 1 match-key.
+  derivation-1-2-presence-aware-time-series-helper: backlog  # Gate 3 primitive (no-observation vs observed-unchanged); ships with 1.2.5 as first consumer. FR6.
+  derivation-1-2-5-source-extraction-health-fact: backlog  # extraction-broke vs genuinely-empty (caravan-cannabis-burlington is the live proof); derivation-time, today-count vs trailing-median, decision C. Precondition for 1.7.
+  derivation-1-3-special-start-end-event-detection: backlog  # D1 / FR8. Special-start/end from sticky-list-price series. Gates 2,3.
+  derivation-1-4-cross-store-disparity-rollups: backlog  # D4 / FR11. SEPARATE artifact disparity-rollups.json (decision A, keeps 1.1 oracle valid). Gate 1 match-key precision.
+  derivation-1-5-brand-discount-personas: backlog  # D2 / FR9. Type-gate F (flat banner-rate + potency unreachable, breach won't compile). Shared brand-normalizer added here (decision B).
+  derivation-1-6-brand-store-matrix: backlog  # D5 / FR12. Cross-sectional grouping; consumes brand-normalizer from 1.5. Type-gate F.
+  derivation-1-7-new-arrival-dormancy-feed: backlog  # D3 / FR10. Gate 4 missed-scrape-ambiguity flag; consumes 1.2.5 so a silent hole isn't read as delisting. Last fact (most dangerous).
+  derivation-1-8-derivation-run-freshness-health-alerting: backlog  # extends existing evaluateAlert path (decision D); reads generatedAt off the envelope.
+  derivation-1-9-remove-api-products: backlog  # FR4. OPEN FORK: remove-now behind grep-clean gate vs defer→Epic 3. ACs written for remove-now (client/ already zero refs).
+  epic-derivation-1-retrospective: optional
+
+  # Derivation Epics 2-3 — NOT decomposed this run (listed for context; stories/retros added when decomposed).
+  epic-derivation-2: backlog  # Tier-2 accrual facts: price vs own rolling median (honest discount, reopens fix6), cheapest-delivered, regional floor.
+  epic-derivation-3: backlog  # Feed the surfaces: AI-search/SEO comparison pages + in-app value cards consuming the derived facts.

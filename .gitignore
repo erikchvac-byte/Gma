@@ -7,6 +7,14 @@ server/dist/
 # ADR-047 commit-back: ingestRun --emit seed artifacts (CI-only; never commit)
 server/out/
 
+# ADR-077 Phase 1: the raw longitudinal product store now lives in local SQLite on the
+# home machine only — NEVER committed (it IS the file-size wall we removed). Render serves
+# the small derived/*.json facts, never this DB. SQLite sidecar files (-wal/-shm) included.
+server/data/products.db
+server/data/products.db-*
+products.db
+products.db-*
+
 # TLS cert/key bundles — contain private keys, never commit
 *-ssl-bundle/
 *.pem

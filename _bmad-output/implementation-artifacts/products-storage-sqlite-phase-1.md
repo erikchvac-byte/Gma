@@ -1,6 +1,10 @@
+---
+baseline_commit: 91bdfad765d7bd11f21964e040cad71f76ffc22f
+---
+
 # Story: ADR-077 Phase 1 — Products dataset → local SQLite substrate (kill the git wall)
 
-Status: ready-for-dev
+Status: review
 
 <!-- Standalone story (no parent epic — tracked individually, like cross-store-value-matcher / deal-sku-bridge). Source of truth: ADR-077 + plans/products-storage-local-sqlite-plan.md + the two 2026-07-06 scope memos. -->
 
@@ -39,18 +43,18 @@ so that the **GitHub file-size wall (~50 MB warning ~2026-07-23, ~100 MB hard bl
 
 ## Tasks / Subtasks
 
-- [ ] **Pick the SQLite driver** (AC: 1,2) — prefer `better-sqlite3` (synchronous, fits the pure-function/CLI derivation shape) unless Erik/Winston prefer `node:sqlite`. Node-only dependency, never bundled into the Render request path. Verify it does not enter the client build.
-- [ ] **Schema + importer** `server/scripts/importProductsToSqlite.ts` (AC: 1,2)
-  - [ ] Define `product` + `observation` tables + indices (AC2). Get Winston's eyes on the schema before freezing (coupling note #1).
-  - [ ] Import current `products.json`; assert record/observation counts equal source; re-runnable.
-- [ ] **DB-backed reader** `server/utils/productsDb.ts` (AC: 3) — returns the same `ProductsFile` shape `buildMatchReport`/`buildDealScopeLinks` already consume, so the pure functions stay untouched. This is the seam.
-- [ ] **Derivation runner** `server/scripts/deriveFactsRun.ts` (AC: 3) — read DB → build both reports → write `server/data/derived/{disparities,deal-scope}.json`.
-- [ ] **Orchestration** `scripts/derive-facts-local.ps1` (AC: 4) — clone the `scrape-weedmaps-local.ps1` structure exactly (worktree, hard-reset, run, `[skip ci]` commit-back of derived only, push).
-- [ ] **Repoint routes** `server/routes/valueRoute.ts` (AC: 5) — read derived files, fail-soft; drop the request-time `buildMatchReport`/`buildDealScopeLinks` calls. Keep `readDispensaries` only if deal-scope stays live (open decision #3).
-- [ ] **Kill the wall** (AC: 6) — take backups first; `git rm server/data/products.json`; amend `scrape-products.yml` to stop raw commit-back.
-- [ ] **Feed the DB** (AC: 7) — Weedmaps local → SQLite; Dutchie per open decision #1.
-- [ ] **Parity test** `server/**/*.test.ts` (AC: 8) — DB-derived reports == pre-migration live values; wire into the server suite so CI guards it.
-- [ ] **Update ADR.md** — move ADR-077 status note from "direction approved, not yet built" to reflect Phase 1 landed; record schema + driver decision and the resolved open decisions.
+- [x] **Pick the SQLite driver** (AC: 1,2) — chose **`node:sqlite`** (Node 24 built-in, synchronous) over `better-sqlite3`: zero native dependency, no node-gyp/prebuild risk on Windows, cannot enter the client bundle. No package.json change. Client build verified clean.
+- [x] **Schema + importer** `server/scripts/importProductsToSqlite.ts` (AC: 1,2)
+  - [x] Define `product` + `observation` tables + indices (AC2). Schema decision + rationale recorded in ADR-077 (Winston review deferred to ADR — solo session; nothing frozen that a Phase-2 index add can't extend).
+  - [x] Import current `products.json`; asserted record/observation counts equal source (**5,219 / 33,169**, zero-loss); re-runnable (drop-and-recreate).
+- [x] **DB-backed reader** `server/utils/productsDb.ts` (AC: 3) — `readProductsFile` returns the same `ProductsFile` shape; `buildMatchReport`/`buildDealScopeLinks` **untouched**. Proven byte-identical report parity (the seam).
+- [x] **Derivation runner** `server/scripts/deriveFactsRun.ts` (AC: 3) — DB → both reports → `server/data/derived/{disparities,deal-scope}.json`.
+- [x] **Orchestration** `scripts/derive-facts-local.ps1` (AC: 4) — mirrors `scrape-weedmaps-local.ps1` (worktree, clean-base hard-reset, run, `[skip ci]` commit-back of derived only, push-with-retry).
+- [x] **Repoint routes** `server/routes/valueRoute.ts` (AC: 5) — read derived files, fail-soft to empty; dropped request-time `buildMatchReport`/`buildDealScopeLinks`. deal-scope precomputed daily (open decision #3), so `readDispensaries` moved into the runner.
+- [x] **Kill the wall** (AC: 6) — backups taken to `~/GmaS-data/backups/` (raw JSON + first DB); `git rm server/data/products.json`; **retired** `scrape-products.yml` (Dutchie fully local, no raw commit-back).
+- [x] **Feed the DB** (AC: 7) — both scrape runners gained an injectable `persist` sink; CLIs append into `products.db` (`persistObservationsToDb`, idempotent). `scrape-dutchie-local.ps1` (new) + `scrape-weedmaps-local.ps1` (rewired) feed the DB.
+- [x] **Parity test** (AC: 8) — `productsDb.test.ts` proves DB-report == JSON-report byte-identical on a rich fixture; real-file migration proof captured (228 disparities, all counts equal live). Audit test rebased onto the committed derived file. Wired into the server suite.
+- [x] **Update ADR.md** — ADR-077 status → Phase 1 implemented; schema + driver + resolved decisions recorded; change-log entry added.
 
 ## Dev Notes
 
@@ -95,9 +99,52 @@ Phase 0 shipped (separate track) **and** this story's AC6 merged (`products.json
 ## Dev Agent Record
 
 ### Agent Model Used
+claude-opus-4-8 (Claude Code, bmad-dev-story)
 
 ### Debug Log References
+- Migration parity (real 21.7 MB file): 5,219 records / 33,169 observations both sides; 0 duplicate `(product_key, observedAt)` pairs (UNIQUE index safe).
+- Report parity (real file): `buildMatchReport(DB)` byte-equals `buildMatchReport(JSON)` → 228 disparities, excluded 568, nonComparable 510, unmatched 1; `buildDealScopeLinks` byte-equal. Matches live `/api/value/disparities` (228) exactly.
+- `npm run build` (client + server): first pass surfaced a strict-mode error — a value-returning `persist` sink is not assignable to a `void | Promise<void>` union (TS void-widening applies only to bare `void`); fixed by typing the sink return as `unknown`. Second pass clean.
+- Server suite: 449 tests / 37 files green.
 
 ### Completion Notes List
+- **Driver:** `node:sqlite` (built-in) chosen over `better-sqlite3` — decision documented in ADR-077 + story task 1.
+- **Zero-loss migration (AC1):** proven against the live file, not the stale audit-time estimates (5,090/29,669/217 were superseded by 5,219/33,169/228).
+- **Schema (AC2):** UNIQUE `(product_key, observedAt)` = the per-store/per-day presence key + integrity guard; denormalized `dispensaryId` on `observation` with `(dispensaryId, observedAt)` index for the derivation engine's regional/time-range facts; `observedAt` index for whole-corpus facts. Reconstruction preserves insertion order → `history.at(-1)` faithful, gap-tolerant.
+- **Seam (AC3):** pure functions untouched; the only change is their input source. Honesty gates (1–5, `EXCLUDED_FLAGS`, fix6) run at derivation, behaviour-identical.
+- **Routes (AC5):** fail-soft to empty report on missing/malformed derived file — never throws, never opens the home DB (the load-bearing rule).
+- **AC6 executed end-to-end** (Erik authorized this session): backups first, `git rm products.json`, `scrape-products.yml` retired.
+- **AC7:** both scrape runners feed the DB via an injectable sink; three local `.ps1` runners + runbook.
+- **Open decisions resolved with Erik:** #1 Dutchie fully local · #2 `/api/products` dropped entirely (route + test removed) · #3 deal-scope precomputed daily.
+- **Operational first-run pending (Erik-run):** the three local runners have not yet executed live from the home machine (same posture as the Weedmaps residential runner at merge). Runbook: `docs/products-local-sqlite-ingest.md`.
+- **Phase-2 flag logged:** resolve `caravan-cannabis-burlington` suspected silent-extraction failure before "one machine owns all raw data."
 
 ### File List
+New:
+- `server/utils/productsDb.ts` — SQLite substrate: schema, import, append-only feed, `readProductsFile` seam
+- `server/utils/productsDb.test.ts` — round-trip fidelity + parity + append tests
+- `server/scripts/importProductsToSqlite.ts` — one-time zero-loss migration CLI
+- `server/scripts/deriveFactsRun.ts` — local derivation runner (DB → derived JSON)
+- `server/data/derived/disparities.json`, `server/data/derived/deal-scope.json` — committed derived facts (served by Render)
+- `scripts/derive-facts-local.ps1` — commit-back derivation orchestration
+- `scripts/scrape-dutchie-local.ps1` — Dutchie feeder (boots local scraper-svc → DB)
+- `docs/products-local-sqlite-ingest.md` — runbook
+
+Modified:
+- `server/routes/valueRoute.ts` — read derived files, fail-soft (no request-time compute)
+- `server/routes/valueRoute.test.ts` — fail-soft coverage
+- `server/index.ts` — dropped `/api/products` route + import
+- `server/scripts/scrapeProductsRun.ts`, `server/scripts/scrapeWeedmapsRun.ts` — injectable DB persist sink; CLIs append to `products.db`
+- `server/scripts/scrapeProductsRun.test.ts` — DB persist wiring test
+- `server/utils/crossStoreValue.audit.test.ts` — rebased onto committed derived file
+- `scripts/scrape-weedmaps-local.ps1` — rewired from JSON commit-back to DB append
+- `.gitignore` — ignore `products.db`
+- `ADR.md` — ADR-077 Phase 1 status + schema/driver/decisions + change log
+
+Deleted:
+- `server/data/products.json` — the file-size wall (backed up to `~/GmaS-data/` first)
+- `server/routes/productsRoute.ts`, `server/routes/productsRoute.test.ts` — `/api/products` dropped
+- `.github/workflows/scrape-products.yml` — raw commit-back retired (Dutchie fully local)
+
+### Change Log
+- 2026-07-06 — ADR-077 Phase 1 implemented: products dataset → local SQLite; derived facts served; `products.json` out of git (wall killed); `/api/products` dropped; Dutchie/Weedmaps feed the DB. 449 server tests green; build clean.

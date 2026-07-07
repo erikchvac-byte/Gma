@@ -2,6 +2,7 @@ import { pathToFileURL } from 'node:url'
 import { dutchieProductScrapers } from '../scrapers/dutchie-stores.js'
 import { normalizeProduct } from '../utils/normalizeProduct.js'
 import { persistProductObservations, DEFAULT_PRODUCTS_PATH } from '../utils/productsStore.js'
+import { persistObservationsToDb, DEFAULT_PRODUCTS_DB_PATH } from '../utils/productsDb.js'
 import type { ProductRecord, RawProduct } from '../types/index.js'
 
 // Commit-back product-price scrape (SPEC-dutchie-product-pricing CAP-4/CAP-6, ADR-053).
@@ -20,6 +21,10 @@ export interface RunProductScrapeOptions {
   registry?: Record<string, () => Promise<RawProduct[]>>
   productsPath?: string
   now?: string
+  // ADR-077 AC7: injectable write sink. Defaults to the legacy JSON commit-back path (keeps
+  // unit tests + any bridge running); the CLI wires the local SQLite append (persistObservationsToDb).
+  // Return is `unknown` (awaited) so both the async JSON persist and the sync DB append fit.
+  persist?: (records: ProductRecord[], now: string) => unknown
 }
 
 export interface RunProductScrapeOutcome {
@@ -35,6 +40,8 @@ export async function runProductScrape(
   const registry = opts.registry ?? dutchieProductScrapers
   const productsPath = opts.productsPath ?? DEFAULT_PRODUCTS_PATH
   const now = opts.now ?? new Date().toISOString()
+  const persist =
+    opts.persist ?? ((records: ProductRecord[], n: string) => persistProductObservations(records, n, productsPath))
 
   if (opts.stores.length === 0) {
     console.error('[productsRun] no stores to scrape')
@@ -64,9 +71,9 @@ export async function runProductScrape(
     }
   }
 
-  // Append every observation in one serialized read-modify-write.
+  // Append every observation via the configured sink (DB locally, JSON in tests/bridge).
   if (records.length > 0) {
-    await persistProductObservations(records, now, productsPath)
+    await persist(records, now)
   }
 
   return { ok, results, recordsWritten: records.length }
@@ -97,9 +104,15 @@ async function main(): Promise<void> {
     stores = all
   }
 
-  const { ok, results, recordsWritten } = await runProductScrape({ stores })
+  // ADR-077: the durable store is now the local SQLite DB (products.json left git). Append
+  // straight into products.db — the home path is set via PRODUCTS_DB_PATH by the local runner.
+  const dbPath = process.env.PRODUCTS_DB_PATH ?? DEFAULT_PRODUCTS_DB_PATH
+  const { ok, results, recordsWritten } = await runProductScrape({
+    stores,
+    persist: (records, n) => persistObservationsToDb(records, n, dbPath),
+  })
   for (const [id, r] of Object.entries(results)) console.log(`[productsRun] ${id}: ${r}`)
-  console.log(`[productsRun] ${recordsWritten} observations appended`)
+  console.log(`[productsRun] ${recordsWritten} observations appended → ${dbPath}`)
   process.exit(ok ? 0 : 1)
 }
 

@@ -2,6 +2,7 @@ import { pathToFileURL } from 'node:url'
 import { weedmapsProductScrapers } from '../scrapers/weedmaps-stores.js'
 import { normalizeProduct } from '../utils/normalizeProduct.js'
 import { persistProductObservations, DEFAULT_PRODUCTS_PATH } from '../utils/productsStore.js'
+import { persistObservationsToDb, DEFAULT_PRODUCTS_DB_PATH } from '../utils/productsDb.js'
 import type { ProductRecord, RawProduct } from '../types/index.js'
 
 // Commit-back Weedmaps PRODUCT scrape (AI-search Phase 2). The sibling of scrapeProductsRun
@@ -29,6 +30,9 @@ export interface RunWeedmapsScrapeOptions {
   // injectable so tests don't actually wait / aren't randomness-dependent
   sleepFn?: (ms: number) => Promise<void>
   rng?: () => number
+  // ADR-077 AC7: injectable write sink (defaults to legacy JSON path; CLI wires SQLite append).
+  // Return is `unknown` (awaited) so both the async JSON persist and the sync DB append fit.
+  persist?: (records: ProductRecord[], now: string) => unknown
 }
 
 export interface RunWeedmapsScrapeOutcome {
@@ -48,6 +52,8 @@ export async function runWeedmapsScrape(
   const jitter = opts.jitterMs ?? DEFAULT_JITTER_MS
   const sleep = opts.sleepFn ?? realSleep
   const rng = opts.rng ?? Math.random
+  const persist =
+    opts.persist ?? ((records: ProductRecord[], n: string) => persistProductObservations(records, n, productsPath))
 
   if (opts.stores.length === 0) {
     console.error('[weedmapsRun] no stores to scrape')
@@ -82,7 +88,7 @@ export async function runWeedmapsScrape(
   }
 
   if (records.length > 0) {
-    await persistProductObservations(records, now, productsPath)
+    await persist(records, now)
   }
 
   return { ok, results, recordsWritten: records.length }
@@ -113,9 +119,15 @@ async function main(): Promise<void> {
     stores = all
   }
 
-  const { ok, results, recordsWritten } = await runWeedmapsScrape({ stores })
+  // ADR-077: append into the local SQLite store (products.json left git). Home path via
+  // PRODUCTS_DB_PATH set by the local runner.
+  const dbPath = process.env.PRODUCTS_DB_PATH ?? DEFAULT_PRODUCTS_DB_PATH
+  const { ok, results, recordsWritten } = await runWeedmapsScrape({
+    stores,
+    persist: (records, n) => persistObservationsToDb(records, n, dbPath),
+  })
   for (const [id, r] of Object.entries(results)) console.log(`[weedmapsRun] ${id}: ${r}`)
-  console.log(`[weedmapsRun] ${recordsWritten} observations appended`)
+  console.log(`[weedmapsRun] ${recordsWritten} observations appended → ${dbPath}`)
   process.exit(ok ? 0 : 1)
 }
 

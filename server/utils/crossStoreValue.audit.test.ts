@@ -1,47 +1,46 @@
 import { describe, it, expect } from 'vitest'
-import { buildDisparities, buildMatchReport } from './crossStoreValue.js'
+import { existsSync, readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import path from 'node:path'
 import { canonicalWeightGrams } from './productMatchKey.js'
 import { parseGrams, parsePackCount } from './normalizeProduct.js'
-import { readProducts } from './productsStore.js'
-import type { ProductsFile } from '../types/index.js'
+import type { MatchReport } from './crossStoreValue.js'
 
-// Phase 0 verification (AC5). Runs the real matcher over the COMMITTED products.json
-// and proves the honesty gates hold on live data — the integrity of this output is the
-// product's moat, so it is asserted against reality, not just synthetic fixtures.
+// Phase 0 verification (AC5), rebased onto ADR-077. The raw products.json left git for local
+// SQLite, so this audit now runs over the COMMITTED DERIVED disparities.json — the real,
+// deployed value output (produced by deriveFactsRun from the home DB). It still asserts the
+// honesty invariants against reality, not synthetic fixtures. The raw-record exclusion-gate
+// equivalence it used to prove is fully unit-covered in crossStoreValue.test.ts (gate 1).
 
-const EXCLUDED_FLAGS = new Set(['weight-mismatch', 'unparseable-weight', 'unparseable-pack'])
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const DERIVED_DISPARITIES = path.join(__dirname, '../data/derived/disparities.json')
 
-describe('Phase 0 audit — committed products.json', () => {
-  const file = readProducts()
-  const report = buildMatchReport(file)
+describe('Phase 0 audit — committed derived disparities.json (ADR-077)', () => {
+  const present = existsSync(DERIVED_DISPARITIES)
+  const report: MatchReport | null = present
+    ? (JSON.parse(readFileSync(DERIVED_DISPARITIES, 'utf-8')) as MatchReport)
+    : null
 
-  it('the dataset actually exercises the exclusion gate (flagged records exist)', () => {
-    // Guards against a vacuous audit: if the committed data carried no excluded flags
-    // the equivalence check below would pass trivially. (427 weight-mismatch as of writing.)
-    expect(report.excludedFlagCount).toBeGreaterThan(0)
+  it('the committed derived facts exist and were actually derived from a populated dataset', () => {
+    expect(present).toBe(true)
+    expect(report!.totalRecords).toBeGreaterThan(0)
   })
 
-  it('produces ZERO disparity rows influenced by an excluded-flag record', () => {
-    // Excluded-flag records must have NO effect on output. Build disparities once from
-    // the full file and once from a file with every excluded record removed; identical
-    // output proves no flagged input ever reached a disparity row.
-    const cleanProducts = Object.fromEntries(
-      Object.entries(file.products).filter(([, r]) => !r.flags.some((f) => EXCLUDED_FLAGS.has(f))),
-    )
-    const clean: ProductsFile = { ...file, products: cleanProducts }
-    expect(buildDisparities(file)).toEqual(buildDisparities(clean))
+  it('the dataset actually exercises the exclusion gate (flagged records counted)', () => {
+    // Non-vacuous audit: real committed data carries excluded-flag records (568 as of writing).
+    expect(report!.excludedFlagCount).toBeGreaterThan(0)
   })
 
   it('counts every unplaceable record (nothing hidden)', () => {
-    expect(report.totalRecords).toBe(Object.keys(file.products).length)
-    expect(report.unmatchedCount).toBeGreaterThanOrEqual(0)
-    expect(report.excludedFlagCount).toBeGreaterThanOrEqual(0)
+    expect(report!.unmatchedCount).toBeGreaterThanOrEqual(0)
+    expect(report!.excludedFlagCount).toBeGreaterThanOrEqual(0)
+    expect(report!.nonComparableCategoryCount).toBeGreaterThanOrEqual(0)
     // Every record is accounted for: excluded, unmatched, placed, or matched-but-unpriced/single-option.
-    expect(report.unmatchedCount + report.excludedFlagCount).toBeLessThanOrEqual(report.totalRecords)
+    expect(report!.unmatchedCount + report!.excludedFlagCount).toBeLessThanOrEqual(report!.totalRecords)
   })
 
   it('every emitted disparity is well-formed and like-for-like', () => {
-    for (const d of report.disparities) {
+    for (const d of report!.disparities) {
       expect(d.storesCarrying.length).toBeGreaterThanOrEqual(2)
       const ids = d.storesCarrying.map((s) => s.dispensaryId)
       expect(new Set(ids).size).toBe(ids.length) // distinct stores
