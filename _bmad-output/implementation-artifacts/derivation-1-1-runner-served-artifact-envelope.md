@@ -4,7 +4,7 @@ baseline_commit: 7d35445339499f2950356c76e4effceafee14c8e
 
 # Story derivation-1.1: Derivation runner + served-artifact envelope
 
-Status: review
+Status: done
 
 ## Story
 
@@ -131,3 +131,4 @@ Untouched (verified, not modified): `server/utils/crossStoreValue.ts`, `server/u
 ## Change Log
 
 - 2026-07-07: Story implemented — honesty envelope `{data, excluded, coverage, generatedAt}` added and wired through `deriveFactsRun.ts` (write path) and `valueRoute.ts` (read/serve path); zero-collapse guard updated to the new shape; `crossStoreValue.audit.test.ts` updated after verifying it reads the committed file off disk. 468 server tests green; production build clean. Status → review.
+- 2026-07-07: PR #70 squash-merged to `master` (`8c75a74`), fileset verified against the merge commit. Erik marked the story **done** as-is (no separate `code-review` pass run).

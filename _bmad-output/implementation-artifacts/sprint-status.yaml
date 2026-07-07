@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-09
-last_updated: 2026-07-07 (derivation-1-1-runner-served-artifact-envelope → review)
+last_updated: 2026-07-07 (derivation-1-1-runner-served-artifact-envelope → done)
 project: Happy
 project_key: NOKEY
 tracking_system: file-system
@@ -105,7 +105,7 @@ development_status:
   # Derivation Epic 1: Honest daily relational facts, served
   epic-derivation-1: in-progress  # first story (1.0) exists → in-progress
   products-storage-sqlite-phase-1: done  # Derivation Story 1.0 (ADR-077 Phase 1 substrate). HARD DEADLINE ~2026-07-23 (git 50MB wall). raw products.json → local SQLite on home machine; Render serves small derived facts only, NEVER queries home DB. Kills the file-size wall at $0 + creates the query substrate the Tier-1 facts are gated on. Golden-file parity test + intact-history migration are load-bearing ACs. Phase 0 (mtime-cache) + Phase 2 (hardening) = separate tracks. Story file: products-storage-sqlite-phase-1.md. Code review 2026-07-07: 10 patches fixed (incl. derivation fail-soft data-loss risk + missing AC8 deal-scope parity test), 6 deferred, 5 dismissed. 459 server tests green; build clean. Operational first-run (Erik's home machine) still pending.
-  derivation-1-1-runner-served-artifact-envelope: review  # SCOPE NARROWED at story-creation (2026-07-07): runner/orchestration/routes already shipped early inside 1.0 — net-new scope is just the honesty-envelope wrapper {data,excluded,coverage,generatedAt} on the two already-served disparities/deal-scope artifacts. FR1/2/3/5/7. Decision E, Gate 1 match-key (already covered by existing tests, cited not duplicated). Implemented 2026-07-07: derivedEnvelope.ts + wired through runner/routes; 468 tests green, build clean.
+  derivation-1-1-runner-served-artifact-envelope: done  # SCOPE NARROWED at story-creation (2026-07-07): runner/orchestration/routes already shipped early inside 1.0 — net-new scope is just the honesty-envelope wrapper {data,excluded,coverage,generatedAt} on the two already-served disparities/deal-scope artifacts. FR1/2/3/5/7. Decision E, Gate 1 match-key (already covered by existing tests, cited not duplicated). Implemented 2026-07-07: derivedEnvelope.ts + wired through runner/routes; 468 tests green, build clean. SHIPPED: PR #70 squash-merged → master `8c75a74`. Erik marked done as-is, no separate code-review pass.
   derivation-1-2-presence-aware-time-series-helper: backlog  # Gate 3 primitive (no-observation vs observed-unchanged); ships with 1.2.5 as first consumer. FR6.
   derivation-1-2-5-source-extraction-health-fact: backlog  # extraction-broke vs genuinely-empty (caravan-cannabis-burlington is the live proof); derivation-time, today-count vs trailing-median, decision C. Precondition for 1.7.
   derivation-1-3-special-start-end-event-detection: backlog  # D1 / FR8. Special-start/end from sticky-list-price series. Gates 2,3.
