@@ -1,5 +1,6 @@
 import { DatabaseSync } from 'node:sqlite'
 import { fileURLToPath } from 'node:url'
+import { mkdirSync } from 'node:fs'
 import path from 'node:path'
 import type {
   ProductRecord,
@@ -79,10 +80,16 @@ export function ensureSchema(db: DatabaseSync): void {
   db.exec(SCHEMA)
 }
 
-// Open (or create) the DB with the schema applied and FK enforcement on.
+// Open (or create) the DB with the schema applied and FK enforcement on. WAL + a busy_timeout
+// are load-bearing: three independent local processes (Dutchie/Weedmaps feeders + the
+// derivation runner) can open this same file, and without them a concurrent writer throws
+// SQLITE_BUSY immediately instead of waiting briefly for the lock to clear.
 export function openProductsDb(dbPath: string = DEFAULT_PRODUCTS_DB_PATH): DatabaseSync {
+  if (dbPath !== ':memory:') mkdirSync(path.dirname(dbPath), { recursive: true })
   const db = new DatabaseSync(dbPath)
   db.exec('PRAGMA foreign_keys = ON')
+  db.exec('PRAGMA journal_mode = WAL')
+  db.exec('PRAGMA busy_timeout = 5000')
   ensureSchema(db)
   return db
 }
@@ -212,6 +219,7 @@ export function appendObservations(
   const insertObs = db.prepare(
     'INSERT OR IGNORE INTO observation(product_key, dispensaryId, observedAt, special, options_json) VALUES(?, ?, ?, ?, ?)',
   )
+  const existsObs = db.prepare('SELECT 1 FROM observation WHERE product_key = ? AND observedAt = ?')
 
   let productsSeen = 0
   let observationsAppended = 0
@@ -221,8 +229,14 @@ export function appendObservations(
       const observation = rec.history[0]
       if (!observation) continue
       const key = PRODUCT_KEY(rec.dispensaryId, rec.productId)
-      bindProduct(upsert, key, rec)
       productsSeen++
+      // Only refresh the product's identity (name/brand/thc/...) when this (product, day) is
+      // genuinely new. A retry of an already-recorded pair may carry degraded data from a
+      // partial page load — a true duplicate must not clobber previously-good metadata with
+      // it. A brand-new product always has no prior observation, so its identity is still
+      // written here (also required by the FK: observation.product_key REFERENCES product).
+      const alreadyRecorded = existsObs.get(key, observation.observedAt) !== undefined
+      if (!alreadyRecorded) bindProduct(upsert, key, rec)
       const res = insertObs.run(
         key,
         rec.dispensaryId,
@@ -335,18 +349,18 @@ export function readProductsFile(db: DatabaseSync): ProductsFile {
   return { lastUpdated: getMeta(db, 'lastUpdated') ?? '', products }
 }
 
-// Open the local DB read-only-ish and return the ProductsFile, fail-soft to empty (mirrors
-// readProducts()). Used by the local derivation runner. If the DB is missing/corrupt the
-// derivation degrades to an empty dataset rather than throwing.
+// Open the local DB and return the ProductsFile. Used by the local derivation runner.
+// Deliberately NOT fail-soft: this is the INPUT to a computation whose output gets committed
+// and pushed to master (derive-facts-local.ps1). Swallowing a DB-open failure here would let
+// a misconfigured PRODUCTS_DB_PATH, a permissions error, or a mid-write lock collision silently
+// produce an empty ProductsFile that then overwrites the live derived facts served to
+// gmaslist.com. The Express route layer (valueRoute.ts) is the one that stays fail-soft — it
+// only ever reads already-computed derived files, never this DB.
 export function readProductsFromDbPath(dbPath: string = DEFAULT_PRODUCTS_DB_PATH): ProductsFile {
+  const db = openProductsDb(dbPath)
   try {
-    const db = openProductsDb(dbPath)
-    try {
-      return readProductsFile(db)
-    } finally {
-      db.close()
-    }
-  } catch {
-    return { lastUpdated: '', products: {} }
+    return readProductsFile(db)
+  } finally {
+    db.close()
   }
 }

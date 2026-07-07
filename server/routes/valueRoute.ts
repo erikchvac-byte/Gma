@@ -4,6 +4,7 @@ import path from 'node:path'
 import type { Request, Response } from 'express'
 import type { MatchReport } from '../utils/crossStoreValue.js'
 import type { DealScopeReport } from '../types/index.js'
+import { isEnvelope, type DerivedEnvelope } from '../utils/derivedEnvelope.js'
 
 // ADR-077 Phase 1 — these two private/internal routes NO LONGER compute anything at request
 // time. The raw products dataset left git for a local SQLite DB on the home machine; the home
@@ -20,36 +21,55 @@ const DERIVED_DIR = path.join(__dirname, '../data/derived')
 const DISPARITIES_PATH = path.join(DERIVED_DIR, 'disparities.json')
 const DEAL_SCOPE_PATH = path.join(DERIVED_DIR, 'deal-scope.json')
 
-export const EMPTY_MATCH_REPORT: MatchReport = {
-  disparities: [],
-  totalRecords: 0,
-  unmatchedCount: 0,
-  excludedFlagCount: 0,
-  nonComparableCategoryCount: 0,
-  placedRecords: 0,
+// derivation-1.1: served artifacts are wrapped in the honesty envelope (decision E). The
+// empty fallback's `generatedAt` is a FIXED value, not "now" — the fail-soft output must stay
+// referentially stable so tests (and any future freshness check) can tell "never derived" apart
+// from "derived a moment ago".
+const EMPTY_GENERATED_AT = new Date(0).toISOString()
+
+export const EMPTY_DISPARITIES_ENVELOPE: DerivedEnvelope<MatchReport> = {
+  data: {
+    disparities: [],
+    totalRecords: 0,
+    unmatchedCount: 0,
+    excludedFlagCount: 0,
+    nonComparableCategoryCount: 0,
+    placedRecords: 0,
+  },
+  excluded: [],
+  coverage: {},
+  generatedAt: EMPTY_GENERATED_AT,
 }
 
-export const EMPTY_DEAL_SCOPE: DealScopeReport = {
-  links: [],
-  totalDeals: 0,
-  storewideCount: 0,
-  categoryCount: 0,
-  linkedSkuCount: 0,
-  unsupportedCategoryCount: 0,
-  brandCount: 0,
-  unresolvedCount: 0,
-  zeroMatchCount: 0,
+export const EMPTY_DEAL_SCOPE_ENVELOPE: DerivedEnvelope<DealScopeReport> = {
+  data: {
+    links: [],
+    totalDeals: 0,
+    storewideCount: 0,
+    categoryCount: 0,
+    linkedSkuCount: 0,
+    unsupportedCategoryCount: 0,
+    brandCount: 0,
+    unresolvedCount: 0,
+    zeroMatchCount: 0,
+  },
+  excluded: [],
+  coverage: {},
+  generatedAt: EMPTY_GENERATED_AT,
 }
 
-// Read a precomputed derived fact file, fail-soft to the given empty shape. A missing file
-// (home machine never ran / first deploy) or a malformed one degrades to empty rather than
-// throwing — never a 500, never a read of the raw dataset.
-export function readDerived<T>(filePath: string, empty: T): T {
+// Read a precomputed derived fact file, fail-soft to the given empty envelope. A missing file
+// (home machine never ran / first deploy), an unparseable one, or one that parses but doesn't
+// match the envelope shape all degrade to empty rather than throwing — never a 500, never a
+// read of the raw dataset.
+export function readDerived<T extends object>(
+  filePath: string,
+  empty: DerivedEnvelope<T>,
+): DerivedEnvelope<T> {
   if (!existsSync(filePath)) return empty
   try {
     const parsed = JSON.parse(readFileSync(filePath, 'utf-8'))
-    if (!parsed || typeof parsed !== 'object') return empty
-    return parsed as T
+    return isEnvelope<T>(parsed) ? parsed : empty
   } catch {
     return empty
   }
@@ -57,16 +77,15 @@ export function readDerived<T>(filePath: string, empty: T): T {
 
 // GET /api/value/disparities (SPEC ai-search-data-strategy A1). Serves the precomputed
 // cross-store price-disparity dataset from server/data/derived/disparities.json. Private/
-// internal only — no public SSR page/schema.org (Phase 4, legal-gated). Response shape (the
-// MatchReport with disparity rows + audit counts) is UNCHANGED; only the source moved from a
-// request-time computation to a committed derived file.
+// internal only — no public SSR page/schema.org (Phase 4, legal-gated). Response is the
+// honesty envelope (derivation-1.1); `data` is the unchanged MatchReport.
 export function disparitiesRoute(_req: Request, res: Response) {
-  res.json(readDerived<MatchReport>(DISPARITIES_PATH, EMPTY_MATCH_REPORT))
+  res.json(readDerived<MatchReport>(DISPARITIES_PATH, EMPTY_DISPARITIES_ENVELOPE))
 }
 
 // GET /api/value/deal-scope (ADR-070). Serves the precomputed deal→SKU scope-bridge report
 // from server/data/derived/deal-scope.json (open decision #3: precomputed daily, so links can
 // be up to ~24h stale — acceptable to start). Same private/decoupled/fail-soft posture.
 export function dealScopeRoute(_req: Request, res: Response) {
-  res.json(readDerived<DealScopeReport>(DEAL_SCOPE_PATH, EMPTY_DEAL_SCOPE))
+  res.json(readDerived<DealScopeReport>(DEAL_SCOPE_PATH, EMPTY_DEAL_SCOPE_ENVELOPE))
 }

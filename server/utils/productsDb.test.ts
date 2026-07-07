@@ -8,7 +8,9 @@ import {
   countObservations,
 } from './productsDb.js'
 import { buildMatchReport } from './crossStoreValue.js'
+import { buildDealScopeLinks } from './dealScope.js'
 import type { ProductRecord, ProductsFile, ProductObservation } from '../types/index.js'
+import type { Dispensary } from '../../client/src/types/index.js'
 
 // ADR-077 Phase 1 substrate tests. The load-bearing claim is that the DB round-trip is
 // byte-faithful to the derivation functions' INPUT, so buildMatchReport produces an
@@ -141,6 +143,44 @@ describe('productsDb — import + reconstruction fidelity (ADR-077 AC1/AC2/AC3)'
     expect(storeB.thc).toEqual({ unit: '%', low: 20, high: 24 })
     expect(storeB.effects).toEqual({ relaxed: 3, happy: 2 })
   })
+
+  // AC8: "deal-scope buckets still sum to total deals" is only a real regression gate if this
+  // is asserted as a test, not just checked by hand during dev (the gap the Acceptance Auditor
+  // caught in code review — the MatchReport parity above was covered, this wasn't).
+  it('reconstructs a ProductsFile that produces a byte-identical DealScopeReport (parity seam)', () => {
+    const file = fixture()
+    const db = openProductsDb(':memory:')
+    importProductsFile(db, file)
+
+    const dispensaries: Dispensary[] = [
+      {
+        id: 'store-a',
+        name: 'Store A',
+        url: 'https://store-a.example.com',
+        stale: false,
+        lastFetchedAt: '2026-07-02T00:00:00.000Z',
+        deals: [
+          {
+            type: 'daily',
+            description: '20% off everything',
+            discountPct: 20,
+            startTime: null,
+            endTime: null,
+            daysValid: ['everyday'],
+          },
+        ],
+      },
+    ]
+
+    const fromJson = buildDealScopeLinks({ dispensaries }, file)
+    const fromDb = buildDealScopeLinks({ dispensaries }, readProductsFile(db))
+
+    expect(fromDb).toEqual(fromJson)
+    // the fixture must actually exercise a link, else the parity claim is vacuous
+    expect(fromJson.totalDeals).toBe(1)
+    expect(fromJson.storewideCount).toBe(1)
+    expect(fromJson.links.length).toBeGreaterThanOrEqual(1)
+  })
 })
 
 describe('productsDb — append-only feed path (ADR-077 AC7)', () => {
@@ -178,6 +218,43 @@ describe('productsDb — append-only feed path (ADR-077 AC7)', () => {
     const again = appendObservations(db, incoming, '2026-07-05T00:00:00.000Z')
     expect(again.observationsAppended).toBe(0)
     expect(countObservations(db)).toBe(mid)
+  })
+
+  it('a duplicate-day retry with degraded metadata does not clobber previously-good identity', () => {
+    const db = openProductsDb(':memory:')
+    importProductsFile(db, fixture())
+
+    // First (successful) run for a new day: good metadata.
+    const good: ProductRecord[] = [
+      rec({
+        productId: 'bd',
+        dispensaryId: 'store-a',
+        name: 'Blue Dream',
+        brand: 'Acme',
+        history: [obs('2026-07-06T00:00:00.000Z', '3.5g', 39)],
+      }),
+    ]
+    const first = appendObservations(db, good, '2026-07-06T00:00:00.000Z')
+    expect(first.observationsAppended).toBe(1)
+
+    // A retry of the SAME (product, day) — e.g. a re-invoked run after a crash — carrying
+    // degraded metadata from a partial page load. The observation insert is a no-op
+    // (already recorded), so the degraded name/brand must NOT overwrite the good ones.
+    const degraded: ProductRecord[] = [
+      rec({
+        productId: 'bd',
+        dispensaryId: 'store-a',
+        name: 'UNKNOWN',
+        brand: undefined,
+        history: [obs('2026-07-06T00:00:00.000Z', '3.5g', 39)],
+      }),
+    ]
+    const retry = appendObservations(db, degraded, '2026-07-06T00:00:00.000Z')
+    expect(retry.observationsAppended).toBe(0)
+
+    const p = readProductsFile(db).products['store-a::bd']
+    expect(p.name).toBe('Blue Dream')
+    expect(p.brand).toBe('Acme')
   })
 
   it('adds a wholly new product on append', () => {

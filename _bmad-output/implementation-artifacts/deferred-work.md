@@ -1,5 +1,16 @@
 # Deferred Work
 
+## Deferred from: code review of products-storage-sqlite-phase-1 (2026-07-07)
+
+Surfaced by the 3-layer adversarial review (Blind Hunter + Edge Case Hunter + Acceptance Auditor) of ADR-077 Phase 1. All pre-existing patterns or explicitly out-of-scope tradeoffs, not new regressions blocking this story:
+
+- **`DEFAULT_PRODUCTS_DB_PATH` code-level fallback lives inside the git worktree** (`server/utils/productsDb.ts`), contradicting the "always OUTSIDE the worktree" invariant the docs state. All three shipped `.ps1` runners always pass `PRODUCTS_DB_PATH` explicitly, so this default is never hit through the real operational path — only bites a CLI invoked directly without the env var.
+- **Whole-table `SELECT *` on every derive run** (`readProductsFile`, `server/utils/productsDb.ts:298-330`) reproduces unbounded memory growth on the home machine instead of eliminating the OOM risk — just moved it off Render. Story's own Dev Notes explicitly scope time-range-query indices/hardening to Phase 2 ("B1 indices... post-deadline hardening").
+- **No alerting on the three local runners' heartbeat files** — nothing detects a silently-stopped Windows Scheduled Task. Already tracked as its own backlog story, `derivation-1-8-derivation-run-freshness-health-alerting`.
+- **Push-retry logic can't distinguish a real git conflict from a persistent auth/network failure** (`scripts/derive-facts-local.ps1`, `scripts/scrape-dutchie-local.ps1`) — silently retries forever, framed as benign "no data lost." Same pattern already shipped and accepted in `scrape-weedmaps-local.ps1`, not introduced by this story.
+- **Lock-acquisition TOCTOU race** (Test-Path + Set-Content isn't atomic) and **Windows PID-reuse false-positive** on stale-lock detection, across all three `*-local.ps1` scripts. Inherited from the already-shipped `scrape-weedmaps-local.ps1` pattern; low real-world probability given staggered cron scheduling.
+- **`PRODUCT_KEY`'s `::` separator has no collision guard** (`server/utils/productsDb.ts:37`) against a dispensaryId/productId that happens to contain the literal substring. Theoretical: dispensaryId is internally controlled, productId is empirically alphanumeric/UUID-like in both Dutchie and Weedmaps.
+
 ## DEFERRED — Banner-linking Edible/Concentrate + concentrate banner cues (from review of spec-category-expansion, 2026-07-04)
 
 Collection fix #2 shipped Edible/Concentrate COLLECTION; the deal-scope bridge deliberately does NOT link them (`BANNER_LINKABLE_CATEGORIES` in `dealScope.ts` pins the pre-expansion output). Deferred decisions, surfaced by the 3-reviewer pass:
