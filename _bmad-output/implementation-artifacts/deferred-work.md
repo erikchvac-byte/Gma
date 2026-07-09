@@ -1,5 +1,13 @@
 # Deferred Work
 
+## Deferred from: code review of derivation-1-2-5-source-extraction-health-fact (2026-07-09)
+
+Surfaced by the 3-layer adversarial review (Blind Hunter + Edge Case Hunter + Acceptance Auditor) of the extraction-health derived fact. All real design-reach limitations, not coding mistakes; revisit only if observed live:
+
+- **`today` anchored to wall-clock, not data freshness** (`server/scripts/deriveFactsRun.ts`) — computes `today` from `new Date()` at run time. If derivation runs before that day's scrape completes, every store with a valid baseline shows `todayCount: null` → indistinguishable false-positive `suspected-extraction-failure`. Already manifested on the live-data proof run (14/16 flagged stores had `todayCount: null`, correctly attributed there to a real ~2-day Dutchie outage, but the raw signal can't itself tell "hasn't scraped yet today" from "broke"). Deferred — reason: runner sequencing is an ops concern (fix belongs at the derive-after-scrape orchestration layer), not this story's job.
+- **No guard against the roster unexpectedly resolving empty** (`server/scripts/deriveFactsRun.ts`, `productScraperRoster()`) — e.g. a broken scraper-registry import silently drops the roster to zero/near-zero. The spec's AC8 explicitly declined a zero-collapse guard here, but that reasoning only covers the misconfigured/empty-DB case (via the pre-existing `report.totalRecords === 0` guard), not an empty-roster-from-a-broken-import failure mode. Low probability.
+- **Stores dark longer than the 14-day trailing window degrade to `insufficient-history` instead of `suspected-extraction-failure`** (`server/utils/extractionHealth.ts`) — a store with strong history that went completely silent for more than `TRAILING_WINDOW_DAYS` reads identically to a store that's simply new, under-reporting long-running outages. Real limitation of the chosen window size, not a bug; worth a future story if it's observed live.
+
 ## Deferred from: code review of products-storage-sqlite-phase-1 (2026-07-07)
 
 Surfaced by the 3-layer adversarial review (Blind Hunter + Edge Case Hunter + Acceptance Auditor) of ADR-077 Phase 1. All pre-existing patterns or explicitly out-of-scope tradeoffs, not new regressions blocking this story:

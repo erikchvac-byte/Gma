@@ -81,6 +81,19 @@ describe('deriveFacts (ADR-077 Phase 1 regression guard)', () => {
     expect(Array.isArray(dealScopeWritten.excluded)).toBe(true)
     expect(typeof dealScopeWritten.coverage).toBe('object')
     expect(typeof dealScopeWritten.generatedAt).toBe('string')
+
+    const extractionHealthWritten = JSON.parse(readFileSync(outcome.extractionHealthPath, 'utf-8'))
+    expect(Array.isArray(extractionHealthWritten.data.entries)).toBe(true)
+    expect(typeof extractionHealthWritten.data.totalStores).toBe('number')
+    expect(Array.isArray(extractionHealthWritten.excluded)).toBe(true)
+    expect(typeof extractionHealthWritten.coverage).toBe('object')
+    expect(typeof extractionHealthWritten.generatedAt).toBe('string')
+    // store-a/store-b (this fixture's dispensaryIds) aren't in the real product-scraper
+    // roster, so every entry in the real roster is a zero-history store here — proving a
+    // roster store absent from productsFile.products degrades to insufficient-history, not a
+    // throw (derivation-1.2.5 AC1/AC5).
+    expect(extractionHealthWritten.data.entries.length).toBeGreaterThan(0)
+    expect(extractionHealthWritten.data.entries.every((e: { status: string }) => e.status === 'insufficient-history')).toBe(true)
   })
 
   it('refuses to overwrite a previously-populated disparities.json with a zero-record result', () => {
@@ -105,5 +118,48 @@ describe('deriveFacts (ADR-077 Phase 1 regression guard)', () => {
     openProductsDb(dbPath).close()
     const outcome = deriveFacts({ dbPath, dataPath, derivedDir })
     expect(outcome.totalRecords).toBe(0)
+  })
+
+  it('extraction-health reaches ok/suspected-extraction-failure through the real wiring (derivation-1.2.5)', () => {
+    // 'kush21-everett-evergreen' is a real id in the product-scraper roster (dutchie-stores.ts) —
+    // using it here (rather than a fixture-only id) proves the runner's roster + `today`
+    // computation reach a real non-insufficient-history verdict, not just the pure function in
+    // isolation (extractionHealth.test.ts already covers that).
+    const today = new Date().toISOString().slice(0, 10)
+    const dayMs = 24 * 60 * 60 * 1000
+    const dayStr = (offsetDays: number) => new Date(Date.now() + offsetDays * dayMs).toISOString().slice(0, 10)
+
+    const products: Record<string, ProductRecord> = {}
+    // 14 trailing days at 20 distinct products/day (baseline).
+    for (let p = 0; p < 20; p++) {
+      const history = []
+      for (let i = 14; i >= 1; i--) {
+        history.push({ observedAt: `${dayStr(-i)}T12:00:00.000Z`, special: false, options: [] })
+      }
+      products[`kush21-everett-evergreen::p${p}`] = rec({
+        productId: `p${p}`,
+        dispensaryId: 'kush21-everett-evergreen',
+        history,
+      })
+    }
+    // Today: only 5 of those 20 products observed (75% drop — well past the 50% threshold).
+    for (let p = 0; p < 5; p++) {
+      products[`kush21-everett-evergreen::p${p}`].history.push({
+        observedAt: `${today}T12:00:00.000Z`,
+        special: false,
+        options: [],
+      })
+    }
+
+    const db = openProductsDb(dbPath)
+    importProductsFile(db, { lastUpdated: today, products })
+    db.close()
+
+    const outcome = deriveFacts({ dbPath, dataPath, derivedDir })
+    expect(outcome.suspectedCount).toBeGreaterThanOrEqual(1)
+
+    const written = JSON.parse(readFileSync(outcome.extractionHealthPath, 'utf-8'))
+    const entry = written.data.entries.find((e: { dispensaryId: string }) => e.dispensaryId === 'kush21-everett-evergreen')
+    expect(entry).toMatchObject({ status: 'suspected-extraction-failure', todayCount: 5, trailingMedian: 20 })
   })
 })
