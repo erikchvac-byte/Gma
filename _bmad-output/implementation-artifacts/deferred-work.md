@@ -1,5 +1,11 @@
 # Deferred Work
 
+## Deferred from: code review of derivation-1-5-brand-discount-personas (2026-07-10)
+
+Surfaced by the 3-layer adversarial review (Blind Hunter + Edge Case Hunter + Acceptance Auditor) of the brand-discount-personas fact:
+
+- **Distinct-calendar-day floor for persona classification** (`server/utils/brandPersonas.ts`, `MIN_OBSERVED_PRODUCT_DAYS`) — the classification floor counts OBSERVED PRODUCT-DAYS (product × calendar-day), not distinct calendar days. A brand carried at ≥10 stores on a single day therefore clears the floor and earns a confident persona ("always-on-special" / "never-discounted") from one day of history. The special-frequency metric is defensible as a prevalence-across-footprint measure (and the design was deliberate + Erik-approved), so this is a semantic refinement, not a bug: the label "always" implies temporal stability a single day can't establish. A distinct-calendar-day gate (e.g. require observations on ≥N calendar days) would change the validated 118/39/134/214 live split and is best decided alongside Erik's open threshold question (story §Questions for Erik #2) or in Epic 2. Revisit if a single-day-confident persona is observed misleading a downstream surface.
+
 ## Deferred from: code review of derivation-1-3-special-start-end-event-detection (2026-07-09)
 
 Surfaced by the 3-layer adversarial review (Blind Hunter + Edge Case Hunter + Acceptance Auditor) of the special-start/end event fact:
