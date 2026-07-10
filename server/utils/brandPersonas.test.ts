@@ -29,6 +29,10 @@ function run(
   return { productId, brand, history }
 }
 
+// A fixed "today" safely after every fixture date (max fixture span is 19 days from 2026-07-01),
+// so the endDate bound never trims a fixture's observed days.
+const TODAY = '2026-08-01'
+
 describe('buildBrandPersonas — decision F type gate (Gate 2 + Gate 5)', () => {
   it('does not expose option prices or potency on the persona input types (the breach does not compile)', () => {
     const signal: BrandDaySignal = { observedAt: '2026-07-01T00:00:00.000Z', special: true }
@@ -47,7 +51,7 @@ describe('buildBrandPersonas — decision F type gate (Gate 2 + Gate 5)', () => 
 
 describe('buildBrandPersonas — classification', () => {
   it('classifies always-on-special when the brand is on special on (nearly) every observed day', () => {
-    const report = buildBrandPersonas([run('a', 'Green Haven', 12, true)])
+    const report = buildBrandPersonas([run('a', 'Green Haven', 12, true)], TODAY)
     const p = report.personas.find((x) => x.brandKey === 'green haven')!
     expect(p.persona).toBe('always-on-special')
     expect(p.specialDayFraction).toBe(1)
@@ -57,7 +61,7 @@ describe('buildBrandPersonas — classification', () => {
   })
 
   it('classifies never-discounted when the brand is never on special', () => {
-    const report = buildBrandPersonas([run('a', 'Zodiac', 12, false)])
+    const report = buildBrandPersonas([run('a', 'Zodiac', 12, false)], TODAY)
     const p = report.personas.find((x) => x.brandKey === 'zodiac')!
     expect(p.persona).toBe('never-discounted')
     expect(p.specialDayFraction).toBe(0)
@@ -69,7 +73,7 @@ describe('buildBrandPersonas — classification', () => {
     const report = buildBrandPersonas([
       run('a', 'Full Spec', 6, true),
       run('b', 'Full Spec', 6, false),
-    ])
+    ], TODAY)
     const p = report.personas.find((x) => x.brandKey === 'full spec')!
     expect(p.persona).toBe('intermittently-discounted')
     expect(p.specialDayFraction).toBe(0.5)
@@ -82,9 +86,9 @@ describe('buildBrandPersonas — classification', () => {
     expect(SPECIAL_FRACTION_HIGH).toBe(0.95)
     expect(SPECIAL_FRACTION_LOW).toBe(0.05)
     // 19/20 = 0.95 → always (>= HIGH); 1/20 = 0.05 → never (<= LOW)
-    const high = buildBrandPersonas([run('a', 'Hi', 19, true), run('b', 'Hi', 1, false)])
+    const high = buildBrandPersonas([run('a', 'Hi', 19, true), run('b', 'Hi', 1, false)], TODAY)
     expect(high.personas.find((x) => x.brandKey === 'hi')!.persona).toBe('always-on-special')
-    const low = buildBrandPersonas([run('a', 'Lo', 1, true), run('b', 'Lo', 19, false)])
+    const low = buildBrandPersonas([run('a', 'Lo', 1, true), run('b', 'Lo', 19, false)], TODAY)
     expect(low.personas.find((x) => x.brandKey === 'lo')!.persona).toBe('never-discounted')
   })
 })
@@ -97,7 +101,7 @@ describe('buildBrandPersonas — gap tolerance (Gate 3)', () => {
       brand: 'GapBrand',
       history: [day('2026-07-01', true), day('2026-07-03', true)],
     }
-    const report = buildBrandPersonas([series])
+    const report = buildBrandPersonas([series], TODAY)
     const p = report.personas.find((x) => x.brandKey === 'gapbrand')!
     expect(p.observedProductDays).toBe(2) // the gap day is NOT counted
     expect(p.specialProductDays).toBe(2)
@@ -109,7 +113,7 @@ describe('buildBrandPersonas — brand normalization + null handling', () => {
     const report = buildBrandPersonas([
       run('a', 'Lavish', 6, true),
       run('b', 'LAVISH', 6, true),
-    ])
+    ], TODAY)
     const lavish = report.personas.filter((x) => x.brandKey === 'lavish')
     expect(lavish).toHaveLength(1)
     expect(lavish[0].productCount).toBe(2)
@@ -123,7 +127,7 @@ describe('buildBrandPersonas — brand normalization + null handling', () => {
       run('a', 'Green Haven', 12, true),
       run('b', null, 12, true),
       run('c', '   ', 12, true),
-    ])
+    ], TODAY)
     expect(report.nullBrandProductCount).toBe(2)
     expect(report.totalBrands).toBe(1)
     expect(report.personas.every((x) => x.brandKey !== '')).toBe(true)
@@ -133,7 +137,7 @@ describe('buildBrandPersonas — brand normalization + null handling', () => {
 describe('buildBrandPersonas — insufficient history + empty input', () => {
   it('marks a brand below the min-observed-days floor as insufficient-history with null fraction', () => {
     expect(MIN_OBSERVED_PRODUCT_DAYS).toBe(10)
-    const report = buildBrandPersonas([run('a', 'Tiny', 3, true)])
+    const report = buildBrandPersonas([run('a', 'Tiny', 3, true)], TODAY)
     const p = report.personas.find((x) => x.brandKey === 'tiny')!
     expect(p.persona).toBe('insufficient-history')
     expect(p.specialDayFraction).toBeNull()
@@ -142,7 +146,7 @@ describe('buildBrandPersonas — insufficient history + empty input', () => {
   })
 
   it('returns a zeroed report for empty input', () => {
-    const report = buildBrandPersonas([])
+    const report = buildBrandPersonas([], TODAY)
     expect(report.personas).toEqual([])
     expect(report.totalBrands).toBe(0)
     expect(report.alwaysOnSpecialCount).toBe(0)

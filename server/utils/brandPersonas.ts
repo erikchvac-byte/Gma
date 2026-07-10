@@ -31,9 +31,12 @@ export interface BrandProductSeries {
 }
 
 // Sample-size floor: a brand needs at least this many OBSERVED product-days (summed across its
-// products) before it is classified — below it, 'insufficient-history' rather than a guess. 10 is
-// reachable by every meaningfully-present brand in the live ~12-day window (Grounding §5) while
-// excluding same-day-onboarded noise.
+// products — a product-day is one product observed on one calendar day) before it is classified;
+// below it, 'insufficient-history' rather than a guess. 10 is reachable by every meaningfully-
+// present brand in the live ~12-day window (Grounding §5). NOTE: this counts product-days, not
+// distinct calendar days — a brand carried at ≥10 stores on a single day also clears the floor, so
+// the persona reflects prevalence-across-footprint, not guaranteed longitudinal depth. A distinct-
+// calendar-day floor is a deferred refinement (see the story's Review Findings).
 export const MIN_OBSERVED_PRODUCT_DAYS = 10
 // A brand on special on ≥95% of observed product-days reads as always-on-special; ≤5% as
 // never-discounted; the band between is intermittently-discounted. Cutoffs chosen from the live
@@ -75,15 +78,18 @@ interface BrandAcc {
 }
 
 // Walk one product's special series, gap-tolerant. Returns observed-day and special-day counts;
-// a missing interior day is a 'gap' counted as neither (Gate 3). Wrapped defensively: a product
-// whose history can't be walked (e.g. a malformed observedAt yielding an inverted range) is
-// treated as fully-gapped rather than aborting the whole derive run (mirrors specialEvents.ts).
-function countSpecialDays(history: BrandDaySignal[]): { observed: number; special: number } {
+// a missing interior day is a 'gap' counted as neither (Gate 3). Bounded with `endDate: today`
+// exactly like specialEvents.ts, so a future-dated / clock-skewed observation is not counted as a
+// real special-day and the walked span can never run past today. Wrapped defensively: a product
+// whose history can't be walked (e.g. a malformed observedAt, or an all-future history whose
+// earliest day lands after today) is treated as fully-gapped rather than aborting the derive run.
+function countSpecialDays(history: BrandDaySignal[], today: string): { observed: number; special: number } {
   let walk
   try {
     walk = walkPresenceAwareSeries(history, {
       getObservedAt: (o: BrandDaySignal) => o.observedAt,
       getValue: (dayItems: BrandDaySignal[]) => dayItems.at(-1)!.special,
+      endDate: today,
     })
   } catch {
     return { observed: 0, special: 0 }
@@ -100,6 +106,9 @@ function countSpecialDays(history: BrandDaySignal[]): { observed: number; specia
 
 // The raw brand spelling carried by the most products (tie → lexicographically smallest, for a
 // deterministic pick) — a genuine label a human recognizes, distinct from the normalized key.
+// Trimmed so a raw variant with surrounding whitespace (e.g. the live "Hustler's Ambition ")
+// doesn't surface a ragged label; the raw always has ≥1 alphanumeric here (its brandKey is
+// non-null), so the trimmed result is never empty.
 function pickDisplayBrand(rawLabelCounts: Map<string, number>): string {
   let best = ''
   let bestCount = -1
@@ -109,10 +118,10 @@ function pickDisplayBrand(rawLabelCounts: Map<string, number>): string {
       bestCount = count
     }
   }
-  return best
+  return best.trim()
 }
 
-export function buildBrandPersonas(products: BrandProductSeries[]): BrandPersonasReport {
+export function buildBrandPersonas(products: BrandProductSeries[], today: string): BrandPersonasReport {
   const byBrand = new Map<string, BrandAcc>()
   let nullBrandProductCount = 0
 
@@ -127,7 +136,7 @@ export function buildBrandPersonas(products: BrandProductSeries[]): BrandPersona
       acc = { productCount: 0, observedProductDays: 0, specialProductDays: 0, rawLabelCounts: new Map() }
       byBrand.set(brandKey, acc)
     }
-    const { observed, special } = countSpecialDays(product.history)
+    const { observed, special } = countSpecialDays(product.history, today)
     acc.productCount++
     acc.observedProductDays += observed
     acc.specialProductDays += special

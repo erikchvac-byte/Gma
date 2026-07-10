@@ -225,7 +225,7 @@ export function deriveFacts(opts: DeriveOptions = {}): DeriveOutcome {
     brand: r.brand,
     history: r.history.map((o) => ({ observedAt: o.observedAt, special: o.special })),
   }))
-  const brandPersonas = buildBrandPersonas(brandSeries)
+  const brandPersonas = buildBrandPersonas(brandSeries, today)
 
   const brandPersonasEnvelope = wrapEnvelope(
     brandPersonas,
