@@ -11,6 +11,8 @@ import { buildSpecialEventsReport } from '../utils/specialEvents.js'
 import { buildDisparityRollups, buildStoreGeoLookup } from '../utils/disparityRollups.js'
 import { buildBrandPersonas, type BrandProductSeries } from '../utils/brandPersonas.js'
 import { buildBrandStoreMatrix, type BrandStoreProduct, type BrandStoreOption } from '../utils/brandStoreMatrix.js'
+import { buildNewArrivalDormancyReport } from '../utils/newArrivalDormancy.js'
+import type { StoreHealthStatus } from '../utils/extractionHealth.js'
 import { canonicalWeightGrams, deriveMatchKey } from '../utils/productMatchKey.js'
 import { wrapEnvelope } from '../utils/derivedEnvelope.js'
 import { dutchieProductScrapers } from '../scrapers/dutchie-stores.js'
@@ -64,6 +66,7 @@ export interface DeriveOutcome {
   disparityRollupsPath: string
   brandPersonasPath: string
   brandStoreMatrixPath: string
+  newArrivalDormancyPath: string
   suspectedCount: number
   insufficientHistoryCount: number
   startCount: number
@@ -80,6 +83,8 @@ export interface DeriveOutcome {
   cheapestCellCount: number
   matrixNullBrandProductCount: number
   unmatchedProductCount: number
+  newArrivalCount: number
+  dormantCount: number
 }
 
 // The product-scraper roster (AC1) — every store actively attempted, not just ids that happen
@@ -122,6 +127,7 @@ export function deriveFacts(opts: DeriveOptions = {}): DeriveOutcome {
   const disparityRollupsPath = path.join(derivedDir, 'disparity-rollups.json')
   const brandPersonasPath = path.join(derivedDir, 'brand-personas.json')
   const brandStoreMatrixPath = path.join(derivedDir, 'brand-store-matrix.json')
+  const newArrivalDormancyPath = path.join(derivedDir, 'new-arrival-dormancy.json')
 
   const productsFile = readProductsFromDbPath(dbPath)
   const report = buildMatchReport(productsFile)
@@ -309,6 +315,34 @@ export function deriveFacts(opts: DeriveOptions = {}): DeriveOutcome {
 
   atomicWriteJson(brandStoreMatrixPath, brandStoreMatrixEnvelope)
 
+  // derivation-1.7: new-arrival & dormancy feed (D3/FR10, Gate 4) — the LAST and most dangerous
+  // Tier-1 fact. First real consumer of 1.2.5's extraction-health: build the store-status map from
+  // the ALREADY-computed `extractionHealth.entries` (in-process — no re-read, no recompute) and pass
+  // it into the pure function, which emits dormancy ONLY for `ok` stores (the outage gate) and never
+  // from a single absent run. Presence-only output (no price/potency). Written last, after every
+  // pre-existing write, preserving the ordering discipline from 1.2.5's review (a new fallible step
+  // ahead of existing writes could silently drop them on a throw).
+  const storeStatus = new Map<string, StoreHealthStatus>(
+    extractionHealth.entries.map((e) => [e.dispensaryId, e.status]),
+  )
+  const newArrivalDormancy = buildNewArrivalDormancyReport(productsFile, storeStatus, today)
+
+  const newArrivalDormancyEnvelope = wrapEnvelope(
+    newArrivalDormancy,
+    [
+      { reason: 'suppressedUnhealthyStore', count: newArrivalDormancy.suppressedUnhealthyStoreCount },
+      { reason: 'belowThreshold', count: newArrivalDormancy.belowThresholdCount },
+      { reason: 'onboardingStore', count: newArrivalDormancy.onboardingStoreArrivalCount },
+    ],
+    {
+      totalProducts: newArrivalDormancy.totalProducts,
+      newArrivalCount: newArrivalDormancy.newArrivalCount,
+      dormantCount: newArrivalDormancy.dormantCount,
+    },
+  )
+
+  atomicWriteJson(newArrivalDormancyPath, newArrivalDormancyEnvelope)
+
   return {
     disparities: report.disparities.length,
     totalRecords: report.totalRecords,
@@ -321,6 +355,7 @@ export function deriveFacts(opts: DeriveOptions = {}): DeriveOutcome {
     disparityRollupsPath,
     brandPersonasPath,
     brandStoreMatrixPath,
+    newArrivalDormancyPath,
     suspectedCount: extractionHealth.suspectedCount,
     insufficientHistoryCount: extractionHealth.insufficientHistoryCount,
     startCount: specialEvents.startCount,
@@ -337,6 +372,8 @@ export function deriveFacts(opts: DeriveOptions = {}): DeriveOutcome {
     cheapestCellCount: brandStoreMatrix.cheapestCellCount,
     matrixNullBrandProductCount: brandStoreMatrix.nullBrandProductCount,
     unmatchedProductCount: brandStoreMatrix.unmatchedProductCount,
+    newArrivalCount: newArrivalDormancy.newArrivalCount,
+    dormantCount: newArrivalDormancy.dormantCount,
   }
 }
 
@@ -356,6 +393,9 @@ function main(): void {
   )
   console.log(
     `[derive] brand-store-matrix: ${r.matrixTotalBrands} brands / ${r.multiStoreBrandCount} multi-store / ${r.cheapestCellCount} cheapest cells (${r.matrixNullBrandProductCount} null-brand, ${r.unmatchedProductCount} unmatched excluded) → ${r.brandStoreMatrixPath}`,
+  )
+  console.log(
+    `[derive] new-arrival-dormancy: ${r.newArrivalCount} new arrivals / ${r.dormantCount} dormant → ${r.newArrivalDormancyPath}`,
   )
   console.log('[derive] ✓ derived facts written')
 }
