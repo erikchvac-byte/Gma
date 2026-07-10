@@ -1,5 +1,11 @@
 # Deferred Work
 
+## Deferred from: code review of derivation-1-3-special-start-end-event-detection (2026-07-09)
+
+Surfaced by the 3-layer adversarial review (Blind Hunter + Edge Case Hunter + Acceptance Auditor) of the special-start/end event fact:
+
+- **"Latest observation of the day wins" assumes `ProductRecord.history` is stored in true chronological order** (`server/utils/specialEvents.ts:45`, `dayItems.at(-1)!.special`). Nothing enforces or re-verifies that observations arrive pre-sorted by timestamp; an out-of-order retry-scraped observation would silently pick the wrong day-value. Pre-existing convention already relied upon by 1.2 (`walkPresenceAwareSeries`) and 1.2.5 (`extractionHealth.ts`) — this story only reuses it, doesn't introduce it. Revisit only if a real out-of-order-write incident is observed.
+
 ## Deferred from: code review of derivation-1-2-5-source-extraction-health-fact (2026-07-09)
 
 Surfaced by the 3-layer adversarial review (Blind Hunter + Edge Case Hunter + Acceptance Auditor) of the extraction-health derived fact. All real design-reach limitations, not coding mistakes; revisit only if observed live:

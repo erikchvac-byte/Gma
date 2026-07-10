@@ -6,6 +6,7 @@ import { readProductsFromDbPath, DEFAULT_PRODUCTS_DB_PATH } from '../utils/produ
 import { buildMatchReport } from '../utils/crossStoreValue.js'
 import { buildDealScopeLinks } from '../utils/dealScope.js'
 import { buildExtractionHealthReport } from '../utils/extractionHealth.js'
+import { buildSpecialEventsReport } from '../utils/specialEvents.js'
 import { wrapEnvelope } from '../utils/derivedEnvelope.js'
 import { dutchieProductScrapers } from '../scrapers/dutchie-stores.js'
 import { weedmapsProductScrapers } from '../scrapers/weedmaps-stores.js'
@@ -54,8 +55,11 @@ export interface DeriveOutcome {
   disparitiesPath: string
   dealScopePath: string
   extractionHealthPath: string
+  specialEventsPath: string
   suspectedCount: number
   insufficientHistoryCount: number
+  startCount: number
+  endCount: number
 }
 
 // The product-scraper roster (AC1) — every store actively attempted, not just ids that happen
@@ -94,6 +98,7 @@ export function deriveFacts(opts: DeriveOptions = {}): DeriveOutcome {
   const disparitiesPath = path.join(derivedDir, 'disparities.json')
   const dealScopePath = path.join(derivedDir, 'deal-scope.json')
   const extractionHealthPath = path.join(derivedDir, 'extraction-health.json')
+  const specialEventsPath = path.join(derivedDir, 'special-events.json')
 
   const productsFile = readProductsFromDbPath(dbPath)
   const report = buildMatchReport(productsFile)
@@ -158,6 +163,26 @@ export function deriveFacts(opts: DeriveOptions = {}): DeriveOutcome {
 
   atomicWriteJson(extractionHealthPath, extractionHealthEnvelope)
 
+  const specialEvents = buildSpecialEventsReport(productsFile, today)
+
+  const specialEventsEnvelope = wrapEnvelope(
+    specialEvents,
+    [
+      { reason: 'noObservationToday', count: specialEvents.gapCount },
+      { reason: 'firstObservation', count: specialEvents.firstObservationCount },
+    ],
+    {
+      totalProducts: specialEvents.totalProducts,
+      startCount: specialEvents.startCount,
+      endCount: specialEvents.endCount,
+      unchangedCount: specialEvents.unchangedCount,
+      gapCount: specialEvents.gapCount,
+      firstObservationCount: specialEvents.firstObservationCount,
+    },
+  )
+
+  atomicWriteJson(specialEventsPath, specialEventsEnvelope)
+
   return {
     disparities: report.disparities.length,
     totalRecords: report.totalRecords,
@@ -166,8 +191,11 @@ export function deriveFacts(opts: DeriveOptions = {}): DeriveOutcome {
     disparitiesPath,
     dealScopePath,
     extractionHealthPath,
+    specialEventsPath,
     suspectedCount: extractionHealth.suspectedCount,
     insufficientHistoryCount: extractionHealth.insufficientHistoryCount,
+    startCount: specialEvents.startCount,
+    endCount: specialEvents.endCount,
   }
 }
 
@@ -178,6 +206,7 @@ function main(): void {
   console.log(
     `[derive] extraction-health: ${r.suspectedCount} suspected, ${r.insufficientHistoryCount} insufficient-history → ${r.extractionHealthPath}`,
   )
+  console.log(`[derive] special-events: ${r.startCount} started, ${r.endCount} ended → ${r.specialEventsPath}`)
   console.log('[derive] ✓ derived facts written')
 }
 

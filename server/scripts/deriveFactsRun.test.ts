@@ -94,6 +94,18 @@ describe('deriveFacts (ADR-077 Phase 1 regression guard)', () => {
     // throw (derivation-1.2.5 AC1/AC5).
     expect(extractionHealthWritten.data.entries.length).toBeGreaterThan(0)
     expect(extractionHealthWritten.data.entries.every((e: { status: string }) => e.status === 'insufficient-history')).toBe(true)
+
+    const specialEventsWritten = JSON.parse(readFileSync(outcome.specialEventsPath, 'utf-8'))
+    expect(Array.isArray(specialEventsWritten.data.events)).toBe(true)
+    expect(typeof specialEventsWritten.data.totalProducts).toBe('number')
+    expect(Array.isArray(specialEventsWritten.excluded)).toBe(true)
+    expect(typeof specialEventsWritten.coverage).toBe('object')
+    expect(typeof specialEventsWritten.generatedAt).toBe('string')
+    // populatedFile()'s two records each have a single observation dated 2026-07-01 (special:
+    // false), well before the real wall-clock `today` this test runs with — every entry is a
+    // 'gap' today, proving the wiring reaches the pure function without throwing (derivation-1.3).
+    expect(specialEventsWritten.data.gapCount).toBe(2)
+    expect(specialEventsWritten.data.events).toHaveLength(0)
   })
 
   it('refuses to overwrite a previously-populated disparities.json with a zero-record result', () => {
@@ -161,5 +173,47 @@ describe('deriveFacts (ADR-077 Phase 1 regression guard)', () => {
     const written = JSON.parse(readFileSync(outcome.extractionHealthPath, 'utf-8'))
     const entry = written.data.entries.find((e: { dispensaryId: string }) => e.dispensaryId === 'kush21-everett-evergreen')
     expect(entry).toMatchObject({ status: 'suspected-extraction-failure', todayCount: 5, trailingMedian: 20 })
+  })
+
+  it('special-events reaches a real start/end transition through the real wiring (derivation-1.3)', () => {
+    const today = new Date().toISOString().slice(0, 10)
+    const dayMs = 24 * 60 * 60 * 1000
+    const dayStr = (offsetDays: number) => new Date(Date.now() + offsetDays * dayMs).toISOString().slice(0, 10)
+
+    const products: Record<string, ProductRecord> = {
+      'store-a::starts-today': rec({
+        productId: 'starts-today',
+        dispensaryId: 'store-a',
+        history: [
+          { observedAt: `${dayStr(-1)}T12:00:00.000Z`, special: false, options: [] },
+          { observedAt: `${today}T12:00:00.000Z`, special: true, options: [] },
+        ],
+      }),
+      'store-a::ends-today': rec({
+        productId: 'ends-today',
+        dispensaryId: 'store-a',
+        history: [
+          { observedAt: `${dayStr(-1)}T12:00:00.000Z`, special: true, options: [] },
+          { observedAt: `${today}T12:00:00.000Z`, special: false, options: [] },
+        ],
+      }),
+    }
+
+    const db = openProductsDb(dbPath)
+    importProductsFile(db, { lastUpdated: today, products })
+    db.close()
+
+    const outcome = deriveFacts({ dbPath, dataPath, derivedDir })
+    expect(outcome.startCount).toBe(1)
+    expect(outcome.endCount).toBe(1)
+
+    const written = JSON.parse(readFileSync(outcome.specialEventsPath, 'utf-8'))
+    expect(written.data.events).toHaveLength(2)
+    expect(written.data.events).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ productId: 'starts-today', type: 'special-start', date: today }),
+        expect.objectContaining({ productId: 'ends-today', type: 'special-end', date: today }),
+      ]),
+    )
   })
 })
