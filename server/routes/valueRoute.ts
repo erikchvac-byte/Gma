@@ -4,6 +4,7 @@ import path from 'node:path'
 import type { Request, Response } from 'express'
 import type { MatchReport } from '../utils/crossStoreValue.js'
 import type { DealScopeReport } from '../types/index.js'
+import type { DisparityRollupsReport } from '../utils/disparityRollups.js'
 import { isEnvelope, type DerivedEnvelope } from '../utils/derivedEnvelope.js'
 
 // ADR-077 Phase 1 — these two private/internal routes NO LONGER compute anything at request
@@ -20,6 +21,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const DERIVED_DIR = path.join(__dirname, '../data/derived')
 const DISPARITIES_PATH = path.join(DERIVED_DIR, 'disparities.json')
 const DEAL_SCOPE_PATH = path.join(DERIVED_DIR, 'deal-scope.json')
+const DISPARITY_ROLLUPS_PATH = path.join(DERIVED_DIR, 'disparity-rollups.json')
 
 // derivation-1.1: served artifacts are wrapped in the honesty envelope (decision E). The
 // empty fallback's `generatedAt` is a FIXED value, not "now" — the fail-soft output must stay
@@ -58,6 +60,14 @@ export const EMPTY_DEAL_SCOPE_ENVELOPE: DerivedEnvelope<DealScopeReport> = {
   generatedAt: EMPTY_GENERATED_AT,
 }
 
+// derivation-1.4
+export const EMPTY_DISPARITY_ROLLUPS_ENVELOPE: DerivedEnvelope<DisparityRollupsReport> = {
+  data: { byCategory: [], byStore: [], totalDisparities: 0, missingGeoCount: 0 },
+  excluded: [],
+  coverage: {},
+  generatedAt: EMPTY_GENERATED_AT,
+}
+
 // Read a precomputed derived fact file, fail-soft to the given empty envelope. A missing file
 // (home machine never ran / first deploy), an unparseable one, or one that parses but doesn't
 // match the envelope shape all degrade to empty rather than throwing — never a 500, never a
@@ -88,4 +98,11 @@ export function disparitiesRoute(_req: Request, res: Response) {
 // be up to ~24h stale — acceptable to start). Same private/decoupled/fail-soft posture.
 export function dealScopeRoute(_req: Request, res: Response) {
   res.json(readDerived<DealScopeReport>(DEAL_SCOPE_PATH, EMPTY_DEAL_SCOPE_ENVELOPE))
+}
+
+// GET /api/value/disparity-rollups (derivation-1.4, FR11 — "needs a served consumer surface").
+// Serves the precomputed rollups over the disparities dataset from
+// server/data/derived/disparity-rollups.json. Same private/internal/fail-soft posture.
+export function disparityRollupsRoute(_req: Request, res: Response) {
+  res.json(readDerived<DisparityRollupsReport>(DISPARITY_ROLLUPS_PATH, EMPTY_DISPARITY_ROLLUPS_ENVELOPE))
 }

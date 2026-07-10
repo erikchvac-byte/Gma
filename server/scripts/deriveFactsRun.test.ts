@@ -106,6 +106,18 @@ describe('deriveFacts (ADR-077 Phase 1 regression guard)', () => {
     // 'gap' today, proving the wiring reaches the pure function without throwing (derivation-1.3).
     expect(specialEventsWritten.data.gapCount).toBe(2)
     expect(specialEventsWritten.data.events).toHaveLength(0)
+
+    // derivation-1.4: store-a/store-b (fixture-only ids, absent from data.json AND the real
+    // WEEDMAPS_STORES registry) form exactly one disparity row (same Blue Dream/Acme/3.5g key
+    // across 2 stores) — proving the rollup wiring reaches the pure function without throwing.
+    const rollupsWritten = JSON.parse(readFileSync(outcome.disparityRollupsPath, 'utf-8'))
+    expect(rollupsWritten.data.totalDisparities).toBe(1)
+    expect(rollupsWritten.data.byCategory).toHaveLength(1)
+    expect(rollupsWritten.data.byStore).toHaveLength(2)
+    expect(rollupsWritten.data.missingGeoCount).toBe(2) // neither fixture store resolves geo
+    expect(Array.isArray(rollupsWritten.excluded)).toBe(true)
+    expect(typeof rollupsWritten.coverage).toBe('object')
+    expect(typeof rollupsWritten.generatedAt).toBe('string')
   })
 
   it('refuses to overwrite a previously-populated disparities.json with a zero-record result', () => {
@@ -215,5 +227,54 @@ describe('deriveFacts (ADR-077 Phase 1 regression guard)', () => {
         expect.objectContaining({ productId: 'ends-today', type: 'special-end', date: today }),
       ]),
     )
+  })
+
+  it('disparity-rollups geo merge reaches both the private WEEDMAPS_STORES registry and data.json through the real wiring (derivation-1.4)', () => {
+    // 'western-bud-burlington' is a real non-overlap entry in WEEDMAPS_STORES (its own committed
+    // coords, absent from data.json). 'store-only-in-datajson' is a fixture id present ONLY in
+    // this test's own data.json fixture (never in the real WEEDMAPS_STORES). 'nowhere-store' is
+    // in neither source. All three carry the same product so they land in one disparity row.
+    const products: Record<string, ProductRecord> = {
+      'western-bud-burlington::bd': rec({ productId: 'bd', dispensaryId: 'western-bud-burlington' }),
+      'store-only-in-datajson::bd': rec({ productId: 'bd', dispensaryId: 'store-only-in-datajson' }),
+      'nowhere-store::bd': rec({ productId: 'bd', dispensaryId: 'nowhere-store' }),
+    }
+
+    writeFileSync(
+      dataPath,
+      JSON.stringify({
+        dispensaries: [
+          {
+            id: 'store-only-in-datajson',
+            name: 'Store Only In data.json',
+            url: 'https://example.com',
+            stale: false,
+            lastFetchedAt: '2026-07-01T00:00:00.000Z',
+            deals: [],
+            lat: 47.5,
+            lng: -122.3,
+          },
+        ],
+      }),
+      'utf-8',
+    )
+
+    const db = openProductsDb(dbPath)
+    importProductsFile(db, { lastUpdated: '2026-07-01', products })
+    db.close()
+
+    const outcome = deriveFacts({ dbPath, dataPath, derivedDir })
+    const written = JSON.parse(readFileSync(outcome.disparityRollupsPath, 'utf-8'))
+
+    expect(written.data.totalDisparities).toBe(1)
+    expect(written.data.byStore).toHaveLength(3)
+    expect(written.data.byStore).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ dispensaryId: 'western-bud-burlington', lat: 48.483114, lng: -122.307298 }),
+        expect.objectContaining({ dispensaryId: 'store-only-in-datajson', lat: 47.5, lng: -122.3 }),
+        expect.objectContaining({ dispensaryId: 'nowhere-store', lat: null, lng: null }),
+      ]),
+    )
+    expect(written.data.missingGeoCount).toBe(1)
   })
 })

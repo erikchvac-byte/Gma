@@ -7,9 +7,11 @@ import { tmpdir } from 'node:os'
 import {
   disparitiesRoute,
   dealScopeRoute,
+  disparityRollupsRoute,
   readDerived,
   EMPTY_DISPARITIES_ENVELOPE,
   EMPTY_DEAL_SCOPE_ENVELOPE,
+  EMPTY_DISPARITY_ROLLUPS_ENVELOPE,
 } from './valueRoute.js'
 
 // A1: the cross-store disparity dataset is reachable on a NEW private route, derived
@@ -106,6 +108,58 @@ describe('GET /api/value/deal-scope (ADR-070)', () => {
   })
 })
 
+// derivation-1.4 (FR11): the disparity-rollups dataset is reachable on a NEW private route,
+// precomputed over the already-served disparities data. Contract: "200 + honesty envelope
+// wrapping a DisparityRollupsReport", same fail-soft posture as the other two routes.
+describe('GET /api/value/disparity-rollups (derivation-1.4)', () => {
+  const app = express()
+  app.get('/api/value/disparity-rollups', disparityRollupsRoute)
+
+  it('serves an envelope whose data is a DisparityRollupsReport', async () => {
+    const res = await request(app).get('/api/value/disparity-rollups')
+    expect(res.status).toBe(200)
+    expect(Array.isArray(res.body.data.byCategory)).toBe(true)
+    expect(Array.isArray(res.body.data.byStore)).toBe(true)
+    expect(typeof res.body.data.totalDisparities).toBe('number')
+    expect(typeof res.body.data.missingGeoCount).toBe('number')
+  })
+
+  it('carries the envelope\'s excluded/coverage/generatedAt fields', async () => {
+    const res = await request(app).get('/api/value/disparity-rollups')
+    expect(Array.isArray(res.body.excluded)).toBe(true)
+    expect(typeof res.body.coverage).toBe('object')
+    expect(typeof res.body.generatedAt).toBe('string')
+  })
+
+  it('every category row carries the aggregate shape', async () => {
+    const res = await request(app).get('/api/value/disparity-rollups')
+    for (const c of res.body.data.byCategory) {
+      expect(c).toHaveProperty('category')
+      expect(c).toHaveProperty('disparityCount')
+      expect(c).toHaveProperty('avgSpreadPct')
+      expect(c).toHaveProperty('distinctStoresInvolved')
+    }
+  })
+
+  it('every store row carries the geo + participation shape', async () => {
+    const res = await request(app).get('/api/value/disparity-rollups')
+    for (const s of res.body.data.byStore) {
+      expect(s).toHaveProperty('dispensaryId')
+      expect(s).toHaveProperty('lat')
+      expect(s).toHaveProperty('lng')
+      expect(s).toHaveProperty('disparityCount')
+      expect(s).toHaveProperty('timesCheapest')
+      expect(s).toHaveProperty('timesPriciest')
+    }
+  })
+
+  it('is independent of /api/data — no deals `dispensaries`/`meta` shape', async () => {
+    const res = await request(app).get('/api/value/disparity-rollups')
+    expect(res.body).not.toHaveProperty('dispensaries')
+    expect(res.body).not.toHaveProperty('meta')
+  })
+})
+
 // ADR-077 AC5: the routes read precomputed derived JSON and MUST fail-soft to an empty report
 // (never throw, never reach for the raw dataset / home DB) when the derived file is
 // missing/malformed — the load-bearing rule that keeps the site up when the home machine is off.
@@ -120,6 +174,7 @@ describe('readDerived fail-soft (ADR-077 AC5)', () => {
     const missing = path.join(__dirname, '../data/derived/__does_not_exist__.json')
     expect(readDerived(missing, EMPTY_DISPARITIES_ENVELOPE)).toEqual(EMPTY_DISPARITIES_ENVELOPE)
     expect(readDerived(missing, EMPTY_DEAL_SCOPE_ENVELOPE)).toEqual(EMPTY_DEAL_SCOPE_ENVELOPE)
+    expect(readDerived(missing, EMPTY_DISPARITY_ROLLUPS_ENVELOPE)).toEqual(EMPTY_DISPARITY_ROLLUPS_ENVELOPE)
   })
 
   it('returns the empty envelope when the file is not valid JSON', () => {
@@ -138,6 +193,7 @@ describe('readDerived fail-soft (ADR-077 AC5)', () => {
     writeFileSync(wrongShape, JSON.stringify({ hello: 'world' }), 'utf-8')
     expect(readDerived(wrongShape, EMPTY_DISPARITIES_ENVELOPE)).toEqual(EMPTY_DISPARITIES_ENVELOPE)
     expect(readDerived(wrongShape, EMPTY_DEAL_SCOPE_ENVELOPE)).toEqual(EMPTY_DEAL_SCOPE_ENVELOPE)
+    expect(readDerived(wrongShape, EMPTY_DISPARITY_ROLLUPS_ENVELOPE)).toEqual(EMPTY_DISPARITY_ROLLUPS_ENVELOPE)
   })
 
   it('returns the empty envelope when the file parses but is a bare (un-enveloped) report', () => {
