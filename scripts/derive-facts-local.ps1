@@ -40,9 +40,23 @@ $ErrorActionPreference = 'Stop'
 
 $WorktreePath = $WorktreePath.TrimEnd('\', '/')
 $serverDir    = Join-Path $WorktreePath 'server'
-# Commit the two derived files EXPLICITLY (never a glob) so a transient atomicWrite *.tmp.json is
-# never captured, and never `git add -A`.
-$derivedFiles = @('server/data/derived/disparities.json', 'server/data/derived/deal-scope.json')
+# Commit EVERY derived artifact deriveFactsRun.ts writes, listed EXPLICITLY (never a glob) so a
+# transient atomicWrite *.tmp.json is never captured, and never `git add -A`. This list must stay in
+# lock-step with the writes in deriveFactsRun.ts -- it originally held only the two ROUTED facts
+# (disparities, deal-scope), which silently stranded the six facts stories 1.2.5-1.7 added: the
+# runner wrote them, this step didn't commit them, and the next run's `git reset --hard` wiped them,
+# so they never republished (disparity-rollups is even route-served). Any NEW derived artifact a
+# future story adds MUST be appended here too.
+$derivedFiles = @(
+    'server/data/derived/disparities.json',
+    'server/data/derived/deal-scope.json',
+    'server/data/derived/extraction-health.json',
+    'server/data/derived/special-events.json',
+    'server/data/derived/disparity-rollups.json',
+    'server/data/derived/brand-personas.json',
+    'server/data/derived/brand-store-matrix.json',
+    'server/data/derived/new-arrival-dormancy.json'
+)
 $logDir       = Join-Path $WorktreePath '.derive-ingest'
 $lockFile     = Join-Path $logDir 'run.lock'
 $logFile      = Join-Path $logDir ('derive-{0}.log' -f (Get-Date -Format 'yyyyMMdd'))

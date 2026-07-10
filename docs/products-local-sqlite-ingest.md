@@ -55,8 +55,22 @@ and re-accrues next run). Only `derive-facts-local.ps1` commits — the two feed
 and commit nothing. The commit is `[skip ci]`, so Render redeploys the fresh facts without
 re-triggering Actions.
 
-Schedule the three with Windows Task Scheduler (mirror `scripts/setup-weedmaps-task.ps1`), staggered
-so derive runs after the feeders.
+## Scheduling (run each setup script once from the main checkout)
+
+The three nightly runs are registered as Windows Scheduled Tasks by three idempotent setup scripts
+(each mirrors the others: dedicated worktree → `npm install` → `Register-ScheduledTask -Force`).
+Run each **once**; re-running is safe. They are staggered so derive reads a freshly-accrued DB:
+
+```powershell
+pwsh -NoProfile -File scripts/setup-dutchie-task.ps1     # 'GmaS Dutchie Ingest'  daily 03:00
+pwsh -NoProfile -File scripts/setup-weedmaps-task.ps1    # 'GmaS Weedmaps Ingest' daily 03:30
+pwsh -NoProfile -File scripts/setup-derive-task.ps1      # 'GmaS Derive Facts'    daily 04:00
+```
+
+`-StartWhenAvailable` means a night the PC was off simply runs at next wake. Verify the whole set
+with `Get-ScheduledTask | ? TaskName -match 'GmaS'`. **If Dutchie accrual ever silently stalls, the
+first thing to check is that `GmaS Dutchie Ingest` exists and is `Ready`** — a missing task (not a
+broken scraper) was the root cause of the 2026-07 outage.
 
 ## Verifying
 
