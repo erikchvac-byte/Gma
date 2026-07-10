@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-09
-last_updated: 2026-07-10 (epic-derivation-1 retrospective → done; epic-derivation-2 decomposition in progress)
+last_updated: 2026-07-10 (epic-derivation-2 decomposed: 3 stories added to backlog; FR16 = cross-cutting type-gate AC per Erik, no dedicated story)
 project: Happy
 project_key: NOKEY
 tracking_system: file-system
@@ -117,6 +117,15 @@ development_status:
   derivation-1-9-remove-api-products: done  # FR4. VERIFIED ALREADY-SATISFIED by 1.0/ADR-077 (2026-07-10, no dev needed): route + test were removed during story 1.0 (ADR-077 open-decision #2 "dropped entirely"); grep-clean gate passes (only 2 comments DOCUMENTING the removal remain: server/index.ts:35, valueRoute.test.ts:20); live GET gmaslist.com/api/products → 404. The remove-now-vs-defer fork dissolved — removal had already happened. No story file created (nothing to dev).
   epic-derivation-1-retrospective: done  # epic-derivation-1-retro-2026-07-10.md — ratified by Erik; action items 1-2 (happy-time-mt-vernon stale + Dutchie outage root-cause) run PARALLEL to Epic 2, not blocking dev.
 
-  # Derivation Epics 2-3 — NOT decomposed this run (listed for context; stories/retros added when decomposed).
-  epic-derivation-2: backlog  # Tier-2 accrual facts: price vs own rolling median (honest discount, reopens fix6), cheapest-delivered, regional floor.
+  # Derivation Epic 2: Accrual facts (the honest discount + delivered/regional value)
+  # Decomposed 2026-07-10 (epics-derivation-engine.md, Epic 2 — Stories). FR16 = cross-cutting
+  # type-gate AC on every story (Erik's ruling, no dedicated FR16 story). Data-integrity retro
+  # items (happy-time-mt-vernon stale, Dutchie outage root-cause) run PARALLEL, non-blocking.
+  epic-derivation-2: backlog
+  derivation-2-1-price-vs-own-rolling-median: backlog  # D6 / FR13, fix6 keystone. New SQLite time-range query (first real consumer of (product_key, observedAt) indices); 1.2 helper; min-obs floor in DISTINCT CALENDAR DAYS; history sorted on read; window/floor = named constants Erik ratifies at dev-start (~16 days history → ships suppression-heavy by design). Gate 2 + FR16 type-gate.
+  derivation-2-2-cheapest-delivered-input-fact: backlog  # D7 / FR14. Per match-key specialPrice ?? basePrice + store lat/lng; NO baked-in origin (ADR-057) — delivered cost composes user-relatively downstream via existing roundTripGasCost (verified reusable). Gate 1 ≥2-store cells + WEIGHT_BASED_CATEGORIES/EXCLUDED_FLAGS mg-parse gating + FR16 type-gate.
+  derivation-2-3-regional-price-floor-availability-gap: backlog  # D8 / FR15. Geo clusters from lat/lng via 1.4's merged geo lookup; price floors per match-key WITHIN cluster only (Gate 1); category level = availability gaps (presence, not price) + FR16 type-gate.
+  epic-derivation-2-retrospective: optional
+
+  # Derivation Epic 3 — NOT decomposed (gated on FR13 accrual depth + ADR-066 legal-cleared surfacing).
   epic-derivation-3: backlog  # Feed the surfaces: AI-search/SEO comparison pages + in-app value cards consuming the derived facts.

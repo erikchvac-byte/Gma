@@ -89,10 +89,10 @@ FR9: Epic 1 — brand discount personas (Story 1.5)
 FR10: Epic 1 — new-arrival & dormancy feed (Story 1.7)
 FR11: Epic 1 — cross-store disparity surfacing + rollups (Story 1.4)
 FR12: Epic 1 — brand→store matrix (Story 1.6)
-FR13: Epic 2 — price vs own rolling median (not decomposed here)
-FR14: Epic 2 — cheapest-delivered index (not decomposed here)
-FR15: Epic 2 — regional price floor + availability gap (not decomposed here)
-FR16: Epic 2 cross-cutting — potency ≥80% per-category gate (applies when a potency fact ships)
+FR13: Epic 2 — price vs own rolling median (Story 2.1)
+FR14: Epic 2 — cheapest-delivered input fact (Story 2.2)
+FR15: Epic 2 — regional price floor + availability gap (Story 2.3)
+FR16: Epic 2 cross-cutting — type-gate AC on every Epic 2 story (Erik's ruling: no dedicated FR16 story); potency facts stay blocked until ≥80% per-category coverage
 
 ## Epic List
 
@@ -103,8 +103,8 @@ The home-machine derivation runner computes a family of bounded, honest, relatio
 
 ### Epic 2: Accrual facts (the honest discount + delivered/regional value)
 Tier 2 facts whose value accrues with history: price vs own rolling median (the only honest discount, reopens the fix6 gate), cheapest-*delivered* index, and regional price-floor/availability gaps. Builds on Epic 1's runner + time-series helper.
-**FRs covered:** FR13, FR14, FR15 (+ FR16 gate when potency facts ship)
-*Not decomposed in this run.*
+**FRs covered:** FR13, FR14, FR15 (+ FR16 as cross-cutting type-gate AC on every story)
+*Decomposed 2026-07-10 (Epic 2 — Stories section below).*
 
 ### Epic 3: Feed the surfaces
 AI-search/SEO comparison pages (`AggregateOffer`/`Dataset` schema) + in-app value cards that consume the derived facts. Gated on Epic 2's D6 history and the legal-cleared public-surfacing posture (ADR-066).
@@ -407,3 +407,97 @@ So that the raw request-time products route is retired (FR4) and ADR-077 Phase 1
 FR coverage for Epic 1: FR1 (1.1), FR2 (1.1), FR3 (1.1 + cross-cutting), FR4 (1.9), FR5 (1.1), FR6 (1.2), FR7 (all fact stories), FR8 (1.3), FR9 (1.5), FR10 (1.7), FR11 (1.4), FR12 (1.6). All Epic 1 FRs covered.
 
 Decisions folded: A→1.4, B→1.5/1.6, C→1.2.5, D→1.8, E→1.1 (all artifacts), F→1.5/1.6. Open: 1.9 fork.
+
+## Epic 2 — Stories
+
+Decomposed 2026-07-10 (Epic 1 complete, all 11 stories done). Order is dependency-clean: no story depends on a later one; all three stand on Epic 1's runner (1.1), time-series helper (1.2), and geo lookup (1.4). Erik's ruling: **FR16 is a cross-cutting type-gate AC on every Epic 2 story — there is no dedicated FR16 story.** The Honesty Contract (Gates 1–5 + Inspectability) remains in force on every story.
+
+### Story 2.1: Price vs own rolling median (D6) — the honest discount
+
+As a data consumer,
+I want each SKU's current effective price compared against its own rolling median from history,
+So that the only honest discount (fix6 keystone) is surfaced, instead of the meaningless flat banner rate.
+
+**Acceptance Criteria:**
+
+**Given** a SKU's observation history in `products.db`
+**When** the fact computes
+**Then** it reads history via a new SQLite time-range query — the first real consumer of the `(product_key, observedAt)` indices designed into 1.0 (FR13)
+**And** history is explicitly sorted on read before walking (1.3 fold-in; insertion order is never assumed).
+
+**Given** the rolling window and minimum-observation floor
+**Then** both are named constants Erik ratifies at dev-start
+**And** the floor counts DISTINCT CALENDAR DAYS with observations, not raw rows (1.5-review fold-in).
+
+**Given** a SKU below the floor
+**Then** it is suppressed and counted in `excluded[]` — with ~16 days of history the artifact ships suppression-heavy by design.
+
+**Given** gaps in the series
+**Then** the fact walks via the 1.2 helper, gap-tolerant (Gate 3).
+
+**Given** Gate 2
+**Then** the banner/product-special % is not an input; the discount is computed only vs the SKU's own history.
+
+**Given** the input type (FR16 cross-cutting gate)
+**Then** potency fields and the flat banner rate are unreachable (decision F pattern) — the breach does not compile.
+
+**Given** the fact
+**Then** it emits the honesty envelope with `excluded[]`/coverage (FR7) and has strict-typed tests covering gap, below-floor, unsorted-input, and window-boundary cases (NFR6).
+
+### Story 2.2: Cheapest-delivered input fact (D7)
+
+As a data consumer,
+I want a per-match-key fact of effective price (`specialPrice ?? basePrice`) plus store lat/lng,
+So that delivered cost composes user-relatively downstream via the existing `roundTripGasCost` — never from a baked-in origin.
+
+**Acceptance Criteria:**
+
+**Given** each match-key cell
+**When** the fact computes
+**Then** it emits effective price = `specialPrice ?? basePrice` and the store's committed lat/lng
+**And** NO origin, distance, or gas cost is baked in at derivation time (ADR-057 user-relative rule); composition happens downstream with `roundTripGasCost` (verified reusable).
+
+**Given** any $/gram dimension
+**Then** it is gated by `WEIGHT_BASED_CATEGORIES` + `EXCLUDED_FLAGS` (the mg/count parse lesson: `"100mg"→0.1g` must not leak)
+**And** cells rest on the same-product match-key, ≥2-store cells only (Gate 1).
+
+**Given** the input type (FR16 gate)
+**Then** potency fields and the flat banner rate are unreachable.
+
+**Given** the fact
+**Then** it emits the honesty envelope with `excluded[]`/coverage (FR7) and has strict-typed tests including the mg-parse exclusion case (NFR6).
+
+### Story 2.3: Regional price floor + availability gap (D8)
+
+As a data consumer,
+I want per-cluster price floors per match-key and category-level availability gaps,
+So that regional value and coverage holes are queryable facts without dishonest cross-product price claims.
+
+**Acceptance Criteria:**
+
+**Given** store lat/lng
+**When** geo clusters are derived
+**Then** clustering uses 1.4's merged geo lookup (no second geo source).
+
+**Given** price floors
+**Then** each floor is computed per match-key WITHIN a cluster only (Gate 1); no cross-product or whole-category price floor exists.
+
+**Given** the category level
+**Then** it reports availability gaps only — presence/absence of a category in a cluster — never a category-level price claim.
+
+**Given** the input type (FR16 gate)
+**Then** potency fields and the flat banner rate are unreachable.
+
+**Given** the fact
+**Then** it emits the honesty envelope with `excluded[]`/coverage (FR7) and has strict-typed tests covering single-store-cluster and empty-category cases (NFR6).
+
+## Epic 2 — Story summary
+
+3 stories: 2.1 (price vs own rolling median / D6, fix6 keystone), 2.2 (cheapest-delivered input fact / D7), 2.3 (regional price floor + availability gap / D8).
+
+FR coverage for Epic 2: FR13 (2.1), FR14 (2.2), FR15 (2.3), FR16 (cross-cutting type-gate AC on 2.1/2.2/2.3 — no dedicated story, per Erik). All Epic 2 FRs covered.
+
+Epic 2 notes:
+- 1.8 freshness alerting already covers the new artifacts — the uniform envelope makes the `generatedAt` check generic; no new alerting work.
+- Flower-THC/$ unlock stays deferred until the ≥80% per-category FR16 coverage bar is met.
+- Data-integrity items (happy-time-mt-vernon stale, Dutchie outage root-cause) run parallel to Epic 2, non-blocking.
