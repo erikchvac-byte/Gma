@@ -3,12 +3,15 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 import path from 'node:path'
 import { atomicWriteJson } from '../utils/atomicWrite.js'
 import { readProductsFromDbPath, DEFAULT_PRODUCTS_DB_PATH } from '../utils/productsDb.js'
-import { buildMatchReport } from '../utils/crossStoreValue.js'
+import { buildMatchReport, EXCLUDED_FLAGS } from '../utils/crossStoreValue.js'
+import { WEIGHT_BASED_CATEGORIES } from '../utils/normalizeProduct.js'
 import { buildDealScopeLinks } from '../utils/dealScope.js'
 import { buildExtractionHealthReport } from '../utils/extractionHealth.js'
 import { buildSpecialEventsReport } from '../utils/specialEvents.js'
 import { buildDisparityRollups, buildStoreGeoLookup } from '../utils/disparityRollups.js'
 import { buildBrandPersonas, type BrandProductSeries } from '../utils/brandPersonas.js'
+import { buildBrandStoreMatrix, type BrandStoreProduct, type BrandStoreOption } from '../utils/brandStoreMatrix.js'
+import { canonicalWeightGrams, deriveMatchKey } from '../utils/productMatchKey.js'
 import { wrapEnvelope } from '../utils/derivedEnvelope.js'
 import { dutchieProductScrapers } from '../scrapers/dutchie-stores.js'
 import { weedmapsProductScrapers, WEEDMAPS_STORES } from '../scrapers/weedmaps-stores.js'
@@ -60,6 +63,7 @@ export interface DeriveOutcome {
   specialEventsPath: string
   disparityRollupsPath: string
   brandPersonasPath: string
+  brandStoreMatrixPath: string
   suspectedCount: number
   insufficientHistoryCount: number
   startCount: number
@@ -71,6 +75,11 @@ export interface DeriveOutcome {
   intermittentCount: number
   brandInsufficientHistoryCount: number
   nullBrandProductCount: number
+  matrixTotalBrands: number
+  multiStoreBrandCount: number
+  cheapestCellCount: number
+  matrixNullBrandProductCount: number
+  unmatchedProductCount: number
 }
 
 // The product-scraper roster (AC1) — every store actively attempted, not just ids that happen
@@ -112,6 +121,7 @@ export function deriveFacts(opts: DeriveOptions = {}): DeriveOutcome {
   const specialEventsPath = path.join(derivedDir, 'special-events.json')
   const disparityRollupsPath = path.join(derivedDir, 'disparity-rollups.json')
   const brandPersonasPath = path.join(derivedDir, 'brand-personas.json')
+  const brandStoreMatrixPath = path.join(derivedDir, 'brand-store-matrix.json')
 
   const productsFile = readProductsFromDbPath(dbPath)
   const report = buildMatchReport(productsFile)
@@ -244,6 +254,61 @@ export function deriveFacts(opts: DeriveOptions = {}): DeriveOutcome {
 
   atomicWriteJson(brandPersonasPath, brandPersonasEnvelope)
 
+  // derivation-1.6: brand→store matrix (D5/FR12). Project the full ProductRecord DOWN to the
+  // narrowed BrandStoreProduct at THIS boundary — the ONLY place prices/potency are dropped and
+  // the per-option reductions happen — so the pure buildBrandStoreMatrix never sees a price PAIR
+  // or potency (decision F, Gates 2/5). Cross-sectional: latest observation only (history.at(-1)),
+  // like crossStoreValue.ts — no gap logic, no 1.2 helper. Each option's canonical weight comes
+  // from canonicalWeightGrams (mg-labelled Edible options → null, dropped so they contribute no
+  // weight tier/cell), a reported sold-out offer is dropped (Gate 4, matching crossStoreValue),
+  // and price is the single reduced specialPrice ?? basePrice (Gate 3). Written last, after every
+  // pre-existing write, preserving the ordering discipline from 1.2.5's review.
+  const matrixProducts: BrandStoreProduct[] = Object.values(productsFile.products).map((rec) => {
+    const mk = deriveMatchKey(rec)
+    const matchKey = 'key' in mk ? mk.key : null
+    // A weight tier / cheapest cell may only be built from a record with an HONEST weight axis —
+    // the same two gates crossStoreValue.ts applies. Gate 5: only WEIGHT_BASED_CATEGORIES (Flower/
+    // Vaporizers/Pre-Rolls/Concentrate) carry a real gram weight; an Edible option label is mg-THC
+    // or a count, which canonicalWeightGrams would parse as a BOGUS gram weight (e.g. "100mg" → 0.1g)
+    // and leak a "$/gram" cell — the exact lie Gate 5 forbids. Gate 1: a record whose weight is
+    // flagged untrustworthy (weight-mismatch / unparseable-* / unreconciled-pack) is dropped from
+    // weight comparison. Such a product still counts toward AVAILABILITY (its store stocks the brand)
+    // but contributes NO tier and NO cheapest cell — exactly the edible-only-brand behaviour
+    // Grounding §7 intends (achieved by an explicit gate, since canonicalWeightGrams does NOT return
+    // null for mg/count labels — the story's §7 premise was factually wrong; see Change Log).
+    const weightComparable =
+      WEIGHT_BASED_CATEGORIES.has(rec.category) && !rec.flags.some((f) => EXCLUDED_FLAGS.has(f))
+    const options: BrandStoreOption[] = []
+    if (weightComparable) {
+      const latest = rec.history.at(-1)
+      for (const opt of latest?.options ?? []) {
+        const weightGrams = canonicalWeightGrams(opt.option)
+        if (weightGrams === null) continue // no usable weight on this option label
+        if (opt.quantityAvailable !== null && opt.quantityAvailable <= 0) continue // Gate 4: sold-out
+        const price = opt.specialPrice ?? opt.basePrice // Gate 3: real price paid (never the pair)
+        if (price === null || !Number.isFinite(price) || price <= 0) continue
+        options.push({ weightGrams, price })
+      }
+    }
+    return { brand: rec.brand, dispensaryId: rec.dispensaryId, matchKey, name: rec.name, options }
+  })
+  const brandStoreMatrix = buildBrandStoreMatrix(matrixProducts)
+
+  const brandStoreMatrixEnvelope = wrapEnvelope(
+    brandStoreMatrix,
+    [
+      { reason: 'nullBrand', count: brandStoreMatrix.nullBrandProductCount },
+      { reason: 'unmatchedProduct', count: brandStoreMatrix.unmatchedProductCount },
+    ],
+    {
+      totalBrands: brandStoreMatrix.totalBrands,
+      multiStoreBrandCount: brandStoreMatrix.multiStoreBrandCount,
+      cheapestCellCount: brandStoreMatrix.cheapestCellCount,
+    },
+  )
+
+  atomicWriteJson(brandStoreMatrixPath, brandStoreMatrixEnvelope)
+
   return {
     disparities: report.disparities.length,
     totalRecords: report.totalRecords,
@@ -255,6 +320,7 @@ export function deriveFacts(opts: DeriveOptions = {}): DeriveOutcome {
     specialEventsPath,
     disparityRollupsPath,
     brandPersonasPath,
+    brandStoreMatrixPath,
     suspectedCount: extractionHealth.suspectedCount,
     insufficientHistoryCount: extractionHealth.insufficientHistoryCount,
     startCount: specialEvents.startCount,
@@ -266,6 +332,11 @@ export function deriveFacts(opts: DeriveOptions = {}): DeriveOutcome {
     intermittentCount: brandPersonas.intermittentCount,
     brandInsufficientHistoryCount: brandPersonas.insufficientHistoryCount,
     nullBrandProductCount: brandPersonas.nullBrandProductCount,
+    matrixTotalBrands: brandStoreMatrix.totalBrands,
+    multiStoreBrandCount: brandStoreMatrix.multiStoreBrandCount,
+    cheapestCellCount: brandStoreMatrix.cheapestCellCount,
+    matrixNullBrandProductCount: brandStoreMatrix.nullBrandProductCount,
+    unmatchedProductCount: brandStoreMatrix.unmatchedProductCount,
   }
 }
 
@@ -282,6 +353,9 @@ function main(): void {
   )
   console.log(
     `[derive] brand-personas: ${r.alwaysOnSpecialCount} always / ${r.neverDiscountedCount} never / ${r.intermittentCount} intermittent / ${r.brandInsufficientHistoryCount} insufficient (${r.nullBrandProductCount} null-brand excluded) → ${r.brandPersonasPath}`,
+  )
+  console.log(
+    `[derive] brand-store-matrix: ${r.matrixTotalBrands} brands / ${r.multiStoreBrandCount} multi-store / ${r.cheapestCellCount} cheapest cells (${r.matrixNullBrandProductCount} null-brand, ${r.unmatchedProductCount} unmatched excluded) → ${r.brandStoreMatrixPath}`,
   )
   console.log('[derive] ✓ derived facts written')
 }
