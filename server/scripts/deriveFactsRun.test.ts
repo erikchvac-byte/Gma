@@ -159,6 +159,29 @@ describe('deriveFacts (ADR-077 Phase 1 regression guard)', () => {
     ])
     expect(matrixWritten.coverage).toMatchObject({ totalBrands: 1, multiStoreBrandCount: 1, cheapestCellCount: 1 })
     expect(typeof matrixWritten.generatedAt).toBe('string')
+
+    // derivation-1.7: populatedFile()'s store-a/store-b are fixture-only ids, absent from the real
+    // product-scraper roster → every roster entry here is insufficient-history (asserted above), so
+    // the storeStatus map built from extractionHealth.entries has NO 'ok' entry for either store.
+    // Each record's single 2026-07-01 observation is a pre-`today` gap (not observed today) → a
+    // dormancy candidate whose store is not `ok` → suppressed, never emitted. This proves the
+    // store-health gate reaches the pure function through the real in-process wiring: dormantCount 0,
+    // suppressedUnhealthyStoreCount 2. newArrivalCount 0 (today is a gap, never 'first').
+    const nadWritten = JSON.parse(readFileSync(outcome.newArrivalDormancyPath, 'utf-8'))
+    expect(Array.isArray(nadWritten.data.newArrivals)).toBe(true)
+    expect(Array.isArray(nadWritten.data.dormant)).toBe(true)
+    expect(nadWritten.data.dormantCount).toBe(0)
+    expect(nadWritten.data.newArrivalCount).toBe(0)
+    expect(nadWritten.data.suppressedUnhealthyStoreCount).toBe(2)
+    expect(nadWritten.excluded).toEqual([
+      { reason: 'suppressedUnhealthyStore', count: 2 },
+      { reason: 'belowThreshold', count: 0 },
+      { reason: 'onboardingStore', count: 0 },
+    ])
+    expect(nadWritten.coverage).toMatchObject({ totalProducts: 2, newArrivalCount: 0, dormantCount: 0 })
+    expect(typeof nadWritten.generatedAt).toBe('string')
+    expect(outcome.dormantCount).toBe(0)
+    expect(outcome.newArrivalCount).toBe(0)
   })
 
   it('projection gates non-weight (Edible) and flag-poisoned records out of tiers/cells but keeps them in availability (derivation-1.6)', () => {
