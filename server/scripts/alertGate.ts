@@ -31,6 +31,76 @@ export const STALE_ALERT_MS = 6 * 60 * 60 * 1000
 // malformed-old) — excluded from the persistent-stale check.
 export const INGESTED_BASELINE_MS = Date.UTC(2020, 0, 1)
 
+// derivation-1.8: freshness of the DAILY derive run (`GmaS Derive Facts`, 04:00 local,
+// -StartWhenAvailable). Same red-only-on-real-staleness discipline as evaluateAlert, but
+// scaled to a 24h cadence instead of the hourly ingest cron:
+//   - FRESH: within ~28h (one day + grace, so a late/next-wake run is still fresh).
+//   - STALE-ALERT: older than ~50h ≈ two full missed daily runs — the real signal (the
+//     ~2-day derive/scraper outage that 1.2.5 and 1.7 kept surfacing). One skipped day
+//     (PC off overnight, ran next evening) must NOT red; two consecutive misses should.
+export const DERIVE_FRESH_WINDOW_MS = 28 * 60 * 60 * 1000
+export const DERIVE_STALE_ALERT_MS = 50 * 60 * 60 * 1000
+// A generatedAt more than this far in the FUTURE is implausible (home-machine clock
+// skew, not a real run) and alerts: a timestamp days ahead would otherwise keep ageMs
+// negative — masking a dead pipeline exactly as long as the skew. Small skew (< this)
+// still counts as fresh, per the future-skew-is-fresh discipline.
+export const DERIVE_MAX_FUTURE_SKEW_MS = 6 * 60 * 60 * 1000
+
+export interface FreshnessOptions {
+  freshWindowMs?: number
+  staleAlertMs?: number
+  neverDerivedBaselineMs?: number
+  maxFutureSkewMs?: number
+}
+
+export interface FreshnessVerdict {
+  alert: boolean
+  ageMs: number
+  fresh: boolean
+  stale: boolean
+  neverDerived: boolean
+  futureSkew: boolean
+}
+
+// Pure decision: given the derive run's `generatedAt` (read generically off the honesty
+// envelope) and "now", decide whether to alert. No I/O so it is fully unit-testable.
+// A generatedAt that is unparseable OR at/before the never-derived baseline (the fixed
+// EMPTY_GENERATED_AT epoch sentinel = Render serving the empty fallback, so no derived
+// file is reaching the site) is flagged `neverDerived` and always alerts — reported
+// distinctly from a merely-stale run. Small future-skew (ageMs < 0 within the plausibility
+// cap) counts as fresh, never stale (mirrors evaluateAlert); skew beyond the cap is
+// flagged `futureSkew` and alerts. `fresh` is the diagnostic band (fresh vs
+// late-but-graceful) — the alert boolean depends only on the stale window and the two
+// anomaly flags.
+export function evaluateRunFreshness(
+  generatedAt: string,
+  nowMs: number,
+  opts: FreshnessOptions = {},
+): FreshnessVerdict {
+  const freshWindowMs = opts.freshWindowMs ?? DERIVE_FRESH_WINDOW_MS
+  const staleAlertMs = opts.staleAlertMs ?? DERIVE_STALE_ALERT_MS
+  const baselineMs = opts.neverDerivedBaselineMs ?? INGESTED_BASELINE_MS
+  const maxFutureSkewMs = opts.maxFutureSkewMs ?? DERIVE_MAX_FUTURE_SKEW_MS
+
+  const t = Date.parse(generatedAt)
+  if (Number.isNaN(t) || t <= baselineMs) {
+    return {
+      alert: true,
+      ageMs: Number.isNaN(t) ? NaN : nowMs - t,
+      fresh: false,
+      stale: false,
+      neverDerived: true,
+      futureSkew: false,
+    }
+  }
+
+  const ageMs = nowMs - t
+  const futureSkew = ageMs < -maxFutureSkewMs // implausibly far ahead → clock-skew anomaly
+  const stale = ageMs > staleAlertMs // small future-skew (ageMs<0 within cap) is fresh, never stale
+  const fresh = !futureSkew && ageMs <= freshWindowMs
+  return { alert: stale || futureSkew, ageMs, fresh, stale, neverDerived: false, futureSkew }
+}
+
 export interface AlertOptions {
   freshWindowMs?: number
   staleAlertMs?: number
@@ -94,19 +164,58 @@ async function main(): Promise<void> {
     process.exit(1)
   }
 
-  const verdict = evaluateAlert(dispensaries, Date.now())
+  const nowMs = Date.now()
+  const verdict = evaluateAlert(dispensaries, nowMs)
   console.log(
     `[alertGate] fresh=${verdict.freshCount}/${dispensaries.length}` +
       ` totalFailure=${verdict.totalFailure} persistentlyStale=[${verdict.staleStores.join(', ')}]`,
   )
+
+  // derivation-1.8: freshness of the DAILY derive run, folded into this same alert gate
+  // (decision D — one alert system, no new schedule). Reads generatedAt off the served
+  // honesty envelope; a stalled derive reds this run's email. The log line names the cause
+  // unambiguously so the cross-pipeline coupling stays diagnosable.
+  const freshnessUrl = process.env.FRESHNESS_URL ?? 'https://gmaslist.com/api/value/disparities'
+  let freshnessAlert = false
+  try {
+    const res = await axios.get<{ generatedAt?: unknown }>(freshnessUrl, { timeout: 30000 })
+    const generatedAt = res.data?.generatedAt
+    if (typeof generatedAt !== 'string') {
+      // Fetch succeeded but the body isn't the envelope — a shape regression, not a
+      // network failure; diagnose it as such.
+      console.error(`[alertGate] ALERT: ${freshnessUrl} responded without a generatedAt string (envelope shape regression?)`)
+      freshnessAlert = true
+    } else {
+      const freshness = evaluateRunFreshness(generatedAt, nowMs)
+      freshnessAlert = freshness.alert
+      if (freshness.neverDerived) {
+        console.error('[alertGate] ALERT: derive run never-derived (empty fallback / unparseable generatedAt)')
+      } else {
+        const ageHours = (freshness.ageMs / 3_600_000).toFixed(1)
+        const band = freshness.futureSkew ? 'FUTURE-SKEW' : freshness.stale ? 'STALE' : freshness.fresh ? 'fresh' : 'late-but-graceful'
+        console.log(`[alertGate] deriveFreshness=${band} age=${ageHours}h stale=${freshness.stale}`)
+        if (freshness.stale) console.error('[alertGate] ALERT: derive run stale (~two missed daily runs)')
+        if (freshness.futureSkew) {
+          console.error('[alertGate] ALERT: derive generatedAt is implausibly far in the future (clock skew?)')
+        }
+      }
+    }
+  } catch (err) {
+    // Can't read the derived surface → alert-worthy (same posture as DATA_URL fetch
+    // failure) — but fall through so a simultaneous store-ingest alert still prints
+    // its own cause before the combined exit.
+    console.error(`[alertGate] could not fetch ${freshnessUrl}:`, (err as Error).message)
+    freshnessAlert = true
+  }
 
   if (verdict.alert) {
     if (verdict.totalFailure) console.error('[alertGate] ALERT: no store has fresh data (total failure)')
     if (verdict.staleStores.length > 0) {
       console.error(`[alertGate] ALERT: store(s) stale for several runs: ${verdict.staleStores.join(', ')}`)
     }
-    process.exit(1)
   }
+
+  if (verdict.alert || freshnessAlert) process.exit(1)
   console.log('[alertGate] ok')
 }
 

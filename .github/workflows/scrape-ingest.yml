@@ -187,6 +187,10 @@ jobs:
   # individual store outcomes) and reads prod /api/data. Reds the run only on a total
   # failure (no store fresh) or a store stale for several runs — not on a single empty
   # store. A red run here is the GitHub failure email.
+  # derivation-1.8: this same gate ALSO checks the DAILY derive run's freshness (reads
+  # generatedAt off the served disparities envelope via FRESHNESS_URL) — one alert system,
+  # no new schedule. A stalled derive (~two missed daily runs, or the empty fallback) reds
+  # this run too; alertGate's log line names which signal fired.
   alert-gate:
     needs: scrape
     if: always()
@@ -198,8 +202,9 @@ jobs:
           node-version: '22'
       - run: npm install
         working-directory: server
-      - name: Evaluate ingest health
+      - name: Evaluate ingest + derive-freshness health
         run: npx tsx scripts/alertGate.ts
         working-directory: server
         env:
           DATA_URL: https://gmaslist.com/api/data
+          FRESHNESS_URL: https://gmaslist.com/api/value/disparities
