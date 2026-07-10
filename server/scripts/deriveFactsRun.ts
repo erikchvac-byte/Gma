@@ -8,6 +8,7 @@ import { buildDealScopeLinks } from '../utils/dealScope.js'
 import { buildExtractionHealthReport } from '../utils/extractionHealth.js'
 import { buildSpecialEventsReport } from '../utils/specialEvents.js'
 import { buildDisparityRollups, buildStoreGeoLookup } from '../utils/disparityRollups.js'
+import { buildBrandPersonas, type BrandProductSeries } from '../utils/brandPersonas.js'
 import { wrapEnvelope } from '../utils/derivedEnvelope.js'
 import { dutchieProductScrapers } from '../scrapers/dutchie-stores.js'
 import { weedmapsProductScrapers, WEEDMAPS_STORES } from '../scrapers/weedmaps-stores.js'
@@ -58,12 +59,18 @@ export interface DeriveOutcome {
   extractionHealthPath: string
   specialEventsPath: string
   disparityRollupsPath: string
+  brandPersonasPath: string
   suspectedCount: number
   insufficientHistoryCount: number
   startCount: number
   endCount: number
   categoryCount: number
   storeCount: number
+  alwaysOnSpecialCount: number
+  neverDiscountedCount: number
+  intermittentCount: number
+  brandInsufficientHistoryCount: number
+  nullBrandProductCount: number
 }
 
 // The product-scraper roster (AC1) — every store actively attempted, not just ids that happen
@@ -104,6 +111,7 @@ export function deriveFacts(opts: DeriveOptions = {}): DeriveOutcome {
   const extractionHealthPath = path.join(derivedDir, 'extraction-health.json')
   const specialEventsPath = path.join(derivedDir, 'special-events.json')
   const disparityRollupsPath = path.join(derivedDir, 'disparity-rollups.json')
+  const brandPersonasPath = path.join(derivedDir, 'brand-personas.json')
 
   const productsFile = readProductsFromDbPath(dbPath)
   const report = buildMatchReport(productsFile)
@@ -208,6 +216,34 @@ export function deriveFacts(opts: DeriveOptions = {}): DeriveOutcome {
 
   atomicWriteJson(disparityRollupsPath, disparityRollupsEnvelope)
 
+  // derivation-1.5: brand discount personas (D2/FR9). Project the full ProductRecord DOWN to the
+  // narrowed BrandProductSeries at THIS boundary — the only place prices/potency are dropped — so
+  // the pure buildBrandPersonas never sees a price (decision F, Gate 2/5). Written last, after
+  // every pre-existing write, preserving the ordering discipline from 1.2.5's review.
+  const brandSeries: BrandProductSeries[] = Object.values(productsFile.products).map((r) => ({
+    productId: r.productId,
+    brand: r.brand,
+    history: r.history.map((o) => ({ observedAt: o.observedAt, special: o.special })),
+  }))
+  const brandPersonas = buildBrandPersonas(brandSeries)
+
+  const brandPersonasEnvelope = wrapEnvelope(
+    brandPersonas,
+    [
+      { reason: 'nullBrand', count: brandPersonas.nullBrandProductCount },
+      { reason: 'insufficientHistory', count: brandPersonas.insufficientHistoryCount },
+    ],
+    {
+      totalBrands: brandPersonas.totalBrands,
+      alwaysOnSpecialCount: brandPersonas.alwaysOnSpecialCount,
+      neverDiscountedCount: brandPersonas.neverDiscountedCount,
+      intermittentCount: brandPersonas.intermittentCount,
+      insufficientHistoryCount: brandPersonas.insufficientHistoryCount,
+    },
+  )
+
+  atomicWriteJson(brandPersonasPath, brandPersonasEnvelope)
+
   return {
     disparities: report.disparities.length,
     totalRecords: report.totalRecords,
@@ -218,12 +254,18 @@ export function deriveFacts(opts: DeriveOptions = {}): DeriveOutcome {
     extractionHealthPath,
     specialEventsPath,
     disparityRollupsPath,
+    brandPersonasPath,
     suspectedCount: extractionHealth.suspectedCount,
     insufficientHistoryCount: extractionHealth.insufficientHistoryCount,
     startCount: specialEvents.startCount,
     endCount: specialEvents.endCount,
     categoryCount: disparityRollups.byCategory.length,
     storeCount: disparityRollups.byStore.length,
+    alwaysOnSpecialCount: brandPersonas.alwaysOnSpecialCount,
+    neverDiscountedCount: brandPersonas.neverDiscountedCount,
+    intermittentCount: brandPersonas.intermittentCount,
+    brandInsufficientHistoryCount: brandPersonas.insufficientHistoryCount,
+    nullBrandProductCount: brandPersonas.nullBrandProductCount,
   }
 }
 
@@ -237,6 +279,9 @@ function main(): void {
   console.log(`[derive] special-events: ${r.startCount} started, ${r.endCount} ended → ${r.specialEventsPath}`)
   console.log(
     `[derive] disparity-rollups: ${r.categoryCount} categories, ${r.storeCount} stores → ${r.disparityRollupsPath}`,
+  )
+  console.log(
+    `[derive] brand-personas: ${r.alwaysOnSpecialCount} always / ${r.neverDiscountedCount} never / ${r.intermittentCount} intermittent / ${r.brandInsufficientHistoryCount} insufficient (${r.nullBrandProductCount} null-brand excluded) → ${r.brandPersonasPath}`,
   )
   console.log('[derive] ✓ derived facts written')
 }

@@ -118,6 +118,21 @@ describe('deriveFacts (ADR-077 Phase 1 regression guard)', () => {
     expect(Array.isArray(rollupsWritten.excluded)).toBe(true)
     expect(typeof rollupsWritten.coverage).toBe('object')
     expect(typeof rollupsWritten.generatedAt).toBe('string')
+
+    // derivation-1.5: populatedFile()'s two records are both brand 'Acme', special:false, one
+    // observed day each → one normalized brand 'acme' with 2 observed product-days (< the
+    // MIN_OBSERVED_PRODUCT_DAYS=10 floor) → insufficient-history, and zero null-brand products.
+    // Proves the projection + wiring reach the pure function without throwing.
+    const brandPersonasWritten = JSON.parse(readFileSync(outcome.brandPersonasPath, 'utf-8'))
+    expect(Array.isArray(brandPersonasWritten.data.personas)).toBe(true)
+    expect(brandPersonasWritten.data.totalBrands).toBe(1)
+    expect(brandPersonasWritten.data.personas[0].brandKey).toBe('acme')
+    expect(brandPersonasWritten.data.personas[0].persona).toBe('insufficient-history')
+    expect(brandPersonasWritten.data.personas[0].specialDayFraction).toBeNull()
+    expect(brandPersonasWritten.data.nullBrandProductCount).toBe(0)
+    expect(Array.isArray(brandPersonasWritten.excluded)).toBe(true)
+    expect(typeof brandPersonasWritten.coverage).toBe('object')
+    expect(typeof brandPersonasWritten.generatedAt).toBe('string')
   })
 
   it('refuses to overwrite a previously-populated disparities.json with a zero-record result', () => {
