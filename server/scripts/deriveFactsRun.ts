@@ -7,9 +7,10 @@ import { buildMatchReport } from '../utils/crossStoreValue.js'
 import { buildDealScopeLinks } from '../utils/dealScope.js'
 import { buildExtractionHealthReport } from '../utils/extractionHealth.js'
 import { buildSpecialEventsReport } from '../utils/specialEvents.js'
+import { buildDisparityRollups, buildStoreGeoLookup } from '../utils/disparityRollups.js'
 import { wrapEnvelope } from '../utils/derivedEnvelope.js'
 import { dutchieProductScrapers } from '../scrapers/dutchie-stores.js'
-import { weedmapsProductScrapers } from '../scrapers/weedmaps-stores.js'
+import { weedmapsProductScrapers, WEEDMAPS_STORES } from '../scrapers/weedmaps-stores.js'
 import type { Dispensary } from '../../client/src/types/index.js'
 
 // ADR-077 Phase 1 — local derivation runner (AC3). Runs on the HOME machine only. It reads
@@ -56,10 +57,13 @@ export interface DeriveOutcome {
   dealScopePath: string
   extractionHealthPath: string
   specialEventsPath: string
+  disparityRollupsPath: string
   suspectedCount: number
   insufficientHistoryCount: number
   startCount: number
   endCount: number
+  categoryCount: number
+  storeCount: number
 }
 
 // The product-scraper roster (AC1) — every store actively attempted, not just ids that happen
@@ -99,6 +103,7 @@ export function deriveFacts(opts: DeriveOptions = {}): DeriveOutcome {
   const dealScopePath = path.join(derivedDir, 'deal-scope.json')
   const extractionHealthPath = path.join(derivedDir, 'extraction-health.json')
   const specialEventsPath = path.join(derivedDir, 'special-events.json')
+  const disparityRollupsPath = path.join(derivedDir, 'disparity-rollups.json')
 
   const productsFile = readProductsFromDbPath(dbPath)
   const report = buildMatchReport(productsFile)
@@ -112,7 +117,8 @@ export function deriveFacts(opts: DeriveOptions = {}): DeriveOutcome {
     )
   }
 
-  const dealScope = buildDealScopeLinks({ dispensaries: readDispensaries(dataPath) }, productsFile)
+  const dispensaries = readDispensaries(dataPath)
+  const dealScope = buildDealScopeLinks({ dispensaries }, productsFile)
 
   const disparitiesEnvelope = wrapEnvelope(
     report,
@@ -183,6 +189,25 @@ export function deriveFacts(opts: DeriveOptions = {}): DeriveOutcome {
 
   atomicWriteJson(specialEventsPath, specialEventsEnvelope)
 
+  // derivation-1.4: rollups over the ALREADY-computed `report.disparities` (decision A — a
+  // separate artifact, no second buildMatchReport call, no mutation of disparities.json).
+  // Written last, after every pre-existing write, preserving the ordering discipline from
+  // 1.2.5's review (a new fallible step ahead of existing writes could silently drop them).
+  const geoLookup = buildStoreGeoLookup(dispensaries, WEEDMAPS_STORES)
+  const disparityRollups = buildDisparityRollups(report.disparities, geoLookup)
+
+  const disparityRollupsEnvelope = wrapEnvelope(
+    disparityRollups,
+    [{ reason: 'missingGeo', count: disparityRollups.missingGeoCount }],
+    {
+      totalDisparities: disparityRollups.totalDisparities,
+      categoryCount: disparityRollups.byCategory.length,
+      storeCount: disparityRollups.byStore.length,
+    },
+  )
+
+  atomicWriteJson(disparityRollupsPath, disparityRollupsEnvelope)
+
   return {
     disparities: report.disparities.length,
     totalRecords: report.totalRecords,
@@ -192,10 +217,13 @@ export function deriveFacts(opts: DeriveOptions = {}): DeriveOutcome {
     dealScopePath,
     extractionHealthPath,
     specialEventsPath,
+    disparityRollupsPath,
     suspectedCount: extractionHealth.suspectedCount,
     insufficientHistoryCount: extractionHealth.insufficientHistoryCount,
     startCount: specialEvents.startCount,
     endCount: specialEvents.endCount,
+    categoryCount: disparityRollups.byCategory.length,
+    storeCount: disparityRollups.byStore.length,
   }
 }
 
@@ -207,6 +235,9 @@ function main(): void {
     `[derive] extraction-health: ${r.suspectedCount} suspected, ${r.insufficientHistoryCount} insufficient-history → ${r.extractionHealthPath}`,
   )
   console.log(`[derive] special-events: ${r.startCount} started, ${r.endCount} ended → ${r.specialEventsPath}`)
+  console.log(
+    `[derive] disparity-rollups: ${r.categoryCount} categories, ${r.storeCount} stores → ${r.disparityRollupsPath}`,
+  )
   console.log('[derive] ✓ derived facts written')
 }
 

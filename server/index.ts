@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url'
 import 'dotenv/config'
 import { dataRoute } from './routes/dataRoute.js'
 import { ingestRoute } from './routes/ingestRoute.js'
-import { disparitiesRoute, dealScopeRoute } from './routes/valueRoute.js'
+import { disparitiesRoute, dealScopeRoute, disparityRollupsRoute } from './routes/valueRoute.js'
 import { refreshGasPrice } from './utils/refreshGasPrice.js'
 
 const app = express()
@@ -37,6 +37,9 @@ app.get('/api/value/disparities', disparitiesRoute)
 // Deal→SKU scope bridge (ADR-070). Same private/decoupled posture; served from the precomputed
 // server/data/derived/deal-scope.json. No public page/markup (Phase 4, legal-gated).
 app.get('/api/value/deal-scope', dealScopeRoute)
+// Cross-store disparity rollups (derivation-1.4, FR11). Same private/decoupled posture; served
+// from the precomputed server/data/derived/disparity-rollups.json. No public page/markup.
+app.get('/api/value/disparity-rollups', disparityRollupsRoute)
 
 // In production this single service also serves the built React client, so
 // gmaslist.com hits one origin for both the app and its API.
