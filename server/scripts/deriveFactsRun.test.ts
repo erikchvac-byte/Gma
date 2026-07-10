@@ -133,6 +133,104 @@ describe('deriveFacts (ADR-077 Phase 1 regression guard)', () => {
     expect(Array.isArray(brandPersonasWritten.excluded)).toBe(true)
     expect(typeof brandPersonasWritten.coverage).toBe('object')
     expect(typeof brandPersonasWritten.generatedAt).toBe('string')
+
+    // derivation-1.6: populatedFile()'s two records are brand 'Acme' at store-a/store-b, both the
+    // same 'Blue Dream' 3.5g product (basePrice 40) → one normalized brand 'acme' carried at 2
+    // stores, and one like-for-like (matchKey, 3.5g) cell at 2 stores (a natural ≥2-store cheapest
+    // cell). Proves the boundary projection (matchKey + canonicalWeightGrams + specialPrice ??
+    // basePrice reduction) and the wiring reach the pure function without throwing.
+    const matrixWritten = JSON.parse(readFileSync(outcome.brandStoreMatrixPath, 'utf-8'))
+    expect(Array.isArray(matrixWritten.data.brands)).toBe(true)
+    expect(matrixWritten.data.totalBrands).toBe(1)
+    expect(matrixWritten.data.multiStoreBrandCount).toBe(1)
+    expect(matrixWritten.data.nullBrandProductCount).toBe(0)
+    expect(matrixWritten.data.unmatchedProductCount).toBe(0)
+    const acme = matrixWritten.data.brands[0]
+    expect(acme.brandKey).toBe('acme')
+    expect(acme.storesCarrying).toEqual(['store-a', 'store-b'])
+    expect(acme.tiers).toEqual([3.5])
+    expect(acme.cheapestCells).toHaveLength(1)
+    expect(acme.cheapestCells[0]).toMatchObject({ weightGrams: 3.5, lowPrice: 40, storesCarrying: 2 })
+    expect(acme.cheapestCells[0].cheapestStores).toEqual(['store-a', 'store-b']) // tied at 40
+    expect(matrixWritten.data.cheapestCellCount).toBe(1)
+    expect(matrixWritten.excluded).toEqual([
+      { reason: 'nullBrand', count: 0 },
+      { reason: 'unmatchedProduct', count: 0 },
+    ])
+    expect(matrixWritten.coverage).toMatchObject({ totalBrands: 1, multiStoreBrandCount: 1, cheapestCellCount: 1 })
+    expect(typeof matrixWritten.generatedAt).toBe('string')
+  })
+
+  it('projection gates non-weight (Edible) and flag-poisoned records out of tiers/cells but keeps them in availability (derivation-1.6)', () => {
+    // canonicalWeightGrams does NOT return null for mg/count labels ("100mg" → 0.1g), so the
+    // projection must apply crossStoreValue's category gate (Gate 5) and flag gate (Gate 1) — else
+    // an Edible priced by mg-THC would leak a bogus "$/gram" cheapest cell. A record dropped from
+    // weight comparison must still count toward AVAILABILITY (its store stocks the brand).
+    const opt100mg = {
+      option: '100mg',
+      weightGrams: null,
+      basePrice: 15,
+      specialPrice: null,
+      pricePerGram: null,
+      pricePerItem: null,
+      specialPricePerGram: null,
+      specialPricePerItem: null,
+      quantityAvailable: null,
+    }
+    const products: Record<string, ProductRecord> = {
+      // Same edible product/brand at 2 stores — a naive ungated matrix would emit a 0.1g cheapest cell.
+      'store-e1::gum': rec({
+        productId: 'gum',
+        dispensaryId: 'store-e1',
+        brand: 'Wyld',
+        name: 'Raspberry Gummies',
+        category: 'Edible',
+        history: [{ observedAt: '2026-07-01T00:00:00.000Z', special: false, options: [opt100mg] }],
+      }),
+      'store-e2::gum': rec({
+        productId: 'gum',
+        dispensaryId: 'store-e2',
+        brand: 'Wyld',
+        name: 'Raspberry Gummies',
+        category: 'Edible',
+        history: [{ observedAt: '2026-07-01T00:00:00.000Z', special: false, options: [opt100mg] }],
+      }),
+      // Same flower product/brand at 2 stores, but weight flagged untrustworthy (Gate 1).
+      'store-f1::mystery': rec({
+        productId: 'mystery',
+        dispensaryId: 'store-f1',
+        brand: 'Fringe',
+        name: 'Mystery Flower',
+        flags: ['weight-mismatch'],
+      }),
+      'store-f2::mystery': rec({
+        productId: 'mystery',
+        dispensaryId: 'store-f2',
+        brand: 'Fringe',
+        name: 'Mystery Flower',
+        flags: ['weight-mismatch'],
+      }),
+    }
+
+    const db = openProductsDb(dbPath)
+    importProductsFile(db, { lastUpdated: '2026-07-01', products })
+    db.close()
+
+    const outcome = deriveFacts({ dbPath, dataPath, derivedDir })
+    const matrix = JSON.parse(readFileSync(outcome.brandStoreMatrixPath, 'utf-8')).data
+
+    const wyld = matrix.brands.find((b: { brandKey: string }) => b.brandKey === 'wyld')
+    expect(wyld.storesCarrying).toEqual(['store-e1', 'store-e2']) // IS stocked at both (availability)
+    expect(wyld.tiers).toEqual([]) // but the mg label is no honest weight axis
+    expect(wyld.cheapestCells).toEqual([]) // and NO bogus 0.1g cheapest cell leaks
+
+    const fringe = matrix.brands.find((b: { brandKey: string }) => b.brandKey === 'fringe')
+    expect(fringe.storesCarrying).toEqual(['store-f1', 'store-f2']) // still in availability
+    expect(fringe.tiers).toEqual([]) // untrustworthy weight suppressed
+    expect(fringe.cheapestCells).toEqual([])
+
+    expect(matrix.cheapestCellCount).toBe(0)
+    expect(matrix.unmatchedProductCount).toBe(0) // both have valid match-keys; suppressed, not unmatched
   })
 
   it('refuses to overwrite a previously-populated disparities.json with a zero-record result', () => {
