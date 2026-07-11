@@ -1,6 +1,8 @@
 # gmas list — Visibility Plan (Search, AI Crawlers, Site Visits)
 
-> Status: planning artifact, not yet implemented. Written 2026-06-24. Point to this file for the full plan; do not re-derive it from scratch.
+> Status: planning artifact, **partially implemented**. Written 2026-06-24. Point to this file for the full plan; do not re-derive it from scratch.
+>
+> **Progress (2026-07-10):** Two server-rendered, crawlable surfaces have shipped and are live on gmaslist.com, both registered before the SPA fallback (the Phase 0a "content in the HTML as delivered by Express" unlock, done page-by-page rather than by injecting into the shell): (1) `/about` + FAQ entity page with Service/FAQPage/WebSite/Organization JSON-LD (**ADR-078**); (2) `/compare` + `/compare/:category` cross-store price-comparison pages with `Dataset` JSON-LD (**ADR-079**) — this realizes the spirit of **Phase 2 (Information Gain)** below, but over the derivation engine's honest derived facts (`disparities.json`/`disparity-rollups.json`), NOT the ingest-time `data.json` stats this doc originally proposed. **Schema note reaffirmed:** both surfaces avoid `Product`/`AggregateOffer` commerce schema per Phase 1's recommendation (`/compare` uses `Dataset`, not a store leaderboard). **Still open:** Phase 0b (AgeGate mounting — legal-gated), Phase 1 robots.txt/sitemap.xml/OG (the `/about` + `/compare` URLs should be listed in the sitemap when it lands), Phase 1a per-store routes, Phases 3–6.
 >
 > Constraint honored throughout: **no visual/layout/style rewrite.** Every item below is backend, markup-only (meta/JSON-LD/static files), or — in exactly one case (Phase 0b) — a *behavioral* change to `AgeGate.tsx` that does not touch its visuals.
 
@@ -58,6 +60,8 @@ Add server-routed, crawlable URLs per store (e.g. `/store/<slug>`) that render t
 ---
 
 ## Phase 2 — Honest "Information Gain" content (backend, computed at ingest)
+
+> **Superseded in practice (2026-07-10, ADR-079).** This is now delivered by the derivation engine, not ingest-time `data.json` stats: honest cross-store price-disparity facts are precomputed daily on the home machine and served read-only, and `/compare` + `/compare/:category` publish them as `Dataset`-schema comparison pages. The "regional stats as plain honest text" idea below stands, but the source is the derived facts. Remaining information-gain surfaces (brand personas, new-arrival/dormancy, etc.) are candidate future `/compare`-style pages.
 
 The original blueprint's claim that an aggregator needs computed proprietary metrics to avoid being flagged as low-value duplicate content is directionally reasonable (and matches Google's actual "doesn't reproduce existing content" guidance) — but its execution (real-time SQL set-based batch ops) doesn't fit this stack. **There is no SQL database; the store is `data/data.json`.** Drop the SQL-batch framing entirely.
 
