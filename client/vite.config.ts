@@ -13,7 +13,10 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/api': 'http://localhost:3001'
+      '/api': 'http://localhost:3001',
+      // /about is server-rendered by Express (spec-ai-search-about-faq); without
+      // this rule the dev footer link lands on Vite's SPA fallback instead.
+      '/about': 'http://localhost:3001'
     }
   },
   test: {

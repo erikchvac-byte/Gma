@@ -248,3 +248,8 @@ Rejected (not defects): flagging honest total-weight multi-packs is the accepted
 ## Deferred from: code review of derivation-1-8-derivation-run-freshness-health-alerting (2026-07-10)
 
 - **Single-shot 30s freshness fetch, no retry + deploy-race exposure.** The alert-gate's new `FRESHNESS_URL` GET has no retry, so a transient 5xx/timeout (Render free-tier cold start, or the push-triggered run racing a deploy-hook redeploy) reds the run falsely. The no-retry posture is spec-ratified (Task 2: "same posture as DATA_URL") and self-corrects on the next hourly run, but the change widens a pre-existing `DATA_URL` exposure with a second sequential prod fetch on every deploy-adjacent run. Enhancement direction: one shared small-retry wrapper (e.g. 2 retries, short backoff) around BOTH gate fetches in `server/scripts/alertGate.ts`.
+
+## Deferred from: code review of spec-ai-search-about-faq (2026-07-10)
+
+- **No 21+ / age statement on the server-rendered /about page.** The page is informational (no deals/pricing shown) and the counsel-gated `WA_WARNING_TEXT` surface lives only in the React `DisclaimerFooter`, which never renders on /about. Whether a crawlable cannabis-topic entity page needs an age statement or the staged WA warning is a counsel/Erik call, not an engineering one — the spec explicitly Ask-First-gated age-verification content. If counsel says yes, add a static footer line to `server/routes/aboutRoute.ts`.
+- **Organization JSON-LD lacks `logo` / `sameAs`.** Entity disambiguation would strengthen with a raster logo URL and links to official profiles, but no official social/company profiles exist yet and the only logo asset is the favicon SVG. Revisit when Erik has a square PNG logo and/or public profiles to point at.

@@ -18,6 +18,15 @@ describe('DisclaimerFooter', () => {
     ).toBeInTheDocument()
   })
 
+  it('renders the entity identity statement with a link to /about', () => {
+    render(<DisclaimerFooter />)
+    expect(
+      screen.getByText(/Gmas List is an independent information service/i),
+    ).toBeInTheDocument()
+    const link = screen.getByRole('link', { name: /About Gmas List/i })
+    expect(link).toHaveAttribute('href', '/about')
+  })
+
   it('hides the WA mandatory-warning text by default (counsel-gated, flag off)', () => {
     expect(WA_WARNING_ENABLED).toBe(false) // launch default — do not enable without counsel
     render(<DisclaimerFooter />)

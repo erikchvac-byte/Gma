@@ -5,6 +5,7 @@ import cors from 'cors'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import 'dotenv/config'
+import { aboutRoute } from './routes/aboutRoute.js'
 import { dataRoute } from './routes/dataRoute.js'
 import { ingestRoute } from './routes/ingestRoute.js'
 import { disparitiesRoute, dealScopeRoute, disparityRollupsRoute } from './routes/valueRoute.js'
@@ -40,6 +41,11 @@ app.get('/api/value/deal-scope', dealScopeRoute)
 // Cross-store disparity rollups (derivation-1.4, FR11). Same private/decoupled posture; served
 // from the precomputed server/data/derived/disparity-rollups.json. No public page/markup.
 app.get('/api/value/disparity-rollups', disparityRollupsRoute)
+
+// Server-rendered About + FAQ entity page (spec-ai-search-about-faq). Must be
+// registered BEFORE the production SPA fallback below so crawlers get real
+// HTML here instead of the empty React shell; unconditional so dev serves it too.
+app.get('/about', aboutRoute)
 
 // In production this single service also serves the built React client, so
 // gmaslist.com hits one origin for both the app and its API.
