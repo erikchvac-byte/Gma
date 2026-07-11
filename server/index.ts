@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url'
 import 'dotenv/config'
 import { aboutRoute } from './routes/aboutRoute.js'
 import { compareIndexRoute, compareCategoryRoute } from './routes/compareRoute.js'
+import { robotsRoute, sitemapRoute } from './routes/sitemapRoute.js'
 import { dataRoute } from './routes/dataRoute.js'
 import { ingestRoute } from './routes/ingestRoute.js'
 import { disparitiesRoute, dealScopeRoute, disparityRollupsRoute } from './routes/valueRoute.js'
@@ -54,6 +55,13 @@ app.get('/about', aboutRoute)
 // /about) and unconditional so dev serves them too.
 app.get('/compare', compareIndexRoute)
 app.get('/compare/:category', compareCategoryRoute)
+
+// Phase 1 technical-SEO foundation (ADR-080): robots.txt + a sitemap.xml that
+// lists /about, /compare, and one URL per live /compare category. Registered
+// BEFORE the SPA fallback and express.static so the dynamic sitemap route wins
+// over any accidental static file of the same name.
+app.get('/robots.txt', robotsRoute)
+app.get('/sitemap.xml', sitemapRoute)
 
 // In production this single service also serves the built React client, so
 // gmaslist.com hits one origin for both the app and its API.
