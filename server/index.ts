@@ -6,6 +6,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import 'dotenv/config'
 import { aboutRoute } from './routes/aboutRoute.js'
+import { compareIndexRoute, compareCategoryRoute } from './routes/compareRoute.js'
 import { dataRoute } from './routes/dataRoute.js'
 import { ingestRoute } from './routes/ingestRoute.js'
 import { disparitiesRoute, dealScopeRoute, disparityRollupsRoute } from './routes/valueRoute.js'
@@ -46,6 +47,13 @@ app.get('/api/value/disparity-rollups', disparityRollupsRoute)
 // registered BEFORE the production SPA fallback below so crawlers get real
 // HTML here instead of the empty React shell; unconditional so dev serves it too.
 app.get('/about', aboutRoute)
+
+// Server-rendered SEO / AI-search comparison surface (derivation-3.1, ADR-066
+// legal gate CLOSED): public pages over the shipped cross-store price-disparity
+// facts, with Dataset JSON-LD. Registered BEFORE the SPA fallback (same reason as
+// /about) and unconditional so dev serves them too.
+app.get('/compare', compareIndexRoute)
+app.get('/compare/:category', compareCategoryRoute)
 
 // In production this single service also serves the built React client, so
 // gmaslist.com hits one origin for both the app and its API.

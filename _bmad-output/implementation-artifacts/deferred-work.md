@@ -1,5 +1,11 @@
 # Deferred Work
 
+## Deferred from: Epic 3 slice decision (2026-07-10, bmad-quick-dev)
+
+Epic 3 ("Feed the surfaces") bundles two independently-shippable goals. Erik chose to slice and ship the SEO/AI-search comparison pages first (`derivation-3-1-seo-comparison-pages`). Deferred:
+
+- **In-app value cards** — client-side cards on the deal feed consuming Epic 1 derived facts (cross-store cheapest / same-product disparity / brand availability). Shippable today on Epic 1 facts, BUT the flagship "how good is this deal vs its own history" card depends on Epic 2 Story 2.1 (FR13, price-vs-own-rolling-median), which is parked. Revisit after Epic 2 unblocks the honest-discount, or as a standalone slice over Epic-1 facts if Erik wants the non-discount cards sooner.
+
 ## Deferred from: code review of derivation-1-5-brand-discount-personas (2026-07-10)
 
 Surfaced by the 3-layer adversarial review (Blind Hunter + Edge Case Hunter + Acceptance Auditor) of the brand-discount-personas fact:

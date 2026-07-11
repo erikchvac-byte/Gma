@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-09
-last_updated: 2026-07-10 (epic-derivation-2 decomposed: 3 stories added to backlog; FR16 = cross-cutting type-gate AC per Erik, no dedicated story)
+last_updated: 2026-07-10 (derivation-3-1-seo-comparison-pages built + 3-reviewer pass → review; in-app value cards deferred per Epic 2 gate)
 project: Happy
 project_key: NOKEY
 tracking_system: file-system
@@ -127,5 +127,8 @@ development_status:
   derivation-2-3-regional-price-floor-availability-gap: backlog  # D8 / FR15. Geo clusters from lat/lng via 1.4's merged geo lookup; price floors per match-key WITHIN cluster only (Gate 1); category level = availability gaps (presence, not price) + FR16 type-gate.
   epic-derivation-2-retrospective: optional
 
-  # Derivation Epic 3 — NOT decomposed (gated on FR13 accrual depth + ADR-066 legal-cleared surfacing).
-  epic-derivation-3: backlog  # Feed the surfaces: AI-search/SEO comparison pages + in-app value cards consuming the derived facts.
+  # Derivation Epic 3 — partially sliced (2026-07-10, bmad-quick-dev). ADR-066 legal gate is CLOSED;
+  # the SEO comparison-pages slice runs on shipped Epic 1 disparity facts (no Epic 2 dependency).
+  # In-app value cards remain gated on Epic 2 FR13 → deferred (deferred-work.md).
+  epic-derivation-3: in-progress  # Feed the surfaces: AI-search/SEO comparison pages + in-app value cards consuming the derived facts.
+  derivation-3-1-seo-comparison-pages: review  # spec-derivation-3-1-seo-comparison-pages.md — server-rendered /compare index + per-category pages over disparities.json/disparity-rollups.json (Dataset JSON-LD, mirrors ADR-078 /about SSR; Dataset schema NOT commerce schema; stable-entity URLs only). Honesty gates 1/2/5 + facts-not-menus. In-app value cards deferred (Epic-2-gated).
