@@ -41,6 +41,13 @@ export default function DisclaimerFooter({ showWaWarning = WA_WARNING_ENABLED }:
       <Notice>
         Gas costs are estimates based on average fuel prices and rated MPG.
       </Notice>
+      {/* Site-wide entity identity (spec-ai-search-about-faq): one quiet line,
+          every page view, linking to the server-rendered /about entity page. */}
+      <Notice>
+        Gmas List is an independent information service. We don't sell cannabis — we help you
+        find deals from licensed WA retailers worth the drive.{' '}
+        <a href="/about" style={{ color: 'var(--accent)' }}>About Gmas List</a>
+      </Notice>
       {showWaWarning && <Notice>{WA_WARNING_TEXT}</Notice>}
     </footer>
   )
