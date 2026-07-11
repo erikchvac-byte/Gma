@@ -201,6 +201,10 @@ const ABOUT_HTML = `<!doctype html>
         place: available deals and discounts, retailer locations, distance and travel costs, and
         local comparison information. It all serves one question — is this deal worth the drive?
       </p>
+      <p>
+        See our <a href="/compare">cross-store price comparisons</a> — for each product carried by
+        two or more Washington stores, the lowest and highest shelf price across those stores.
+      </p>
 
       <h2>An information service, not a retailer</h2>
       <p>

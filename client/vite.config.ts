@@ -16,7 +16,10 @@ export default defineConfig({
       '/api': 'http://localhost:3001',
       // /about is server-rendered by Express (spec-ai-search-about-faq); without
       // this rule the dev footer link lands on Vite's SPA fallback instead.
-      '/about': 'http://localhost:3001'
+      '/about': 'http://localhost:3001',
+      // /compare + /compare/:category are server-rendered too (derivation-3.1);
+      // same reason — send them to Express in dev, not the SPA fallback.
+      '/compare': 'http://localhost:3001'
     }
   },
   test: {
