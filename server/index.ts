@@ -8,6 +8,7 @@ import 'dotenv/config'
 import { aboutRoute } from './routes/aboutRoute.js'
 import { compareIndexRoute, compareCategoryRoute } from './routes/compareRoute.js'
 import { robotsRoute, sitemapRoute, llmsTxtRoute } from './routes/sitemapRoute.js'
+import { makeShellRoute } from './routes/shellRoute.js'
 import { dataRoute } from './routes/dataRoute.js'
 import { ingestRoute } from './routes/ingestRoute.js'
 import { disparitiesRoute, dealScopeRoute, disparityRollupsRoute } from './routes/valueRoute.js'
@@ -76,14 +77,20 @@ if (process.env.NODE_ENV === 'production') {
   const __dirname = path.dirname(fileURLToPath(import.meta.url))
   const clientDist = path.resolve(__dirname, '../../../client/dist')
 
-  app.use(express.static(clientDist))
+  // Shell with the /api/data snapshot injected (Phase 0a perf half). Serves
+  // /, the literal /index.html, and every SPA deep link. index:false disables
+  // static's directory-index resolution only — the explicit /index.html route
+  // is what stops the raw file from serving a snapshot-less shell.
+  const shellRoute = makeShellRoute(clientDist)
+  app.get('/', shellRoute)
+  app.get('/index.html', shellRoute)
 
-  // SPA fallback: any non-API route returns index.html so client-side routing
-  // works on deep links / refresh. Express 5 (path-to-regexp v8) rejects the
-  // bare '*' string route, so match with a RegExp that excludes /api.
-  app.get(/^(?!\/api).*/, (_req, res) => {
-    res.sendFile(path.join(clientDist, 'index.html'))
-  })
+  app.use(express.static(clientDist, { index: false }))
+
+  // SPA fallback: any non-API route returns the injected shell so client-side
+  // routing works on deep links / refresh. Express 5 (path-to-regexp v8)
+  // rejects the bare '*' string route, so match with a RegExp that excludes /api.
+  app.get(/^(?!\/api).*/, shellRoute)
 }
 
 // immediate refresh on boot, then daily — refreshGasPrice never rejects by

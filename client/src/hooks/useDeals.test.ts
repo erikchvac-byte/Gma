@@ -21,6 +21,7 @@ const errorResponse = (status: number, body: unknown) =>
 describe('useDeals', () => {
   afterEach(() => {
     vi.unstubAllGlobals()
+    delete window.__GMA_DATA__
   })
 
   it('returns data on success and clears loading', async () => {
@@ -65,6 +66,43 @@ describe('useDeals', () => {
     await waitFor(() => expect(result.current.isLoading).toBe(false))
     expect(result.current.error).not.toBeNull()
     expect(result.current.data).toBeNull()
+  })
+
+  it('initializes synchronously from a valid injected snapshot and never fetches', () => {
+    window.__GMA_DATA__ = payload
+    const fetchMock = vi.fn()
+    vi.stubGlobal('fetch', fetchMock)
+
+    const { result } = renderHook(() => useDeals())
+
+    // no loading phase: data is present on the very first render
+    expect(result.current.isLoading).toBe(false)
+    expect(result.current.data).toEqual(payload)
+    expect(result.current.error).toBeNull()
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  it('falls back to the fetch path when the snapshot is not an object at all', async () => {
+    window.__GMA_DATA__ = 'not an object'
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(okResponse(payload)))
+
+    const { result } = renderHook(() => useDeals())
+    expect(result.current.isLoading).toBe(true)
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false))
+    expect(result.current.data).toEqual(payload)
+  })
+
+  it('falls back to the fetch path when the snapshot shape is malformed', async () => {
+    window.__GMA_DATA__ = { dispensaries: [] } // missing meta
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(okResponse(payload)))
+
+    const { result } = renderHook(() => useDeals())
+    expect(result.current.isLoading).toBe(true)
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false))
+    expect(result.current.data).toEqual(payload)
+    expect(result.current.error).toBeNull()
   })
 
   it('aborts on unmount without setting error state', async () => {
