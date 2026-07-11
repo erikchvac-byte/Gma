@@ -23,7 +23,9 @@ export default defineConfig({
       // robots.txt + sitemap.xml are Express routes (ADR-080), not static files;
       // proxy them so dev serves the dynamic sitemap, not Vite's public dir.
       '/robots.txt': 'http://localhost:3001',
-      '/sitemap.xml': 'http://localhost:3001'
+      '/sitemap.xml': 'http://localhost:3001',
+      // llms.txt is an Express route too (ADR-081) — same rule.
+      '/llms.txt': 'http://localhost:3001'
     }
   },
   test: {

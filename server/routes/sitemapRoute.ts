@@ -2,6 +2,7 @@ import type { Request, Response } from 'express'
 import type { DisparityRollupsReport } from '../utils/disparityRollups.js'
 import { readDerived, EMPTY_DISPARITY_ROLLUPS_ENVELOPE } from './valueRoute.js'
 import { categorySlug } from './compareRoute.js'
+import { ENTITY_DESCRIPTION } from './aboutRoute.js'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 
@@ -86,6 +87,44 @@ ${[...staticEntries, ...categoryEntries].join('\n')}
 `
 }
 
+// Pure builder (exported for tests). llms.txt (https://llmstxt.org/) is the
+// LLM-crawler counterpart to sitemap.xml: a Markdown file with a required H1,
+// a blockquote summary, and H2 sections of links. Before this route existed the
+// SPA fallback served index.html at /llms.txt, which Lighthouse's
+// agentic-browsing audit failed (no H1, no links). Category links come from the
+// SAME rollups source as the sitemap, so the two surfaces can never disagree.
+export function buildLlmsTxt(categories: string[]): string {
+  const categoryLines = categories
+    .map((c) => ({ name: c, slug: categorySlug(c) }))
+    .filter(({ slug }) => slug.length > 0)
+    // De-dupe on slug, same rule as the sitemap: one URL, one line.
+    .filter(({ slug }, i, arr) => arr.findIndex((x) => x.slug === slug) === i)
+    .sort((a, b) => a.slug.localeCompare(b.slug))
+    .map(
+      ({ name, slug }) =>
+        `- [${name} price comparison](${BASE_URL}/compare/${slug}): Cross-store ${name} price disparities observed at licensed Washington retailers`,
+    )
+
+  const comparisonSection =
+    categoryLines.length > 0 ? `\n## Price comparisons\n\n${categoryLines.join('\n')}\n` : ''
+
+  return `# Gmas List
+
+> ${ENTITY_DESCRIPTION}
+
+## Pages
+
+- [Deal feed](${BASE_URL}/): Live cannabis deal feed from licensed Washington retailers, compared by savings, distance, and gas cost
+- [About Gmas List](${BASE_URL}/about): What Gmas List is, how it works, and frequently asked questions
+- [Compare prices](${BASE_URL}/compare): Cross-store price-disparity comparisons derived from observed menu prices
+${comparisonSection}
+## Notes
+
+- Deals are set by each retailer and may change without notice — verify in store.
+- Gmas List serves Washington State only.
+`
+}
+
 // ---- route handlers ----
 
 // GET /robots.txt
@@ -107,4 +146,21 @@ export function sitemapRoute(_req: Request, res: Response) {
   )
   res.set('Cache-Control', 'public, max-age=3600')
   res.type('application/xml').send(buildSitemapXml(categories, rollups.generatedAt))
+}
+
+// GET /llms.txt — Markdown site guide for LLM crawlers/agents. Same fail-soft
+// posture as the sitemap: a missing derived artifact degrades to the static
+// pages section, never a 500.
+export function llmsTxtRoute(_req: Request, res: Response) {
+  const rollups = readDerived<DisparityRollupsReport>(
+    DISPARITY_ROLLUPS_PATH,
+    EMPTY_DISPARITY_ROLLUPS_ENVELOPE,
+  )
+  const categories = (Array.isArray(rollups.data?.byCategory) ? rollups.data.byCategory : []).map(
+    (c) => c.category,
+  )
+  res.set('Cache-Control', 'public, max-age=3600')
+  // text/plain (not text/markdown): maximally compatible, and what llms.txt
+  // consumers expect from a .txt path.
+  res.type('text/plain').send(buildLlmsTxt(categories))
 }

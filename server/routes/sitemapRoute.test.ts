@@ -4,7 +4,14 @@ import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import express from 'express'
 import request from 'supertest'
-import { robotsRoute, sitemapRoute, buildSitemapXml, ROBOTS_TXT } from './sitemapRoute.js'
+import {
+  robotsRoute,
+  sitemapRoute,
+  llmsTxtRoute,
+  buildSitemapXml,
+  buildLlmsTxt,
+  ROBOTS_TXT,
+} from './sitemapRoute.js'
 import { categorySlug } from './compareRoute.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -13,6 +20,7 @@ const ROLLUPS_PATH = path.join(__dirname, '../data/derived/disparity-rollups.jso
 const app = express()
 app.get('/robots.txt', robotsRoute)
 app.get('/sitemap.xml', sitemapRoute)
+app.get('/llms.txt', llmsTxtRoute)
 
 function liveCategories(): string[] {
   const env = JSON.parse(readFileSync(ROLLUPS_PATH, 'utf-8'))
@@ -66,6 +74,54 @@ describe('GET /sitemap.xml', () => {
   it('does not emit thin per-deal URLs', async () => {
     const res = await request(app).get('/sitemap.xml')
     expect(res.text).not.toMatch(/\/deal\//)
+  })
+})
+
+describe('GET /llms.txt', () => {
+  it('serves Markdown as plain text with an hour cache', async () => {
+    const res = await request(app).get('/llms.txt')
+    expect(res.status).toBe(200)
+    expect(res.headers['content-type']).toMatch(/text\/plain/)
+    expect(res.headers['cache-control']).toBe('public, max-age=3600')
+  })
+
+  it('follows llmstxt.org recommendations: H1, blockquote summary, links', async () => {
+    const res = await request(app).get('/llms.txt')
+    // Required H1 as the FIRST line — the Lighthouse agentic-browsing audit
+    // failed exactly this before the route existed (SPA shell served here).
+    expect(res.text.startsWith('# Gmas List\n')).toBe(true)
+    expect(res.text).toMatch(/^> /m)
+    expect(res.text).toMatch(/\[Deal feed\]\(https:\/\/gmaslist\.com\/\)/)
+    expect(res.text).toMatch(/\[About Gmas List\]\(https:\/\/gmaslist\.com\/about\)/)
+    expect(res.text).toMatch(/\[Compare prices\]\(https:\/\/gmaslist\.com\/compare\)/)
+  })
+
+  it('links one /compare/<category> URL per live rollup category', async () => {
+    const res = await request(app).get('/llms.txt')
+    for (const cat of liveCategories()) {
+      expect(res.text).toContain(`(https://gmaslist.com/compare/${categorySlug(cat)})`)
+    }
+  })
+})
+
+describe('buildLlmsTxt (pure)', () => {
+  it('degrades to the static pages section with zero categories', () => {
+    const txt = buildLlmsTxt([])
+    expect(txt.startsWith('# Gmas List\n')).toBe(true)
+    expect(txt).toContain('(https://gmaslist.com/about)')
+    expect(txt).not.toContain('## Price comparisons')
+    expect(txt).not.toContain('/compare/')
+  })
+
+  it('de-dupes slug collisions and drops empty slugs', () => {
+    const txt = buildLlmsTxt(['Pre-Rolls', 'Pre Rolls', '***', 'Flower'])
+    expect([...txt.matchAll(/\/compare\/pre-rolls\)/g)]).toHaveLength(1)
+    expect(txt).toContain('/compare/flower)')
+    expect(txt).not.toContain('/compare/)')
+  })
+
+  it('states the WA-only scope (WAC 314-55-155 posture)', () => {
+    expect(buildLlmsTxt([])).toContain('Washington State only')
   })
 })
 
