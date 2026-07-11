@@ -92,7 +92,11 @@ export default function DealFeed({ mpg = null, location = null }: DealFeedProps)
 
   if (isLoading) {
     return (
-      <div style={{ padding: 'var(--space-4)' }}>
+      // minHeight 100vh reserves the loaded feed's space so the footer starts
+      // below the fold during the skeleton phase — without it the footer paints
+      // in-viewport and the arriving deals shove it down (CLS 0.37, the whole
+      // Lighthouse layout-shift score; ADR-081).
+      <div style={{ padding: 'var(--space-4)', minHeight: '100vh' }}>
         <SkeletonFeed rows={3} />
       </div>
     )

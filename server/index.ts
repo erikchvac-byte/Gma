@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url'
 import 'dotenv/config'
 import { aboutRoute } from './routes/aboutRoute.js'
 import { compareIndexRoute, compareCategoryRoute } from './routes/compareRoute.js'
-import { robotsRoute, sitemapRoute } from './routes/sitemapRoute.js'
+import { robotsRoute, sitemapRoute, llmsTxtRoute } from './routes/sitemapRoute.js'
 import { dataRoute } from './routes/dataRoute.js'
 import { ingestRoute } from './routes/ingestRoute.js'
 import { disparitiesRoute, dealScopeRoute, disparityRollupsRoute } from './routes/valueRoute.js'
@@ -62,6 +62,10 @@ app.get('/compare/:category', compareCategoryRoute)
 // over any accidental static file of the same name.
 app.get('/robots.txt', robotsRoute)
 app.get('/sitemap.xml', sitemapRoute)
+// llms.txt (llmstxt.org): Markdown site guide for LLM crawlers. Without this
+// route the SPA fallback served the React shell here, failing Lighthouse's
+// agentic-browsing llms-txt audit (ADR-081).
+app.get('/llms.txt', llmsTxtRoute)
 
 // In production this single service also serves the built React client, so
 // gmaslist.com hits one origin for both the app and its API.
