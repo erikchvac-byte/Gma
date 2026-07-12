@@ -182,6 +182,29 @@ describe('deriveFacts (ADR-077 Phase 1 regression guard)', () => {
     expect(typeof nadWritten.generatedAt).toBe('string')
     expect(outcome.dormantCount).toBe(0)
     expect(outcome.newArrivalCount).toBe(0)
+
+    // derivation-2.2: the same one Blue Dream/Acme/3.5g disparity (store-a + store-b, both 40) is
+    // consumed by the cheapest-delivered fact — one delivered cell carrying BOTH store offers (never
+    // pre-picking a winner), each with the reduced price passed through unchanged. Neither fixture
+    // store resolves geo → missingGeoCount 2, offersWithGeo 0. Proves the runner reuses the disparity
+    // oracle + geoLookup and writes an envelope-shaped artifact.
+    const deliveredWritten = JSON.parse(readFileSync(outcome.cheapestDeliveredPath, 'utf-8'))
+    expect(deliveredWritten.data.totalCells).toBe(1)
+    expect(deliveredWritten.data.cells[0]).toMatchObject({ weightGrams: 3.5, category: 'Flower' })
+    expect(deliveredWritten.data.cells[0].storeOffers).toHaveLength(2)
+    expect(deliveredWritten.data.cells[0].storeOffers.map((o: { dispensaryId: string }) => o.dispensaryId).sort()).toEqual([
+      'store-a',
+      'store-b',
+    ])
+    expect(deliveredWritten.data.cells[0].storeOffers.every((o: { price: number }) => o.price === 40)).toBe(true)
+    expect(deliveredWritten.data.totalStoreOffers).toBe(2)
+    expect(deliveredWritten.data.offersWithGeo).toBe(0)
+    expect(deliveredWritten.data.missingGeoCount).toBe(2)
+    expect(deliveredWritten.excluded).toEqual([{ reason: 'missingGeo', count: 2 }])
+    expect(deliveredWritten.coverage).toMatchObject({ totalCells: 1, totalStoreOffers: 2, offersWithGeo: 0 })
+    expect(typeof deliveredWritten.generatedAt).toBe('string')
+    expect(outcome.deliveredCellCount).toBe(1)
+    expect(outcome.deliveredStoreOfferCount).toBe(2)
   })
 
   it('projection gates non-weight (Edible) and flag-poisoned records out of tiers/cells but keeps them in availability (derivation-1.6)', () => {
@@ -254,6 +277,16 @@ describe('deriveFacts (ADR-077 Phase 1 regression guard)', () => {
 
     expect(matrix.cheapestCellCount).toBe(0)
     expect(matrix.unmatchedProductCount).toBe(0) // both have valid match-keys; suppressed, not unmatched
+
+    // derivation-2.2 mg-parse exclusion proof (AC4, NFR6): the mg-labelled Edible never becomes a
+    // Disparity (Gate 5, nonComparableCategory) upstream, so it can NEVER reach cheapest-delivered —
+    // no "100mg → 0.1g" bogus $/gram cell can leak here. The flag-poisoned flower (Gate 1) is
+    // likewise absent. Both categories are proven empty at the SEAM, mirroring how 2.1 proved its
+    // sold-out exclusion at the runner boundary.
+    const delivered = JSON.parse(readFileSync(outcome.cheapestDeliveredPath, 'utf-8')).data
+    expect(delivered.totalCells).toBe(0)
+    expect(delivered.cells).toEqual([])
+    expect(delivered.totalStoreOffers).toBe(0)
   })
 
   it('refuses to overwrite a previously-populated disparities.json with a zero-record result', () => {
