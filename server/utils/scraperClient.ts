@@ -42,7 +42,13 @@ export interface ScrapeResponse {
   timestamp: string
 }
 
-export async function postScrape(req: ScrapeRequest): Promise<Intercepted[]> {
+// Detailed variant exposing whether the service call itself SUCCEEDED (ADR-083).
+// `ok: true` means the scraper service answered `success: true` with a well-formed
+// intercepted array — the caller can then trust an empty capture as evidence
+// rather than a swallowed failure. Still never throws.
+export async function postScrapeDetailed(
+  req: ScrapeRequest,
+): Promise<{ ok: boolean; intercepted: Intercepted[] }> {
   try {
     const url = process.env.SCRAPER_URL || DEFAULT_SERVICE_URL
     // Timeout sits above the service's own 45s browser timeout so the HTTP wait
@@ -50,13 +56,17 @@ export async function postScrape(req: ScrapeRequest): Promise<Intercepted[]> {
     const res = await axios.post<ScrapeResponse>(url, req, { timeout: 50000 })
     const body = res.data
     if (body?.success === true && Array.isArray(body.intercepted)) {
-      return body.intercepted
+      return { ok: true, intercepted: body.intercepted }
     }
     console.error('[scraperClient] unsuccessful scrape', body?.error ?? body)
-    return []
+    return { ok: false, intercepted: [] }
   } catch (err) {
     // Service unreachable / non-2xx / timeout all land here.
     console.error('[scraperClient]', err)
-    return []
+    return { ok: false, intercepted: [] }
   }
+}
+
+export async function postScrape(req: ScrapeRequest): Promise<Intercepted[]> {
+  return (await postScrapeDetailed(req)).intercepted
 }

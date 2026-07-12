@@ -2,16 +2,31 @@ import type { Deal } from '../../client/src/types/index.js'
 
 export type ScraperResult = Deal[]
 
+// Deals-scraper contract (ADR-083, supersedes the bare-Deal[] shape). Every
+// registry scrape() resolves to this — still never throws. `confirmedEmpty`
+// is POSITIVE evidence the store legitimately has zero specials right now
+// (e.g. Dutchie: service success + GetSpecialMenuCards intercepted +
+// `menuCards: []` on every retry attempt). A failure-collapsed empty stays
+// `confirmedEmpty: false` so last-known-good semantics hold. Invariant:
+// `deals.length > 0` implies `confirmedEmpty: false`.
+export interface DealScrapeOutcome {
+  deals: Deal[]
+  confirmedEmpty: boolean
+}
+
 // Push-ingest contract (ADR-034 Goal A). One store's scraped result, POSTed to
 // /api/ingest by the GitHub Actions runner. `IngestResult` is the per-store
-// outcome surfaced back: 'ok' (deals applied), 'stale' (empty/invalid — good
-// data kept), 'unknown' (no such dispensary in data.json).
+// outcome surfaced back: 'ok' (deals applied), 'empty' (confirmed-empty scrape
+// — deals cleared, freshness advanced, ADR-083), 'stale' (unconfirmed empty /
+// invalid — good data kept), 'unknown' (no such dispensary in data.json).
 export interface IngestEntry {
   dispensaryId: string
   deals: Deal[]
+  // Optional so pre-ADR-083 pushers stay valid; applyIngest honors only `=== true`.
+  confirmedEmpty?: boolean
 }
 
-export type IngestResult = 'ok' | 'stale' | 'unknown'
+export type IngestResult = 'ok' | 'empty' | 'stale' | 'unknown'
 
 export type LogEntry = string // "ok" | `error: ${string}`
 

@@ -12,11 +12,14 @@ const DEFAULT_DATA_PATH = path.join(__dirname, '../data/data.json')
 
 // Push-ingest counterpart to runScrapers (ADR-034 Goal A): applies externally
 // scraped deals pushed via POST /api/ingest into data.json. Mirrors runScrapers'
-// per-dispensary last-known-good semantics exactly — empty/invalid input never
-// overwrites good data (the source is only flagged stale). Only updates EXISTING
-// dispensaries, matched by id via .find (never indexes by a request-supplied key
-// → prototype-pollution safe). Serialized against every other data.json writer
-// via withDataLock; published atomically.
+// per-dispensary last-known-good semantics — empty/invalid input never overwrites
+// good data (the source is only flagged stale) — with ONE exception (ADR-083): an
+// entry carrying `confirmedEmpty: true` is positive evidence the store legitimately
+// has zero specials, so its deals are CLEARED and freshness advances instead of
+// freezing stale forever. Only updates EXISTING dispensaries, matched by id via
+// .find (never indexes by a request-supplied key → prototype-pollution safe).
+// Serialized against every other data.json writer via withDataLock; published
+// atomically.
 export async function applyIngest(
   entries: IngestEntry[],
   dataPath: string = DEFAULT_DATA_PATH,
@@ -43,6 +46,15 @@ export async function applyIngest(
         dispensary.lastFetchedAt = now
         dispensary.stale = false
         results[entry.dispensaryId] = 'ok'
+        accepted++
+      } else if (entry.confirmedEmpty === true) {
+        // ADR-083: the scraper PROVED the store has zero specials (strict `=== true`
+        // — anything else from the wire is not evidence). Clearing is real data:
+        // stale deals drop, freshness advances, the store reads `ok` downstream.
+        dispensary.deals = []
+        dispensary.lastFetchedAt = now
+        dispensary.stale = false
+        results[entry.dispensaryId] = 'empty'
         accepted++
       } else {
         // never overwrite good data with empty/invalid: deals + lastFetchedAt

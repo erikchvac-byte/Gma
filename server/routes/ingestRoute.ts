@@ -17,7 +17,12 @@ function secretOk(provided: unknown, expected: string): boolean {
 function isValidEntry(x: unknown): x is IngestEntry {
   if (x === null || typeof x !== 'object') return false
   const e = x as Record<string, unknown>
-  return typeof e.dispensaryId === 'string' && Array.isArray(e.deals)
+  return (
+    typeof e.dispensaryId === 'string' &&
+    Array.isArray(e.deals) &&
+    // optional ADR-083 flag: absent or a real boolean — anything else fails closed
+    (e.confirmedEmpty === undefined || typeof e.confirmedEmpty === 'boolean')
+  )
 }
 
 // POST /api/ingest (ADR-034 Goal A). Authenticated push target for the GitHub

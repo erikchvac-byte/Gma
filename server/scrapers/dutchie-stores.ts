@@ -1,5 +1,4 @@
-import type { Deal } from '../../client/src/types/index.js'
-import type { RawProduct } from '../types/index.js'
+import type { DealScrapeOutcome, RawProduct } from '../types/index.js'
 import { scrapeDutchieSpecials } from './_dutchie.js'
 import { scrapeDutchieProducts } from './_dutchieProducts.js'
 
@@ -31,16 +30,15 @@ export const DUTCHIE_STORE_IDS = [
 
 // Build a Dutchie scrape() for one store id. Mirrors the per-store files: scrape via
 // the Python service and transform the GetSpecialMenuCards intercept through the shared
-// retry-on-empty helper (ADR-051) — it never throws, returning [] so the source degrades
-// to stale rather than crashing the run. Here storeId === the readable dispensary id, so
-// no label override is needed.
-function makeDutchieScraper(storeId: string): () => Promise<Deal[]> {
+// retry-on-empty helper (ADR-051) — it never throws, resolving to a DealScrapeOutcome
+// (ADR-083) whose unconfirmed empties degrade the source to stale rather than crashing
+// the run. Here storeId === the readable dispensary id, so no label override is needed.
+function makeDutchieScraper(storeId: string): () => Promise<DealScrapeOutcome> {
   return () => scrapeDutchieSpecials(storeId)
 }
 
-export const dutchieScrapers: Record<string, () => Promise<Deal[]>> = Object.fromEntries(
-  DUTCHIE_STORE_IDS.map((id) => [id, makeDutchieScraper(id)]),
-)
+export const dutchieScrapers: Record<string, () => Promise<DealScrapeOutcome>> =
+  Object.fromEntries(DUTCHIE_STORE_IDS.map((id) => [id, makeDutchieScraper(id)]))
 
 // The three original Dutchie stores keep dedicated DEALS files because their readable
 // dispensary id diverges from their embed cName (historical, resolved in the 4.3 live

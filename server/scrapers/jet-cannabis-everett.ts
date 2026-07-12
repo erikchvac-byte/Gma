@@ -1,4 +1,4 @@
-import type { Deal } from '../../client/src/types/index.js'
+import type { DealScrapeOutcome } from '../types/index.js'
 import { scrapeDutchieSpecials } from './_dutchie.js'
 
 // Dutchie embed store cName — resolved in the live pass 2026-06-13. Licensed entity
@@ -7,6 +7,6 @@ import { scrapeDutchieSpecials } from './_dutchie.js'
 // dutchie.com/embedded-menu/thc-connection. See live-findings-2026-06-13.md.
 const STORE_ID = 'thc-connection'
 
-export default function scrape(): Promise<Deal[]> {
+export default function scrape(): Promise<DealScrapeOutcome> {
   return scrapeDutchieSpecials(STORE_ID, { label: 'jet-cannabis-everett' })
 }
