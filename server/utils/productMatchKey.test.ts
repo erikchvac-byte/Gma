@@ -46,6 +46,13 @@ describe('canonicalWeightGrams', () => {
     // 3.6g is >2% from the 3.5g eighth → must stay distinct, not merge with eighths
     expect(canonicalWeightGrams('3.6g')).toBe(3.6)
   })
+
+  it('returns null (not 0) when the parsed weight rounds to zero at 2dp', () => {
+    // "4mg" parses to 0.004g on the plain-unit path, passes the g <= 0 guard, then the 2dp
+    // fallback rounds to exactly 0 — a canonical weight of 0 would make every downstream
+    // price/weightGrams division Infinity (serialized as null). No usable weight → null.
+    expect(canonicalWeightGrams('4mg')).toBeNull()
+  })
 })
 
 describe('strainToken', () => {

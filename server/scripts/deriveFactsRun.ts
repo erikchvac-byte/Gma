@@ -21,6 +21,7 @@ import {
   windowStartDay,
   type PriceProductSeries,
 } from '../utils/priceVsOwnMedian.js'
+import { buildCheapestDeliveredReport } from '../utils/cheapestDelivered.js'
 import type { StoreHealthStatus } from '../utils/extractionHealth.js'
 import { canonicalWeightGrams, deriveMatchKey } from '../utils/productMatchKey.js'
 import { wrapEnvelope } from '../utils/derivedEnvelope.js'
@@ -77,6 +78,7 @@ export interface DeriveOutcome {
   brandStoreMatrixPath: string
   newArrivalDormancyPath: string
   priceVsOwnMedianPath: string
+  cheapestDeliveredPath: string
   suspectedCount: number
   insufficientHistoryCount: number
   startCount: number
@@ -100,6 +102,9 @@ export interface DeriveOutcome {
   priceAboveMedianCount: number
   priceAtMedianCount: number
   priceBelowFloorCount: number
+  deliveredCellCount: number
+  deliveredStoreOfferCount: number
+  deliveredMissingGeoCount: number
 }
 
 // The product-scraper roster (AC1) — every store actively attempted, not just ids that happen
@@ -144,6 +149,7 @@ export function deriveFacts(opts: DeriveOptions = {}): DeriveOutcome {
   const brandStoreMatrixPath = path.join(derivedDir, 'brand-store-matrix.json')
   const newArrivalDormancyPath = path.join(derivedDir, 'new-arrival-dormancy.json')
   const priceVsOwnMedianPath = path.join(derivedDir, 'price-vs-own-median.json')
+  const cheapestDeliveredPath = path.join(derivedDir, 'cheapest-delivered.json')
 
   const productsFile = readProductsFromDbPath(dbPath)
   const report = buildMatchReport(productsFile)
@@ -406,6 +412,28 @@ export function deriveFacts(opts: DeriveOptions = {}): DeriveOutcome {
 
   atomicWriteJson(priceVsOwnMedianPath, priceVsOwnMedianEnvelope)
 
+  // derivation-2.2: cheapest-DELIVERED INPUT fact (D7/FR14). The structural twin of 1.4 — a pure
+  // consumer of the ALREADY-computed `report.disparities` oracle + the ALREADY-built `geoLookup`
+  // (both reused straight from above, no recompute, no second DB read, no weight re-parse). It emits
+  // every qualifying store's real price + committed geo per like-for-like cell so the client can
+  // compose delivered cost user-relatively with roundTripGasCost (ADR-057 — NO baked-in origin here).
+  // All honesty gates are inherited from buildMatchReport (a Disparity is already a same-product,
+  // same-weight, ≥2-store, sold-out-excluded cell). Written LAST, after every pre-existing write,
+  // preserving the 1.2.5 write-ordering discipline (a new fallible step must never gate the others).
+  const cheapestDelivered = buildCheapestDeliveredReport(report.disparities, geoLookup)
+
+  const cheapestDeliveredEnvelope = wrapEnvelope(
+    cheapestDelivered,
+    [{ reason: 'missingGeo', count: cheapestDelivered.missingGeoCount }],
+    {
+      totalCells: cheapestDelivered.totalCells,
+      totalStoreOffers: cheapestDelivered.totalStoreOffers,
+      offersWithGeo: cheapestDelivered.offersWithGeo,
+    },
+  )
+
+  atomicWriteJson(cheapestDeliveredPath, cheapestDeliveredEnvelope)
+
   return {
     disparities: report.disparities.length,
     totalRecords: report.totalRecords,
@@ -443,6 +471,10 @@ export function deriveFacts(opts: DeriveOptions = {}): DeriveOutcome {
     priceAtMedianCount: priceVsOwnMedian.atMedianCount,
     priceBelowFloorCount: priceVsOwnMedian.belowFloorCount,
     priceVsOwnMedianPath,
+    cheapestDeliveredPath,
+    deliveredCellCount: cheapestDelivered.totalCells,
+    deliveredStoreOfferCount: cheapestDelivered.totalStoreOffers,
+    deliveredMissingGeoCount: cheapestDelivered.missingGeoCount,
   }
 }
 
@@ -468,6 +500,9 @@ function main(): void {
   )
   console.log(
     `[derive] price-vs-own-median: ${r.priceBelowMedianCount} below / ${r.priceAboveMedianCount} above own median (${r.priceAtMedianCount} at-median, ${r.priceBelowFloorCount} below-floor) → ${r.priceVsOwnMedianPath}`,
+  )
+  console.log(
+    `[derive] cheapest-delivered: ${r.deliveredCellCount} cells / ${r.deliveredStoreOfferCount} store-offers (${r.deliveredMissingGeoCount} missing-geo) → ${r.cheapestDeliveredPath}`,
   )
   console.log('[derive] ✓ derived facts written')
 }
