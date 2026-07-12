@@ -205,6 +205,7 @@ describe('deriveFacts (ADR-077 Phase 1 regression guard)', () => {
     expect(typeof deliveredWritten.generatedAt).toBe('string')
     expect(outcome.deliveredCellCount).toBe(1)
     expect(outcome.deliveredStoreOfferCount).toBe(2)
+    expect(outcome.deliveredMissingGeoCount).toBe(2)
   })
 
   it('projection gates non-weight (Edible) and flag-poisoned records out of tiers/cells but keeps them in availability (derivation-1.6)', () => {

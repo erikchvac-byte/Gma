@@ -89,14 +89,16 @@ describe('buildCheapestDeliveredReport (derivation-2.2)', () => {
   it('pricePerGram = price / weightGrams at 4dp; price passes through unrounded', () => {
     const report = buildCheapestDeliveredReport(
       [disparity({ weightGrams: 3, storesCarrying: [
-        { dispensaryId: 'store-a', price: 10, quantityAvailable: null },
+        { dispensaryId: 'store-a', price: 10.00005, quantityAvailable: null },
         { dispensaryId: 'store-b', price: 20, quantityAvailable: null },
       ] })],
       geo([]),
     )
     const a = report.cells[0].storeOffers.find((o) => o.dispensaryId === 'store-a')!
-    expect(a.price).toBe(10) // unrounded pass-through
-    expect(a.pricePerGram).toBe(3.3333) // 10/3 = 3.3333… → 4dp
+    // 10.00005 is NOT a fixed point of 2dp/4dp rounding (r4 would yield 10.0001), so this
+    // assertion actually fails if pass-through ever gains an accidental rounding step.
+    expect(a.price).toBe(10.00005)
+    expect(a.pricePerGram).toBe(3.3334) // 10.00005/3 = 3.33335 → 4dp
   })
 
   it('cells are sorted by matchKey then weightGrams for stable daily diffs', () => {

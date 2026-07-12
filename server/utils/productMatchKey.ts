@@ -83,7 +83,12 @@ export function canonicalWeightGrams(option: string): number | null {
       best = s
     }
   }
-  return best ?? Math.round(g * 100) / 100
+  if (best !== null) return best
+  // A sub-half-centigram parse ("4mg" → 0.004g on the plain-unit path) rounds to exactly 0 here —
+  // that is no usable weight, and 0 must never escape as a canonical divisor (a $/gram consumer
+  // would mint Infinity, which JSON-serializes as a silent null).
+  const rounded = Math.round(g * 100) / 100
+  return rounded > 0 ? rounded : null
 }
 
 // The strain/product signature: the record name with weight/size/pack measurements

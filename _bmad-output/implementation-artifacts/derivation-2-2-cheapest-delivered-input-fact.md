@@ -4,7 +4,7 @@ baseline_commit: b688a1b98c54575a0ff8d1e8c8f5fe43f0a19984
 
 # Story derivation-2.2: Cheapest-delivered input fact (D7 / FR14)
 
-Status: review
+Status: done
 
 Epic: epic-derivation-2 (Accrual facts) — second story. Source: `_bmad-output/planning-artifacts/epics-derivation-engine.md` (Epic 2 — Story 2.2), PRD `prds/prd-Happy-2026-07-06/prd.md` FR14/Gate 1.
 
@@ -58,6 +58,15 @@ Why this is the honest AND minimal design:
 - [x] Task 4 — Verify (AC: all)
   - [x] Full server suite green (661 tests, +8 vs 2.1's 653) + `npm run build` clean (server `tsc` — the `@ts-expect-error` decision-F gates are enforced here — + client `vite build`).
   - [x] Live-data proof: the local `~/GmaS-data/products.db` is currently EMPTY (0 rows; scrape feeders haven't repopulated since a reset — 29MB file, unrelated to this story), so the faithful proof per Dev Notes is the pure fn over the **committed** `disparities.json` + real `geoLookup` (data.json + WEEDMAPS_STORES). Result matches grounding EXACTLY: **305 cells / 684 store-offers / 22 distinct stores / offersWithGeo 684 / missingGeoCount 0**; `price` reconciles byte-for-byte with `disparities.json` (MATCH); `pricePerGram` correct (28/3.5=$8, 40/3.5=$11.4286). Committed derived artifacts left byte-identical (only wrote to temp dirs; `git status server/data/derived/` clean).
+
+### Review Findings
+
+(bmad-code-review 2026-07-12 — 3 layers: Blind Hunter, Edge Case Hunter, Acceptance Auditor. All 4 ACs PASS per auditor; 8 findings dismissed as verified-handled/convention.)
+
+- [x] [Review][Decision] `$derivedFiles` version-skew window — while the main checkout sits on this branch, the hourly publish task runs the branch ps1 (which lists `cheapest-delivered.json`) against a worktree reset to origin/master (whose runner doesn't write it); `git add` on the missing pathspec exits 128 and the whole publish run fails until merge. RESOLVED (Erik, 2026-07-12): no code change — the loud hard-fail on a missing listed artifact is the desired post-merge guard; merge promptly to close the window. [scripts/derive-facts-local.ps1:60 vs :134]
+- [x] [Review][Patch] `canonicalWeightGrams` fallback can round a sub-5mg plain-unit label (e.g. "4mg" → 0.004g) to exactly 0 instead of null; a 0-weight Disparity would make `pricePerGram` = Infinity → JSON `null` in the published artifact. FIXED: fallback returns null when the 2dp rounding lands on 0, + "4mg" → null test. [server/utils/productMatchKey.ts:86]
+- [x] [Review][Patch] Price pass-through test asserts a rounding fixed point (`price: 10`) — the assertion cannot detect accidental rounding. FIXED: fixture price 10.00005 (not a fixed point of r2/r4). [server/utils/cheapestDelivered.test.ts:98]
+- [x] [Review][Patch] `outcome.deliveredMissingGeoCount` (feeds the console line) is never asserted in the integration test. FIXED: asserted `toBe(2)`. [server/scripts/deriveFactsRun.test.ts]
 
 ## Dev Notes
 
@@ -154,5 +163,6 @@ claude-opus-4-8 (bmad-dev-story workflow)
 
 ## Change Log
 
+- 2026-07-12: Code review (bmad-code-review, 3 adversarial layers). All 4 ACs PASS; 1 decision resolved (ps1 skew window → no change, merge promptly), 3 patches applied (canonicalWeightGrams 0→null guard + test, non-fixed-point pass-through fixture, deliveredMissingGeoCount assertion), 8 findings dismissed as verified-handled/convention. 662 server tests green, production build clean. Status → done.
 - 2026-07-12: Implemented (bmad-dev-story). New pure `cheapestDelivered.ts` (twin of 1.4), runner wiring writing `cheapest-delivered.json` LAST, `$derivedFiles` append, ADR-085. 661 server tests green, build clean, live proof over committed disparities matches grounding (305 cells / 684 offers / 22 stores / missingGeo 0, prices reconcile byte-for-byte). Status → review. Note: home products.db is currently empty (pre-existing env condition, flagged in Completion Notes).
 - 2026-07-12: Story created (create-story workflow). Grounded against the live committed `disparities.json`/`disparity-rollups.json` (305 cells / 684 store-offers / 22 stores, all geo-resolved, missingGeo 0). Bound as the structural twin of 1.4: pure fn of `(Disparity[], StoreGeoLookup)`, all honesty gates inherited from the disparity oracle, emits per-cell store offers + committed geo for downstream user-relative delivered-cost composition (never a baked-in origin, ADR-057). No dev-start ratification gate.
