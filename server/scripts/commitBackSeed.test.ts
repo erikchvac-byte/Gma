@@ -90,6 +90,19 @@ describe('commitBackSeed', () => {
     expect(read(dataPath).meta.lastScraperRun).toBe(EPOCH) // not bumped — nothing accepted
   })
 
+  it('(b2) a confirmed-empty artifact clears the seed store and advances freshness (ADR-083)', async () => {
+    const { dataPath } = seed()
+    const inDir = artifactDir([{ dispensaryId: 'remedy-tulalip', deals: [], confirmedEmpty: true }])
+
+    const results = await commitBackSeed(inDir, dataPath)
+
+    expect(results['remedy-tulalip']).toBe('empty')
+    const after = byId(read(dataPath), 'remedy-tulalip')
+    expect(after.deals).toEqual([]) // expired deals dropped from the committed seed too
+    expect(after.stale).toBe(false)
+    expect(after.lastFetchedAt).not.toBe(EPOCH)
+  })
+
   it('(c) a store absent from the artifacts is untouched', async () => {
     const { dataPath, priorKush } = seed()
     const inDir = artifactDir([{ dispensaryId: 'remedy-tulalip', deals: [validDeal] }])

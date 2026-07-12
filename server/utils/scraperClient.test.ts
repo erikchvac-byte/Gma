@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import axios from 'axios'
-import { postScrape, type Intercepted, type ScrapeRequest } from './scraperClient.js'
+import { postScrape, postScrapeDetailed, type Intercepted, type ScrapeRequest } from './scraperClient.js'
 
 vi.mock('axios')
 const mockedPost = vi.mocked(axios.post)
@@ -80,5 +80,43 @@ describe('postScrape', () => {
       req,
       expect.objectContaining({ timeout: expect.any(Number) }),
     )
+  })
+})
+
+describe('postScrapeDetailed (ADR-083 success signal)', () => {
+  beforeEach(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+  })
+  afterEach(() => {
+    vi.restoreAllMocks()
+    vi.unstubAllEnvs()
+  })
+
+  it('ok:true with the intercepted payload on a successful scrape — even when empty', async () => {
+    mockedPost.mockResolvedValueOnce({ data: { success: true, intercepted } })
+    await expect(postScrapeDetailed(req)).resolves.toEqual({ ok: true, intercepted })
+
+    // an empty capture from a SUCCESSFUL call is still ok:true — that distinction
+    // is the whole point (confirmed-empty evidence vs swallowed failure)
+    mockedPost.mockResolvedValueOnce({ data: { success: true, intercepted: [] } })
+    await expect(postScrapeDetailed(req)).resolves.toEqual({ ok: true, intercepted: [] })
+  })
+
+  it('ok:false when the service reports success:false', async () => {
+    mockedPost.mockResolvedValueOnce({ data: { success: false, intercepted: [], error: 'boom' } })
+    await expect(postScrapeDetailed(req)).resolves.toEqual({ ok: false, intercepted: [] })
+  })
+
+  it('ok:false when the service is unreachable / times out / non-2xx', async () => {
+    mockedPost.mockRejectedValueOnce(Object.assign(new Error('connect ECONNREFUSED'), { code: 'ECONNREFUSED' }))
+    await expect(postScrapeDetailed(req)).resolves.toEqual({ ok: false, intercepted: [] })
+
+    mockedPost.mockRejectedValueOnce(Object.assign(new Error('timeout of 50000ms exceeded'), { code: 'ECONNABORTED' }))
+    await expect(postScrapeDetailed(req)).resolves.toEqual({ ok: false, intercepted: [] })
+  })
+
+  it('ok:false when the body is malformed (no intercepted array)', async () => {
+    mockedPost.mockResolvedValueOnce({ data: { success: true } })
+    await expect(postScrapeDetailed(req)).resolves.toEqual({ ok: false, intercepted: [] })
   })
 })

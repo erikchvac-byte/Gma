@@ -135,7 +135,7 @@ claude-opus-4-8 (Claude Code, bmad-dev-story)
 - **AC6 executed end-to-end** (Erik authorized this session): backups first, `git rm products.json`, `scrape-products.yml` retired.
 - **AC7:** both scrape runners feed the DB via an injectable sink; three local `.ps1` runners + runbook.
 - **Open decisions resolved with Erik:** #1 Dutchie fully local · #2 `/api/products` dropped entirely (route + test removed) · #3 deal-scope precomputed daily.
-- **Operational first-run pending (Erik-run):** the three local runners have not yet executed live from the home machine (same posture as the Weedmaps residential runner at merge). Runbook: `docs/products-local-sqlite-ingest.md`.
+- **Operational first-run DONE — verified live 2026-07-11:** all four `GmaS` Scheduled Tasks registered and `Ready` (Dutchie 03:00, Weedmaps 03:30, Derive 04:00, Store Link Check); all three ingest tasks ran this morning with result 0x0 and fresh `last-success.txt` heartbeats; `products.db` at 26 MB / 6,143 products / 46,275 observations (from 5,219/33,169 at import), 24 stores contributed 3,580 observations on 2026-07-11; derive committed `636a3c9` at 04:00 today; `products.json` confirmed gone from git index. The git 50MB deadline is dead. Runbook: `docs/products-local-sqlite-ingest.md`.
 - **Phase-2 flag logged:** resolve `caravan-cannabis-burlington` suspected silent-extraction failure before "one machine owns all raw data."
 
 ### File List

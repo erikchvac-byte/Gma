@@ -1,5 +1,6 @@
 import type { Deal } from '../../client/src/types/index.js'
-import { postScrape, type Intercepted, type ScrapeRequest } from '../utils/scraperClient.js'
+import type { DealScrapeOutcome } from '../types/index.js'
+import { postScrapeDetailed, type Intercepted, type ScrapeRequest } from '../utils/scraperClient.js'
 
 // Shared, store-agnostic Dutchie logic. Every Dutchie store serves the identical
 // GraphQL shape, so the transform lives here once; the per-store files only supply
@@ -56,13 +57,21 @@ interface DutchieSpecialCard {
   recurringSchedule?: unknown | null
 }
 
-// Locate the GetSpecialMenuCards intercept and return its menu cards (or []).
-export function pickSpecials(intercepted: Intercepted[]): DutchieSpecialCard[] {
+// Locate the GetSpecialMenuCards intercept and return its menuCards ARRAY, or
+// null when the op wasn't captured / the shape drifted. Distinguishing "captured
+// an empty array" from "not captured at all" is what makes a confirmed-empty
+// verdict honest (ADR-083) — only a real `menuCards: []` counts as evidence.
+export function pickMenuCards(intercepted: Intercepted[]): DutchieSpecialCard[] | null {
   const entry = intercepted.find((i) => /GetSpecialMenuCards/i.test(i.url))
-  if (!entry) return []
+  if (!entry) return null
   const data = entry.data as { data?: { getSpecialMenuCards?: { menuCards?: unknown } } } | undefined
   const cards = data?.data?.getSpecialMenuCards?.menuCards
-  return Array.isArray(cards) ? (cards as DutchieSpecialCard[]) : []
+  return Array.isArray(cards) ? (cards as DutchieSpecialCard[]) : null
+}
+
+// Locate the GetSpecialMenuCards intercept and return its menu cards (or []).
+export function pickSpecials(intercepted: Intercepted[]): DutchieSpecialCard[] {
+  return pickMenuCards(intercepted) ?? []
 }
 
 // Day restrictions live only in free display text (e.g. "Storewide - Monday & Friday").
@@ -150,7 +159,7 @@ const DEFAULT_ATTEMPTS = 3
 
 export interface ScrapeDutchieOptions {
   attempts?: number
-  postFn?: typeof postScrape
+  postFn?: typeof postScrapeDetailed
   // Friendly id for logs; defaults to storeId (which, for the dedicated stores, is the
   // opaque embed id/cName rather than the readable dispensary id).
   label?: string
@@ -160,29 +169,36 @@ export interface ScrapeDutchieOptions {
 // The embed's GetSpecialMenuCards response is captured by URL pattern, but on a slow or
 // race-y load the op can fire BEFORE its menuCards array populates (the late-emit hazard
 // dutchieRequest already warns about), yielding zero deals for a store that genuinely has
-// specials. Downstream that empty result is indistinguishable from a real no-specials
-// store, so applyIngest flags it 'stale', keeps last-known-good, and the store silently
-// goes dark run after run (the root cause diagnosed in ADR-051). Re-running gives the menu
-// another full load to populate; a store that truly has no specials just stays empty across
-// every attempt — cheap (empty scrapes return fast) and harmless. Never throws: a thrown
-// attempt logs and counts as empty, exactly like the old single-shot path, so the caller
-// still degrades to [] → stale rather than crashing the run.
+// specials. Re-running gives the menu another full load to populate — cheap (empty
+// scrapes return fast) and harmless. Never throws: a thrown attempt logs and counts as
+// an UNCONFIRMED empty, so the caller still degrades to stale rather than crashing.
+//
+// ADR-083: the outcome now says WHICH kind of empty this was. `confirmedEmpty: true`
+// requires positive evidence on EVERY attempt — service success AND the
+// GetSpecialMenuCards op captured AND a real `menuCards: []`. The retry budget doubles
+// as the race guard (ADR-051): a store must prove it is dealless 3× in one run before
+// applyIngest is allowed to clear it. menuCards PRESENT but all skipped by the
+// transform (nameless/malformed) is shape drift, never a confirmed empty.
 export async function scrapeDutchieSpecials(
   storeId: string,
   opts: ScrapeDutchieOptions = {},
-): Promise<Deal[]> {
+): Promise<DealScrapeOutcome> {
   const attempts = Math.max(1, opts.attempts ?? DEFAULT_ATTEMPTS)
-  const post = opts.postFn ?? postScrape
+  const post = opts.postFn ?? postScrapeDetailed
   const label = opts.label ?? storeId
-  let deals: Deal[] = []
+  let allAttemptsConfirmedEmpty = true
   for (let attempt = 1; attempt <= attempts; attempt++) {
+    let ok = false
+    let intercepted: Intercepted[] = []
     try {
-      deals = transformSpecials(await post(dutchieRequest(storeId)))
+      ;({ ok, intercepted } = await post(dutchieRequest(storeId)))
     } catch (err) {
       console.error(`[scraper:${label}] attempt ${attempt}/${attempts}`, err)
-      deals = []
     }
-    if (deals.length > 0) return deals
+    const cards = pickMenuCards(intercepted)
+    const deals = transformSpecials(intercepted)
+    if (deals.length > 0) return { deals, confirmedEmpty: false }
+    if (!(ok && cards !== null && cards.length === 0)) allAttemptsConfirmedEmpty = false
   }
-  return deals
+  return { deals: [], confirmedEmpty: allAttemptsConfirmedEmpty }
 }

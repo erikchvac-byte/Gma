@@ -70,6 +70,63 @@ describe('applyIngest', () => {
     expect(after.meta.lastScraperRun).toBe(EPOCH) // not bumped — nothing accepted
   })
 
+  it('confirmed-empty clears deals and advances freshness (empty, ADR-083)', async () => {
+    const { dataPath } = seed()
+
+    const results = await applyIngest(
+      [{ dispensaryId: 'remedy-tulalip', deals: [], confirmedEmpty: true }],
+      dataPath,
+    )
+
+    expect(results).toEqual({ 'remedy-tulalip': 'empty' })
+    const after = read(dataPath)
+    expect(after.dispensaries[0].deals).toEqual([]) // stale deals dropped
+    expect(after.dispensaries[0].stale).toBe(false)
+    expect(after.dispensaries[0].lastFetchedAt).not.toBe(EPOCH) // freshness advanced
+    expect(after.meta.lastScraperRun).not.toBe(EPOCH) // a confirmed empty is real data
+  })
+
+  it('honors only confirmedEmpty === true — truthy junk from the wire stays stale', async () => {
+    const { dataPath, prior } = seed()
+
+    const results = await applyIngest(
+      [{ dispensaryId: 'remedy-tulalip', deals: [], confirmedEmpty: 'yes' as unknown as boolean }],
+      dataPath,
+    )
+
+    expect(results).toEqual({ 'remedy-tulalip': 'stale' })
+    const after = read(dataPath)
+    expect(after.dispensaries[0].deals).toEqual(prior)
+    expect(after.dispensaries[0].lastFetchedAt).toBe(EPOCH)
+  })
+
+  it('confirmedEmpty with deals that normalize to empty still clears (evidence wins over junk)', async () => {
+    // The flag asserts the SOURCE was provably dealless; junk deals that died at the
+    // chokepoint don't contradict that assertion server-side (the pusher already
+    // guards the honest pairing — ingestRun only sets the flag on a truly empty set).
+    const { dataPath } = seed()
+
+    const results = await applyIngest(
+      [{ dispensaryId: 'remedy-tulalip', deals: [invalidDeal], confirmedEmpty: true }],
+      dataPath,
+    )
+
+    expect(results).toEqual({ 'remedy-tulalip': 'empty' })
+    expect(read(dataPath).dispensaries[0].deals).toEqual([])
+  })
+
+  it('non-empty deals win over a contradictory confirmedEmpty flag (ok)', async () => {
+    const { dataPath } = seed()
+
+    const results = await applyIngest(
+      [{ dispensaryId: 'remedy-tulalip', deals: [validDeal], confirmedEmpty: true }],
+      dataPath,
+    )
+
+    expect(results).toEqual({ 'remedy-tulalip': 'ok' })
+    expect(read(dataPath).dispensaries[0].deals).toEqual([validDeal])
+  })
+
   it('reports an unknown dispensary and writes nothing', async () => {
     const { dataPath } = seed()
     const before = readFileSync(dataPath, 'utf-8')

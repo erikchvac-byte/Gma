@@ -149,6 +149,26 @@ describe('ingest → freshness → alert (integration)', () => {
     expect(readData().meta.lastScraperRun).toBe(runMarkerBefore) // freshness not falsely bumped
   })
 
+  it('a confirmed-empty push clears stale deals and flips a dark store back to ok (ADR-083)', async () => {
+    // The happy-time-mt-vernon scenario: expired promos frozen for days because
+    // an honest zero-specials store could never advance lastFetchedAt.
+    const daysDark = new Date(Date.now() - 10 * 24 * HOUR_MS).toISOString()
+    seed([store('remedy-tulalip', daysDark, [{ ...liveDeal, description: 'expired june promo' }])])
+    const app = makeApp()
+
+    const ingest = await post(app, {
+      stores: [{ dispensaryId: 'remedy-tulalip', deals: [], confirmedEmpty: true }],
+    })
+    expect(ingest.status).toBe(200)
+    expect(ingest.body).toEqual({ results: { 'remedy-tulalip': 'empty' } })
+
+    const data = await request(app).get('/api/data')
+    const d = data.body.dispensaries.find((x: Dispensary) => x.id === 'remedy-tulalip')
+    expect(d.deals).toEqual([]) // dead promo dropped, not served as current
+    expect(d.status).toBe('ok') // freshness advanced → no more persistent-stale alert
+    expect(Date.now() - Date.parse(d.lastFetchedAt)).toBeLessThan(60 * 1000)
+  })
+
   it('a rejected push (bad secret) writes nothing — data.json is byte-identical', async () => {
     seed([store('remedy-tulalip', new Date().toISOString(), [liveDeal])])
     const app = makeApp()

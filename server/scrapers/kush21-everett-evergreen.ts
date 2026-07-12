@@ -1,4 +1,4 @@
-import type { Deal } from '../../client/src/types/index.js'
+import type { DealScrapeOutcome } from '../types/index.js'
 import { scrapeDutchieSpecials } from './_dutchie.js'
 
 // Dutchie embed store cName — resolved in the live pass 2026-06-13. Kush21 also
@@ -8,6 +8,6 @@ import { scrapeDutchieSpecials } from './_dutchie.js'
 // (no custom-domain handling needed). See live-findings-2026-06-13.md.
 const STORE_ID = 'kush21-everett'
 
-export default function scrape(): Promise<Deal[]> {
+export default function scrape(): Promise<DealScrapeOutcome> {
   return scrapeDutchieSpecials(STORE_ID, { label: 'kush21-everett-evergreen' })
 }

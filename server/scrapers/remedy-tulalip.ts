@@ -1,6 +1,7 @@
 import axios from 'axios'
 import * as cheerio from 'cheerio'
 import type { Deal } from '../../client/src/types/index.js'
+import type { DealScrapeOutcome } from '../types/index.js'
 
 const URL = 'https://remedytulalip.com/promos/'
 
@@ -90,17 +91,20 @@ export function parse(html: string): Deal[] {
   return deals
 }
 
-export default async function scrape(): Promise<Deal[]> {
+// Axios+Cheerio has no positive no-deals signal (an empty promo page and a
+// silently-changed selector look identical), so this source can never assert
+// `confirmedEmpty: true` (ADR-083) — empties always degrade to stale.
+export default async function scrape(): Promise<DealScrapeOutcome> {
   try {
     const { data } = await axios.get(URL, {
       timeout: 15000,
       headers: { 'User-Agent': 'Mozilla/5.0 (compatible; GmaHelper/1.0)' },
     })
-    return parse(data)
+    return { deals: parse(data), confirmedEmpty: false }
   } catch (err) {
     // Log for operator monitoring (FR-12) — matches _template.ts; runScrapers
-    // still marks the source stale on the returned [].
+    // still marks the source stale on the returned empty outcome.
     console.error('[scraper:remedy-tulalip]', err)
-    return []
+    return { deals: [], confirmedEmpty: false }
   }
 }

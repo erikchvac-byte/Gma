@@ -5,8 +5,8 @@ import { atomicWriteJson } from './atomicWrite.js'
 import { withDataLock } from './dataStore.js'
 import { scrapers as defaultRegistry } from '../scrapers/index.js'
 import { normalizeDeals } from './normalizeDeals.js'
-import type { ApiDataResponse, Deal } from '../../client/src/types/index.js'
-import type { LogEntry, LogRun } from '../types/index.js'
+import type { ApiDataResponse } from '../../client/src/types/index.js'
+import type { DealScrapeOutcome, LogEntry, LogRun } from '../types/index.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const DEFAULT_DATA_PATH = path.join(__dirname, '../data/data.json')
@@ -15,7 +15,7 @@ const DEFAULT_LOGS_PATH = path.join(__dirname, '../data/logs.json')
 export async function runScrapers(
   dataPath: string = DEFAULT_DATA_PATH,
   logsPath: string = DEFAULT_LOGS_PATH,
-  registry: Record<string, () => Promise<Deal[]>> = defaultRegistry,
+  registry: Record<string, () => Promise<DealScrapeOutcome>> = defaultRegistry,
 ): Promise<void> {
   await withDataLock(async () => {
     const file: ApiDataResponse = JSON.parse(readFileSync(dataPath, 'utf-8'))
@@ -37,8 +37,10 @@ export async function runScrapers(
       try {
         // normalize at the single ingestion chokepoint: drop degenerate /
         // malformed deals (zero-length or unparseable windows, bad daysValid)
-        // before the count + write, so junk never reaches filterActiveDeals
-        const deals = normalizeDeals(await scrape())
+        // before the count + write, so junk never reaches filterActiveDeals.
+        // This retired path (ADR-034 Goal C) predates confirmed-empty (ADR-083)
+        // and deliberately ignores the flag — every empty stays stale here.
+        const deals = normalizeDeals((await scrape()).deals)
         if (deals.length > 0) {
           results[dispensary.id] = 'ok'
           dispensary.stale = false

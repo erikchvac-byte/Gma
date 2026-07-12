@@ -4,21 +4,21 @@ import path from 'node:path'
 import axios from 'axios'
 import { scrapers, storeIds } from '../scrapers/index.js'
 import { normalizeDeals } from '../utils/normalizeDeals.js'
-import type { Deal } from '../../client/src/types/index.js'
-import type { IngestEntry, IngestResult } from '../types/index.js'
+import type { DealScrapeOutcome, IngestEntry, IngestResult } from '../types/index.js'
 
 // Push counterpart to runScrapers (ADR-034 Goal D). Run by the GitHub Actions cron
 // (one store per matrix job). For each store it runs the SAME pipeline runScrapers
 // uses — scrape() -> normalizeDeals — then POSTs the batch to /api/ingest instead of
 // writing data.json.
 //
-// Exit semantics (ADR-034 §6, amended): an empty scrape ('stale') is NOT a failure —
-// the server keeps last-known-good, and a store legitimately having no specials this
-// hour is normal. Only a genuine error flips ok=false: a scrape throw, a POST failure,
-// an 'unknown' dispensary, or a missing scraper. Even so, a single store's red is no
-// longer the alert — the workflow runs this per-store with continue-on-error and a
-// separate alert-gate job (alertGate.ts) raises the actual alert only on a TOTAL
-// failure or a store that stays stale for several runs.
+// Exit semantics (ADR-034 §6, amended): an empty scrape ('stale', or 'empty' when
+// confirmed — ADR-083) is NOT a failure — the server keeps last-known-good (or
+// honestly clears a confirmed-empty store), and a store legitimately having no
+// specials this hour is normal. Only a genuine error flips ok=false: a scrape throw,
+// a POST failure, an 'unknown' dispensary, or a missing scraper. Even so, a single
+// store's red is no longer the alert — the workflow runs this per-store with
+// continue-on-error and a separate alert-gate job (alertGate.ts) raises the actual
+// alert only on a TOTAL failure or a store that stays stale for several runs.
 
 export type PostFn = (
   url: string,
@@ -62,7 +62,7 @@ export interface RunIngestOptions {
   stores: string[]
   ingestUrl: string
   secret: string
-  registry?: Record<string, () => Promise<Deal[]>>
+  registry?: Record<string, () => Promise<DealScrapeOutcome>>
   postFn?: PostFn
   // ADR-047: when set, each scraped IngestEntry is additionally written to
   // <emitDir>/<dispensaryId>.json BEFORE the POST. These artifacts are the
@@ -101,10 +101,15 @@ export async function runIngest(opts: RunIngestOptions): Promise<RunIngestOutcom
     }
     try {
       // normalize at the same chokepoint runScrapers/applyIngest use. An empty
-      // result is still POSTed: the server flags it stale and keeps last-known-good.
-      // An empty/'stale' result is NOT treated as a failure here (see exit semantics).
-      const deals = normalizeDeals(await withTimeout(scrape(), SCRAPE_TIMEOUT_MS, id))
-      entries.push({ dispensaryId: id, deals })
+      // result is still POSTed: the server flags it stale and keeps last-known-good —
+      // unless the scraper CONFIRMED the emptiness (ADR-083), in which case the flag
+      // rides along and the server clears the store instead. The flag is only
+      // forwarded when the normalized set is empty too: deals that all died at the
+      // normalize chokepoint are extraction junk, not evidence of a dealless store.
+      const outcome = await withTimeout(scrape(), SCRAPE_TIMEOUT_MS, id)
+      const deals = normalizeDeals(outcome.deals)
+      const confirmedEmpty = outcome.confirmedEmpty === true && deals.length === 0
+      entries.push({ dispensaryId: id, deals, ...(confirmedEmpty ? { confirmedEmpty } : {}) })
     } catch (err) {
       results[id] = 'error'
       ok = false
@@ -127,10 +132,10 @@ export async function runIngest(opts: RunIngestOptions): Promise<RunIngestOutcom
       for (const entry of entries) {
         const r = posted[entry.dispensaryId] ?? 'error'
         results[entry.dispensaryId] = r
-        // 'stale' (empty scrape, last-known-good kept) is acceptable — not a hard
-        // failure. Only 'unknown'/'error' (and a missing key, defaulted to 'error')
-        // flip ok=false.
-        if (r !== 'ok' && r !== 'stale') ok = false
+        // 'stale' (empty scrape, last-known-good kept) and 'empty' (confirmed-empty
+        // applied, ADR-083) are acceptable — not hard failures. Only 'unknown'/'error'
+        // (and a missing key, defaulted to 'error') flip ok=false.
+        if (r !== 'ok' && r !== 'stale' && r !== 'empty') ok = false
       }
     } catch (err) {
       ok = false

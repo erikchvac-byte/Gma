@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { runScrapers } from './runScrapers.js'
 import type { Deal } from '../../client/src/types/index.js'
+import type { DealScrapeOutcome } from '../types/index.js'
 
 const deal: Deal = {
   type: 'daily',
@@ -87,8 +88,8 @@ describe('runScrapers', () => {
   })
 
   const registry = {
-    'success-store': async () => [deal],
-    'empty-result-store': async () => [],
+    'success-store': async () => ({ deals: [deal], confirmedEmpty: false }),
+    'empty-result-store': async () => ({ deals: [], confirmedEmpty: false }),
     'throwing-store': async () => {
       throw new Error('site down')
     },
@@ -179,9 +180,9 @@ describe('runScrapers', () => {
     writeFileSync(dataPath, JSON.stringify(customSeed, null, 2), 'utf-8')
 
     const badRegistry = {
-      'success-store': async () => [deal],
-      // returns a non-array, violating the contract — must not crash the run
-      'null-store': async () => null as unknown as Deal[],
+      'success-store': async () => ({ deals: [deal], confirmedEmpty: false }),
+      // returns a contract-violating shape (deals not an array) — must not crash the run
+      'null-store': async () => ({ deals: null, confirmedEmpty: false }) as unknown as DealScrapeOutcome,
     }
 
     await runScrapers(dataPath, logsPath, badRegistry)
@@ -220,7 +221,9 @@ describe('runScrapers', () => {
     }
     writeFileSync(dataPath, JSON.stringify(customSeed, null, 2), 'utf-8')
 
-    await runScrapers(dataPath, logsPath, { 'success-store': async () => [degenerateDeal] })
+    await runScrapers(dataPath, logsPath, {
+      'success-store': async () => ({ deals: [degenerateDeal], confirmedEmpty: false }),
+    })
 
     const file = JSON.parse(readFileSync(dataPath, 'utf-8'))
     const dispensary = file.dispensaries.find((d: { id: string }) => d.id === 'success-store')

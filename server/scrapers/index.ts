@@ -1,11 +1,14 @@
-import type { Deal } from '../../client/src/types/index.js'
+import type { DealScrapeOutcome } from '../types/index.js'
 import remedyTulalipScrape from './remedy-tulalip.js'
 import theJointEverettScrape from './the-joint-everett.js'
 import jetCannabisEverettScrape from './jet-cannabis-everett.js'
 import kush21EverettEvergreenScrape from './kush21-everett-evergreen.js'
 import { dutchieScrapers } from './dutchie-stores.js'
 
-export const scrapers: Record<string, () => Promise<Deal[]>> = {
+// Registry contract (ADR-083): scrape() never throws and resolves to a
+// DealScrapeOutcome — `confirmedEmpty: true` only on positive zero-specials
+// evidence; failure-shaped empties stay unconfirmed (→ stale downstream).
+export const scrapers: Record<string, () => Promise<DealScrapeOutcome>> = {
   'remedy-tulalip': remedyTulalipScrape,
   // Dutchie-powered (Story 4.3) — route through the Python Scraper microservice.
   // the-joint-everett ships with a confirmed embed id; jet + kush21 report stale

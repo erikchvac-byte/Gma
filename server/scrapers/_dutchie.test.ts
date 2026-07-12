@@ -6,6 +6,7 @@ import type { Intercepted } from '../utils/scraperClient.js'
 import {
   dutchieEmbedUrl,
   dutchieRequest,
+  pickMenuCards,
   pickSpecials,
   scrapeDutchieSpecials,
   transformSpecials,
@@ -80,6 +81,34 @@ describe('pickSpecials', () => {
       },
     ]
     expect(pickSpecials(old)).toEqual([])
+  })
+})
+
+describe('pickMenuCards (captured-vs-missing distinction, ADR-083)', () => {
+  it('returns the cards array when the op is captured (even empty)', () => {
+    const empty: Intercepted[] = [
+      {
+        url: 'graphql?operationName=GetSpecialMenuCards',
+        status: 200,
+        data: { data: { getSpecialMenuCards: { menuCards: [] } } },
+      },
+    ]
+    expect(pickMenuCards(empty)).toEqual([])
+    expect(pickMenuCards(fixture.intercepted)).toHaveLength(6)
+  })
+
+  it('returns null when the op was never captured', () => {
+    expect(pickMenuCards([])).toBeNull()
+    expect(
+      pickMenuCards([{ url: 'graphql?operationName=FilteredProducts', status: 200, data: {} }]),
+    ).toBeNull()
+  })
+
+  it('returns null when menuCards is missing or not an array', () => {
+    const bad: Intercepted[] = [
+      { url: 'graphql?operationName=GetSpecialMenuCards', status: 200, data: { data: {} } },
+    ]
+    expect(pickMenuCards(bad)).toBeNull()
   })
 })
 
@@ -171,7 +200,7 @@ describe('transformSpecials — specialType & providerNote (capture 2026-07-02)'
   })
 })
 
-describe('scrapeDutchieSpecials (retry-on-empty)', () => {
+describe('scrapeDutchieSpecials (retry-on-empty + confirmed-empty, ADR-083)', () => {
   // Build a GetSpecialMenuCards intercept with the given menuDisplayNames.
   const cards = (...names: string[]): Intercepted[] => [
     {
@@ -182,8 +211,11 @@ describe('scrapeDutchieSpecials (retry-on-empty)', () => {
   ]
   const EMPTY = cards() // intercept present, zero cards — the race/no-specials case
 
-  // A postFn that yields the queued batches in order (last batch repeats), counting calls.
-  function queuedPost(batches: Intercepted[][]) {
+  // Service-level result wrapper: ok:true = the scraper service call SUCCEEDED.
+  const okBatch = (intercepted: Intercepted[]) => ({ ok: true, intercepted })
+
+  // A postFn that yields the queued results in order (last repeats), counting calls.
+  function queuedPost(batches: { ok: boolean; intercepted: Intercepted[] }[]) {
     const calls = { n: 0 }
     const postFn = async () => {
       const batch = batches[Math.min(calls.n, batches.length - 1)]
@@ -194,43 +226,93 @@ describe('scrapeDutchieSpecials (retry-on-empty)', () => {
   }
 
   it('returns deals from the first attempt without retrying when non-empty', async () => {
-    const { postFn, calls } = queuedPost([cards('40% OFF Everything')])
-    const deals = await scrapeDutchieSpecials('store-x', { postFn })
+    const { postFn, calls } = queuedPost([okBatch(cards('40% OFF Everything'))])
+    const { deals, confirmedEmpty } = await scrapeDutchieSpecials('store-x', { postFn })
     expect(deals).toHaveLength(1)
     expect(deals[0].discountPct).toBe(40)
+    expect(confirmedEmpty).toBe(false)
     expect(calls.n).toBe(1) // no wasted retries on a good first scrape
   })
 
   it('retries past empty captures and returns deals once they populate', async () => {
-    const { postFn, calls } = queuedPost([EMPTY, EMPTY, cards('25% OFF Edibles')])
-    const deals = await scrapeDutchieSpecials('store-x', { postFn })
+    const { postFn, calls } = queuedPost([okBatch(EMPTY), okBatch(EMPTY), okBatch(cards('25% OFF Edibles'))])
+    const { deals, confirmedEmpty } = await scrapeDutchieSpecials('store-x', { postFn })
     expect(deals).toHaveLength(1)
     expect(deals[0].discountPct).toBe(25)
+    expect(confirmedEmpty).toBe(false)
     expect(calls.n).toBe(3) // two empties, then the populated capture
   })
 
-  it('returns [] after exhausting attempts on a genuinely specials-less store', async () => {
-    const { postFn, calls } = queuedPost([EMPTY])
-    const deals = await scrapeDutchieSpecials('store-x', { postFn, attempts: 3 })
-    expect(deals).toEqual([])
+  it('confirms empty when EVERY attempt captures a real menuCards: []', async () => {
+    const { postFn, calls } = queuedPost([okBatch(EMPTY)])
+    const outcome = await scrapeDutchieSpecials('store-x', { postFn, attempts: 3 })
+    expect(outcome).toEqual({ deals: [], confirmedEmpty: true })
     expect(calls.n).toBe(3)
   })
 
-  it('treats a thrown attempt as empty and keeps retrying', async () => {
+  it('does NOT confirm when any attempt is a failed service call', async () => {
+    const { postFn } = queuedPost([okBatch(EMPTY), { ok: false, intercepted: [] }, okBatch(EMPTY)])
+    const outcome = await scrapeDutchieSpecials('store-x', { postFn, attempts: 3 })
+    expect(outcome).toEqual({ deals: [], confirmedEmpty: false })
+  })
+
+  it('does NOT confirm when the GetSpecialMenuCards op was never captured', async () => {
+    const noOp: Intercepted[] = [
+      { url: 'https://dutchie.com/graphql?operationName=FilteredProducts', status: 200, data: {} },
+    ]
+    const { postFn } = queuedPost([okBatch(noOp)])
+    const outcome = await scrapeDutchieSpecials('store-x', { postFn, attempts: 3 })
+    expect(outcome).toEqual({ deals: [], confirmedEmpty: false })
+  })
+
+  it('does NOT confirm on shape drift — menuCards present but every card skipped', async () => {
+    // nameless cards transform to zero deals, but the store is NOT provably dealless
+    const nameless = cards('') // one card with an empty menuDisplayName → skipped
+    const { postFn } = queuedPost([okBatch(nameless)])
+    const outcome = await scrapeDutchieSpecials('store-x', { postFn, attempts: 3 })
+    expect(outcome).toEqual({ deals: [], confirmedEmpty: false })
+  })
+
+  it('does NOT confirm when menuCards is not an array (wrong-shaped payload)', async () => {
+    const wrong: Intercepted[] = [
+      {
+        url: 'graphql?operationName=GetSpecialMenuCards',
+        status: 200,
+        data: { data: { getSpecialMenuCards: { menuCards: null } } },
+      },
+    ]
+    const { postFn } = queuedPost([okBatch(wrong)])
+    const outcome = await scrapeDutchieSpecials('store-x', { postFn, attempts: 2 })
+    expect(outcome).toEqual({ deals: [], confirmedEmpty: false })
+  })
+
+  it('treats a thrown attempt as an UNCONFIRMED empty and keeps retrying', async () => {
     let n = 0
     const postFn = async () => {
       n++
       if (n === 1) throw new Error('service unreachable')
-      return cards('30% OFF Flower')
+      return okBatch(cards('30% OFF Flower'))
     }
-    const deals = await scrapeDutchieSpecials('store-x', { postFn })
+    const { deals } = await scrapeDutchieSpecials('store-x', { postFn })
     expect(deals).toHaveLength(1)
     expect(deals[0].discountPct).toBe(30)
     expect(n).toBe(2)
   })
 
+  it('a throw on any attempt blocks confirmation even if the rest confirm', async () => {
+    let n = 0
+    const postFn = async () => {
+      n++
+      if (n === 2) throw new Error('flake')
+      return okBatch(EMPTY)
+    }
+    const outcome = await scrapeDutchieSpecials('store-x', { postFn, attempts: 3 })
+    expect(outcome).toEqual({ deals: [], confirmedEmpty: false })
+    expect(n).toBe(3)
+  })
+
   it('respects a custom attempts count', async () => {
-    const { postFn, calls } = queuedPost([EMPTY])
+    const { postFn, calls } = queuedPost([okBatch(EMPTY)])
     await scrapeDutchieSpecials('store-x', { postFn, attempts: 2 })
     expect(calls.n).toBe(2)
   })
