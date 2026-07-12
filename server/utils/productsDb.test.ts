@@ -4,6 +4,7 @@ import {
   importProductsFile,
   appendObservations,
   readProductsFile,
+  readWindowedObservations,
   countRecords,
   countObservations,
 } from './productsDb.js'
@@ -268,5 +269,80 @@ describe('productsDb — append-only feed path (ADR-077 AC7)', () => {
     )
     expect(countRecords(db)).toBe(beforeRecs + 1)
     expect(readProductsFile(db).products['store-c::new'].name).toBe('Gelato')
+  })
+})
+
+describe('productsDb — windowed time-range reader (derivation-2.1 / FR13)', () => {
+  it('includes the boundary row exactly at sinceIso and excludes the row before it', () => {
+    const db = openProductsDb(':memory:')
+    importProductsFile(db, {
+      lastUpdated: '2026-07-03T00:00:00.000Z',
+      products: {
+        'store-a::bd': rec({
+          productId: 'bd',
+          dispensaryId: 'store-a',
+          history: [
+            obs('2026-07-01T00:00:00.000Z', '3.5g', 40), // before window — excluded
+            obs('2026-07-02T00:00:00.000Z', '3.5g', 41), // exactly at boundary — included
+            obs('2026-07-03T00:00:00.000Z', '3.5g', 42), // after boundary — included
+          ],
+        }),
+      },
+    })
+
+    const rows = readWindowedObservations(db, '2026-07-02T00:00:00.000Z')
+    expect(rows.map((r) => r.observedAt)).toEqual([
+      '2026-07-02T00:00:00.000Z',
+      '2026-07-03T00:00:00.000Z',
+    ])
+    // identity is joined from product; options are parsed from options_json
+    expect(rows[0].productId).toBe('bd')
+    expect(rows[0].dispensaryId).toBe('store-a')
+    expect(rows[0].name).toBe('Blue Dream')
+    expect(rows[0].category).toBe('Flower')
+    expect(rows[0].options[0].basePrice).toBe(41)
+  })
+
+  it('returns rows sorted on read (ORDER BY in the query, not insertion order)', () => {
+    const db = openProductsDb(':memory:')
+    // Append observations OUT OF calendar order (day 3, day 1, day 2) so insertion order (id) is
+    // deliberately NOT chronological — the windowed reader must still return them day-sorted per
+    // product because the ORDER BY lives in the SQL. This is the AC-1 sorted-on-read gate.
+    importProductsFile(db, { lastUpdated: '', products: {} })
+    appendObservations(db, [rec({ productId: 'bd', dispensaryId: 'store-a', history: [obs('2026-07-13T00:00:00.000Z', '3.5g', 43)] })], '2026-07-13T00:00:00.000Z')
+    appendObservations(db, [rec({ productId: 'bd', dispensaryId: 'store-a', history: [obs('2026-07-11T00:00:00.000Z', '3.5g', 41)] })], '2026-07-11T00:00:00.000Z')
+    appendObservations(db, [rec({ productId: 'bd', dispensaryId: 'store-a', history: [obs('2026-07-12T00:00:00.000Z', '3.5g', 42)] })], '2026-07-12T00:00:00.000Z')
+
+    const rows = readWindowedObservations(db, '2026-07-01T00:00:00.000Z')
+    expect(rows.map((r) => r.observedAt)).toEqual([
+      '2026-07-11T00:00:00.000Z',
+      '2026-07-12T00:00:00.000Z',
+      '2026-07-13T00:00:00.000Z',
+    ])
+  })
+
+  it('groups by product_key then observedAt across multiple products', () => {
+    const db = openProductsDb(':memory:')
+    importProductsFile(db, {
+      lastUpdated: '',
+      products: {
+        'store-b::bd': rec({ productId: 'bd', dispensaryId: 'store-b', history: [obs('2026-07-12T00:00:00.000Z', '3.5g', 50)] }),
+        'store-a::bd': rec({ productId: 'bd', dispensaryId: 'store-a', history: [obs('2026-07-11T00:00:00.000Z', '3.5g', 40)] }),
+      },
+    })
+    const rows = readWindowedObservations(db, '2026-07-01T00:00:00.000Z')
+    // product_key 'store-a::bd' sorts before 'store-b::bd'
+    expect(rows.map((r) => r.product_key)).toEqual(['store-a::bd', 'store-b::bd'])
+  })
+
+  it('returns an empty array when no observation falls in the window', () => {
+    const db = openProductsDb(':memory:')
+    importProductsFile(db, {
+      lastUpdated: '',
+      products: {
+        'store-a::bd': rec({ productId: 'bd', dispensaryId: 'store-a', history: [obs('2026-07-01T00:00:00.000Z', '3.5g', 40)] }),
+      },
+    })
+    expect(readWindowedObservations(db, '2026-08-01T00:00:00.000Z')).toEqual([])
   })
 })

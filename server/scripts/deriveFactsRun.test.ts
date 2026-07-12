@@ -365,6 +365,71 @@ describe('deriveFacts (ADR-077 Phase 1 regression guard)', () => {
     )
   })
 
+  it('price-vs-own-median reaches a real below-median mover through the bounded window read, and excludes sold-out-today (derivation-2.1)', () => {
+    const today = new Date().toISOString().slice(0, 10)
+    const dayMs = 24 * 60 * 60 * 1000
+    // Anchor every day string to the single captured `today` (not per-call Date.now()) so a UTC
+    // midnight crossing mid-test can't desynchronize the fixture's "today" row from itself.
+    const todayMs = Date.parse(`${today}T00:00:00.000Z`)
+    const dayStr = (offsetDays: number) => new Date(todayMs + offsetDays * dayMs).toISOString().slice(0, 10)
+
+    const opt = (option: string, price: number, quantityAvailable: number | null = null) => ({
+      option,
+      weightGrams: null,
+      basePrice: price,
+      specialPrice: null,
+      pricePerGram: null,
+      pricePerItem: null,
+      specialPricePerGram: null,
+      specialPricePerItem: null,
+      quantityAvailable,
+    })
+
+    // 8 trailing days (offset −7..0=today). Option '3.5g': 40 for 7 days then 30 today → below own
+    // median (median 40 → −25%), emitted. Option '7g': buyable at 80 for 7 days but SOLD OUT today
+    // (quantityAvailable 0) → 7 usable history days clear the floor, but today's price is dropped at
+    // the runner boundary (Gate 4), so it is noObservationToday, never compared.
+    const history = []
+    for (let i = 7; i >= 1; i--) {
+      history.push({ observedAt: `${dayStr(-i)}T12:00:00.000Z`, special: false, options: [opt('3.5g', 40), opt('7g', 80)] })
+    }
+    history.push({ observedAt: `${today}T12:00:00.000Z`, special: false, options: [opt('3.5g', 30), opt('7g', 80, 0)] })
+
+    const db = openProductsDb(dbPath)
+    importProductsFile(db, {
+      lastUpdated: today,
+      products: { 'store-a::bd': rec({ productId: 'bd', dispensaryId: 'store-a', history }) },
+    })
+    db.close()
+
+    const outcome = deriveFacts({ dbPath, dataPath, derivedDir })
+    expect(outcome.priceComparedCount).toBe(1)
+    expect(outcome.priceBelowMedianCount).toBe(1)
+
+    const written = JSON.parse(readFileSync(outcome.priceVsOwnMedianPath, 'utf-8'))
+    expect(written.data.rows).toHaveLength(1)
+    expect(written.data.rows[0]).toMatchObject({
+      dispensaryId: 'store-a',
+      productId: 'bd',
+      option: '3.5g',
+      currentPrice: 30,
+      medianPrice: 40,
+      pctVsMedian: -0.25,
+      observedDays: 8,
+    })
+    // the sold-out-today '7g' series cleared the floor but has no usable price today → not compared
+    expect(written.data.noObservationTodayCount).toBe(1)
+    expect(written.data.comparedCount).toBe(1)
+    expect(written.excluded).toEqual([
+      { reason: 'belowFloor', count: 0 },
+      { reason: 'noObservationToday', count: 1 },
+      { reason: 'atOwnMedian', count: 0 },
+      { reason: 'noUsablePrice', count: 0 },
+    ])
+    expect(written.coverage).toMatchObject({ totalProducts: 1, totalSeries: 2, comparedCount: 1, belowMedianCount: 1, aboveMedianCount: 0 })
+    expect(typeof written.generatedAt).toBe('string')
+  })
+
   it('disparity-rollups geo merge reaches both the private WEEDMAPS_STORES registry and data.json through the real wiring (derivation-1.4)', () => {
     // 'western-bud-burlington' is a real non-overlap entry in WEEDMAPS_STORES (its own committed
     // coords, absent from data.json). 'store-only-in-datajson' is a fixture id present ONLY in

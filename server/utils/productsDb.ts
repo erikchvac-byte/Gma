@@ -364,3 +364,70 @@ export function readProductsFromDbPath(dbPath: string = DEFAULT_PRODUCTS_DB_PATH
     db.close()
   }
 }
+
+// One windowed observation, joined to its product's descriptive identity. Deliberately carries
+// ONLY the fields a per-SKU own-history fact needs — potency (thc/cbd/totalTerpenes/effects) and
+// `flags` are NOT selected (SQL-level reinforcement of decision F / Gate 5, and no weight/$-per-
+// gram claim is made by the fact that consumes this).
+export interface WindowedObservationRow {
+  product_key: string
+  dispensaryId: string
+  productId: string
+  name: string
+  category: string
+  observedAt: string
+  options: ProductOptionObservation[]
+}
+
+interface WindowedObsRow {
+  product_key: string
+  dispensaryId: string
+  productId: string
+  name: string
+  category: string
+  observedAt: string
+  options_json: string
+}
+
+// derivation-2.1 (FR13) — the FIRST real consumer of the (product_key, observedAt) index designed
+// into 1.0: a BOUNDED time-range read instead of the whole-file `readProductsFile` reconstruction.
+// `sinceIso` is an inclusive lower bound (`observedAt >= ?`), so a row exactly at the window-start
+// boundary is included. The AC-1 sorted-on-read guarantee lives in the SQL itself (ORDER BY
+// product_key, observedAt) — never in caller convention — so a consumer walking a series never has
+// to assume insertion order. Potency/flags are omitted at the SELECT (decision F reinforcement).
+export function readWindowedObservations(db: DatabaseSync, sinceIso: string): WindowedObservationRow[] {
+  const rows = db
+    .prepare(
+      `SELECT o.product_key, o.dispensaryId, p.productId, p.name, p.category, o.observedAt, o.options_json
+       FROM observation o
+       JOIN product p ON p.product_key = o.product_key
+       WHERE o.observedAt >= ?
+       ORDER BY o.product_key, o.observedAt`,
+    )
+    .all(sinceIso) as unknown as WindowedObsRow[]
+  return rows.map((r) => ({
+    product_key: r.product_key,
+    dispensaryId: r.dispensaryId,
+    productId: r.productId,
+    name: r.name,
+    category: r.category,
+    observedAt: r.observedAt,
+    options: parseJson<ProductOptionObservation[]>(r.options_json) ?? [],
+  }))
+}
+
+// Open the local DB, read one window, close. Used by the local derivation runner. Deliberately
+// NOT fail-soft, same rationale as readProductsFromDbPath: this feeds committed + pushed output, so
+// a misconfigured PRODUCTS_DB_PATH or a mid-write lock collision must fail LOUD, never silently
+// yield an empty window that overwrites the live derived facts.
+export function readWindowedObservationsFromDbPath(
+  sinceIso: string,
+  dbPath: string = DEFAULT_PRODUCTS_DB_PATH,
+): WindowedObservationRow[] {
+  const db = openProductsDb(dbPath)
+  try {
+    return readWindowedObservations(db, sinceIso)
+  } finally {
+    db.close()
+  }
+}
