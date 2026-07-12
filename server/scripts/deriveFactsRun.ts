@@ -2,7 +2,11 @@ import { existsSync, mkdirSync, readFileSync } from 'node:fs'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import path from 'node:path'
 import { atomicWriteJson } from '../utils/atomicWrite.js'
-import { readProductsFromDbPath, DEFAULT_PRODUCTS_DB_PATH } from '../utils/productsDb.js'
+import {
+  readProductsFromDbPath,
+  readWindowedObservationsFromDbPath,
+  DEFAULT_PRODUCTS_DB_PATH,
+} from '../utils/productsDb.js'
 import { buildMatchReport, EXCLUDED_FLAGS } from '../utils/crossStoreValue.js'
 import { WEIGHT_BASED_CATEGORIES } from '../utils/normalizeProduct.js'
 import { buildDealScopeLinks } from '../utils/dealScope.js'
@@ -12,6 +16,11 @@ import { buildDisparityRollups, buildStoreGeoLookup } from '../utils/disparityRo
 import { buildBrandPersonas, type BrandProductSeries } from '../utils/brandPersonas.js'
 import { buildBrandStoreMatrix, type BrandStoreProduct, type BrandStoreOption } from '../utils/brandStoreMatrix.js'
 import { buildNewArrivalDormancyReport } from '../utils/newArrivalDormancy.js'
+import {
+  buildPriceVsOwnMedianReport,
+  windowStartDay,
+  type PriceProductSeries,
+} from '../utils/priceVsOwnMedian.js'
 import type { StoreHealthStatus } from '../utils/extractionHealth.js'
 import { canonicalWeightGrams, deriveMatchKey } from '../utils/productMatchKey.js'
 import { wrapEnvelope } from '../utils/derivedEnvelope.js'
@@ -67,6 +76,7 @@ export interface DeriveOutcome {
   brandPersonasPath: string
   brandStoreMatrixPath: string
   newArrivalDormancyPath: string
+  priceVsOwnMedianPath: string
   suspectedCount: number
   insufficientHistoryCount: number
   startCount: number
@@ -85,6 +95,11 @@ export interface DeriveOutcome {
   unmatchedProductCount: number
   newArrivalCount: number
   dormantCount: number
+  priceComparedCount: number
+  priceBelowMedianCount: number
+  priceAboveMedianCount: number
+  priceAtMedianCount: number
+  priceBelowFloorCount: number
 }
 
 // The product-scraper roster (AC1) — every store actively attempted, not just ids that happen
@@ -128,6 +143,7 @@ export function deriveFacts(opts: DeriveOptions = {}): DeriveOutcome {
   const brandPersonasPath = path.join(derivedDir, 'brand-personas.json')
   const brandStoreMatrixPath = path.join(derivedDir, 'brand-store-matrix.json')
   const newArrivalDormancyPath = path.join(derivedDir, 'new-arrival-dormancy.json')
+  const priceVsOwnMedianPath = path.join(derivedDir, 'price-vs-own-median.json')
 
   const productsFile = readProductsFromDbPath(dbPath)
   const report = buildMatchReport(productsFile)
@@ -343,6 +359,53 @@ export function deriveFacts(opts: DeriveOptions = {}): DeriveOutcome {
 
   atomicWriteJson(newArrivalDormancyPath, newArrivalDormancyEnvelope)
 
+  // derivation-2.1: price vs own rolling median (D6/FR13) — the fix6 keystone, and the FIRST real
+  // consumer of the (product_key, observedAt) index: a BOUNDED time-range read (readWindowed...),
+  // not the whole-file reconstruction the facts above share. Project each parsed
+  // ProductOptionObservation DOWN at THIS boundary — the ONLY place the base/special PAIR exists —
+  // to a single reduced `effectivePrice` per option-day, so the pure buildPriceVsOwnMedianReport
+  // never sees the pair, the banner rate, or potency (decision F, Gate 2/FR16). A reported sold-out
+  // offer is dropped (Gate 4, crossStoreValue/brandStoreMatrix precedent — an unbuyable price is not
+  // a price paid); a null/≤0 effectivePrice is passed THROUGH so the pure fn owns the noUsablePrice
+  // count the envelope restates (never invented here). Written LAST, after every pre-existing write,
+  // preserving the 1.2.5 write-ordering discipline (a new fallible step must never gate the others).
+  const sinceIso = `${windowStartDay(today)}T00:00:00.000Z`
+  const windowedRows = readWindowedObservationsFromDbPath(sinceIso, dbPath)
+  const priceSeriesByKey = new Map<string, PriceProductSeries>()
+  for (const row of windowedRows) {
+    const key = `${row.dispensaryId}::${row.productId}`
+    let s = priceSeriesByKey.get(key)
+    if (!s) {
+      s = { productId: row.productId, dispensaryId: row.dispensaryId, name: row.name, category: row.category, entries: [] }
+      priceSeriesByKey.set(key, s)
+    }
+    for (const opt of row.options) {
+      if (opt.quantityAvailable !== null && opt.quantityAvailable <= 0) continue // Gate 4: sold-out
+      const effectivePrice = opt.specialPrice ?? opt.basePrice // Gate 2: single reduced (never the pair)
+      s.entries.push({ observedAt: row.observedAt, option: opt.option, effectivePrice })
+    }
+  }
+  const priceVsOwnMedian = buildPriceVsOwnMedianReport([...priceSeriesByKey.values()], today)
+
+  const priceVsOwnMedianEnvelope = wrapEnvelope(
+    priceVsOwnMedian,
+    [
+      { reason: 'belowFloor', count: priceVsOwnMedian.belowFloorCount },
+      { reason: 'noObservationToday', count: priceVsOwnMedian.noObservationTodayCount },
+      { reason: 'atOwnMedian', count: priceVsOwnMedian.atMedianCount },
+      { reason: 'noUsablePrice', count: priceVsOwnMedian.noUsablePriceCount },
+    ],
+    {
+      totalProducts: priceVsOwnMedian.totalProducts,
+      totalSeries: priceVsOwnMedian.totalSeries,
+      comparedCount: priceVsOwnMedian.comparedCount,
+      belowMedianCount: priceVsOwnMedian.belowMedianCount,
+      aboveMedianCount: priceVsOwnMedian.aboveMedianCount,
+    },
+  )
+
+  atomicWriteJson(priceVsOwnMedianPath, priceVsOwnMedianEnvelope)
+
   return {
     disparities: report.disparities.length,
     totalRecords: report.totalRecords,
@@ -374,6 +437,12 @@ export function deriveFacts(opts: DeriveOptions = {}): DeriveOutcome {
     unmatchedProductCount: brandStoreMatrix.unmatchedProductCount,
     newArrivalCount: newArrivalDormancy.newArrivalCount,
     dormantCount: newArrivalDormancy.dormantCount,
+    priceComparedCount: priceVsOwnMedian.comparedCount,
+    priceBelowMedianCount: priceVsOwnMedian.belowMedianCount,
+    priceAboveMedianCount: priceVsOwnMedian.aboveMedianCount,
+    priceAtMedianCount: priceVsOwnMedian.atMedianCount,
+    priceBelowFloorCount: priceVsOwnMedian.belowFloorCount,
+    priceVsOwnMedianPath,
   }
 }
 
@@ -396,6 +465,9 @@ function main(): void {
   )
   console.log(
     `[derive] new-arrival-dormancy: ${r.newArrivalCount} new arrivals / ${r.dormantCount} dormant → ${r.newArrivalDormancyPath}`,
+  )
+  console.log(
+    `[derive] price-vs-own-median: ${r.priceBelowMedianCount} below / ${r.priceAboveMedianCount} above own median (${r.priceAtMedianCount} at-median, ${r.priceBelowFloorCount} below-floor) → ${r.priceVsOwnMedianPath}`,
   )
   console.log('[derive] ✓ derived facts written')
 }
