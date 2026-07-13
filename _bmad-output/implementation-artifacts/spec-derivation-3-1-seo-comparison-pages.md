@@ -126,3 +126,14 @@ context: ['{project-root}/_bmad-output/implementation-artifacts/epic-derivation-
 
 - SSR + JSON-LD match, fail-soft, 404, no-discount-%, tie vs spread rendering.
   [`compareRoute.test.ts:1`](../../server/routes/compareRoute.test.ts#L1)
+
+## Review Findings
+
+3-layer adversarial code review 2026-07-13 (Blind Hunter + Edge Case Hunter + Acceptance Auditor). All 5 ACs + honesty constraints verified MET. Findings: 1 decision-needed, 2 patch, 3 deferred, 4 dismissed as noise.
+
+- [x] [Review][Decision→Patch] Percentage inside a product `displayName` vs the no-% honesty gate — RESOLVED (Erik chose: accept product-name `%` as non-discount). Relaxed the honesty test from a blanket `/\d+%/` to discount-phrasing only (`%\s*off` / `\d+% off|discount|savings`), so a verbatim product name like "Blue Dream 20% CBD" no longer trips CI. Gate 2 (discount-% suppression) still enforced. [`compareRoute.test.ts:121`]
+- [x] [Review][Patch] Element-level row shape unguarded — a malformed row 500s, breaking the module's own "never a 500" fail-soft contract. FIXED: added `isRenderableDisparity` (guards `displayName`/`dispensaryId` strings, finite `weightGrams`/`spread`/`lowPrice`/`highPrice`/`price`, non-empty `storesCarrying`) applied to category rows, plus field-guard filters on the index `byCategory`/`byStore`; a broken row is now skipped, never thrown. [`compareRoute.ts:163`, render fns]
+- [x] [Review][Patch] Fail-soft pages publish a 1970 `dateModified` to crawlers — FIXED: `datasetJsonLd` now omits `dateModified` when `generatedAt` equals the epoch sentinel (`EPOCH_GENERATED_AT`), so the never-derived state no longer advertises a false 1970 freshness date. [`compareRoute.ts:138`]
+- [x] [Review][Defer] Category slug collisions silently hide a category [`compareRoute.ts:373`, `:203`] — deferred, dormant with today's controlled category vocabulary
+- [x] [Review][Defer] Category `name`/`description` verbatim schema-match unguarded for `& < >` [`compareRoute.ts:264`] — deferred, no current category label contains those chars
+- [x] [Review][Defer] Rollups/disparities read independently — transient desync can 404 real data or serve an empty category page [`compareRoute.ts:373`] — deferred, co-committed by one derive run + rollups categories ⊆ disparities, so only a partial-deploy transient

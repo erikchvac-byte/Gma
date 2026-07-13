@@ -116,9 +116,12 @@ describe('honesty contract', () => {
     const cat = aRealCategory()
     const index = visibleText((await request(app).get('/compare')).text)
     const category = visibleText((await request(app).get(`/compare/${categorySlug(cat)}`)).text)
+    // Gate 2 targets DISCOUNT phrasing ("N% off"). A bare "%" digit is allowed:
+    // it can legitimately appear inside a verbatim product displayName (e.g.
+    // "Blue Dream 20% CBD"), which is the product's name, not a discount claim.
     for (const text of [index, category]) {
       expect(text).not.toMatch(/%\s*off/i)
-      expect(text).not.toMatch(/\d+%/)
+      expect(text).not.toMatch(/\d+\s*%\s*(off|discount|savings?)/i)
     }
   })
 

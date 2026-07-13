@@ -135,6 +135,11 @@ ${opts.bodyHtml}
 
 // ---- JSON-LD builders ----
 
+// The fail-soft EMPTY_* envelopes carry a fixed epoch `generatedAt` (see
+// valueRoute EMPTY_GENERATED_AT) meaning "never derived" — do NOT publish it as a
+// real Dataset.dateModified, or crawlers ingest a false 1970 freshness date.
+const EPOCH_GENERATED_AT = new Date(0).toISOString()
+
 function datasetJsonLd(opts: {
   id: string
   url: string
@@ -142,7 +147,7 @@ function datasetJsonLd(opts: {
   description: string
   generatedAt: string
 }) {
-  return {
+  const ld: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'Dataset',
     '@id': opts.id,
@@ -152,10 +157,35 @@ function datasetJsonLd(opts: {
     isAccessibleForFree: true,
     creator: { '@type': 'Organization', '@id': ORG_ID, name: 'Gmas List', url: `${BASE_URL}/` },
     spatialCoverage: { '@type': 'State', name: 'Washington' },
-    dateModified: opts.generatedAt,
     variableMeasured: ['Lowest shelf price', 'Highest shelf price', 'Cross-store price spread'],
     keywords: ['cannabis price comparison', 'Washington', 'cross-store', 'cannabis deals'],
   }
+  // Omit dateModified on the epoch sentinel (fail-soft / never-derived state).
+  if (opts.generatedAt && opts.generatedAt !== EPOCH_GENERATED_AT) {
+    ld.dateModified = opts.generatedAt
+  }
+  return ld
+}
+
+// Fail-soft goes deeper than the envelope: isEnvelope validates only the four
+// top-level keys, so a parseable-but-shapeless artifact can still carry a broken
+// row. Guard the fields a row is rendered/reduced through so one bad row degrades
+// (is skipped) instead of throwing a 500 (empty storesCarrying → seedless reduce,
+// undefined dispensaryId/displayName → .split/.replace throw, NaN price → "$NaN").
+function isRenderableDisparity(d: Disparity): boolean {
+  return (
+    !!d &&
+    typeof d.displayName === 'string' &&
+    Number.isFinite(d.weightGrams) &&
+    Number.isFinite(d.spread) &&
+    Number.isFinite(d.lowPrice) &&
+    Number.isFinite(d.highPrice) &&
+    Array.isArray(d.storesCarrying) &&
+    d.storesCarrying.length > 0 &&
+    d.storesCarrying.every(
+      (s) => !!s && typeof s.dispensaryId === 'string' && Number.isFinite(s.price),
+    )
+  )
 }
 
 // ---- render functions (pure over the derived envelopes; exported for tests) ----
@@ -184,8 +214,23 @@ export function renderIndexHtml(
   })
 
   // Defensive reads: a parseable-but-shapeless envelope degrades to empty, never a 500.
-  const byCategory = Array.isArray(rollupsEnv.data?.byCategory) ? rollupsEnv.data.byCategory : []
-  const byStore = Array.isArray(rollupsEnv.data?.byStore) ? rollupsEnv.data.byStore : []
+  // Also drop rows missing the string/numeric fields they're rendered/sorted through
+  // (category → categorySlug/escapeHtml, dispensaryId → storeName, counts → sort/text).
+  const byCategory = (Array.isArray(rollupsEnv.data?.byCategory) ? rollupsEnv.data.byCategory : [])
+    .filter(
+      (c) =>
+        !!c &&
+        typeof c.category === 'string' &&
+        Number.isFinite(c.disparityCount) &&
+        Number.isFinite(c.distinctStoresInvolved),
+    )
+  const byStore = (Array.isArray(rollupsEnv.data?.byStore) ? rollupsEnv.data.byStore : []).filter(
+    (s) =>
+      !!s &&
+      typeof s.dispensaryId === 'string' &&
+      Number.isFinite(s.timesCheapest) &&
+      Number.isFinite(s.disparityCount),
+  )
   const totalDisparities =
     typeof rollupsEnv.data?.totalDisparities === 'number' ? rollupsEnv.data.totalDisparities : 0
 
@@ -275,9 +320,11 @@ export function renderCategoryHtml(
   })
 
   // Defensive: a parseable-but-shapeless envelope must not throw (never a 500).
+  // Drop rows missing the fields we render/reduce through (isRenderableDisparity)
+  // so one broken row is skipped, not a 500; the count below reflects renderable rows.
   const all = Array.isArray(disparitiesEnv.data?.disparities) ? disparitiesEnv.data.disparities : []
   const rows: Disparity[] = all
-    .filter((d) => d.category === category)
+    .filter((d) => d.category === category && isRenderableDisparity(d))
     .sort((a, b) => b.spread - a.spread)
   const shown = rows.slice(0, MAX_CATEGORY_ROWS)
 

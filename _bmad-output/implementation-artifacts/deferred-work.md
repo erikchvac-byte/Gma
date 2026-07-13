@@ -1,5 +1,13 @@
 # Deferred Work
 
+## Deferred from: code review of derivation-3-1-seo-comparison-pages (2026-07-13)
+
+Surfaced by the 3-layer adversarial review (Blind Hunter + Edge Case Hunter + Acceptance Auditor) of the SEO `/compare` pages. All 3 are real but dormant/narrow given current data:
+
+- **Category slug collisions silently hide a category** (`server/routes/compareRoute.ts:373`, index links `:203`). `categorySlug` collapses any run of non-alphanumerics to `-` and lowercases, so two distinct category strings can map to one slug (e.g. "Pre-Roll"/"Pre Roll", "Vape"/"vape"). The index would double-link them, and the route's `categories.find(...)` resolves only the first — the second category's rows become unreachable while the index still advertises a link/count. Dormant with the current controlled Dutchie category vocabulary (no collisions today). Revisit if a colliding category pair ever appears.
+- **Category `name`/`description` schema↔page-text verbatim match is unguarded for `& < >`** (`server/routes/compareRoute.ts:264`). The "no `& < >`" copy rule is enforced (by comment) only for the two `INDEX_*` constants. Category `name`/`description` interpolate the raw category label; a label containing `&`/`<`/`>` would escape in the visible HTML but stay raw in JSON-LD, breaking Google's "schema text must equal on-page text" invariant (and the happy-path test). Real categories (Flower, Vaporizers, Concentrate, Pre-Rolls) have no such chars. Revisit only if an exotic category name lands.
+- **Rollups and disparities are read independently — a transient desync can 404 real data or serve a thin empty category page** (`server/routes/compareRoute.ts:373` validates from `disparity-rollups.json`, renders rows from `disparities.json`). Both are co-committed by one derive run ($derivedFiles append) and rollups categories are a subset of disparities categories, so a mismatch is only a partial-deploy transient; the empty-category 200 is itself spec-sanctioned. If ever addressed, aligning the category route's validation with the already-exported `categoriesFrom(disparities)` would make validation and row-rendering share one source. Ties to the retro's engine-wide oracle-freshness item.
+
 ## Deferred from: code review of derivation-2-3 (2026-07-12)
 
 Surfaced by the 3-layer adversarial review (Blind Hunter + Edge Case Hunter + Acceptance Auditor) of the regional-price-floor fact:
