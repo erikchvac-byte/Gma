@@ -57,7 +57,8 @@ $derivedFiles = @(
     'server/data/derived/brand-store-matrix.json',
     'server/data/derived/new-arrival-dormancy.json',
     'server/data/derived/price-vs-own-median.json',
-    'server/data/derived/cheapest-delivered.json'
+    'server/data/derived/cheapest-delivered.json',
+    'server/data/derived/regional-price-floor.json'
 )
 $logDir       = Join-Path $WorktreePath '.derive-ingest'
 $lockFile     = Join-Path $logDir 'run.lock'
