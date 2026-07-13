@@ -30,6 +30,7 @@ import { formatCountdown, formatLastUpdated, formatTimeOfDay } from '../utils/fo
 import { formatGasCost, isPositiveFinite, roundTripGasCost } from '../utils/gasCost'
 import { applyUserDistance } from '../utils/withUserDistance'
 import StaleIndicator from './StaleIndicator'
+import ValueDrops from './ValueDrops'
 import { Notice, SkeletonFeed } from './ui'
 import type { Deal, Dispensary, UserLocation } from '../types'
 
@@ -244,6 +245,11 @@ export default function DealFeed({ mpg = null, location = null }: DealFeedProps)
   return (
     <section aria-label="Deal feed" style={feedStyle}>
       <DistanceFilter value={maxDistance} onChange={setStoredDistance} />
+      {/* derivation-3.2 — product-keyed "Real price drops" section, between the distance slider
+          and the store deal feed (ratified UX placement). Additive + fail-soft: renders nothing
+          when there are no drops today. Joins against the FULL, unfiltered dispensary list (price
+          drops are NOT distance-filtered). The store-keyed feed below is unchanged. */}
+      <ValueDrops dispensaries={data.dispensaries} />
       <DealCategoryFilter
         categories={presentCategories}
         selected={category}

@@ -8,10 +8,12 @@ import {
   disparitiesRoute,
   dealScopeRoute,
   disparityRollupsRoute,
+  priceVsOwnMedianRoute,
   readDerived,
   EMPTY_DISPARITIES_ENVELOPE,
   EMPTY_DEAL_SCOPE_ENVELOPE,
   EMPTY_DISPARITY_ROLLUPS_ENVELOPE,
+  EMPTY_PRICE_VS_OWN_MEDIAN_ENVELOPE,
 } from './valueRoute.js'
 
 // A1: the cross-store disparity dataset is reachable on a NEW private route, derived
@@ -160,6 +162,62 @@ describe('GET /api/value/disparity-rollups (derivation-1.4)', () => {
   })
 })
 
+// derivation-3.2 (FR13/D6): the flagship price-vs-own-median fact is reachable on a NEW private
+// route, precomputed by the home runner. Contract: "200 + honesty envelope wrapping a
+// PriceVsOwnMedianReport", same fail-soft posture. On a fresh checkout the derived file is not
+// yet committed, so the live assertion is the empty-envelope shape (never a 500) — the row/count
+// shape is asserted structurally without assuming any rows are present.
+describe('GET /api/value/price-vs-own-median (derivation-3.2)', () => {
+  const app = express()
+  app.get('/api/value/price-vs-own-median', priceVsOwnMedianRoute)
+
+  it('serves an envelope whose data is a PriceVsOwnMedianReport with rows + audit counts', async () => {
+    const res = await request(app).get('/api/value/price-vs-own-median')
+    expect(res.status).toBe(200)
+    expect(Array.isArray(res.body.data.rows)).toBe(true)
+    for (const k of [
+      'totalProducts',
+      'totalSeries',
+      'comparedCount',
+      'belowMedianCount',
+      'aboveMedianCount',
+      'atMedianCount',
+      'belowFloorCount',
+      'noObservationTodayCount',
+      'noUsablePriceCount',
+    ]) {
+      expect(typeof res.body.data[k]).toBe('number')
+    }
+  })
+
+  it("carries the envelope's excluded/coverage/generatedAt fields", async () => {
+    const res = await request(app).get('/api/value/price-vs-own-median')
+    expect(Array.isArray(res.body.excluded)).toBe(true)
+    expect(typeof res.body.coverage).toBe('object')
+    expect(typeof res.body.generatedAt).toBe('string')
+  })
+
+  it('every drop row carries the price-vs-own-median shape (movers only, no banner %)', async () => {
+    const res = await request(app).get('/api/value/price-vs-own-median')
+    for (const r of res.body.data.rows) {
+      expect(r).toHaveProperty('dispensaryId')
+      expect(r).toHaveProperty('name')
+      expect(r).toHaveProperty('option')
+      expect(typeof r.currentPrice).toBe('number')
+      expect(typeof r.medianPrice).toBe('number')
+      expect(typeof r.pctVsMedian).toBe('number')
+      // Gate 2: the fact is own-median only — a flat banner discount % must NOT be on any row.
+      expect(r).not.toHaveProperty('discountPct')
+    }
+  })
+
+  it('is independent of /api/data — no deals `dispensaries`/`meta` shape', async () => {
+    const res = await request(app).get('/api/value/price-vs-own-median')
+    expect(res.body).not.toHaveProperty('dispensaries')
+    expect(res.body).not.toHaveProperty('meta')
+  })
+})
+
 // ADR-077 AC5: the routes read precomputed derived JSON and MUST fail-soft to an empty report
 // (never throw, never reach for the raw dataset / home DB) when the derived file is
 // missing/malformed — the load-bearing rule that keeps the site up when the home machine is off.
@@ -175,6 +233,7 @@ describe('readDerived fail-soft (ADR-077 AC5)', () => {
     expect(readDerived(missing, EMPTY_DISPARITIES_ENVELOPE)).toEqual(EMPTY_DISPARITIES_ENVELOPE)
     expect(readDerived(missing, EMPTY_DEAL_SCOPE_ENVELOPE)).toEqual(EMPTY_DEAL_SCOPE_ENVELOPE)
     expect(readDerived(missing, EMPTY_DISPARITY_ROLLUPS_ENVELOPE)).toEqual(EMPTY_DISPARITY_ROLLUPS_ENVELOPE)
+    expect(readDerived(missing, EMPTY_PRICE_VS_OWN_MEDIAN_ENVELOPE)).toEqual(EMPTY_PRICE_VS_OWN_MEDIAN_ENVELOPE)
   })
 
   it('returns the empty envelope when the file is not valid JSON', () => {
@@ -194,6 +253,7 @@ describe('readDerived fail-soft (ADR-077 AC5)', () => {
     expect(readDerived(wrongShape, EMPTY_DISPARITIES_ENVELOPE)).toEqual(EMPTY_DISPARITIES_ENVELOPE)
     expect(readDerived(wrongShape, EMPTY_DEAL_SCOPE_ENVELOPE)).toEqual(EMPTY_DEAL_SCOPE_ENVELOPE)
     expect(readDerived(wrongShape, EMPTY_DISPARITY_ROLLUPS_ENVELOPE)).toEqual(EMPTY_DISPARITY_ROLLUPS_ENVELOPE)
+    expect(readDerived(wrongShape, EMPTY_PRICE_VS_OWN_MEDIAN_ENVELOPE)).toEqual(EMPTY_PRICE_VS_OWN_MEDIAN_ENVELOPE)
   })
 
   it('returns the empty envelope when the file parses but is a bare (un-enveloped) report', () => {

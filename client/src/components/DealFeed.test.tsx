@@ -6,6 +6,13 @@ import type { ApiDataResponse, Deal, Dispensary } from '../types'
 
 vi.mock('../hooks/useDeals')
 
+// The additive "Real price drops" child (derivation-3.2) fetches its own endpoint on mount; stub
+// it to no drops so these DealFeed tests stay isolated from that fetch (ValueDrops then renders
+// nothing). Its own behavior is covered in ValueDrops.test.tsx / useValueDrops.test.ts.
+vi.mock('../hooks/useValueDrops', () => ({
+  useValueDrops: () => ({ drops: [], isLoading: false, error: null }),
+}))
+
 // applyUserDistance is unit-tested in withUserDistance.test.ts. Here it is mocked
 // to an identity so these tests can inject `distanceMiles` directly and focus on
 // the filter / nearest-first sort / pill / gas-line behavior DOWNSTREAM of the

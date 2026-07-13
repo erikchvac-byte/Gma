@@ -82,3 +82,21 @@ export interface ApiDataResponse {
   meta: Meta
   dispensaries: Dispensary[]
 }
+
+// derivation-3.2 — one row of the price-vs-own-median flagship fact, as consumed by the in-app
+// "Real price drops" surface. Mirrors server/utils/priceVsOwnMedian.ts `PriceVsOwnMedianRow` (the
+// client validates the served envelope into this shape). `pctVsMedian` = (current − median) /
+// median; NEGATIVE = below the SKU's own rolling median = the one honest discount the engine can
+// compute (Gate 2). There is NO banner/product discount % on this row by construction — a flat
+// promo rate carries no per-item signal and must never reach this surface. The row carries only
+// `dispensaryId`; the store display name is joined from the loaded dispensary list at render.
+export interface PriceDropRow {
+  dispensaryId: string
+  productId: string
+  name: string
+  category: string
+  option: string
+  currentPrice: number
+  medianPrice: number
+  pctVsMedian: number
+}

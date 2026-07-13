@@ -11,7 +11,7 @@ import { robotsRoute, sitemapRoute, llmsTxtRoute } from './routes/sitemapRoute.j
 import { makeShellRoute } from './routes/shellRoute.js'
 import { dataRoute } from './routes/dataRoute.js'
 import { ingestRoute } from './routes/ingestRoute.js'
-import { disparitiesRoute, dealScopeRoute, disparityRollupsRoute } from './routes/valueRoute.js'
+import { disparitiesRoute, dealScopeRoute, disparityRollupsRoute, priceVsOwnMedianRoute } from './routes/valueRoute.js'
 import { refreshGasPrice } from './utils/refreshGasPrice.js'
 
 const app = express()
@@ -44,6 +44,10 @@ app.get('/api/value/deal-scope', dealScopeRoute)
 // Cross-store disparity rollups (derivation-1.4, FR11). Same private/decoupled posture; served
 // from the precomputed server/data/derived/disparity-rollups.json. No public page/markup.
 app.get('/api/value/disparity-rollups', disparityRollupsRoute)
+// Price-vs-own-median flagship fact (derivation-3.2, FR13/D6) — the in-app "Real price drops"
+// surface's data source. Same private/decoupled/fail-soft posture; served from the precomputed
+// server/data/derived/price-vs-own-median.json. Registered before the SPA fallback below.
+app.get('/api/value/price-vs-own-median', priceVsOwnMedianRoute)
 
 // Server-rendered About + FAQ entity page (spec-ai-search-about-faq). Must be
 // registered BEFORE the production SPA fallback below so crawlers get real

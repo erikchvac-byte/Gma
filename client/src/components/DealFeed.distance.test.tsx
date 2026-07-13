@@ -9,6 +9,11 @@ import type { ApiDataResponse, Dispensary, UserLocation } from '../types'
 // NOTE: unlike DealFeed.test.tsx, this file does NOT mock applyUserDistance — it
 // exercises the real transform end-to-end through DealFeed to prove CAP-2/CAP-3.
 vi.mock('../hooks/useDeals')
+// Stub the additive "Real price drops" child's hook (derivation-3.2) so its on-mount fetch stays
+// out of these distance tests; ValueDrops renders nothing with no drops.
+vi.mock('../hooks/useValueDrops', () => ({
+  useValueDrops: () => ({ drops: [], isLoading: false, error: null }),
+}))
 const mockUseDeals = vi.mocked(useDeals)
 
 const meta = { lastScraperRun: '2026-06-10T07:45:00', gasPrice: 4.1, gasPriceUpdatedAt: '2026-06-10T07:00:00' }

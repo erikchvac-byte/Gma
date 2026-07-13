@@ -5,6 +5,7 @@ import type { Request, Response } from 'express'
 import type { MatchReport } from '../utils/crossStoreValue.js'
 import type { DealScopeReport } from '../types/index.js'
 import type { DisparityRollupsReport } from '../utils/disparityRollups.js'
+import type { PriceVsOwnMedianReport } from '../utils/priceVsOwnMedian.js'
 import { isEnvelope, type DerivedEnvelope } from '../utils/derivedEnvelope.js'
 
 // ADR-077 Phase 1 — these two private/internal routes NO LONGER compute anything at request
@@ -22,6 +23,7 @@ const DERIVED_DIR = path.join(__dirname, '../data/derived')
 const DISPARITIES_PATH = path.join(DERIVED_DIR, 'disparities.json')
 const DEAL_SCOPE_PATH = path.join(DERIVED_DIR, 'deal-scope.json')
 const DISPARITY_ROLLUPS_PATH = path.join(DERIVED_DIR, 'disparity-rollups.json')
+const PRICE_VS_OWN_MEDIAN_PATH = path.join(DERIVED_DIR, 'price-vs-own-median.json')
 
 // derivation-1.1: served artifacts are wrapped in the honesty envelope (decision E). The
 // empty fallback's `generatedAt` is a FIXED value, not "now" — the fail-soft output must stay
@@ -68,6 +70,27 @@ export const EMPTY_DISPARITY_ROLLUPS_ENVELOPE: DerivedEnvelope<DisparityRollupsR
   generatedAt: EMPTY_GENERATED_AT,
 }
 
+// derivation-3.2 (FR13/D6 in-app value cards): the flagship "real price drop" fact —
+// each SKU's current price vs its OWN rolling median. Movers-only rows; the empty report
+// mirrors the pure fn's shape (priceVsOwnMedian.ts) with every counter zeroed.
+export const EMPTY_PRICE_VS_OWN_MEDIAN_ENVELOPE: DerivedEnvelope<PriceVsOwnMedianReport> = {
+  data: {
+    rows: [],
+    totalProducts: 0,
+    totalSeries: 0,
+    comparedCount: 0,
+    belowMedianCount: 0,
+    aboveMedianCount: 0,
+    atMedianCount: 0,
+    belowFloorCount: 0,
+    noObservationTodayCount: 0,
+    noUsablePriceCount: 0,
+  },
+  excluded: [],
+  coverage: {},
+  generatedAt: EMPTY_GENERATED_AT,
+}
+
 // Read a precomputed derived fact file, fail-soft to the given empty envelope. A missing file
 // (home machine never ran / first deploy), an unparseable one, or one that parses but doesn't
 // match the envelope shape all degrade to empty rather than throwing — never a 500, never a
@@ -105,4 +128,13 @@ export function dealScopeRoute(_req: Request, res: Response) {
 // server/data/derived/disparity-rollups.json. Same private/internal/fail-soft posture.
 export function disparityRollupsRoute(_req: Request, res: Response) {
   res.json(readDerived<DisparityRollupsReport>(DISPARITY_ROLLUPS_PATH, EMPTY_DISPARITY_ROLLUPS_ENVELOPE))
+}
+
+// GET /api/value/price-vs-own-median (derivation-3.2, FR13/D6 — the in-app "Real price drops"
+// surface). Serves the precomputed flagship fact from server/data/derived/price-vs-own-median.json.
+// Same private/decoupled/fail-soft posture: never a 500, never a read of the raw dataset. This is
+// the one honest discount the engine can compute (a SKU below its OWN rolling median); the flat
+// banner % (Gate 2) is deliberately NOT in this fact and must not reach any surface.
+export function priceVsOwnMedianRoute(_req: Request, res: Response) {
+  res.json(readDerived<PriceVsOwnMedianReport>(PRICE_VS_OWN_MEDIAN_PATH, EMPTY_PRICE_VS_OWN_MEDIAN_ENVELOPE))
 }

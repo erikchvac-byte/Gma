@@ -546,6 +546,112 @@ article.gma-card::before {
 }
 
 /* ---------------------------------------------------------------
+   Real price drops (derivation-3.2) — the product-keyed value
+   surface: calm ledger rows for SKUs priced below their OWN rolling
+   median (the one honest discount; Gate 2). Reuses the .gma-card
+   primitive; figures are mono/tabular; the drop magnitude is the
+   single amber discount hue (weight-only ramp, never a 2nd color).
+   --------------------------------------------------------------- */
+.gma-value-drops__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+/* section heading — Space Grotesk, sentence case (spec) */
+.gma-value-drops__heading {
+  font-family: var(--font-head);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-tight);
+  color: var(--text-strong);
+  min-width: 0;
+}
+/* count — quiet mono figure, right-aligned (spec: "4 today") */
+.gma-value-drops__count {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+/* rows are a LOCAL list — not the deal feed's <ul> (a11y count preserved) */
+.gma-value-drops__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--gap-feed);
+}
+/* one ledger row: identity left, the honest figure right. Divided by a hairline
+   (tables-as-cards); the last row carries no divider. */
+.gma-value-drops__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-top: var(--gap-feed);
+  border-top: var(--border-hairline) solid var(--border-card);
+}
+.gma-value-drops__row:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+.gma-value-drops__identity {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+/* product name — body, truncates to one line (full name stays in the row's
+   accessible name) */
+.gma-value-drops__name {
+  font: var(--font-body);
+  color: var(--text-strong);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* meta — store name · option label, muted caption */
+.gma-value-drops__meta {
+  font: var(--font-caption);
+  color: var(--text-muted);
+}
+/* the honest figure column — right-aligned, side-by-side percent + $ support */
+.gma-value-drops__figure {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-1);
+  text-align: right;
+}
+/* headline: "19% below its usual" — the words are quiet caption; the magnitude
+   is the amber discount figure below */
+.gma-value-drops__headline {
+  font: var(--font-caption);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+/* drop magnitude — the single amber discount hue (ADR-041 weight-only ramp).
+   Larger than the surrounding caption so it reads as the row's figure. */
+.gma-value-drops__pct {
+  font-family: var(--font-mono);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  color: var(--discount);
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+/* support: "$32.40 vs $40.00 usual" — mono muted, both dollars 2dp */
+.gma-value-drops__support {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums slashed-zero;
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------
    Skeleton — loading placeholder (matches the feed's pulse)
    --------------------------------------------------------------- */
 .gma-skeleton {
