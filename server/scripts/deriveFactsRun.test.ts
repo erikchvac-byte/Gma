@@ -206,6 +206,34 @@ describe('deriveFacts (ADR-077 Phase 1 regression guard)', () => {
     expect(outcome.deliveredCellCount).toBe(1)
     expect(outcome.deliveredStoreOfferCount).toBe(2)
     expect(outcome.deliveredMissingGeoCount).toBe(2)
+
+    // derivation-2.3: store-a/store-b resolve NO geo (absent from data.json AND WEEDMAPS_STORES), so
+    // both are UNCLUSTERED + counted (never defaulted to 0,0) → zero clusters, zero floors. Presence
+    // still collects their category, so the universe carries 'Flower'. Proves the runner reuses the
+    // disparity oracle + geoLookup + storeStatus and writes an envelope-shaped artifact LAST.
+    const regionalWritten = JSON.parse(readFileSync(outcome.regionalPriceFloorPath, 'utf-8'))
+    expect(Array.isArray(regionalWritten.data.clusters)).toBe(true)
+    expect(regionalWritten.data.clusters).toHaveLength(0)
+    expect(regionalWritten.data.categoryUniverse).toEqual(['Flower'])
+    expect(regionalWritten.data.unclusteredStoreCount).toBe(2)
+    expect(regionalWritten.data.totalFloors).toBe(0)
+    expect(regionalWritten.data.singleStoreFloorCount).toBe(0)
+    expect(regionalWritten.data.suppressedGapClusterCount).toBe(0)
+    expect(regionalWritten.excluded).toEqual([
+      { reason: 'unclusteredStore', count: 2 },
+      { reason: 'suppressedGapCluster', count: 0 },
+    ])
+    expect(regionalWritten.coverage).toMatchObject({
+      totalClusters: 0,
+      clusteredStoreCount: 0,
+      totalFloors: 0,
+      singleStoreFloorCount: 0,
+      categoryUniverseSize: 1,
+    })
+    expect(typeof regionalWritten.generatedAt).toBe('string')
+    expect(outcome.regionalClusterCount).toBe(0)
+    expect(outcome.regionalFloorCount).toBe(0)
+    expect(outcome.regionalUnclusteredStoreCount).toBe(2)
   })
 
   it('projection gates non-weight (Edible) and flag-poisoned records out of tiers/cells but keeps them in availability (derivation-1.6)', () => {
@@ -288,6 +316,17 @@ describe('deriveFacts (ADR-077 Phase 1 regression guard)', () => {
     expect(delivered.totalCells).toBe(0)
     expect(delivered.cells).toEqual([])
     expect(delivered.totalStoreOffers).toBe(0)
+
+    // derivation-2.3 seam proof: 'Edible' IS collected into the category universe (presence is the
+    // narrowed projection, blind to price/weight — it sees only category) — yet NO floor exists for
+    // it. A floor can only come from a Disparity, and the mg-labelled Edible never becomes one (Gate
+    // 5, upstream), so Gate 1/5 inheritance is observable right at the boundary: category present,
+    // zero floors. (All four fixture stores are geoless → unclustered, so there are no clusters to
+    // carry a floor either way — totalFloors 0 is the honest result.)
+    const regional = JSON.parse(readFileSync(outcome.regionalPriceFloorPath, 'utf-8')).data
+    expect(regional.categoryUniverse).toEqual(['Edible', 'Flower'])
+    expect(regional.totalFloors).toBe(0)
+    expect(regional.unclusteredStoreCount).toBe(4)
   })
 
   it('refuses to overwrite a previously-populated disparities.json with a zero-record result', () => {

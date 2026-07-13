@@ -22,6 +22,10 @@ import {
   type PriceProductSeries,
 } from '../utils/priceVsOwnMedian.js'
 import { buildCheapestDeliveredReport } from '../utils/cheapestDelivered.js'
+import {
+  buildRegionalPriceFloorReport,
+  type StoreCategoryPresence,
+} from '../utils/regionalPriceFloor.js'
 import type { StoreHealthStatus } from '../utils/extractionHealth.js'
 import { canonicalWeightGrams, deriveMatchKey } from '../utils/productMatchKey.js'
 import { wrapEnvelope } from '../utils/derivedEnvelope.js'
@@ -79,6 +83,7 @@ export interface DeriveOutcome {
   newArrivalDormancyPath: string
   priceVsOwnMedianPath: string
   cheapestDeliveredPath: string
+  regionalPriceFloorPath: string
   suspectedCount: number
   insufficientHistoryCount: number
   startCount: number
@@ -105,6 +110,11 @@ export interface DeriveOutcome {
   deliveredCellCount: number
   deliveredStoreOfferCount: number
   deliveredMissingGeoCount: number
+  regionalClusterCount: number
+  regionalFloorCount: number
+  regionalSingleStoreFloorCount: number
+  regionalUnclusteredStoreCount: number
+  regionalSuppressedGapClusterCount: number
 }
 
 // The product-scraper roster (AC1) — every store actively attempted, not just ids that happen
@@ -150,6 +160,7 @@ export function deriveFacts(opts: DeriveOptions = {}): DeriveOutcome {
   const newArrivalDormancyPath = path.join(derivedDir, 'new-arrival-dormancy.json')
   const priceVsOwnMedianPath = path.join(derivedDir, 'price-vs-own-median.json')
   const cheapestDeliveredPath = path.join(derivedDir, 'cheapest-delivered.json')
+  const regionalPriceFloorPath = path.join(derivedDir, 'regional-price-floor.json')
 
   const productsFile = readProductsFromDbPath(dbPath)
   const report = buildMatchReport(productsFile)
@@ -434,6 +445,43 @@ export function deriveFacts(opts: DeriveOptions = {}): DeriveOutcome {
 
   atomicWriteJson(cheapestDeliveredPath, cheapestDeliveredEnvelope)
 
+  // derivation-2.3: regional price floor + availability gap (D8/FR15) — the third sibling of 1.4/2.2
+  // and the FINAL Epic-2 accrual fact. A pure consumer of already-in-scope runner inputs: the
+  // `report.disparities` oracle (floors, Gate-1-honest by inheritance), the already-built `geoLookup`
+  // (the ONLY geo source — AC1), the already-built `storeStatus` map (suspected-store gap suppression,
+  // reused from 1.7 — no rebuild), and a NEW narrowed presence projection. Project the full
+  // ProductRecord DOWN to `{ dispensaryId, category }` at THIS boundary — the ONLY place the full
+  // record is visible — so the pure fn never sees a price, the base/special pair, or potency (decision
+  // F, FR16). Written LAST, after every pre-existing write, preserving the 1.2.5 write-ordering
+  // discipline (a new fallible step must never gate the others).
+  const presence: StoreCategoryPresence[] = Object.values(productsFile.products).map((r) => ({
+    dispensaryId: r.dispensaryId,
+    category: r.category,
+  }))
+  const regionalPriceFloor = buildRegionalPriceFloorReport(
+    report.disparities,
+    presence,
+    geoLookup,
+    storeStatus,
+  )
+
+  const regionalPriceFloorEnvelope = wrapEnvelope(
+    regionalPriceFloor,
+    [
+      { reason: 'unclusteredStore', count: regionalPriceFloor.unclusteredStoreCount },
+      { reason: 'suppressedGapCluster', count: regionalPriceFloor.suppressedGapClusterCount },
+    ],
+    {
+      totalClusters: regionalPriceFloor.totalClusters,
+      clusteredStoreCount: regionalPriceFloor.clusteredStoreCount,
+      totalFloors: regionalPriceFloor.totalFloors,
+      singleStoreFloorCount: regionalPriceFloor.singleStoreFloorCount,
+      categoryUniverseSize: regionalPriceFloor.categoryUniverse.length,
+    },
+  )
+
+  atomicWriteJson(regionalPriceFloorPath, regionalPriceFloorEnvelope)
+
   return {
     disparities: report.disparities.length,
     totalRecords: report.totalRecords,
@@ -475,6 +523,12 @@ export function deriveFacts(opts: DeriveOptions = {}): DeriveOutcome {
     deliveredCellCount: cheapestDelivered.totalCells,
     deliveredStoreOfferCount: cheapestDelivered.totalStoreOffers,
     deliveredMissingGeoCount: cheapestDelivered.missingGeoCount,
+    regionalPriceFloorPath,
+    regionalClusterCount: regionalPriceFloor.totalClusters,
+    regionalFloorCount: regionalPriceFloor.totalFloors,
+    regionalSingleStoreFloorCount: regionalPriceFloor.singleStoreFloorCount,
+    regionalUnclusteredStoreCount: regionalPriceFloor.unclusteredStoreCount,
+    regionalSuppressedGapClusterCount: regionalPriceFloor.suppressedGapClusterCount,
   }
 }
 
@@ -503,6 +557,9 @@ function main(): void {
   )
   console.log(
     `[derive] cheapest-delivered: ${r.deliveredCellCount} cells / ${r.deliveredStoreOfferCount} store-offers (${r.deliveredMissingGeoCount} missing-geo) → ${r.cheapestDeliveredPath}`,
+  )
+  console.log(
+    `[derive] regional-price-floor: ${r.regionalClusterCount} clusters / ${r.regionalFloorCount} floors (${r.regionalSingleStoreFloorCount} single-store, ${r.regionalUnclusteredStoreCount} unclustered, ${r.regionalSuppressedGapClusterCount} gap-suppressed) → ${r.regionalPriceFloorPath}`,
   )
   console.log('[derive] ✓ derived facts written')
 }

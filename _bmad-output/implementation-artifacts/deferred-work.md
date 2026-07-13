@@ -1,5 +1,11 @@
 # Deferred Work
 
+## Deferred from: code review of derivation-2-3 (2026-07-12)
+
+Surfaced by the 3-layer adversarial review (Blind Hunter + Edge Case Hunter + Acceptance Auditor) of the regional-price-floor fact:
+
+- **Floors can inherit a stale price from a `suspected-extraction-failure` store** (`server/utils/crossStoreValue.ts:96`). The shared disparity oracle `buildMatchReport` uses each product's latest observation (`rec.history.at(-1)`, `specialPrice ?? basePrice`) with no "today" gate. A store whose extraction partially broke today returns fewer products; the products it did NOT re-report retain an earlier day's observation, whose stale price can then set a regional cluster floor. The spec bound floors to stay emitted for suspected stores on the rationale "missing data only makes a min conservative" — which holds only if the oracle never surfaces stale prices, and it can. NOT introduced by 2.3: this is an oracle-wide property inherited identically by `disparities.json`, `cheapest-delivered.json`, and `disparity-rollups.json` (all shipped). Fixing it means a today/freshness gate at the `buildMatchReport` layer, affecting every disparity-derived fact at once — out of scope for 2.3. Ties to the retro's Dutchie-outage / stale-store data-integrity items. Revisit when the oracle's freshness posture is addressed engine-wide.
+
 ## Deferred from: Epic 3 slice decision (2026-07-10, bmad-quick-dev)
 
 Epic 3 ("Feed the surfaces") bundles two independently-shippable goals. Erik chose to slice and ship the SEO/AI-search comparison pages first (`derivation-3-1-seo-comparison-pages`). Deferred:
