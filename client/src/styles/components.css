@@ -546,34 +546,34 @@ article.gma-card::before {
 }
 
 /* ---------------------------------------------------------------
-   Real price drops (derivation-3.2) — the product-keyed value
-   surface: calm ledger rows for SKUs priced below their OWN rolling
-   median (the one honest discount; Gate 2). Reuses the .gma-card
-   primitive; figures are mono/tabular; the drop magnitude is the
-   single amber discount hue (weight-only ramp, never a 2nd color).
+   Real price drops (derivation-3.3) — the in-card value strip: calm
+   ledger rows for SKUs priced below their OWN rolling median (the one
+   honest discount; Gate 2). Nests INSIDE a DealCard under the deal
+   grid (see below); figures are mono/tabular; the drop magnitude is
+   the single amber discount hue (weight-only ramp, never a 2nd color).
    --------------------------------------------------------------- */
-.gma-value-drops__head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
+/* derivation-3.3: the strip nests INSIDE a DealCard (under the deal grid), not in its own
+   Card. It is a plain <div> (not an ARIA region landmark) labelled by its <h3>: heading +
+   local list, stacked with a small gap. */
+.gma-value-drops {
+  display: grid;
   gap: var(--space-2);
 }
-/* section heading — Space Grotesk, sentence case (spec) */
+/* divider — a hairline above the strip when it follows a banner deal grid; omitted on a
+   drop-only/expired card (no grid to separate from), see DealCard `divided` prop. */
+.gma-value-drops--divided {
+  padding-top: var(--space-3);
+  border-top: var(--border-hairline) solid var(--border-card);
+}
+/* strip heading — Space Grotesk, sentence case; a child region of the card's <h2> store name,
+   so it sits a step below it in size (sub-heading within a card). */
 .gma-value-drops__heading {
   font-family: var(--font-head);
-  font-size: var(--text-lg);
+  font-size: var(--text-base);
   font-weight: var(--weight-bold);
   letter-spacing: var(--tracking-tight);
   color: var(--text-strong);
   min-width: 0;
-}
-/* count — quiet mono figure, right-aligned (spec: "4 today") */
-.gma-value-drops__count {
-  flex: none;
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  color: var(--text-muted);
-  font-variant-numeric: tabular-nums slashed-zero;
 }
 /* rows are a LOCAL list — not the deal feed's <ul> (a11y count preserved) */
 .gma-value-drops__list {
@@ -612,7 +612,7 @@ article.gma-card::before {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-/* meta — store name · option label, muted caption */
+/* meta — the option label only (the card's <h2> already names the store), muted caption */
 .gma-value-drops__meta {
   font: var(--font-caption);
   color: var(--text-muted);

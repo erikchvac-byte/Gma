@@ -2,7 +2,7 @@ import { render, screen, within } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
 import DealCard, { type DealView } from './DealCard'
 import { DEAL_ICON_SRC } from '../utils/dealIconAssets'
-import type { Deal, Dispensary } from '../types'
+import type { Deal, Dispensary, PriceDropRow } from '../types'
 
 const makeDeal = (overrides: Partial<Deal>): Deal => ({
   type: 'happy_hour',
@@ -656,5 +656,97 @@ describe('DealCard — expired store (no current deals)', () => {
     expect(container.querySelector('.gma-deal-grid')).toBeNull()
     expect(container.querySelector('.gma-deal-block')).toBeNull()
     expect(screen.queryByText('active today')).not.toBeInTheDocument()
+  })
+})
+
+// derivation-3.3: the "Real price drops" strip renders INSIDE the store's card, under its deals.
+describe('DealCard — real price drops strip', () => {
+  const dropRow = (over: Partial<PriceDropRow> = {}): PriceDropRow => ({
+    dispensaryId: 'a',
+    productId: 'p1',
+    name: 'Blue Dream',
+    category: 'flower',
+    option: '1/8 oz',
+    currentPrice: 32.4,
+    medianPrice: 40,
+    pctVsMedian: -0.19,
+    ...over,
+  })
+
+  it('renders the strip under the store deals, divided from them by a hairline', () => {
+    render(
+      <DealCard
+        dispensary={makeDispensary({})}
+        deals={[view({ type: 'daily', description: 'Daily special', discountPct: 20, startTime: null, endTime: null }, 'Active today', null)]}
+        gasCostText={null}
+        drops={[dropRow()]}
+      />,
+    )
+
+    const card = screen.getByRole('article')
+    // the store's banner deal AND its price drop both render inside the one card
+    expect(within(card).getByText('Daily special')).toBeInTheDocument()
+    // the strip is a plain <div> (no ARIA region landmark), reached via its <h3> heading
+    expect(within(card).getByRole('heading', { name: 'Real price drops', level: 3 })).toBeInTheDocument()
+    const strip = card.querySelector('.gma-value-drops') as HTMLElement
+    expect(within(strip).getByText('Blue Dream')).toBeInTheDocument()
+    expect(within(strip).getByText('19%')).toBeInTheDocument()
+    // strip comes AFTER the deal grid, with the divider (follows a grid)
+    expect(strip).toHaveClass('gma-value-drops--divided')
+    const grid = card.querySelector('.gma-deal-grid')
+    expect(grid && grid.compareDocumentPosition(strip) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+  })
+
+  it('renders no strip when the store has no drops (byte-for-byte the old card)', () => {
+    const { container } = render(
+      <DealCard
+        dispensary={makeDispensary({})}
+        deals={[view({ type: 'daily', description: 'Daily special', startTime: null, endTime: null }, 'Active today', null)]}
+        gasCostText={null}
+      />,
+    )
+    expect(container.querySelector('.gma-value-drops')).toBeNull()
+  })
+
+  it('surfaces a drop-only store (no banner deals) as a "No current deals" card that still shows the strip, no divider', () => {
+    const { container } = render(
+      <DealCard dispensary={makeDispensary({})} deals={[]} gasCostText={null} drops={[dropRow()]} />,
+    )
+
+    // drop-only card = the expired shell + the strip so the drop is not lost
+    expect(screen.getByText('No current deals')).toBeInTheDocument()
+    expect(container.querySelector('.gma-deal-grid')).toBeNull()
+    const strip = container.querySelector('.gma-value-drops') as HTMLElement
+    expect(within(strip).getByText('Blue Dream')).toBeInTheDocument()
+    // no deal grid above it → no divider
+    expect(strip).not.toHaveClass('gma-value-drops--divided')
+  })
+
+  it('keeps the feed a11y contract: the strip adds NO listitem to the card article', () => {
+    const { container } = render(
+      <DealCard
+        dispensary={makeDispensary({})}
+        deals={[view({ type: 'daily', description: 'Daily special', startTime: null, endTime: null }, 'Active today', null)]}
+        gasCostText={null}
+        drops={[dropRow(), dropRow({ productId: 'p2', name: 'Gelato', option: '1 g' })]}
+      />,
+    )
+    // the two drop rows live in the strip's OWN local <ul> — the card itself is not a list, and
+    // DealFeed (not tested here) keeps one <li> per store. The strip's list holds exactly its rows.
+    const strip = container.querySelector('.gma-value-drops') as HTMLElement
+    expect(within(strip).getAllByRole('listitem')).toHaveLength(2)
+  })
+
+  it('drops sub-1%/above-median rows before deciding to show the strip', () => {
+    const { container } = render(
+      <DealCard
+        dispensary={makeDispensary({})}
+        deals={[]}
+        gasCostText={null}
+        // only a sub-0.5% mover → nothing renderable → no strip, no phantom drop-only card content
+        drops={[dropRow({ pctVsMedian: -0.004 })]}
+      />,
+    )
+    expect(container.querySelector('.gma-value-drops')).toBeNull()
   })
 })

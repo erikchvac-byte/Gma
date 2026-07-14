@@ -7,6 +7,7 @@ import DistanceFilter, {
   MIN_DISTANCE_MILES,
 } from './DistanceFilter'
 import { useDeals } from '../hooks/useDeals'
+import { useValueDrops } from '../hooks/useValueDrops'
 import { useLocalStorage } from '../hooks/useLocalStorage'
 import { useNow } from '../hooks/useNow'
 import { hasValidTimedWindow, isDealActive, minutesUntilEnd } from '../utils/dealTime'
@@ -30,9 +31,9 @@ import { formatCountdown, formatLastUpdated, formatTimeOfDay } from '../utils/fo
 import { formatGasCost, isPositiveFinite, roundTripGasCost } from '../utils/gasCost'
 import { applyUserDistance } from '../utils/withUserDistance'
 import StaleIndicator from './StaleIndicator'
-import ValueDrops from './ValueDrops'
+import { renderableDrops } from './ValueDropStrip'
 import { Notice, SkeletonFeed } from './ui'
-import type { Deal, Dispensary, UserLocation } from '../types'
+import type { Deal, Dispensary, PriceDropRow, UserLocation } from '../types'
 
 interface DealFeedProps {
   // resolved vehicle MPG from App (already validated); null → no gas line
@@ -68,6 +69,11 @@ function countdownText(deal: Deal, now: Date): string | null {
 
 export default function DealFeed({ mpg = null, location = null }: DealFeedProps) {
   const { data, isLoading, error } = useDeals()
+  // derivation-3.3: product-keyed "real price drops". Additive + fail-soft (yields [] on any failure),
+  // grouped by store below and rendered INSIDE each store's DealCard. A drop follows its store: it only
+  // shows if its store's card shows (distance/fresh), and a fresh in-range store with a drop but no
+  // banner deal still gets a card (union / no-drop-lost) so the drop is never lost.
+  const { drops: allDrops } = useValueDrops()
   const now = useNow()
   const [storedDistance, setStoredDistance] = useLocalStorage<number>(
     'gma_distance_miles',
@@ -187,7 +193,32 @@ export default function DealFeed({ mpg = null, location = null }: DealFeedProps)
     dispensary,
     deals: [],
   }))
-  const storeGroups = [...liveGroups, ...expiredGroups].sort(byDistanceMiles)
+  // derivation-3.3: group the loaded drops by store, then expose each store's RENDERABLE drops.
+  // Honesty gates (mirroring the retired standalone surface): a store whose `status` is failed/stale
+  // carries no drops; sub-1%-display + above-median rows are filtered by `renderableDrops`.
+  const dropsByStore = new Map<string, PriceDropRow[]>()
+  for (const row of allDrops) {
+    const list = dropsByStore.get(row.dispensaryId)
+    if (list === undefined) dropsByStore.set(row.dispensaryId, [row])
+    else list.push(row)
+  }
+  const dropsFor = (dispensary: Dispensary): PriceDropRow[] => {
+    if (dispensary.status === 'failed' || dispensary.status === 'stale') return []
+    return renderableDrops(dropsByStore.get(dispensary.id) ?? [])
+  }
+  // Union / no-drop-lost (ratified): a fresh, in-range store with a real drop but NO active/expired
+  // banner deal still gets a card — identity + trip + "No current deals" + the drops strip — so its
+  // drop isn't silently dropped. Category-gated exactly like expired cards (a drop-only store has no
+  // active deals to match a selection), and never a store already carded by live/expired groups.
+  const baseGroups = [...liveGroups, ...expiredGroups]
+  const cardedIds = new Set(baseGroups.map((group) => group.dispensary.id))
+  const dropOnlyGroups: StoreGroup[] =
+    category === null
+      ? nearbyDispensaries
+          .filter((dispensary) => !cardedIds.has(dispensary.id) && dropsFor(dispensary).length > 0)
+          .map((dispensary) => ({ dispensary, deals: [] }))
+      : []
+  const storeGroups = [...baseGroups, ...dropOnlyGroups].sort(byDistanceMiles)
   const lastUpdated = formatLastUpdated(data.meta.lastScraperRun)
 
   // build each store's DealView list once — the same array drives both the
@@ -199,6 +230,8 @@ export default function DealFeed({ mpg = null, location = null }: DealFeedProps)
       windowText: windowText(deal),
       countdown: countdownText(deal, now),
     })),
+    // derivation-3.3: this store's renderable drops, rendered as a strip inside its card
+    drops: dropsFor(dispensary),
   }))
   // Rotating sale-tag pools (dealIconPools): count each rotating family's glyph
   // occurrences per store in feed reading order, then deal every store its
@@ -245,11 +278,6 @@ export default function DealFeed({ mpg = null, location = null }: DealFeedProps)
   return (
     <section aria-label="Deal feed" style={feedStyle}>
       <DistanceFilter value={maxDistance} onChange={setStoredDistance} />
-      {/* derivation-3.2 — product-keyed "Real price drops" section, between the distance slider
-          and the store deal feed (ratified UX placement). Additive + fail-soft: renders nothing
-          when there are no drops today. Joins against the FULL, unfiltered dispensary list (price
-          drops are NOT distance-filtered). The store-keyed feed below is unchanged. */}
-      <ValueDrops dispensaries={data.dispensaries} />
       <DealCategoryFilter
         categories={presentCategories}
         selected={category}
@@ -261,14 +289,15 @@ export default function DealFeed({ mpg = null, location = null }: DealFeedProps)
         </Notice>
       ) : (
         <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 'var(--gap-feed)' }}>
-          {storeViews.map(({ dispensary, views }, storeIndex) => (
-            // one listitem per STORE; deals are grouped inside the card
+          {storeViews.map(({ dispensary, views, drops }, storeIndex) => (
+            // one listitem per STORE; deals + the price-drops strip are grouped inside the card
             <li key={dispensary.id}>
               <DealCard
                 dispensary={dispensary}
                 deals={views}
                 gasCostText={gasCostText(dispensary.distanceMiles)}
                 rotatingIconSrcs={rotatingByStore[storeIndex]}
+                drops={drops}
               />
             </li>
           ))}

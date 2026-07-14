@@ -2,16 +2,17 @@ import { render, screen, within, act, fireEvent } from '@testing-library/react'
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import DealFeed from './DealFeed'
 import { useDeals } from '../hooks/useDeals'
-import type { ApiDataResponse, Deal, Dispensary } from '../types'
+import type { ApiDataResponse, Deal, Dispensary, PriceDropRow } from '../types'
 
 vi.mock('../hooks/useDeals')
 
-// The additive "Real price drops" child (derivation-3.2) fetches its own endpoint on mount; stub
-// it to no drops so these DealFeed tests stay isolated from that fetch (ValueDrops then renders
-// nothing). Its own behavior is covered in ValueDrops.test.tsx / useValueDrops.test.ts.
-vi.mock('../hooks/useValueDrops', () => ({
-  useValueDrops: () => ({ drops: [], isLoading: false, error: null }),
-}))
+// The "Real price drops" data (derivation-3.3) is fetched by useValueDrops and rendered INSIDE each
+// store's card. Mock it so most DealFeed tests stay isolated from that fetch (default: no drops → no
+// strips, byte-for-byte the pre-3.3 feed). The dedicated describe block below drives real drops.
+vi.mock('../hooks/useValueDrops', () => ({ useValueDrops: vi.fn() }))
+import { useValueDrops } from '../hooks/useValueDrops'
+const mockUseValueDrops = vi.mocked(useValueDrops)
+const noDrops = { drops: [], isLoading: false, error: null }
 
 // applyUserDistance is unit-tested in withUserDistance.test.ts. Here it is mocked
 // to an identity so these tests can inject `distanceMiles` directly and focus on
@@ -61,6 +62,7 @@ const withData = (dispensaries: Dispensary[]): ApiDataResponse => ({ meta, dispe
 describe('DealFeed', () => {
   beforeEach(() => {
     localStorage.clear()
+    mockUseValueDrops.mockReturnValue(noDrops)
     vi.useFakeTimers()
     vi.setSystemTime(new Date(2026, 5, 10, 23, 0))
   })
@@ -820,6 +822,7 @@ describe('DealFeed — stale deal expiry (CAP-1/CAP-2)', () => {
   // "now" to 2026-06-10 23:00 so the lastFetchedAt ages below are deterministic.
   beforeEach(() => {
     localStorage.clear()
+    mockUseValueDrops.mockReturnValue(noDrops)
     vi.useFakeTimers()
     vi.setSystemTime(new Date(2026, 5, 10, 23, 0))
   })
@@ -924,5 +927,125 @@ describe('DealFeed — stale deal expiry (CAP-1/CAP-2)', () => {
     expect(screen.queryByText('No current deals')).not.toBeInTheDocument()
     expect(screen.queryByRole('link', { name: /Down Cannabis/ })).not.toBeInTheDocument()
     expect(screen.getByText('1 source unavailable')).toBeInTheDocument()
+  })
+})
+
+// derivation-3.3: price drops are grouped by store and rendered INSIDE each store's card. A drop
+// follows its store (distance/fresh), and a fresh in-range store with a drop but no banner deal
+// still gets a card (union / no-drop-lost). System time is 2026-06-10 23:00 (see beforeEach).
+describe('DealFeed — real price drops in cards', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    mockUseValueDrops.mockReturnValue(noDrops)
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date(2026, 5, 10, 23, 0))
+  })
+  afterEach(() => {
+    vi.useRealTimers()
+    vi.clearAllMocks()
+  })
+
+  const dropRow = (over: Partial<PriceDropRow> = {}): PriceDropRow => ({
+    dispensaryId: 'a',
+    productId: 'p1',
+    name: 'Blue Dream',
+    category: 'flower',
+    option: '1/8 oz',
+    currentPrice: 32.4,
+    medianPrice: 40,
+    pctVsMedian: -0.19,
+    ...over,
+  })
+
+  it('renders a store’s drop inside that store’s card, next to its deals', () => {
+    mockUseDeals.mockReturnValue({
+      data: withData([makeDispensary('a', 'Green Fields', [makeDeal({ description: 'Daily special' })])]),
+      isLoading: false,
+      error: null,
+    })
+    mockUseValueDrops.mockReturnValue({ drops: [dropRow()], isLoading: false, error: null })
+    render(<DealFeed />)
+
+    // exactly one store card, and BOTH the banner deal and the price drop live inside it
+    const item = screen.getByRole('article')
+    expect(within(item).getByText('Green Fields')).toBeInTheDocument()
+    expect(within(item).getByText('Daily special')).toBeInTheDocument()
+    // strip is a plain <div> reached via its <h3> heading (no ARIA region landmark)
+    expect(within(item).getByRole('heading', { name: 'Real price drops', level: 3 })).toBeInTheDocument()
+    const strip = item.querySelector('.gma-value-drops') as HTMLElement
+    expect(within(strip).getByText('Blue Dream')).toBeInTheDocument()
+    expect(within(strip).getByText('19%')).toBeInTheDocument()
+  })
+
+  it('surfaces a fresh in-range store with a drop but NO banner deal as a card (union / no-drop-lost)', () => {
+    mockUseDeals.mockReturnValue({
+      data: withData([makeDispensary('a', 'Green Fields', [])]), // no deals
+      isLoading: false,
+      error: null,
+    })
+    mockUseValueDrops.mockReturnValue({ drops: [dropRow()], isLoading: false, error: null })
+    render(<DealFeed />)
+
+    // it would be invisible without a drop; the drop gives it a "No current deals" card + the strip
+    const item = screen.getByRole('article')
+    expect(within(item).getByText('Green Fields')).toBeInTheDocument()
+    expect(within(item).getByText('No current deals')).toBeInTheDocument()
+    expect(within(item).getByRole('heading', { name: 'Real price drops', level: 3 })).toBeInTheDocument()
+    // the additive-empty state must NOT show — there IS a card now
+    expect(screen.queryByText('No active deals right now')).not.toBeInTheDocument()
+  })
+
+  it('hides a drop with its store when the store is beyond the distance slider', () => {
+    localStorage.setItem('gma_distance_miles', '10')
+    const near = { ...makeDispensary('a', 'Near', [makeDeal({ description: 'near deal' })]), distanceMiles: 5 }
+    const far = { ...makeDispensary('b', 'Far', []), distanceMiles: 40 } // drop-only, but out of range
+    mockUseDeals.mockReturnValue({ data: withData([near, far]), isLoading: false, error: null })
+    mockUseValueDrops.mockReturnValue({
+      drops: [dropRow({ dispensaryId: 'b', name: 'Far Drop' })],
+      isLoading: false,
+      error: null,
+    })
+    render(<DealFeed />)
+
+    // the far store's card is filtered out, so its drop is gone too (drops follow their store)
+    expect(screen.queryByText('Far')).not.toBeInTheDocument()
+    expect(screen.queryByText('Far Drop')).not.toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Real price drops' })).not.toBeInTheDocument()
+    // the near store is unaffected
+    expect(screen.getByText('Near')).toBeInTheDocument()
+  })
+
+  it('never attaches a drops strip to a failed/stale-status store', () => {
+    const failed = { ...makeDispensary('a', 'Broken', [makeDeal({ description: 'a deal' })]), status: 'failed' as const }
+    mockUseDeals.mockReturnValue({ data: withData([failed]), isLoading: false, error: null })
+    mockUseValueDrops.mockReturnValue({ drops: [dropRow()], isLoading: false, error: null })
+    render(<DealFeed />)
+
+    // the card still shows (it has a live deal), but the status gate drops its price-drop rows
+    expect(screen.getByText('Broken')).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Real price drops' })).not.toBeInTheDocument()
+    expect(screen.queryByText('Blue Dream')).not.toBeInTheDocument()
+  })
+
+  it('does not surface a drop-only card while a category icon is selected', () => {
+    // a live store carrying a vape deal + a drop, plus a drop-only store
+    const vape = makeDispensary('a', 'Vape Store', [makeDeal({ description: '20% off vapes' })])
+    const dropOnly = makeDispensary('b', 'Drop Only', [])
+    mockUseDeals.mockReturnValue({ data: withData([vape, dropOnly]), isLoading: false, error: null })
+    mockUseValueDrops.mockReturnValue({
+      drops: [dropRow({ dispensaryId: 'a' }), dropRow({ dispensaryId: 'b', name: 'Lonely Drop' })],
+      isLoading: false,
+      error: null,
+    })
+    render(<DealFeed />)
+
+    // both stores show unfiltered
+    expect(screen.getByText('Drop Only')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Vapes' }))
+    // the drop-only store has no active vape deal → it drops under the selection (like expired cards)
+    expect(screen.queryByText('Drop Only')).not.toBeInTheDocument()
+    expect(screen.queryByText('Lonely Drop')).not.toBeInTheDocument()
+    // the carded vape store keeps its own drop strip
+    expect(screen.getByText('Vape Store')).toBeInTheDocument()
   })
 })

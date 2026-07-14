@@ -1,10 +1,11 @@
-import type { Dispensary } from '../types'
+import type { Dispensary, PriceDropRow } from '../types'
 import { Card } from './ui'
 import gasPumpArt from '../assets/location-icons/gas-pump.webp'
 import { buildDealBlocks, storeUrgencyBadge, type DealView } from '../utils/dealView'
 import { DEAL_ICON_LABEL, type DealIconName } from '../utils/dealIcons'
 import { DEAL_ICON_SRC, BOGO_BADGE_SRC } from '../utils/dealIconAssets'
 import { ROTATING_ICON_POOLS, type RotatingIconName, type RotatingIconSrcs } from '../utils/dealIconPools'
+import ValueDropStrip, { renderableDrops } from './ValueDropStrip'
 
 // a family rotates iff it has a pool; non-pool names keep their single art
 const isRotating = (name: DealIconName): name is RotatingIconName => name in ROTATING_ICON_POOLS
@@ -23,6 +24,10 @@ export interface DealCardProps {
   // no-repeat cycle spans cards). Consumed in order; underflow falls back to
   // the family's legacy single art rather than a broken img.
   rotatingIconSrcs?: RotatingIconSrcs
+  // derivation-3.3: this store's genuine "real price drops" (product priced below its own rolling
+  // median), already store-joined + store-status-gated by DealFeed. Rendered as a labeled strip
+  // UNDER the deal grid so the drop reads together with this store's link/address/deals. Default [].
+  drops?: PriceDropRow[]
 }
 
 // url is a required field but not validated upstream (scraped/ingested data) —
@@ -38,7 +43,7 @@ function isLinkableUrl(url: string): boolean {
 
 // Purely presentational: receives data and computed values as props.
 // No fetching, no intervals, no hooks.
-export default function DealCard({ dispensary, deals, gasCostText, rotatingIconSrcs = {} }: DealCardProps) {
+export default function DealCard({ dispensary, deals, gasCostText, rotatingIconSrcs = {}, drops = [] }: DealCardProps) {
   // next unconsumed pool src per family; render-scoped so every render replays
   // the same assignment (the srcs themselves are stable — DealFeed derives them
   // from a per-mount seed)
@@ -57,6 +62,10 @@ export default function DealCard({ dispensary, deals, gasCostText, rotatingIconS
   // trip info but shows a "No current deals" state instead of stale deal blocks —
   // never silently dropped. Its urgency/border stay neutral (no live countdown).
   const isExpired = deals.length === 0
+  // derivation-3.3: this store's renderable price drops (sub-1%/above-median already filtered). When
+  // present they render as a strip below the deal grid; a store with ONLY drops (no banner deals) is
+  // an expired/"No current deals" card that still carries the strip so the drop is never lost.
+  const dropRows = renderableDrops(drops)
   // one store-level urgency badge — reports time, never a verdict (ADR-009).
   // The card's accent border is driven from the same signal so border and
   // badge can never disagree (urgent only when a live countdown exists).
@@ -197,6 +206,12 @@ export default function DealCard({ dispensary, deals, gasCostText, rotatingIconS
           </div>
         ))}
       </div>
+      )}
+      {/* derivation-3.3: the store's "Real price drops" strip, UNDER the deal grid. A hairline
+          divider separates it from the banner deals; on a drop-only/expired card there is no grid
+          to separate from, so the divider is omitted (the "No current deals" line sits above). */}
+      {dropRows.length > 0 && (
+        <ValueDropStrip storeId={dispensary.id} drops={dropRows} divided={!isExpired} />
       )}
     </Card>
   )

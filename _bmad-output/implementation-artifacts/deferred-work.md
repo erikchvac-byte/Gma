@@ -1,5 +1,11 @@
 # Deferred Work
 
+## Deferred from: code review of derivation-3-3-price-drops-in-card (2026-07-13)
+
+Surfaced by the 3-layer adversarial review (Blind Hunter + Edge Case Hunter) of the in-card price-drops relocation:
+
+- **Sub-1% mover rounds up to a displayed "1%"** (`client/src/components/ValueDropStrip.tsx:25`). `dropPercent` uses `Math.round(Math.abs(pctVsMedian) * 100)`, so a genuine −0.5% drop (`pctVsMedian = -0.005`) survives `renderableDrops` and renders "1% below its usual" beside its true dollar figures (e.g. `$39.80 vs $40.00 usual`, a 0.5% gap) — the headline percent slightly overstates the boundary mover. NOT introduced by 3-3: inherited verbatim from 3-2 / the deleted `ValueDrops.tsx` (identical `Math.round`), and spec-compliant with the "displayed whole-number percent ≥ 1%" suppression rule (only `round → 0%` is suppressed). Revisit only if the honesty bar tightens to truncation (`Math.floor`), which would also suppress every 0.5–0.99% mover.
+
 ## Deferred from: code review of derivation-3-1-seo-comparison-pages (2026-07-13)
 
 Surfaced by the 3-layer adversarial review (Blind Hunter + Edge Case Hunter + Acceptance Auditor) of the SEO `/compare` pages. All 3 are real but dormant/narrow given current data:
