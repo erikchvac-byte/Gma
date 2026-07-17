@@ -3,6 +3,7 @@ import remedyTulalipScrape from './remedy-tulalip.js'
 import theJointEverettScrape from './the-joint-everett.js'
 import jetCannabisEverettScrape from './jet-cannabis-everett.js'
 import kush21EverettEvergreenScrape from './kush21-everett-evergreen.js'
+import happyTimeMtVernonScrape from './happy-time-mt-vernon.js'
 import { dutchieScrapers } from './dutchie-stores.js'
 
 // Registry contract (ADR-083): scrape() never throws and resolves to a
@@ -19,6 +20,11 @@ export const scrapers: Record<string, () => Promise<DealScrapeOutcome>> = {
   // Batch-resolved Dutchie stores (2026-06-21), id === embed cName. See
   // dutchie-stores.ts. Each needs a matching dispensary record in data.json.
   ...dutchieScrapers,
+  // OVERRIDE (prototype 2026-07-17): happy-time-mt-vernon runs no Dutchie specials
+  // (confirmed-empty menuCards), so its DEALS come from the store's own site
+  // instead of the empty Dutchie specials path. Placed AFTER the spread so this
+  // key wins. Its Dutchie PRODUCT-pricing scrape (dutchie-stores.ts) is untouched.
+  'happy-time-mt-vernon': happyTimeMtVernonScrape,
 }
 
 // Single source of truth for the CI scrape matrix (ADR-034 Goal D). The Actions

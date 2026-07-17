@@ -70,3 +70,29 @@ export async function postScrapeDetailed(
 export async function postScrape(req: ScrapeRequest): Promise<Intercepted[]> {
   return (await postScrapeDetailed(req)).intercepted
 }
+
+// HTML variant: returns the service's `raw_html` (page.content()) instead of the
+// intercepted GraphQL payloads. For sources that render their content into the DOM
+// rather than a capturable API — e.g. a store's own marketing page behind a JS
+// challenge (Vercel checkpoint) that only a real browser clears. Pair it with an
+// EMPTY intercept_pattern: the service returns page.content() only when nothing was
+// captured (api/server.py `_run_browser`), so any matched request would null the
+// HTML. Never throws — a service failure / non-2xx / missing html returns null so
+// the caller degrades to an empty scrape (→ stale), same contract as the others.
+export async function postScrapeHtml(
+  req: ScrapeRequest,
+): Promise<{ ok: boolean; html: string | null }> {
+  try {
+    const url = process.env.SCRAPER_URL || DEFAULT_SERVICE_URL
+    const res = await axios.post<ScrapeResponse>(url, req, { timeout: 50000 })
+    const body = res.data
+    if (body?.success === true) {
+      return { ok: true, html: typeof body.raw_html === 'string' ? body.raw_html : null }
+    }
+    console.error('[scraperClient] unsuccessful scrape', body?.error ?? body)
+    return { ok: false, html: null }
+  } catch (err) {
+    console.error('[scraperClient]', err)
+    return { ok: false, html: null }
+  }
+}

@@ -1,0 +1,61 @@
+<!doctype html>
+<!--
+  Trimmed real capture of https://happytimeweed.com/mount-vernon-menu (2026-07-17).
+  The store runs NO Dutchie GetSpecialMenuCards specials (confirmed empty), so this
+  wrapper page's server-rendered `.deal-card` blocks are the only machine-readable
+  source of its promotions. Kept just the deals region + representative noise (nav,
+  the storewide banner anchor, an embedded-menu product card) so the parser is
+  exercised against the things it must IGNORE as well as the cards it must keep.
+-->
+<html lang="en">
+  <head><title>Mount Vernon Cannabis Menu — Order Online | Happy Time</title></head>
+  <body>
+    <header>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/mount-vernon-menu">Mount Vernon Menu</a>
+        <a href="/specials">Specials</a>
+      </nav>
+    </header>
+    <main>
+      <h1>Mount Vernon Cannabis Menu — Order Weed Online for Pickup</h1>
+
+      <div class="mt-6">
+        <div class="flex justify-center px-4 py-2 text-center">
+          <a aria-label="View 4th of July specials - 50% off selected products storewide" href="/specials">
+            <span class="relative inline-flex flex-wrap items-center justify-center gap-x-3 rounded-full bg-gradient-to-r from-amber via-amber to-ember px-6 py-3 border-2 border-cream/40">
+              <span>50% OFF SELECTED PRODUCTS STOREWIDE</span>
+              <span>4th of July Sale · July 1-10 · 21+</span>
+            </span>
+          </a>
+        </div>
+      </div>
+
+      <section>
+        <h2>Current Deals &amp; Specials</h2>
+        <div class="deals-grid">
+          <div class="deal-card"><span class="deal-cat">July Deals</span><h3 class="deal-title">30% Off All Flower</h3><p class="deal-desc">July 1–31 at Happy Time Mount Vernon: 30% off all flower — eighths, quarters, halves.</p></div>
+          <div class="deal-card"><span class="deal-cat">July Deals</span><h3 class="deal-title">30% Off Concentrates</h3><p class="deal-desc">July 1–31 at Happy Time Mount Vernon: 30% off all concentrates — rosin, live resin, dabs, sauce.</p></div>
+          <div class="deal-card"><span class="deal-cat">July Deals</span><h3 class="deal-title">25% Off Vape Carts</h3><p class="deal-desc">July 1–31 at Happy Time Mount Vernon: 25% off vape cartridges.</p></div>
+          <div class="deal-card"><span class="deal-cat">July Deals</span><h3 class="deal-title">25% Off Disposables</h3><p class="deal-desc">July 1–31 at Happy Time Mount Vernon: 25% off all-in-one disposable vapes.</p></div>
+          <div class="deal-card"><span class="deal-cat">July Deals</span><h3 class="deal-title">20% Off Pre-Rolls</h3><p class="deal-desc">July 1–31 at Happy Time Mount Vernon: 20% off flower pre-rolls.</p></div>
+          <div class="deal-card"><span class="deal-cat">July Deals</span><h3 class="deal-title">20% Off Infused Pre-Rolls</h3><p class="deal-desc">July 1–31 at Happy Time Mount Vernon: 20% off infused pre-rolls.</p></div>
+          <div class="deal-card"><span class="deal-cat">July Deals</span><h3 class="deal-title">20% Off Edibles</h3><p class="deal-desc">July 1–31 at Happy Time Mount Vernon: 20% off edibles — gummies, chocolates, and more.</p></div>
+          <div class="deal-card"><span class="deal-cat">July Deals</span><h3 class="deal-title">20% Off Drinks</h3><p class="deal-desc">July 1–31 at Happy Time Mount Vernon: 20% off cannabis-infused drinks.</p></div>
+          <div class="deal-card"><span class="deal-cat">July Deals</span><h3 class="deal-title">20% Off Wellness Products</h3><p class="deal-desc">July 1–31 at Happy Time Mount Vernon: 20% off wellness products — tinctures, topicals, and CBD.</p></div>
+        </div>
+      </section>
+
+      <!-- Embedded Dutchie menu grid below: a product card that also contains "% Off"
+           text must NOT be mistaken for a deal card. -->
+      <section>
+        <h2>Browse Our Products</h2>
+        <div class="product-card">
+          <h3 class="product-name">Good Vibes Infused Pre-roll Bubblegum 5pk</h3>
+          <p class="product-meta">Hybrid · THC 33.56% · 20% Off applied at checkout</p>
+          <span class="product-price">$25.00</span>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
