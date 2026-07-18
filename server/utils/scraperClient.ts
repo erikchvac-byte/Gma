@@ -53,14 +53,22 @@ export interface ScrapeResponse {
 // `ok: true` means the scraper service answered `success: true` with a well-formed
 // intercepted array — the caller can then trust an empty capture as evidence
 // rather than a swallowed failure. Still never throws.
+// Client-side HTTP timeout for one service call. Must sit above the service's own
+// worst case: for a plain scrape that's the 45s browser nav (+settle), so 50s. A
+// `paginate` request does its numbered-page walk AFTER the nav inside the same
+// service call (categories × pages sub-second in-page fetches + pauses), so it gets
+// a much larger budget — an HTTP timeout mid-walk would discard a COMPLETED capture
+// and send the retry loop into full re-scrapes that yield zero (worse than page-0).
+export function clientTimeoutMs(req: ScrapeRequest): number {
+  return req.paginate ? 180000 : 50000
+}
+
 export async function postScrapeDetailed(
   req: ScrapeRequest,
 ): Promise<{ ok: boolean; intercepted: Intercepted[] }> {
   try {
     const url = process.env.SCRAPER_URL || DEFAULT_SERVICE_URL
-    // Timeout sits above the service's own 45s browser timeout so the HTTP wait
-    // never fires before the service has had its chance to respond or fail.
-    const res = await axios.post<ScrapeResponse>(url, req, { timeout: 50000 })
+    const res = await axios.post<ScrapeResponse>(url, req, { timeout: clientTimeoutMs(req) })
     const body = res.data
     if (body?.success === true && Array.isArray(body.intercepted)) {
       return { ok: true, intercepted: body.intercepted }
@@ -91,7 +99,7 @@ export async function postScrapeHtml(
 ): Promise<{ ok: boolean; html: string | null }> {
   try {
     const url = process.env.SCRAPER_URL || DEFAULT_SERVICE_URL
-    const res = await axios.post<ScrapeResponse>(url, req, { timeout: 50000 })
+    const res = await axios.post<ScrapeResponse>(url, req, { timeout: clientTimeoutMs(req) })
     const body = res.data
     if (body?.success === true) {
       return { ok: true, html: typeof body.raw_html === 'string' ? body.raw_html : null }

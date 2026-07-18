@@ -8,9 +8,9 @@ class PaginateFilteredProducts(BaseModel):
     per category via same-origin in-page fetch (the embed API 403s non-browser
     clients; the embed menu is numbered pages, not infinite scroll). Replaces the
     former scroll_after_wait no-op. See interceptor.paginate_filtered_products."""
-    types: list[str] = []          # categories to enumerate (Dutchie `type` values)
-    per_page: int = 100            # page size; the embed accepts up to 100
-    max_pages: int = 40            # per-category safety cap
+    types: list[str] = []                          # categories to enumerate (Dutchie `type` values)
+    per_page: int = Field(default=100, ge=1)       # page size; the embed accepts up to 100
+    max_pages: int = Field(default=40, ge=1)       # per-category safety cap
 
 
 class ScrapeRequest(BaseModel):

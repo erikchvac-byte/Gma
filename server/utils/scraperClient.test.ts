@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import axios from 'axios'
-import { postScrape, postScrapeDetailed, type Intercepted, type ScrapeRequest } from './scraperClient.js'
+import { clientTimeoutMs, postScrape, postScrapeDetailed, type Intercepted, type ScrapeRequest } from './scraperClient.js'
 
 vi.mock('axios')
 const mockedPost = vi.mocked(axios.post)
@@ -118,5 +118,31 @@ describe('postScrapeDetailed (ADR-083 success signal)', () => {
   it('ok:false when the body is malformed (no intercepted array)', async () => {
     mockedPost.mockResolvedValueOnce({ data: { success: true } })
     await expect(postScrapeDetailed(req)).resolves.toEqual({ ok: false, intercepted: [] })
+  })
+})
+
+describe('clientTimeoutMs (ADR-089 review patch)', () => {
+  it('gives paginate requests a budget that covers nav + a full page walk', () => {
+    // A slow-but-successful 45s nav plus a 16-page walk must NOT be aborted
+    // client-side — a mid-walk timeout discards a COMPLETED capture and sends the
+    // retry loop into full re-scrapes that yield zero products (worse than page-0).
+    expect(clientTimeoutMs({ ...req, paginate: { types: ['Flower'], per_page: 100 } })).toBe(180000)
+  })
+
+  it('keeps non-paginate requests (the deals scrape) at the original 50s', () => {
+    expect(clientTimeoutMs(req)).toBe(50000)
+  })
+
+  it('is the timeout actually passed to axios', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    mockedPost.mockResolvedValueOnce({ data: { success: true, intercepted: [] } })
+    const walkReq = { ...req, paginate: { types: ['Flower'] } }
+    await postScrapeDetailed(walkReq)
+    expect(mockedPost).toHaveBeenCalledWith(
+      expect.any(String),
+      walkReq,
+      expect.objectContaining({ timeout: 180000 }),
+    )
+    vi.restoreAllMocks()
   })
 })

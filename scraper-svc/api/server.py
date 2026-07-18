@@ -132,13 +132,22 @@ async def _run_browser(request: ScrapeRequest, start: float) -> ScrapeResponse:
                         captured, request.wait_for_pattern
                     )
                     if template:
-                        await interceptor.paginate_filtered_products(
-                            template,
-                            request.paginate.types,
-                            per_page=request.paginate.per_page,
-                            max_pages=request.paginate.max_pages,
-                        )
+                        # Defense-in-depth: the walk is fail-soft by construction
+                        # (every page path returns None instead of raising), but an
+                        # unexpected raise must degrade to the page-0 capture we
+                        # already hold, never to a 502 that discards it.
+                        try:
+                            await interceptor.paginate_filtered_products(
+                                template,
+                                request.paginate.types,
+                                per_page=request.paginate.per_page,
+                                max_pages=request.paginate.max_pages,
+                            )
+                        except Exception as exc:
+                            print(f"[paginate] walk failed unexpectedly ({exc!r}) — returning captures collected so far")
                         captured = list(interceptor._captured)
+                    else:
+                        print("[paginate] no usable FilteredProducts template captured — walk skipped, page-0 capture only")
 
                 html = await page.content() if not captured else None
 
@@ -158,9 +167,18 @@ def _find_filtered_products_template(
     captured: list[dict], wait_for_pattern: Optional[str]
 ) -> Optional[str]:
     """Pick a captured FilteredProducts GET URL usable as a pagination template:
-    one whose `variables` parse and carry both a `productsFilter` and a `page`. The
-    page-walk rewrites those, preserving the persisted-query hash + dispensaryId."""
+    one whose `variables` parse and carry a dict `productsFilter` and a `page`. The
+    page-walk rewrites those, preserving the persisted-query hash + dispensaryId.
+
+    PREFERS a template whose scoping filters (productIds / subcategories /
+    strainTypes) are already unconstrained: homepage carousels can be pinned to
+    explicit productIds (live-confirmed in the committed kushmart-north fixture),
+    and capture order is a network race — first-match selection of a pinned
+    template would silently collapse the whole walk to that ~25-product subset.
+    Falls back to a pinned template only when no unconstrained one was captured
+    (the rewrite clears the scoping keys defensively)."""
     pattern = wait_for_pattern or "FilteredProducts"
+    fallback: Optional[str] = None
     for entry in captured:
         url = entry.get("url", "")
         if not re.search(pattern, url):
@@ -169,9 +187,16 @@ def _find_filtered_products_template(
             variables = json.loads(parse_qs(urlparse(url).query)["variables"][0])
         except (KeyError, IndexError, ValueError, TypeError):
             continue
-        if isinstance(variables, dict) and "productsFilter" in variables and "page" in variables:
-            return url
-    return None
+        if not isinstance(variables, dict) or "page" not in variables:
+            continue
+        pf = variables.get("productsFilter")
+        if not isinstance(pf, dict):
+            continue
+        if all(not pf.get(key) for key in ("productIds", "subcategories", "strainTypes")):
+            return url  # unconstrained — ideal template
+        if fallback is None:
+            fallback = url
+    return fallback
 
 
 def _elapsed(start: float) -> float:

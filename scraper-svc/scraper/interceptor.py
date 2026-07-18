@@ -30,8 +30,17 @@ def rewrite_filtered_products_url(
     variables = json.loads(query["variables"][0])
     variables["page"] = page
     variables["perPage"] = per_page
-    if isinstance(variables.get("productsFilter"), dict):
-        variables["productsFilter"]["types"] = [category]
+    pf = variables.get("productsFilter")
+    if isinstance(pf, dict):
+        pf["types"] = [category]
+        # Normalize the scoping keys to unconstrained ([]). Homepage carousels can
+        # be pinned to explicit productIds (live-confirmed in the committed
+        # kushmart-north fixture) — walking such a template would silently collapse
+        # every page of every category to that ~25-product subset. Unconstrained
+        # category listings carry these keys as [] (the live-proven shape).
+        for key in ("productIds", "subcategories", "strainTypes"):
+            if key in pf:
+                pf[key] = []
     # Re-serialize only the variables param; leave operationName + extensions intact.
     new_query = {k: v[0] for k, v in query.items()}
     new_query["variables"] = json.dumps(variables, separators=(",", ":"))
@@ -74,6 +83,7 @@ class NetworkInterceptor:
     def __init__(self, page: Page):
         self._page = page
         self._captured: list[dict] = []
+        self._handlers: list = []
 
     def on_url(self, pattern: str) -> "NetworkInterceptor":
         """Capture JSON responses matching the regex pattern."""
@@ -92,6 +102,7 @@ class NetworkInterceptor:
                 pass  # non-JSON or body consumed — skip
 
         self._page.on("response", _handler)
+        self._handlers.append(_handler)
         return self
 
     def on_all_urls(self) -> "NetworkInterceptor":
@@ -105,7 +116,18 @@ class NetworkInterceptor:
             })
 
         self._page.on("response", _handler)
+        self._handlers.append(_handler)
         return self
+
+    def detach(self) -> None:
+        """Remove all registered response listeners. Called before the pagination
+        walk: its in-page fetches hit the same graphql URLs the passive listener
+        matches, so leaving it attached would double-capture every walked page
+        (once via the listener, once via the walk's own append) — and the async
+        listener appends land nondeterministically late."""
+        for handler in self._handlers:
+            self._page.remove_listener("response", handler)
+        self._handlers.clear()
 
     async def navigate_and_collect(
         self,
@@ -163,18 +185,29 @@ class NetworkInterceptor:
 
         Per category: fetch page 0 to learn queryInfo.totalPages, then fetch pages
         1..totalPages-1. When totalPages is unavailable, fall back to walking until a
-        page returns zero products (empty-page terminator). Best-effort throughout —
+        page returns zero products (empty-page terminator) or two CONSECUTIVE pages
+        fail (a single transient failure is tolerated). Best-effort throughout —
         any page that fails (non-200 / missing body / thrown) is skipped and never
-        aborts the category or the store. Runs as same-origin in-page fetches because
-        the embed API 403s non-browser clients; the browser session is already cleared.
+        aborts the category or the store; every degrade path is logged so a silent
+        regression to page-0-only coverage is visible in the run logs. Runs as
+        same-origin in-page fetches because the embed API 403s non-browser clients;
+        the browser session is already cleared.
         """
+        # The walk's own fetches match the passive listener's pattern — detach it so
+        # every page isn't captured twice (see detach()). Page-0 nav captures are
+        # already in self._captured; from here the walk owns all appends.
+        self.detach()
         for category in types:
             page0 = await self._fetch_page(template_url, category, 0, per_page)
             if page0 is None:
-                continue  # page 0 unreadable → skip this category (fail-soft)
+                print(f"[paginate] {category}: page 0 unreadable — category skipped")
+                continue  # fail-soft: category contributes nothing
             self._captured.append(page0)
 
             total_pages = read_total_pages(page0["data"])
+            if total_pages is not None and total_pages > max_pages:
+                print(f"[paginate] {category}: totalPages {total_pages} capped at max_pages {max_pages}")
+            consecutive_failures = 0
             page = 1
             while True:
                 if total_pages is not None:
@@ -186,12 +219,19 @@ class NetworkInterceptor:
                 result = await self._fetch_page(template_url, category, page, per_page)
                 if result is None:
                     # Transient page failure: with a known total, keep going (a gap is
-                    # better than truncating the category); without one, stop.
-                    if total_pages is None:
+                    # better than truncating the category); walking blind, tolerate a
+                    # single failure and probe the next page, stopping only after two
+                    # consecutive failures.
+                    consecutive_failures += 1
+                    if total_pages is None and consecutive_failures >= 2:
+                        print(f"[paginate] {category}: stopping blind walk at page {page} after {consecutive_failures} consecutive failed pages")
                         break
+                    print(f"[paginate] {category}: page {page} failed — continuing")
                     page += 1
+                    await asyncio.sleep(page_pause_ms / 1000)
                     continue
 
+                consecutive_failures = 0
                 self._captured.append(result)
                 # Empty-page terminator only matters when we're walking blind.
                 if total_pages is None and count_products(result["data"]) == 0:

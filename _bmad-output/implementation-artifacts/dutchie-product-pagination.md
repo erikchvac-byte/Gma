@@ -4,7 +4,7 @@ baseline_commit: e1fbab326ca9a20d7ba71c0b377c6a4ef9c893fa
 
 # Story: Dutchie product scrape — capture the full paginated menu (kill the ~100-item cap)
 
-Status: review
+Status: done
 
 <!-- Cross-cutting follow-up story (no parent epic), tracked individually in sprint-status.yaml
      like cross-store-value-matcher / weedmaps-source-wiring. Promoted from the lever-A
@@ -78,6 +78,21 @@ The homepage does emit multiple `FilteredProducts` ops (one per carousel), which
 - [x] **Task 4 — Comment/dead-code cleanup (AC: 9).** Removed the dead `scroll_after_wait` flag from `models.py`/`server.py`/`interceptor.py`/`scraperClient.ts`/`dutchieProductsRequest`; corrected the numbered-pagination comments. (Only remaining `scroll_after_wait` mentions are explanatory "replaces the former…" notes.)
 - [x] **Task 5 — Tests (AC: 10).** TS: paginate preset + category threading + deals-preset regression + existing assembly/dedupe (40 in `_dutchieProducts.test.ts`). Python: `scraper-svc/tests/test_pagination.py` (9) covers URL rewrite (page-count derivation input), `read_total_pages`, empty-page terminator, and mid-page fail-soft with a fake page. `cd server && npx vitest run` green (702); `npm run build` clean.
 - [x] **Task 6 — Operational measurement + ADR (AC: 8).** Measured live: `happy-time-mt-vernon` ~100 → **1,369 products / 17.8s**; `local-roots-everett-128th` **532 / 4.7s** (no regression). The change *removes* the former 8s dead scroll-hold and replaces it with sub-second GET replays, so per-store cost is comparable and a 17-store run stays well within the 3:00 AM→4:00 AM derive window. Documented in **ADR-089**.
+
+### Review Findings
+
+<!-- bmad-code-review 2026-07-18, commit 012ace3. Layers: Blind Hunter + Edge Case Hunter + Acceptance Auditor (all completed). 1 decision, 6 patches, 1 defer, 4 dismissed. -->
+
+- [x] [Review][Decision] AC-8 "before/after full-run duration" was argued, not measured — RESOLVED (Erik chose ad-hoc measurement, run post-patch 2026-07-18): **17 stores / 5m 36s / 23,470 observations** vs the pre-fix nightly **~4m 15s / ~2,000–2,900 observations** (worktree ingest logs 07-17/07-18) — +~80s for ~9× the data, >54 min headroom before the 4AM derive. Backfilled into ADR-089.
+- [x] [Review][Patch] **HIGH (CONFIRMED): pagination template can lift a productIds-pinned carousel op, silently collapsing the whole walk to ~25 products** — `_find_filtered_products_template` takes the FIRST captured URL with `productsFilter`+`page`, and the rewrite preserves all other filter keys verbatim. The committed fixture `server/scrapers/__fixtures__/dutchie-products.json` is a live kushmart-north capture whose variables carry `productsFilter.productIds:[25 ids]` with `page` present — it passes the template gate. Capture order is a network race, so any store can intermittently regress to ~homepage coverage with zero error — re-creating the exact day-over-day churn this story kills. Fix: template selection must require `productsFilter` to be a dict and skip templates with non-empty `productIds`/`subcategories`/`strainTypes`; rewrite defensively clears `productIds` to `[]`. [scraper-svc/api/server.py:163-173, scraper-svc/scraper/interceptor.py:33-46]
+- [x] [Review][Patch] Walked pages are captured TWICE — the `on_url` response listener stays attached during the walk, so each in-page fetch fires the handler AND `paginate_filtered_products` appends the same body; payload ~doubles for a 16-page store and async handler appends land nondeterministically after `list(interceptor._captured)`. Fix: detach the listener before the walk. [scraper-svc/scraper/interceptor.py:81-94, scraper-svc/api/server.py:119-141]
+- [x] [Review][Patch] 50s axios client timeout no longer bounds nav+walk worst case — a slow (30-45s) but successful navigation plus a normal 16-page walk exceeds 50s; axios aborts, `postScrapeDetailed` returns `[]`, retry loop burns 3 full scrapes, store yields ZERO products (worse than the old ~100). Fix: larger client timeout for `paginate` requests (deals stay at 50s). [server/utils/scraperClient.ts:56, scraper-svc/scraper/interceptor.py:151-200]
+- [x] [Review][Patch] Blind-mode (no totalPages) walk terminates the category on the FIRST transient page failure, and the failure path skips the inter-page pause (zero backoff exactly when the remote is unhappy). Fix: tolerate a bounded number of consecutive failures before stopping; pause on failure too. [scraper-svc/scraper/interceptor.py:179-186]
+- [x] [Review][Patch] Zero observability on every degrade path — no-template, category-skipped, page-failed, and max_pages-cap-hit are all silent, so a regression to ~100 capture is indistinguishable from success in the nightly logs. Fix: log each degrade event. [scraper-svc/api/server.py:130-141, scraper-svc/scraper/interceptor.py:160-200]
+- [x] [Review][Patch] Hardening bundle: `_find_filtered_products_template` has zero tests (the load-bearing gate); `test_rewrite_raises_on_malformed_template` accepts ANY exception; `PaginateFilteredProducts` lacks pydantic bounds (`per_page`/`max_pages` ≥ 1); `max_pages` cap branch untested; wrap the walk call in try/except so an unexpected raise degrades to page-0 capture instead of 502. [scraper-svc/tests/test_pagination.py, scraper-svc/scraper/models.py, scraper-svc/api/server.py]
+- [x] [Review][Defer] `server.py` reads the interceptor's private `_captured` attribute to collect walk results [scraper-svc/api/server.py:141] — deferred, pre-existing pattern (the `/discover` endpoint has always done the same); a return-value refactor is cosmetic.
+
+Dismissed as noise (4): `transformProducts` default-arg concern (its own default IS `DEFAULT_PRODUCT_CATEGORIES` — byte-identical); 200-with-`errors` GraphQL bodies polluting captures (harmless — `pickProducts` ignores them; listener detach removes the duplication); repeated-query-param collapse in `parse_qs` (these URLs have single-valued params only); "deals regression guard proves nothing service-side" (Edge layer verified the wait-path body is byte-equivalent to the old `scroll_after_wait=False` branch in the real code).
 
 ## Dev Notes
 
@@ -190,4 +205,11 @@ claude-opus-4-8 (bmad-dev-story)
 
 ### Change Log
 
-- 2026-07-18 — Implemented numbered-pagination full-menu capture (ADR-089). Service-side in-page fetch walk; removed dead `scroll_after_wait`. Live: happy-time ~100→1,369. Server 702 + scraper-svc 9 green; `npm run build` clean. Status → review.
+- 2026-07-18 — Implemented numbered-pagination full-menu capture (ADR-089). Service-side in-page fetch walk; removed dead `scroll_after_wait`. Live: happy-time ~100→1,369. Server 702 + scraper-svc 9 green; `npm run build` clean. Status → review. Pushed to master as `012ace3`.
+- 2026-07-18 — Addressed code review findings (bmad-code-review, 3 layers) — 7 items resolved: 6 patches applied + 1 decision (AC-8 measured ad-hoc). Headline: HIGH/CONFIRMED template-pinning race fixed (selection prefers unconstrained template; rewrite clears `productIds`/`subcategories`/`strainTypes`) — live proof local-roots 532→2,023; plus listener detach, 180s paginate client timeout (`clientTimeoutMs`), blind-walk transient tolerance + failure-path pause, degrade-path logging, pydantic bounds + 8 new tests. **Measured full run: 17 stores / 5m36s / 23,470 obs (before: ~4m15s / ~2-2.9k).** Docs synced (scraper-svc README source-of-truth corrected, ADR-053 superseded marker). Server 705 + scraper-svc 17 green; build clean. Status → done.
+
+### Post-review File List additions
+
+- `server/utils/scraperClient.test.ts` (modified) — `clientTimeoutMs` tests (3).
+- `scraper-svc/README.md` (rewritten) — vendored copy declared canonical; stale "re-sync from Dev\Scraper" instruction removed (it would have overwritten the pagination walk); `paginate` field documented.
+- `_bmad-output/implementation-artifacts/deferred-work.md` (modified) — review defer logged.

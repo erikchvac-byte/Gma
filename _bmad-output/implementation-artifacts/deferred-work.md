@@ -292,3 +292,7 @@ Rejected (not defects): flagging honest total-weight multi-packs is the accepted
 ## Deferred from: code review of derivation-2-1-price-vs-own-rolling-median (2026-07-12)
 
 - **UTC-day seam can publish an honest-but-empty price-vs-own-median artifact.** `deriveFacts` anchors `today` to the current UTC date (`deriveFactsRun.ts:196`); a run just after 00:00 UTC (~5pm PDT) finds no observation carrying the new UTC day, so every floor-clearing series lands in `noObservationToday` and `rows: []` is committed over the live fact until the next scrape+derive cycle. Same wall-clock caveat deferred from 1.2.5 and explicitly out-of-scope per the 2.1 spec; benign at the scheduled ~03:30-local (~10:30 UTC) cadence. If the schedule ever moves near the UTC seam: anchor `today` to the max observed day in the DB, or guard the write when comparedCount collapses to 0 while the DB has same-day data.
+
+## Deferred from: code review of dutchie-product-pagination (2026-07-18)
+
+- **`server.py` reads the interceptor's private `_captured` attribute to collect pagination-walk results** (`scraper-svc/api/server.py`, `captured = list(interceptor._captured)` after `paginate_filtered_products`). Pre-existing pattern — the `/discover` endpoint has always read `interceptor._captured` directly — so this is fragile coupling, not a new defect. If `scraper-svc` grows another consumer, refactor the walk (and `/discover`) to return captures as a value instead.

@@ -10,6 +10,7 @@ from urllib.parse import parse_qs, urlencode, urlparse
 
 import pytest
 
+from api.server import _find_filtered_products_template
 from scraper.interceptor import (
     NetworkInterceptor,
     count_products,
@@ -18,7 +19,7 @@ from scraper.interceptor import (
 )
 
 
-def _template_url(dispensary_id="disp-1", category="Flower", page=0, per_page=25):
+def _template_url(dispensary_id="disp-1", category="Flower", page=0, per_page=25, extra_filter=None):
     variables = {
         "someOtherKey": True,  # a non-page variable that must survive untouched
         "productsFilter": {
@@ -29,6 +30,8 @@ def _template_url(dispensary_id="disp-1", category="Flower", page=0, per_page=25
         "page": page,
         "perPage": per_page,
     }
+    if extra_filter:
+        variables["productsFilter"].update(extra_filter)
     extensions = {"persistedQuery": {"version": 1, "sha256Hash": "abc123"}}
     query = urlencode({
         "operationName": "FilteredProducts",
@@ -63,8 +66,65 @@ def test_rewrite_sets_page_perpage_and_types_preserving_everything_else():
 
 
 def test_rewrite_raises_on_malformed_template():
-    with pytest.raises(Exception):
+    # Tight error families, not bare Exception — a typo-level NameError must FAIL this test.
+    with pytest.raises(json.JSONDecodeError):
         rewrite_filtered_products_url("https://dutchie.com/api-0/graphql?variables=notjson", "Flower", 1, 100)
+    with pytest.raises(KeyError):
+        rewrite_filtered_products_url("https://dutchie.com/api-0/graphql?operationName=FilteredProducts", "Flower", 1, 100)
+
+
+def test_rewrite_clears_pinned_scoping_filters():
+    # A productIds-pinned carousel template (live-confirmed shape) must come out
+    # unconstrained — otherwise every walked page collapses to the pinned subset.
+    url = _template_url(extra_filter={
+        "productIds": ["id-1", "id-2"],
+        "strainTypes": ["Hybrid"],
+        "subcategories": ["gummies"],
+    })
+    out = rewrite_filtered_products_url(url, "Flower", 1, 100)
+    pf = json.loads(parse_qs(urlparse(out).query)["variables"][0])["productsFilter"]
+    assert pf["productIds"] == []
+    assert pf["strainTypes"] == []
+    assert pf["subcategories"] == []
+    assert pf["types"] == ["Flower"]
+    assert pf["dispensaryId"] == "disp-1"  # non-scoping keys untouched
+
+
+# --- template selection (api.server) ----------------------------------------
+
+def _capture(url):
+    return {"url": url, "status": 200, "data": None}
+
+
+def test_template_finder_prefers_unconstrained_over_earlier_pinned():
+    pinned = _template_url(extra_filter={"productIds": ["a", "b", "c"]})
+    clean = _template_url(category="Vaporizers")
+    picked = _find_filtered_products_template([_capture(pinned), _capture(clean)], "FilteredProducts")
+    assert picked == clean  # capture ORDER must not win over constraint-freedom
+
+
+def test_template_finder_falls_back_to_pinned_when_no_unconstrained_exists():
+    # The rewrite clears the pins, so a pinned template is usable as last resort.
+    pinned = _template_url(extra_filter={"productIds": ["a"]})
+    assert _find_filtered_products_template([_capture(pinned)], "FilteredProducts") == pinned
+
+
+def test_template_finder_treats_empty_scoping_keys_as_unconstrained():
+    clean = _template_url(extra_filter={"productIds": [], "subcategories": [], "strainTypes": []})
+    assert _find_filtered_products_template([_capture(clean)], "FilteredProducts") == clean
+
+
+def test_template_finder_rejects_unusable_candidates():
+    # non-matching op, malformed variables, missing page, non-dict productsFilter
+    other_op = "https://dutchie.com/api-0/graphql?operationName=GetSpecialMenuCards&variables=%7B%7D"
+    bad_json = "https://dutchie.com/api-0/graphql?operationName=FilteredProducts&variables=notjson"
+    no_page = "https://dutchie.com/api-0/graphql?operationName=FilteredProducts&variables=" + \
+        json.dumps({"productsFilter": {}}).replace(" ", "")
+    non_dict_pf = "https://dutchie.com/api-0/graphql?operationName=FilteredProducts&variables=" + \
+        json.dumps({"productsFilter": "x", "page": 0}).replace(" ", "")
+    captures = [_capture(u) for u in (other_op, bad_json, no_page, non_dict_pf)]
+    assert _find_filtered_products_template(captures, "FilteredProducts") is None
+    assert _find_filtered_products_template([], None) is None
 
 
 def test_read_total_pages():
@@ -157,3 +217,36 @@ async def test_walk_covers_every_category():
     interceptor, page = await _walk(responses, types=("Flower", "Edible", "Concentrate"))
     assert [c for c, _ in page.fetched] == ["Flower", "Edible", "Concentrate"]
     assert len(interceptor._captured) == 3
+
+
+async def test_walk_respects_max_pages_cap_with_larger_total():
+    # totalPages=5 but max_pages=3 → fetch pages 0,1,2 only (silent-runaway guard).
+    responses = [
+        {"status": 200, "data": _body([{"_id": f"p{i}"}] * 100, total_pages=5)}
+        for i in range(5)
+    ]
+    interceptor, page = await _walk(responses, max_pages=3)
+    assert page.fetched == [("Flower", 0), ("Flower", 1), ("Flower", 2)]
+    assert len(interceptor._captured) == 3
+
+
+async def test_walk_blind_mode_tolerates_a_single_transient_failure():
+    # No totalPages; page 1 fails once → probe page 2 anyway, then terminate on empty.
+    interceptor, page = await _walk([
+        {"status": 200, "data": _body([{"_id": "p0"}] * 100)},
+        {"status": 500, "data": None},                     # transient blip
+        {"status": 200, "data": _body([{"_id": "p2"}] * 40)},
+        {"status": 200, "data": _body([])},                # empty → stop
+    ])
+    assert page.fetched == [("Flower", 0), ("Flower", 1), ("Flower", 2), ("Flower", 3)]
+    assert len(interceptor._captured) == 3  # p0, p2, empty terminator
+
+
+async def test_walk_blind_mode_stops_after_two_consecutive_failures():
+    interceptor, page = await _walk([
+        {"status": 200, "data": _body([{"_id": "p0"}] * 100)},
+        {"status": 500, "data": None},
+        {"status": 500, "data": None},
+    ])
+    assert page.fetched == [("Flower", 0), ("Flower", 1), ("Flower", 2)]
+    assert len(interceptor._captured) == 1  # page 0 only
