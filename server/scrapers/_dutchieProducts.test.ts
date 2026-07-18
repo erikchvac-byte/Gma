@@ -63,6 +63,29 @@ describe('dutchieProductsRequest', () => {
     expect(req.tier).toBe('browser')
     expect(req.intercept_pattern).toMatch(/graphql/)
   })
+
+  it('requests the numbered-pagination walk over all five categories at perPage 100', () => {
+    // The embed menu is NUMBERED pages, not infinite scroll — `paginate` tells the
+    // service to walk every page of every category in-page (ADR-089). This replaces
+    // the old scroll_after_wait no-op, which never pulled pages 2..N.
+    const req = dutchieProductsRequest('abc123')
+    expect(req.paginate).toEqual({ types: [...DEFAULT_PRODUCT_CATEGORIES], per_page: 100 })
+    expect('scroll_after_wait' in req).toBe(false)
+  })
+
+  it('threads a narrowed category list into the paginate walk', () => {
+    const req = dutchieProductsRequest('abc123', ['Flower'])
+    expect(req.paginate?.types).toEqual(['Flower'])
+  })
+})
+
+describe('deals-path regression (AC-6): the specials preset is untouched by pagination', () => {
+  it('the deals request never carries a paginate walk (its timing is unchanged)', async () => {
+    const { dutchieRequest } = await import('./_dutchie.js')
+    const deals = dutchieRequest('abc123')
+    expect(deals.paginate).toBeUndefined()
+    expect(deals.wait_for_pattern).toBe('GetSpecialMenuCards')
+  })
 })
 
 describe('pickProducts (pagination assembly, CAP-3)', () => {
@@ -391,5 +414,18 @@ describe('scrapeDutchieProducts (retry-on-empty, CAP-1/CAP-3)', () => {
     const products = await scrapeDutchieProducts('store-x', { postFn })
     expect(products).toHaveLength(1)
     expect(n).toBe(2)
+  })
+
+  it('forwards its category scope into the paginate walk request', async () => {
+    let seen: string[] | undefined
+    const postFn = async (req: { paginate?: { types: string[] } }) => {
+      seen = req.paginate?.types
+      return [page(spaceKush)]
+    }
+    await scrapeDutchieProducts('store-x', {
+      postFn: postFn as unknown as typeof import('../utils/scraperClient.js').postScrape,
+      categories: ['Flower', 'Concentrate'],
+    })
+    expect(seen).toEqual(['Flower', 'Concentrate'])
   })
 })

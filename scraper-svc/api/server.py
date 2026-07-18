@@ -1,6 +1,9 @@
 import asyncio
+import json
+import re
 import time
-from typing import Any
+from typing import Any, Optional
+from urllib.parse import parse_qs, urlparse
 
 from fastapi import FastAPI, HTTPException
 
@@ -119,9 +122,23 @@ async def _run_browser(request: ScrapeRequest, start: float) -> ScrapeResponse:
                 captured = await interceptor.navigate_and_collect(
                     request.url,
                     wait_for_pattern=request.wait_for_pattern,
-                    scroll_after_wait=request.scroll_after_wait,
                     timeout=request.timeout,
                 )
+
+                # Opt-in: walk the Dutchie numbered menu in-page off a captured
+                # FilteredProducts template, appending every page to the capture set.
+                if request.paginate and request.paginate.types:
+                    template = _find_filtered_products_template(
+                        captured, request.wait_for_pattern
+                    )
+                    if template:
+                        await interceptor.paginate_filtered_products(
+                            template,
+                            request.paginate.types,
+                            per_page=request.paginate.per_page,
+                            max_pages=request.paginate.max_pages,
+                        )
+                        captured = list(interceptor._captured)
 
                 html = await page.content() if not captured else None
 
@@ -135,6 +152,26 @@ async def _run_browser(request: ScrapeRequest, start: float) -> ScrapeResponse:
                 )
     except Exception as exc:
         raise HTTPException(status_code=502, detail=str(exc))
+
+
+def _find_filtered_products_template(
+    captured: list[dict], wait_for_pattern: Optional[str]
+) -> Optional[str]:
+    """Pick a captured FilteredProducts GET URL usable as a pagination template:
+    one whose `variables` parse and carry both a `productsFilter` and a `page`. The
+    page-walk rewrites those, preserving the persisted-query hash + dispensaryId."""
+    pattern = wait_for_pattern or "FilteredProducts"
+    for entry in captured:
+        url = entry.get("url", "")
+        if not re.search(pattern, url):
+            continue
+        try:
+            variables = json.loads(parse_qs(urlparse(url).query)["variables"][0])
+        except (KeyError, IndexError, ValueError, TypeError):
+            continue
+        if isinstance(variables, dict) and "productsFilter" in variables and "page" in variables:
+            return url
+    return None
 
 
 def _elapsed(start: float) -> float:

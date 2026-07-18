@@ -26,10 +26,18 @@ export const DEFAULT_PRODUCT_CATEGORIES = ['Pre-Rolls', 'Flower', 'Vaporizers', 
 // empty-products race, not a wall — see investigation), so the wait + retry-on-empty
 // discipline mirrors scrapeDutchieSpecials. The intercept pattern is broad enough to
 // catch the op on whichever api-N host serves it (api-0/api-3/api-4 all carry graphql).
-// scroll_after_wait=true makes the service scroll AFTER the op fires so the full
-// paginated menu loads (the menu arrives as many FilteredProducts pages, not one) —
-// the deals request leaves this off, so its timing is unchanged.
-export function dutchieProductsRequest(storeId: string): ScrapeRequest {
+//
+// The embed menu paginates via NUMBERED pages (a zero-indexed `page` variable,
+// perPage=100), NOT infinite scroll — so the homepage capture is only ~page-1 breadth
+// (~100 products) and scrolling adds nothing. `paginate` tells the service to walk
+// every numbered page of each category in-page off a captured FilteredProducts
+// template (the embed API 403s non-browser clients, so the walk must run same-origin
+// in the cleared browser). The deals request omits `paginate`, so its timing is
+// unchanged. See ADR-089.
+export function dutchieProductsRequest(
+  storeId: string,
+  categories: readonly string[] = DEFAULT_PRODUCT_CATEGORIES,
+): ScrapeRequest {
   return {
     url: dutchieEmbedUrl(storeId),
     intercept_pattern: 'dutchie\\.com.*graphql',
@@ -37,7 +45,7 @@ export function dutchieProductsRequest(storeId: string): ScrapeRequest {
     tier: 'browser',
     headless: true,
     timeout: 45000,
-    scroll_after_wait: true,
+    paginate: { types: [...categories], per_page: 100 },
   }
 }
 
@@ -217,10 +225,11 @@ export interface ScrapeProductsOptions {
 // empty menu. Never throws; a thrown attempt counts as empty and the caller degrades
 // to [].
 //
-// PAGINATION: dutchieProductsRequest sets scroll_after_wait, so after FilteredProducts
-// fires the service scrolls to trigger the rest of the menu's pages; pickProducts then
-// assembles + dedupes across every captured FilteredProducts response. The scroll is
-// opt-in, so the deals scrape (which omits it) is timing-unchanged. See ADR-053.
+// PAGINATION: dutchieProductsRequest sets `paginate`, so after FilteredProducts fires
+// the service walks every NUMBERED page of each category in-page and returns them with
+// the intercepts; pickProducts then assembles + dedupes across every captured page.
+// The walk is opt-in, so the deals scrape (which omits `paginate`) is timing-unchanged.
+// See ADR-053 (decoupled scrape) and ADR-089 (numbered-pagination coverage fix).
 export async function scrapeDutchieProducts(
   storeId: string,
   opts: ScrapeProductsOptions = {},
@@ -228,10 +237,11 @@ export async function scrapeDutchieProducts(
   const attempts = Math.max(1, opts.attempts ?? DEFAULT_ATTEMPTS)
   const post = opts.postFn ?? postScrape
   const label = opts.label ?? storeId
+  const categories = opts.categories ?? DEFAULT_PRODUCT_CATEGORIES
   let products: RawProduct[] = []
   for (let attempt = 1; attempt <= attempts; attempt++) {
     try {
-      products = transformProducts(await post(dutchieProductsRequest(storeId)), opts.categories)
+      products = transformProducts(await post(dutchieProductsRequest(storeId, categories)), categories)
     } catch (err) {
       console.error(`[products:${label}] attempt ${attempt}/${attempts}`, err)
       products = []

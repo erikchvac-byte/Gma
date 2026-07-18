@@ -11,6 +11,17 @@ import axios from 'axios'
 
 const DEFAULT_SERVICE_URL = 'http://localhost:8000/scrape'
 
+// Opt-in Dutchie numbered-pagination walk (product scrape). When present, the
+// service — after capturing page 0 — walks every numbered page of each `types`
+// category in-page and returns them alongside the intercepts. Absent for the deals
+// scrape, whose navigate-wait-return timing is therefore unchanged. Replaces the
+// former `scroll_after_wait` no-op (the embed menu is numbered pages, not scroll).
+export interface PaginateFilteredProducts {
+  types: string[]
+  per_page?: number
+  max_pages?: number
+}
+
 export interface ScrapeRequest {
   url: string
   intercept_pattern: string
@@ -18,11 +29,7 @@ export interface ScrapeRequest {
   tier: 'browser' | 'tls' | 'cloudflare'
   headless: boolean
   timeout: number
-  // After wait_for_pattern unblocks, scroll the page to trigger lazy/paginated
-  // follow-up requests and hold for them before returning (ADR-053). Defaults to
-  // false service-side, so requests that omit it (the deals scrape) are unchanged;
-  // only the product scrape sets it to capture the full paginated menu.
-  scroll_after_wait?: boolean
+  paginate?: PaginateFilteredProducts
 }
 
 export interface Intercepted {
