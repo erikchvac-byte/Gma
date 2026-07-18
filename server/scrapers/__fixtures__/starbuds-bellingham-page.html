@@ -1,0 +1,50 @@
+<!doctype html>
+<!--
+  Trimmed real capture of https://starbud.com/star-buds-recreational-marijuana-dispensary-bellingham/
+  (2026-07-17). Star Buds - Bellingham runs NO Dutchie specials (its online menu IS the
+  same confirmed-empty Dutchie embed `starbuds-bellingham` our shared path scrapes), and
+  its /specials/ page is only a store-selector that routes back to that empty menu. The
+  one off-Dutchie, server-rendered offer is the single "Shop Star Buds online for 10% off"
+  line kept below. Representative NOISE is included so the parser is exercised against the
+  things it must IGNORE: the age-gate overlay, nav, an app line that mentions "deals" but
+  no percent, and a "Rewards" review blurb.
+-->
+<html lang="en-US">
+  <head><title>Best Dispensary in Bellingham, Washington - Star Buds</title></head>
+  <body>
+    <div id="age-gate" class="age-gate-overlay">
+      <p>Welcome!</p>
+      <p>Are you over 21 years of age?</p>
+      <a href="#">Yes</a><a href="#">No</a>
+    </div>
+
+    <header>
+      <nav>
+        <a href="/">HOME</a>
+        <a href="/order-cannabis-online/">MENUS</a>
+        <a href="/about-us/">ABOUT US</a>
+        <a href="/specials/">DAILY SPECIALS</a>
+        <a href="/locations/">LOCATIONS</a>
+      </nav>
+    </header>
+
+    <main>
+      <h1>Star Buds — Bellingham Recreational Dispensary</h1>
+
+      <section class="elementor-widget-container">
+        <p>Skip the wait and save. <a href="https://starbud.com/order-cannabis-online/">Shop Star Buds online for 10% off</a>, and pick up your weed edibles at our recreational dispensary!</p>
+      </section>
+
+      <!-- Noise: "mobile-only deals" mentions deals but has NO percent — must be ignored. -->
+      <section>
+        <span class="elementor-icon-list-text">Mobile Exclusive Rewards</span>
+        <p>Download the Star Buds app to unlock exclusive mobile-only deals, track your loyalty points in real-time, and skip the line with express pickup.</p>
+      </section>
+
+      <!-- Noise: a customer review that mentions "Rewards" but is not a deal. -->
+      <section class="reviews">
+        <em>“I like their selection and the way they display their stuff. Rewards are nice and the staff is great.”</em>
+      </section>
+    </main>
+  </body>
+</html>
