@@ -1,5 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { PriceDropRow } from '../types'
+
+// Server-injected drops snapshot (shellRoute / ADR-092). Present only on the production Express
+// shell; absent in dev and whenever the server degraded to the plain shell.
+declare global {
+  interface Window {
+    __GMA_DROPS__?: unknown
+  }
+}
 
 // derivation-3.2 — the "Real price drops" surface's data source. Fetches the flagship
 // price-vs-own-median fact from the served route and exposes only the honest-discount rows
@@ -61,12 +69,32 @@ export function selectDrops(raw: unknown): PriceDropRow[] {
     .filter((row): row is PriceDropRow => row !== null && row.pctVsMedian < 0)
 }
 
+// Synchronous read of the server-injected drops snapshot. Returns the selected honest-drop rows
+// when the global is present (even []: a valid empty snapshot — skip the fetch), or null when the
+// global is absent/unreadable → fall back to the fetch. selectDrops already fail-softs any bad
+// shape to [], so a corrupted snapshot degrades to "no drops" exactly like the fetch path would.
+function readSnapshot(): PriceDropRow[] | null {
+  if (typeof window === 'undefined' || window.__GMA_DROPS__ === undefined) return null
+  try {
+    return selectDrops(window.__GMA_DROPS__)
+  } catch {
+    return null
+  }
+}
+
 export function useValueDrops(): UseValueDropsResult {
-  const [drops, setDrops] = useState<PriceDropRow[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  // Init from the injected snapshot so the FIRST render already carries the drops — no post-paint
+  // re-render that reflows the feed (ADR-092). Absent snapshot → [] + fetch, exactly as before.
+  const initial = readSnapshot()
+  const [drops, setDrops] = useState<PriceDropRow[]>(initial ?? [])
+  const [isLoading, setIsLoading] = useState(initial === null)
   const [error, setError] = useState<string | null>(null)
+  // decided once at mount: a present snapshot means skip the fetch entirely
+  const hasSnapshot = useRef(initial !== null)
 
   useEffect(() => {
+    if (hasSnapshot.current) return
+
     const controller = new AbortController()
 
     async function load() {

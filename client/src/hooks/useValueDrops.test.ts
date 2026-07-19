@@ -77,6 +77,51 @@ describe('selectDrops (pure envelope → honest-discount rows)', () => {
   })
 })
 
+describe('useValueDrops — server snapshot (window.__GMA_DROPS__, ADR-092)', () => {
+  afterEach(() => {
+    delete (window as { __GMA_DROPS__?: unknown }).__GMA_DROPS__
+    vi.unstubAllGlobals()
+  })
+
+  it('hydrates synchronously from the injected snapshot and never fetches', () => {
+    ;(window as { __GMA_DROPS__?: unknown }).__GMA_DROPS__ = envelope([drop()])
+    const fetchMock = vi.fn()
+    vi.stubGlobal('fetch', fetchMock)
+
+    const { result } = renderHook(() => useValueDrops())
+
+    // no loading flash, drops present on the very first render, no network call
+    expect(result.current.isLoading).toBe(false)
+    expect(result.current.drops).toHaveLength(1)
+    expect(result.current.error).toBeNull()
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  it('treats a present-but-empty snapshot as authoritative (skips the fetch, no drops)', () => {
+    ;(window as { __GMA_DROPS__?: unknown }).__GMA_DROPS__ = envelope([])
+    const fetchMock = vi.fn()
+    vi.stubGlobal('fetch', fetchMock)
+
+    const { result } = renderHook(() => useValueDrops())
+
+    expect(result.current.isLoading).toBe(false)
+    expect(result.current.drops).toEqual([])
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  it('falls back to the fetch when no snapshot global is present', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(okResponse(envelope([drop()])))
+    vi.stubGlobal('fetch', fetchMock)
+
+    const { result } = renderHook(() => useValueDrops())
+    expect(result.current.isLoading).toBe(true)
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false))
+    expect(result.current.drops).toHaveLength(1)
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+  })
+})
+
 describe('useValueDrops', () => {
   afterEach(() => vi.unstubAllGlobals())
 

@@ -135,6 +135,14 @@ export function disparityRollupsRoute(_req: Request, res: Response) {
 // Same private/decoupled/fail-soft posture: never a 500, never a read of the raw dataset. This is
 // the one honest discount the engine can compute (a SKU below its OWN rolling median); the flat
 // banner % (Gate 2) is deliberately NOT in this fact and must not reach any surface.
+// Shared reader for the price-vs-own-median envelope — used by the route above AND by the shell
+// snapshot injector (shellRoute) so the in-app "Real price drops" surface can hydrate from
+// window.__GMA_DROPS__ on the FIRST client render instead of an ungated post-paint fetch that
+// reflowed the deal feed (ADR-092 CLS fix). Same fail-soft posture: missing/malformed → empty.
+export function readPriceVsOwnMedian(): DerivedEnvelope<PriceVsOwnMedianReport> {
+  return readDerived<PriceVsOwnMedianReport>(PRICE_VS_OWN_MEDIAN_PATH, EMPTY_PRICE_VS_OWN_MEDIAN_ENVELOPE)
+}
+
 export function priceVsOwnMedianRoute(_req: Request, res: Response) {
-  res.json(readDerived<PriceVsOwnMedianReport>(PRICE_VS_OWN_MEDIAN_PATH, EMPTY_PRICE_VS_OWN_MEDIAN_ENVELOPE))
+  res.json(readPriceVsOwnMedian())
 }
