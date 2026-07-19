@@ -43,7 +43,16 @@ interface DealFeedProps {
   location?: UserLocation | null
 }
 
-const feedStyle = { padding: 'var(--space-4)', display: 'grid', gap: 'var(--space-4)' } as const
+// grid-template-columns: minmax(0, 1fr) — an implicit `auto` track floors at its
+// widest child's min-content, so the icon-chip bar's full width forced the feed
+// (and the page) wider than a phone. minmax(0, 1fr) lets the column shrink below
+// content min-size so children fit/scroll instead of blowing out the viewport.
+const feedStyle = {
+  padding: 'var(--space-4)',
+  display: 'grid',
+  gridTemplateColumns: 'minmax(0, 1fr)',
+  gap: 'var(--space-4)',
+} as const
 
 // Window line per spec matrix: '9:00 PM – 11:30 PM' / '9:00 PM – close' /
 // 'Active today'. Any present-but-unparseable time → no window text at all.

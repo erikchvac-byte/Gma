@@ -255,6 +255,10 @@ article.gma-card::before {
 .gma-chips {
   display: flex;
   gap: var(--space-3);
+  /* min-width: 0 lets this scroller shrink below its content's min-content inside
+     a grid/flex parent, so overflow-x actually engages instead of the full chip
+     row stretching the feed column (and the page) wider than the viewport. */
+  min-width: 0;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
@@ -323,6 +327,21 @@ article.gma-card::before {
   align-items: flex-end;
   gap: var(--space-1);
   text-align: right;
+}
+/* Mobile: the two-column header (26px store name + address/distance stack) can't
+   fit side by side on a phone — its combined min-content (~460px) forced the card
+   wider than the viewport. Below 480px the header stacks: name on top, then the
+   address/distance block left-aligned beneath it, so the card fits any phone. */
+@media (max-width: 480px) {
+  .gma-dealcard__head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .gma-dealcard__head-right {
+    max-width: 100%;
+    align-items: flex-start;
+    text-align: left;
+  }
 }
 /* address — deal-title size/weight/color (matches .gma-deal-block__title), the
    size the spec pinned to the deal-title example. `address` element, de-italic. */
@@ -561,6 +580,11 @@ article.gma-card::before {
 .gma-value-drops {
   display: grid;
   gap: var(--space-2);
+  /* min-width: 0 must chain down every grid/flex level (strip → list → row →
+     identity) or the row's nowrap product name contributes its FULL width to
+     min-content sizing and the ellipsis never engages — floating the card wider
+     than a phone. The identity already sets it; the ancestors must too. */
+  min-width: 0;
 }
 /* divider — a hairline above the strip when it follows a banner deal grid; omitted on a
    drop-only/expired card (no grid to separate from), see DealCard `divided` prop. */
@@ -585,6 +609,7 @@ article.gma-card::before {
   padding: 0;
   display: grid;
   gap: var(--gap-feed);
+  min-width: 0;
 }
 /* one ledger row: identity left, the honest figure right. Divided by a hairline
    (tables-as-cards); the last row carries no divider. */
@@ -593,6 +618,7 @@ article.gma-card::before {
   align-items: baseline;
   justify-content: space-between;
   gap: var(--space-3);
+  min-width: 0;
   padding-top: var(--gap-feed);
   border-top: var(--border-hairline) solid var(--border-card);
 }
@@ -620,9 +646,13 @@ article.gma-card::before {
   font: var(--font-caption);
   color: var(--text-muted);
 }
-/* the honest figure column — right-aligned, side-by-side percent + $ support */
+/* the honest figure column — right-aligned, side-by-side percent + $ support.
+   flex: 0 1 auto + min-width: 0 (not flex: none) so on a narrow phone the column
+   can shrink and its support line wraps, instead of the nowrap figure forcing the
+   whole card wider than the viewport. */
 .gma-value-drops__figure {
-  flex: none;
+  flex: 0 1 auto;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -634,7 +664,6 @@ article.gma-card::before {
 .gma-value-drops__headline {
   font: var(--font-caption);
   color: var(--text-muted);
-  white-space: nowrap;
 }
 /* drop magnitude — the single amber discount hue (ADR-041 weight-only ramp).
    Larger than the surrounding caption so it reads as the row's figure. */
@@ -645,13 +674,13 @@ article.gma-card::before {
   color: var(--discount);
   font-variant-numeric: tabular-nums slashed-zero;
 }
-/* support: "$32.40 vs $40.00 usual" — mono muted, both dollars 2dp */
+/* support: "$32.40 vs $40.00 usual" — mono muted, both dollars 2dp. Wraps when
+   the figure column is squeezed on a phone (was nowrap, which forced overflow). */
 .gma-value-drops__support {
   font-family: var(--font-mono);
   font-size: var(--text-sm);
   color: var(--text-muted);
   font-variant-numeric: tabular-nums slashed-zero;
-  white-space: nowrap;
 }
 
 /* ---------------------------------------------------------------
