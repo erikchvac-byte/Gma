@@ -732,6 +732,16 @@ article.gma-card::before {
   object-fit: cover;
   flex: none;
 }
+/* Reserve the pin's box explicitly in the persistent location bar (present at
+   first paint) so it can't contribute to CLS — Lighthouse flagged this pin as a
+   "media element lacking an explicit size" despite its 36×36 HTML attrs. Scoped
+   to the bar label so the inline location/vehicle pickers, which reuse
+   .gma-location-pin at 16/22/56px, keep their own sizes.
+   (spec-perf-cls-analytics-wins) */
+.gma-location-bar__label .gma-location-pin {
+  width: 36px;
+  height: 36px;
+}
 
 /* persistent top-of-feed vehicle bar (CAP-5) — paired with the location bar */
 .gma-vehicle-bar {

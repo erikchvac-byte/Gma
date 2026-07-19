@@ -1,14 +1,29 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z3EH6D5C89"></script>
+    <!-- Google tag (gtag.js). The stub (dataLayer + gtag() + js/config) stays
+         inline so any early event queues; the ~166KB gtag.js download is deferred
+         to browser idle after load so it doesn't compete with first paint /
+         hydration (Lighthouse: ~68KB unused during initial load). Queued events
+         flush once the script arrives — measurement is unchanged, just later. -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', 'G-Z3EH6D5C89');
+      addEventListener('load', function () {
+        function loadGtag() {
+          var s = document.createElement('script');
+          s.async = true;
+          s.src = 'https://www.googletagmanager.com/gtag/js?id=G-Z3EH6D5C89';
+          document.head.appendChild(s);
+        }
+        // timeout caps idle-callback starvation on a busy main thread so gtag.js
+        // (and the queued dataLayer events) can't be deferred indefinitely; older
+        // engines without requestIdleCallback fall back to a plain timer.
+        if (window.requestIdleCallback) requestIdleCallback(loadGtag, { timeout: 3000 });
+        else setTimeout(loadGtag, 1500);
+      });
     </script>
 
     <meta charset="UTF-8" />
@@ -49,22 +64,24 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <!-- Async font CSS (ADR-081): the plain stylesheet link render-blocked first
          paint by ~870ms on mobile (Lighthouse). media="print" makes the browser
-         fetch it without blocking render; onload flips it live. display=swap in
-         the URL keeps text visible on the fallback font meanwhile. -->
+         fetch it without blocking render; onload flips it live. display=optional
+         keeps text visible on the fallback font meanwhile AND never swaps a
+         late-arriving web font in — killing the FOUT reflow that was ~91% of the
+         mobile CLS past the age gate (spec-perf-cls-analytics-wins). -->
     <link
       rel="preload"
       as="style"
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=optional"
     />
     <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=optional"
       rel="stylesheet"
       media="print"
       onload="this.media='all'"
     />
     <noscript>
       <link
-        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=optional"
         rel="stylesheet"
       />
     </noscript>
