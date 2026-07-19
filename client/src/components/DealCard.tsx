@@ -116,8 +116,15 @@ export default function DealCard({ dispensary, deals, gasCostText, rotatingIconS
             </div>
           )}
         </div>
-        {/* gas line — omitted entirely when round-trip cost can't be computed */}
-        {gasCostText !== null && (
+        {/* gas line — the icon slot renders whenever the store has a distance, so a
+            round-trip cost that resolves a beat AFTER first paint (vehicle/fuel-price
+            async) fills in the text without shifting the deal grid below it. That
+            deal-grid reflow was 100% of past-gate mobile CLS once the font FOUT was
+            fixed (ADR-090). Suppressed only when there's no distance at all — no trip
+            to price, so no gas line ever appears and there's nothing to reserve. When
+            present-but-unresolved the icon shows alone; it asserts no cost (Honest
+            Math), and its fixed 40px box holds the height whether or not $-text is in. */}
+        {distanceText !== null && (
           <span className="gma-gas-line">
             <img src={gasPumpArt} alt="" width={40} height={40} className="gma-gas-line__icon" />
             {gasCostText}

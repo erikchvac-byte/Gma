@@ -130,11 +130,15 @@ describe('App', () => {
     vi.stubGlobal('fetch', routeFetch(oneDispensary, 20))
     render(<App />)
 
-    // location set → distance pill shows; but no vehicle yet → NO gas line (the
-    // 28-MPG national default was removed, CAP-4). The deal + distance still render.
+    // location set → distance pill shows; no vehicle yet → the gas-line SLOT is
+    // reserved (icon) but carries NO cost figure. ADR-090 reserves it so a cost
+    // resolving after first paint can't shift the deal grid; Honest Math keeps the
+    // $ out until it's real (the 28-MPG national default was removed, CAP-4).
     expect(await screen.findByText('30%')).toBeInTheDocument()
     expect(document.querySelector('.gma-distance-pill')).not.toBeNull()
-    expect(document.querySelector('.gma-gas-line')).toBeNull()
+    const gasLine = document.querySelector('.gma-gas-line')
+    expect(gasLine).not.toBeNull()
+    expect(gasLine?.textContent).not.toContain('$')
 
     fireEvent.click(screen.getByRole('button', { name: 'Set' }))
     await screen.findByRole('option', { name: '2019' })

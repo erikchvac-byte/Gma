@@ -161,7 +161,7 @@ describe('DealCard', () => {
     expect(screen.queryByText(/left/)).not.toBeInTheDocument()
   })
 
-  it('omits the gas line entirely when gasCostText is null', () => {
+  it('reserves the gas-line slot (icon only, no cost) when gasCostText is null but a distance exists', () => {
     const { container } = render(
       <DealCard
         dispensary={makeDispensary({})}
@@ -171,9 +171,14 @@ describe('DealCard', () => {
     )
 
     expect(screen.getByText('35%')).toBeInTheDocument()
-    // distance pill still renders; the gas line is omitted entirely
+    // distance pill still renders
     expect(byFullText('12.4 mi', '.gma-distance-pill')).toBeInTheDocument()
-    expect(container.querySelector('.gma-gas-line')).toBeNull()
+    // ADR-090: the slot is reserved (icon present) so a cost resolving after first
+    // paint can't shift the deal grid — but it shows NO $ figure yet (Honest Math)
+    const gasLine = container.querySelector('.gma-gas-line')
+    expect(gasLine).not.toBeNull()
+    expect(gasLine?.querySelector('img')).not.toBeNull()
+    expect(gasLine?.textContent).not.toContain('$')
     expect(container.textContent).not.toContain('to get there')
     // guard against re-introducing the old "discount — gas" joined line
     expect(container.textContent).not.toContain('—')

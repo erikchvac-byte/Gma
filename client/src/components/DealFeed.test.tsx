@@ -223,9 +223,12 @@ describe('DealFeed', () => {
     render(<DealFeed />)
 
     // CAP-4: the hardcoded national-average MPG was removed — no vehicle → no gas
-    // figure (Honest Math), but distance still shows from distanceMiles alone.
+    // FIGURE (Honest Math). But the slot is reserved with its icon (ADR-090) so a
+    // cost resolving later can't shift the deal grid; distance still shows too.
     const item = screen.getByRole('listitem')
-    expect(item.querySelector('.gma-gas-line')).toBeNull()
+    const gasLine = item.querySelector('.gma-gas-line')
+    expect(gasLine).not.toBeNull()
+    expect(gasLine?.textContent).not.toContain('$')
     expect(within(item).getByText(hasText('5.0 mi'), { selector: '.gma-distance-pill' })).toBeInTheDocument()
   })
 
