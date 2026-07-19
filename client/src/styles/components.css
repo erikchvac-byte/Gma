@@ -393,6 +393,9 @@ article.gma-card::before {
   font-size: 15px;
   color: var(--accent);
   font-variant-numeric: tabular-nums slashed-zero;
+  /* hold the icon's height even before the icon paints, so the slot is reserved
+     whether the cost has resolved yet or not — no deal-grid reflow (ADR-090). */
+  min-height: 40px;
 }
 
 /* status row — urgency lives here (ADR-009: reports time, never a verdict) */
