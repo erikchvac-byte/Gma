@@ -5,11 +5,19 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   build: {
-    // Keep the age-gate tile mosaic as separate cacheable files instead of
-    // inlining ~150KB of base64 into the critical JS bundle that every visitor
-    // loads. Other small assets keep Vite's default inlining behavior.
+    // Keep ALL of Erik's webp art (age-gate mosaic, deal-tag glyphs + rotation
+    // pools, location/gas icons) as separate cacheable files instead of inlining
+    // it as base64 into the critical JS bundle every visitor must download +
+    // execute before first paint. Measured 2026-07-19: the deal/location icons
+    // were 40 inlined data URIs = ~127KB uncompressed = ~33% of the entry chunk,
+    // sitting on the FCP/LCP critical path (FCP 3.1s past the gate, all network+
+    // parse; TTFB 50ms). Externalizing shrinks the entry chunk and — because the
+    // deal icons render with fixed width/height AND loading="lazy" (DealCard) —
+    // only the above-the-fold icons load on first paint, the rest defer. Fixed
+    // dims mean no CLS regression (ADR-090/091/092 kept CLS at 0). Other small
+    // assets keep Vite's default inlining. See ADR-093.
     assetsInlineLimit: (filePath: string) =>
-      filePath.includes('age-icons') ? false : undefined,
+      /[\\/](age-icons|deal-icons|location-icons)[\\/]/.test(filePath) ? false : undefined,
   },
   server: {
     proxy: {
