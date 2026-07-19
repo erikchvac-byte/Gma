@@ -331,7 +331,9 @@ article.gma-card::before {
 /* Mobile: the two-column header (26px store name + address/distance stack) can't
    fit side by side on a phone — its combined min-content (~460px) forced the card
    wider than the viewport. Below 480px the header stacks: name on top, then the
-   address/distance block left-aligned beneath it, so the card fits any phone. */
+   address/distance block left-aligned beneath it, so the card fits any phone.
+   480px == the single --bp-mobile boundary (see tokens.css); reuse it, don't add
+   a second mobile breakpoint. */
 @media (max-width: 480px) {
   .gma-dealcard__head {
     flex-direction: column;

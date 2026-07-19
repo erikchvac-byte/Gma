@@ -211,6 +211,16 @@
   --content-max:   480px;
   --content-wide:  1120px;
 
+  /* Breakpoints — the layout is fluid; there is exactly ONE width breakpoint.
+     --bp-mobile (480px) == --content-max on purpose: below it the content column
+     already fills the screen, so it's the natural "phone" boundary. Introduced by
+     ADR-094 (mobile horizontal-overflow fix) to stack the deal-card header.
+     CONVENTION for future card/layout work: any responsive rule uses
+     `@media (max-width: 480px)`. CSS @media CANNOT read a custom property, so the
+     literal 480px must be repeated in the query — keep it in sync with this token;
+     do NOT introduce a second, different mobile breakpoint. */
+  --bp-mobile:     480px;
+
   /* -------------------------------------------------------------------------
      Elevation — border-led on dark. Only the sheet floats.
      ------------------------------------------------------------------------- */
