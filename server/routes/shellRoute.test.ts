@@ -93,7 +93,14 @@ afterEach(() => {
 })
 
 function extractSnapshot(html: string): unknown {
-  const match = html.match(/window\.__GMA_DATA__ = (.*?)<\/script>/s)
+  // stops at the FIRST ';window.__GMA_DROPS__' boundary (the two globals share one script)
+  const match = html.match(/window\.__GMA_DATA__ = (.*?);window\.__GMA_DROPS__ = /s)
+  expect(match).not.toBeNull()
+  return JSON.parse(match![1])
+}
+
+function extractDrops(html: string): unknown {
+  const match = html.match(/window\.__GMA_DROPS__ = (.*?)<\/script>/s)
   expect(match).not.toBeNull()
   return JSON.parse(match![1])
 }
@@ -116,6 +123,13 @@ describe('shellRoute', () => {
     // output (fixture is time-invariant, so back-to-back `now` values agree)
     const snapshot = extractSnapshot(res.text)
     expect(snapshot).toEqual(JSON.parse(JSON.stringify(buildApiData())))
+
+    // the drops snapshot is injected too (ADR-092), exactly once, as a valid honesty
+    // envelope — hydrates useValueDrops on first render so it never reflows the feed.
+    // (content = the real committed derived file / empty envelope; assert shape, not rows)
+    expect(res.text.match(/window\.__GMA_DROPS__/g)).toHaveLength(1)
+    const drops = extractDrops(res.text) as { data?: { rows?: unknown } }
+    expect(Array.isArray(drops.data?.rows)).toBe(true)
   })
 
   it('injects on SPA deep links too', async () => {
@@ -166,6 +180,8 @@ describe('shellRoute', () => {
 
     expect(res.status).toBe(200)
     expect(res.text).not.toContain('__GMA_DATA__')
+    // the drops snapshot is coupled to the data path: a broken data.json drops both (ADR-092)
+    expect(res.text).not.toContain('__GMA_DROPS__')
     expect(res.text).toContain('<div id="root">')
     consoleError.mockRestore()
   })
@@ -180,6 +196,7 @@ describe('shellRoute', () => {
 
     expect(res.status).toBe(200)
     expect(res.text).not.toContain('__GMA_DATA__')
+    expect(res.text).not.toContain('__GMA_DROPS__')
     expect(res.text).toContain('<div id="root">')
     consoleError.mockRestore()
   })
