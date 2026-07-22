@@ -353,6 +353,64 @@ describe('deriveFacts (ADR-077 Phase 1 regression guard)', () => {
     expect(outcome.totalRecords).toBe(0)
   })
 
+  it('Gate 6: a store with a stale latest observation is excluded from disparities AND every downstream fact (oracle-freshness-gate)', () => {
+    // Build a fresh 07-06 fleet plus one store whose latest scrape is 07-01 — its $10 would be a
+    // phantom cross-store low. The freshness gate (anchor = global max day 07-06, lag 1) must drop it.
+    const obsOn = (day: string, basePrice: number) => ({
+      observedAt: `${day}T00:00:00.000Z`,
+      special: false,
+      options: [
+        {
+          option: '3.5g',
+          weightGrams: null,
+          basePrice,
+          specialPrice: null,
+          pricePerGram: null,
+          pricePerItem: null,
+          specialPricePerGram: null,
+          specialPricePerItem: null,
+          quantityAvailable: null,
+        },
+      ],
+    })
+    const file: ProductsFile = {
+      lastUpdated: '2026-07-06T00:00:00.000Z',
+      products: {
+        'store-a::bd': rec({ productId: 'bd', dispensaryId: 'store-a', history: [obsOn('2026-07-06', 40)] }),
+        'store-b::bd': rec({ productId: 'bd', dispensaryId: 'store-b', history: [obsOn('2026-07-06', 50)] }),
+        'store-c::bd': rec({ productId: 'bd', dispensaryId: 'store-c', history: [obsOn('2026-07-01', 10)] }), // STALE
+      },
+    }
+    const db = openProductsDb(dbPath)
+    importProductsFile(db, file)
+    db.close()
+
+    const outcome = deriveFacts({ dbPath, dataPath, derivedDir })
+
+    // AC2: the stale exclusion is surfaced in the envelope, never silent.
+    const written = JSON.parse(readFileSync(outcome.disparitiesPath, 'utf-8'))
+    expect(written.excluded.find((e: { reason: string }) => e.reason === 'stale').count).toBe(1)
+    expect(written.coverage.staleRecords).toBe(1)
+
+    // The stale $10 is NOT the low; only the two fresh stores form the disparity.
+    const d = written.data.disparities[0]
+    expect(d.lowPrice).toBe(40)
+    expect(d.highPrice).toBe(50)
+    expect(d.storesCarrying.map((s: { dispensaryId: string }) => s.dispensaryId).sort()).toEqual([
+      'store-a',
+      'store-b',
+    ])
+
+    // AC4: the rollup (a downstream fact reading report.disparities) inherits the gate for free —
+    // store-c never appears.
+    const rollups = JSON.parse(readFileSync(outcome.disparityRollupsPath, 'utf-8'))
+    expect(rollups.data.totalDisparities).toBe(1)
+    expect(rollups.data.byStore.map((s: { dispensaryId: string }) => s.dispensaryId).sort()).toEqual([
+      'store-a',
+      'store-b',
+    ])
+  })
+
   it('extraction-health reaches ok/suspected-extraction-failure through the real wiring (derivation-1.2.5)', () => {
     // 'kush21-everett-evergreen' is a real id in the product-scraper roster (dutchie-stores.ts) —
     // using it here (rather than a fixture-only id) proves the runner's roster + `today`

@@ -156,7 +156,7 @@ describe('honesty contract', () => {
           },
         ],
         totalRecords: 2, unmatchedCount: 0, excludedFlagCount: 0,
-        nonComparableCategoryCount: 0, placedRecords: 2,
+        nonComparableCategoryCount: 0, placedRecords: 2, staleRecords: 0,
       },
       excluded: [], coverage: {}, generatedAt: '2026-07-10T00:00:00.000Z',
     }

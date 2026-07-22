@@ -1,5 +1,14 @@
 # Deferred Work
 
+## Deferred from: code review of oracle-freshness-gate (2026-07-21)
+
+Surfaced by the 3-layer adversarial review (Blind Hunter + Edge Case Hunter + Acceptance Auditor, Opus 4.8) of Gate 6. All real; none live-reachable in the current pipeline (scraper stamps valid UTC ISO), so held as hardening / open items:
+
+- **AC2 reconciliation is not literally exact** (`server/utils/crossStoreValue.ts:165`). A record with no history (`rec.history.at(-1)` empty → bare `continue`) and a record that is fresh but places zero priced options (all options fail canonical-weight / sold-out / null-price → `placed=false`) are each counted in NO bucket, so `nonComparableCategoryCount + excludedFlagCount + unmatchedCount + staleRecords + placedRecords < totalRecords`. Pre-existing — Gate 6 adds a correctly-counted bucket and introduces no new leak. Close by adding a `noHistoryCount` (and a matched-but-unpriced count), or correct AC2's stated bucket list. Not a Gate-6 regression.
+- **AC7 live-home-DB proof + store-level fall-out unproven** (story AC7). The 23.5% / 94-removed figures are from the committed pre-ADR-089 snapshot (coverage-starved → upper bound). The original motivating mt-vernon-style whole-store fall-out does not appear in that single-day copy. Must re-ground on Erik's next `derive-facts-local` run before the gate is considered live-verified. Gating open-item, not a code defect.
+- **Whole-dataset-unparseable disables the gate** (`server/utils/crossStoreValue.ts:130`). If EVERY record's `observedAt` is unparseable, `globalMaxObservedDay` returns null, `staleThreshold` is null, and Gate 6 is skipped entirely — the inverse of the "unprovable ⇒ stale" guarantee. Corrupt-DB pathological only (other guards/parity would already scream). Low value; revisit only if a feeder ever emits non-ISO timestamps at scale.
+- **Non-UTC `observedAt` offsets mis-bucket by a day** (`server/utils/crossStoreValue.ts:65`). `observedDay` slices the first 10 chars, implicitly assuming a `Z`/UTC timestamp; `2026-07-06T23:30:00-08:00` is `2026-07-07` UTC but buckets as `07-06`. The scraper always stamps UTC via `Date.toISOString()`, so not live-reachable — but the UTC assumption is undocumented. Document it, or parse-then-reformat if offset timestamps ever enter the substrate.
+
 ## Deferred from: code review of derivation-3-3-price-drops-in-card (2026-07-13)
 
 Surfaced by the 3-layer adversarial review (Blind Hunter + Edge Case Hunter) of the in-card price-drops relocation:
