@@ -26,6 +26,19 @@ import type {
 //  5. Non-weight-based categories (Edible) never enter weight-keyed groups: their option
 //     labels state mg-THC, not product weight, so a "weightGrams" row built from them
 //     would lie. Counted, never silent (spec-category-expansion; $/mg is derivation work).
+//  6. FRESHNESS (oracle-freshness-gate, promoted from the derivation-2 retro): a record whose
+//     LATEST observation is stale relative to the freshest scrape in the dataset is excluded.
+//     A store that silently stopped being scraped — a persistent outage (happy-time-mt-vernon),
+//     a recurring Dutchie extraction failure, or a SKU that just dropped off the menu — leaves a
+//     prior-day price as its latest observation. Without this gate that stale price sets a
+//     cross-store low, inflates a spread, or becomes a regional floor, engine-wide (every
+//     disparity-derived fact reads report.disparities). The anchor is the GLOBAL max observed
+//     day in the dataset, NOT wall-clock today — that is seam-proof (a derive just after 00:00
+//     UTC cannot flag the whole fleet stale) and correctly catches a store lagging the fleet
+//     (its own latest < the fleet max). FRESHNESS_MAX_LAG_DAYS tolerates ordinary 1-day scrape
+//     jitter while catching multi-day staleness. Excluded and counted (staleRecords), never
+//     silent. Note this catches a DIFFERENT population than gate 4: a silently-vanished SKU is
+//     not flagged quantityAvailable<=0, it simply stops being observed.
 
 // Per-record flags that poison weight-based comparison. A record carrying ANY of these
 // is dropped from disparity output (and counted in the report).
@@ -38,6 +51,61 @@ export const EXCLUDED_FLAGS = new Set([
 
 function r2(x: number): number {
   return Math.round(x * 100) / 100
+}
+
+// Gate 6 default: how many days a record's latest observation may lag the freshest scrape in the
+// dataset before it is treated as stale. 1 = tolerate ordinary one-day scrape jitter (a SKU that
+// missed a single run) while excluding the multi-day staleness that a real outage produces.
+// Ratified by Erik 2026-07-21 (oracle-freshness-gate dev-start).
+export const FRESHNESS_MAX_LAG_DAYS = 1
+
+// The calendar day (YYYY-MM-DD) of an ISO timestamp, or null if it is not a parseable date.
+// A record whose freshness cannot be established is treated as stale (gate 6) — an unprovable
+// price must not set a headline. The shape regex alone is not enough: a value like "2026-13-45"
+// matches YYYY-MM-DD but is not a real date, and would lexically out-sort every valid day (poisoning
+// the anchor) or read as "fresh". So we also require the day to round-trip through a real UTC Date
+// (review-hardening 2026-07-21).
+function observedDay(iso: string): string | null {
+  if (typeof iso !== 'string' || iso.length < 10) return null
+  const day = iso.slice(0, 10)
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return null
+  const d = new Date(`${day}T00:00:00.000Z`)
+  // Invalid dates are NaN; a valid-but-normalized date (e.g. "2026-02-31" → Mar 3) must equal its
+  // own input, so an impossible calendar day is rejected rather than silently shifted.
+  return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === day ? day : null
+}
+
+// Subtract whole days from a YYYY-MM-DD string, UTC-safe (setUTCDate handles month/year rollover).
+function subtractDaysUTC(day: string, days: number): string {
+  const d = new Date(`${day}T00:00:00.000Z`)
+  d.setUTCDate(d.getUTCDate() - days)
+  return d.toISOString().slice(0, 10)
+}
+
+// The freshest scrape day present anywhere in the dataset = the max over every record's LATEST
+// observation day (history is append-only chronological, so `at(-1)` is each record's newest).
+// This is the gate-6 anchor: seam-proof (data-derived, not wall-clock) and fleet-relative, so a
+// store lagging the fleet is caught. Null when no record has a parseable observation.
+//
+// Future-day guard (review-hardening 2026-07-21): a single future-dated observation — clock skew
+// or a bad scrape — would otherwise become the max and push the stale threshold past EVERY real
+// store's latest day, silently emptying every disparity/floor/rollup (and the zero-collapse guard
+// would not catch it, since totalRecords stays pre-gate). So days strictly after `today` (UTC) are
+// ignored when picking the max. This is only an UPPER bound: it never touches AC6's lower-seam
+// behavior (a just-after-00:00-UTC derive still cannot flag the fleet stale). `today` is a param so
+// tests are deterministic; the runner uses the wall-clock default.
+export function globalMaxObservedDay(
+  file: ProductsFile,
+  today: string = new Date().toISOString().slice(0, 10),
+): string | null {
+  let max: string | null = null
+  for (const rec of Object.values(file.products)) {
+    const latest = rec.history.at(-1)
+    if (!latest) continue
+    const day = observedDay(latest.observedAt)
+    if (day !== null && day <= today && (max === null || day > max)) max = day
+  }
+  return max
 }
 
 // One store's candidate offer for a (identity, weight) group before per-store reduction.
@@ -64,17 +132,45 @@ export interface MatchReport {
   nonComparableCategoryCount: number
   // records that contributed ≥1 priced option to a group (whether or not it reached ≥2 stores)
   placedRecords: number
+  // records excluded by gate 6 because their latest observation is stale (see header)
+  staleRecords: number
+}
+
+export interface MatchReportOptions {
+  // Gate 6 anchor: the "freshest scrape day" a record's latest observation is measured against.
+  // Defaults to globalMaxObservedDay(file) — the ratified data-derived, seam-proof anchor. The
+  // runner passes it explicitly so the gate is never accidentally off; callers may omit it.
+  freshnessAnchor?: string
+  // Days of lag tolerated before staleness. Defaults to FRESHNESS_MAX_LAG_DAYS.
+  maxLagDays?: number
 }
 
 // Build the full match report: disparities plus the bookkeeping AC5 requires (every
 // record the matcher cannot place is counted, never silently dropped).
-export function buildMatchReport(file: ProductsFile): MatchReport {
+export function buildMatchReport(file: ProductsFile, opts: MatchReportOptions = {}): MatchReport {
   const records = Object.values(file.products)
   const groups = new Map<string, Group>()
   let unmatchedCount = 0
   let excludedFlagCount = 0
   let nonComparableCategoryCount = 0
   let placedRecords = 0
+  let staleRecords = 0
+
+  // Gate 6 anchor. When no anchor is given, self-derive the global max observed day — so the
+  // gate is ALWAYS active (never silently off), even for a one-arg caller. staleThreshold is the
+  // oldest day still considered fresh; a latest-observation day strictly before it is stale.
+  //
+  // Both option inputs are validated before any date arithmetic (review-hardening 2026-07-21): an
+  // explicit freshnessAnchor that is not a real calendar day falls back to the self-derived anchor
+  // (rather than crashing subtractDaysUTC with an Invalid Date), and maxLagDays is coerced to a
+  // non-negative integer — a NaN would throw in setUTCDate, and a negative value would push the
+  // threshold into the future and silently flag the whole fleet stale.
+  const explicitAnchor =
+    opts.freshnessAnchor === undefined ? null : observedDay(opts.freshnessAnchor)
+  const anchor = explicitAnchor ?? globalMaxObservedDay(file)
+  const rawLag = opts.maxLagDays ?? FRESHNESS_MAX_LAG_DAYS
+  const maxLagDays = Number.isFinite(rawLag) ? Math.max(0, Math.trunc(rawLag)) : FRESHNESS_MAX_LAG_DAYS
+  const staleThreshold = anchor === null ? null : subtractDaysUTC(anchor, maxLagDays)
 
   for (const rec of records) {
     // Gate 5: no honest weight axis for this category (see header). Checked first —
@@ -95,6 +191,17 @@ export function buildMatchReport(file: ProductsFile): MatchReport {
     }
     const latest = rec.history.at(-1)
     if (!latest) continue
+
+    // Gate 6 (freshness): drop a record whose latest observation is stale relative to the
+    // dataset's freshest scrape (see header). An unparseable observedAt cannot be proven fresh,
+    // so it is treated as stale. Excluded and counted, never silent.
+    if (staleThreshold !== null) {
+      const day = observedDay(latest.observedAt)
+      if (day === null || day < staleThreshold) {
+        staleRecords++
+        continue
+      }
+    }
 
     let placed = false
     for (const opt of latest.options) {
@@ -166,6 +273,7 @@ export function buildMatchReport(file: ProductsFile): MatchReport {
     excludedFlagCount,
     nonComparableCategoryCount,
     placedRecords,
+    staleRecords,
   }
 }
 

@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest'
-import { buildDisparities, buildMatchReport } from './crossStoreValue.js'
+import {
+  buildDisparities,
+  buildMatchReport,
+  globalMaxObservedDay,
+  FRESHNESS_MAX_LAG_DAYS,
+} from './crossStoreValue.js'
 import type { ProductRecord, ProductsFile, ProductOptionObservation } from '../types/index.js'
 
 const AT = '2026-06-24T12:00:00.000Z'
@@ -231,5 +236,181 @@ describe('buildMatchReport — non-weight-based categories (spec-category-expans
     expect(ds[0].category).toBe('Concentrate')
     expect(ds[0].lowPrice).toBe(24)
     expect(ds[0].weightGrams).toBe(1)
+  })
+})
+
+describe('buildMatchReport — freshness gate (Gate 6)', () => {
+  // A record whose latest observation lands on a specific scrape day. History is fully
+  // replaced so `history.at(-1)` is that day.
+  const recAt = (dispensaryId: string, productId: string, day: string, basePrice: number) =>
+    rec({
+      dispensaryId,
+      productId,
+      history: [{ observedAt: `${day}T00:00:00.000Z`, special: false, options: [opt({ basePrice })] }],
+    })
+
+  it('exports a default max-lag of 1 day', () => {
+    expect(FRESHNESS_MAX_LAG_DAYS).toBe(1)
+  })
+
+  it('globalMaxObservedDay returns the freshest scrape day across all records', () => {
+    const f = file(recAt('store-a', 'a', '2026-07-01', 10), recAt('store-b', 'b', '2026-07-06', 15))
+    expect(globalMaxObservedDay(f)).toBe('2026-07-06')
+  })
+
+  it('globalMaxObservedDay is null for an empty dataset', () => {
+    expect(globalMaxObservedDay(file())).toBeNull()
+  })
+
+  it('excludes a record whose latest observation is stale beyond the lag window, and counts it', () => {
+    // anchor = global max day = 2026-07-06; default lag 1 → threshold 2026-07-05
+    const f = file(
+      recAt('store-a', 'a', '2026-07-06', 10), // fresh
+      recAt('store-b', 'b', '2026-07-06', 15), // fresh
+      recAt('store-c', 'c', '2026-07-01', 5), // STALE — a phantom low if used
+    )
+    const report = buildMatchReport(f)
+    expect(report.staleRecords).toBe(1)
+    // the stale $5 must NOT set the cross-store low
+    expect(report.disparities).toHaveLength(1)
+    expect(report.disparities[0].lowPrice).toBe(10)
+    expect(report.disparities[0].storesCarrying.map((s) => s.dispensaryId).sort()).toEqual([
+      'store-a',
+      'store-b',
+    ])
+  })
+
+  it('keeps a record exactly at the lag boundary (1-day scrape jitter tolerated)', () => {
+    const f = file(
+      recAt('store-a', 'a', '2026-07-06', 10),
+      recAt('store-b', 'b', '2026-07-05', 8), // 1 day old → within lag → kept
+    )
+    const report = buildMatchReport(f)
+    expect(report.staleRecords).toBe(0)
+    expect(report.disparities[0].lowPrice).toBe(8)
+  })
+
+  it('suppresses a group that falls below 2 stores after the freshness gate', () => {
+    const f = file(
+      recAt('store-a', 'a', '2026-07-06', 10),
+      recAt('store-b', 'b', '2026-07-01', 8), // stale → group drops to 1 fresh store
+    )
+    const report = buildMatchReport(f)
+    expect(report.staleRecords).toBe(1)
+    expect(report.disparities).toHaveLength(0)
+  })
+
+  it('honors an explicit freshnessAnchor + maxLagDays=0 (strict same-day)', () => {
+    const f = file(
+      recAt('store-a', 'a', '2026-07-06', 10),
+      recAt('store-b', 'b', '2026-07-05', 8),
+    )
+    const report = buildMatchReport(f, { freshnessAnchor: '2026-07-06', maxLagDays: 0 })
+    expect(report.staleRecords).toBe(1) // 07-05 now stale at lag 0
+    expect(report.disparities).toHaveLength(0)
+  })
+
+  it('does not misfire at the UTC-day boundary: a same-scrape-day fleet is all fresh', () => {
+    // anchor is derived from the data, not wall-clock — a derive at any hour sees all fresh
+    const f = file(recAt('store-a', 'a', '2026-07-06', 10), recAt('store-b', 'b', '2026-07-06', 15))
+    expect(buildMatchReport(f).staleRecords).toBe(0)
+  })
+
+  it('excludes a record with an unparseable observedAt (cannot be proven fresh)', () => {
+    const f = file(
+      recAt('store-a', 'a', '2026-07-06', 10),
+      recAt('store-b', 'b', '2026-07-06', 15),
+      rec({
+        dispensaryId: 'store-c',
+        productId: 'c',
+        history: [{ observedAt: 'not-a-date', special: false, options: [opt({ basePrice: 5 })] }],
+      }),
+    )
+    const report = buildMatchReport(f)
+    expect(report.staleRecords).toBe(1)
+    expect(report.disparities[0].lowPrice).toBe(10)
+  })
+
+  // --- review-hardening 2026-07-21 ---
+
+  it('excludes a record exactly one day past the fresh boundary (pins `<` vs `<=`)', () => {
+    // anchor 2026-07-06, lag 1 → threshold 2026-07-05. 07-04 is one day beyond the kept boundary.
+    const f = file(
+      recAt('store-a', 'a', '2026-07-06', 10),
+      recAt('store-b', 'b', '2026-07-06', 12),
+      recAt('store-c', 'c', '2026-07-04', 5), // just past the boundary → stale
+    )
+    const report = buildMatchReport(f)
+    expect(report.staleRecords).toBe(1)
+    expect(report.disparities[0].lowPrice).toBe(10)
+  })
+
+  it('keeps the anchor-day record at maxLagDays=0 (strict mode does not exclude everything)', () => {
+    const f = file(
+      recAt('store-a', 'a', '2026-07-06', 10),
+      recAt('store-b', 'b', '2026-07-06', 15), // both ON the anchor day → kept at lag 0
+    )
+    const report = buildMatchReport(f, { freshnessAnchor: '2026-07-06', maxLagDays: 0 })
+    expect(report.staleRecords).toBe(0)
+    expect(report.disparities[0].lowPrice).toBe(10)
+  })
+
+  it('rejects a calendar-invalid but regex-shaped date: not the anchor, and excluded', () => {
+    // "2026-13-45" matches YYYY-MM-DD but is not a real day; it must NOT lexically win the anchor
+    // nor read as fresh.
+    const f = file(
+      recAt('store-a', 'a', '2026-07-06', 10),
+      recAt('store-b', 'b', '2026-07-06', 15),
+      rec({
+        dispensaryId: 'store-c',
+        productId: 'c',
+        history: [{ observedAt: '2026-13-45T00:00:00.000Z', special: false, options: [opt({ basePrice: 5 })] }],
+      }),
+    )
+    expect(globalMaxObservedDay(f)).toBe('2026-07-06') // garbage day did not poison the anchor
+    const report = buildMatchReport(f)
+    expect(report.staleRecords).toBe(1)
+    expect(report.disparities[0].lowPrice).toBe(10)
+  })
+
+  it('globalMaxObservedDay ignores a future-dated observation (anchor cannot be poisoned high)', () => {
+    // A store emits a day AFTER `today` (clock skew / bad scrape). It must not become the anchor,
+    // which would push the threshold past every real store and blackout the whole fleet.
+    const f = file(
+      recAt('store-a', 'a', '2026-07-06', 10),
+      recAt('store-b', 'b', '2026-07-20', 15), // future relative to the today below
+    )
+    expect(globalMaxObservedDay(f, '2026-07-06')).toBe('2026-07-06')
+    // and with no future record, a normal fleet still resolves to its true max
+    expect(globalMaxObservedDay(file(recAt('store-a', 'a', '2026-07-06', 10)), '2026-07-06')).toBe(
+      '2026-07-06',
+    )
+  })
+
+  it('coerces a hostile maxLagDays: negative clamps to 0, NaN falls back to the default', () => {
+    const f = file(
+      recAt('store-a', 'a', '2026-07-06', 10),
+      recAt('store-b', 'b', '2026-07-05', 8),
+    )
+    // negative would push the threshold into the future (all stale) if unguarded → clamp to 0:
+    // 07-05 is then stale (strict same-day), 07-06 kept, group drops below 2 → no disparity.
+    const neg = buildMatchReport(f, { freshnessAnchor: '2026-07-06', maxLagDays: -5 })
+    expect(neg.staleRecords).toBe(1)
+    expect(neg.disparities).toHaveLength(0)
+    // NaN falls back to FRESHNESS_MAX_LAG_DAYS (1) → 07-05 within lag → kept.
+    const nan = buildMatchReport(f, { freshnessAnchor: '2026-07-06', maxLagDays: Number.NaN })
+    expect(nan.staleRecords).toBe(0)
+    expect(nan.disparities[0].lowPrice).toBe(8)
+  })
+
+  it('falls back to the self-derived anchor when an explicit freshnessAnchor is unparseable', () => {
+    const f = file(
+      recAt('store-a', 'a', '2026-07-06', 10),
+      recAt('store-b', 'b', '2026-07-06', 15),
+      recAt('store-c', 'c', '2026-07-01', 5), // stale vs the real max, must still be dropped
+    )
+    const report = buildMatchReport(f, { freshnessAnchor: 'not-a-date' })
+    expect(report.staleRecords).toBe(1) // gate still active via globalMaxObservedDay fallback
+    expect(report.disparities[0].lowPrice).toBe(10)
   })
 })

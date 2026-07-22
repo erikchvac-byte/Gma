@@ -39,6 +39,7 @@ export const EMPTY_DISPARITIES_ENVELOPE: DerivedEnvelope<MatchReport> = {
     excludedFlagCount: 0,
     nonComparableCategoryCount: 0,
     placedRecords: 0,
+    staleRecords: 0,
   },
   excluded: [],
   coverage: {},

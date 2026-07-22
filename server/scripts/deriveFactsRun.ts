@@ -7,7 +7,7 @@ import {
   readWindowedObservationsFromDbPath,
   DEFAULT_PRODUCTS_DB_PATH,
 } from '../utils/productsDb.js'
-import { buildMatchReport, EXCLUDED_FLAGS } from '../utils/crossStoreValue.js'
+import { buildMatchReport, globalMaxObservedDay, EXCLUDED_FLAGS } from '../utils/crossStoreValue.js'
 import { WEIGHT_BASED_CATEGORIES } from '../utils/normalizeProduct.js'
 import { buildDealScopeLinks } from '../utils/dealScope.js'
 import { buildExtractionHealthReport } from '../utils/extractionHealth.js'
@@ -163,7 +163,12 @@ export function deriveFacts(opts: DeriveOptions = {}): DeriveOutcome {
   const regionalPriceFloorPath = path.join(derivedDir, 'regional-price-floor.json')
 
   const productsFile = readProductsFromDbPath(dbPath)
-  const report = buildMatchReport(productsFile)
+  // Gate 6 (oracle-freshness-gate): pass the data-derived global max observed day explicitly so
+  // the freshness gate is never silently off in production. A stale prior-day price from a store
+  // that stopped being scraped can no longer set a cross-store low / floor across ANY
+  // disparity-derived fact (all read report.disparities).
+  const freshnessAnchor = globalMaxObservedDay(productsFile) ?? undefined
+  const report = buildMatchReport(productsFile, { freshnessAnchor })
 
   const previousTotalRecords = readPreviousTotalRecords(disparitiesPath)
   if (previousTotalRecords > 0 && report.totalRecords === 0) {
@@ -183,10 +188,12 @@ export function deriveFacts(opts: DeriveOptions = {}): DeriveOutcome {
       { reason: 'nonComparableCategory', count: report.nonComparableCategoryCount },
       { reason: 'excludedFlag', count: report.excludedFlagCount },
       { reason: 'unmatched', count: report.unmatchedCount },
+      { reason: 'stale', count: report.staleRecords },
     ],
     {
       totalRecords: report.totalRecords,
       placedRecords: report.placedRecords,
+      staleRecords: report.staleRecords,
       disparityCount: report.disparities.length,
     },
   )
