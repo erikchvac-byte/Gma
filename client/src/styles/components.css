@@ -254,17 +254,13 @@ article.gma-card::before {
    --------------------------------------------------------------- */
 .gma-chips {
   display: flex;
+  flex-wrap: wrap; /* chips flow onto extra rows instead of scrolling off-screen */
   gap: var(--space-3);
-  /* min-width: 0 lets this scroller shrink below its content's min-content inside
-     a grid/flex parent, so overflow-x actually engages instead of the full chip
-     row stretching the feed column (and the page) wider than the viewport. */
+  /* min-width: 0 keeps the row from stretching the feed column (and the page)
+     wider than the viewport; wrapping — not sideways scroll — absorbs overflow. */
   min-width: 0;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
   padding: var(--space-1) 0; /* room for the focus ring */
 }
-.gma-chips::-webkit-scrollbar { display: none; }
 /* Icon chip: a toggle button stacking one .gma-deal-icon tile over its bold
    title — each family's canonical card art (DEAL_ICON_SRC), so the bar reads
    as the cards' tag vocabulary. The padding widens the tap target. */
@@ -282,7 +278,7 @@ article.gma-card::before {
   transition: var(--transition-control);
 }
 /* the visible title doubles as the accessible name — bold and readable per
-   Erik ("easy on the eyes"), never truncated (the row scrolls instead) */
+   Erik ("easy on the eyes"), never truncated (the bar wraps instead) */
 .gma-icon-chip__label {
   font-family: var(--font-sans);
   font-weight: var(--weight-bold);
