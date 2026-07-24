@@ -47,6 +47,9 @@ const FIXTURE_DATA = {
       deals: [
         {
           title: HOSTILE_TITLE,
+          // `description` is the field renderShellBody renders into the crawler body;
+          // reuse the hostile string so the body path is exercised for escaping + $-safety
+          description: HOSTILE_TITLE,
           type: 'discount',
           daysValid: ['everyday'],
           startTime: null,
@@ -130,6 +133,30 @@ describe('shellRoute', () => {
     expect(res.text.match(/window\.__GMA_DROPS__/g)).toHaveLength(1)
     const drops = extractDrops(res.text) as { data?: { rows?: unknown } }
     expect(Array.isArray(drops.data?.rows)).toBe(true)
+  })
+
+  it('server-renders human-readable deal/store HTML inside #root for non-JS crawlers (Phase 0a-HTML)', async () => {
+    mockDataJson(JSON.stringify(FIXTURE_DATA))
+
+    const res = await request(app).get('/')
+
+    // the empty-root marker was replaced (content injected inside it)
+    expect(res.text).not.toContain('<div id="root"></div>')
+    // isolate the #root inner HTML — renderShellBody emits no <div>, so the first
+    // </div> after the opening tag closes the root (AC2: content lives INSIDE #root)
+    const rootInner = res.text.match(/<div id="root">([\s\S]*?)<\/div>/)
+    expect(rootInner).not.toBeNull()
+    const inner = rootInner![1]
+
+    // real headings + age line + escaped store name + deal text, all INSIDE #root
+    expect(inner).toContain('<h1>Cannabis deals worth the drive at licensed Washington retailers</h1>')
+    expect(inner).toContain('adults 21 and older')
+    expect(inner).toContain('Store &lt;/script&gt;&lt;script&gt;alert(1)&lt;/script&gt;')
+    // $$$ survives verbatim → the body path used a FUNCTION replacement (a string
+    // replacement would have collapsed $$ → $)
+    expect(inner).toContain('SAVE $$$ TODAY')
+    // hostile store name never appears un-escaped anywhere in the response
+    expect(res.text).not.toContain('</script><script>alert(1)</script></h2>')
   })
 
   it('injects on SPA deep links too', async () => {
