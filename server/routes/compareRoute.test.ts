@@ -52,6 +52,16 @@ function extractJsonLdBlocks(html: string): Array<Record<string, unknown>> {
 }
 
 describe('GET /compare (index)', () => {
+  it('loads the GA4 tag so its pageviews register in Analytics', async () => {
+    const res = await request(app).get('/compare')
+
+    expect(res.text).toContain('googletagmanager.com/gtag/js?id=G-Z3EH6D5C89')
+    expect(res.text).toContain("gtag('config', 'G-Z3EH6D5C89')")
+    // GA scripts stay out of the crawler-visible text and the Dataset JSON-LD count
+    expect(visibleText(res.text)).not.toContain('dataLayer')
+    expect(extractJsonLdBlocks(res.text)).toHaveLength(1)
+  })
+
   it('serves plain HTML with no React shell and an hour cache', async () => {
     const res = await request(app).get('/compare')
     expect(res.status).toBe(200)

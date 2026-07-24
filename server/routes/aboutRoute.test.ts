@@ -93,6 +93,18 @@ describe('GET /about', () => {
     }
   })
 
+  it('loads the GA4 tag so its pageviews register in Analytics', async () => {
+    const res = await fetchAbout()
+
+    // gtag.js + the config for the shared measurement id — without it this
+    // server-rendered page is invisible to GA (separate document, no SPA mount).
+    expect(res.text).toContain('googletagmanager.com/gtag/js?id=G-Z3EH6D5C89')
+    expect(res.text).toContain("gtag('config', 'G-Z3EH6D5C89')")
+    // the GA scripts must not pollute the crawler-visible text or the JSON-LD count
+    expect(visibleText(res.text)).not.toContain('dataLayer')
+    expect(extractJsonLdBlocks(res.text)).toHaveLength(2)
+  })
+
   it('is registered before the production SPA fallback in server/index.ts', () => {
     const content = readFileSync(path.join(__dirname, '../index.ts'), 'utf-8')
     const aboutIdx = content.indexOf("app.get('/about', aboutRoute)")

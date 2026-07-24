@@ -10,6 +10,7 @@ import {
   EMPTY_DISPARITIES_ENVELOPE,
   EMPTY_DISPARITY_ROLLUPS_ENVELOPE,
 } from './valueRoute.js'
+import { GA_HEAD_SNIPPET } from './gaSnippet.js'
 
 // Public SEO / AI-search comparison surface (derivation-3.1, epic-derivation-3).
 // Server-rendered pages that expose the SHIPPED Epic 1 cross-store price-disparity
@@ -100,6 +101,7 @@ function page(opts: {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0E1417" />
+    ${GA_HEAD_SNIPPET}
     <title>${escapeHtml(opts.title)}</title>
     <meta name="description" content="${escapeAttr(opts.description)}" />
     <link rel="canonical" href="${opts.canonical}" />

@@ -1,4 +1,5 @@
 import type { Request, Response } from 'express'
+import { GA_HEAD_SNIPPET } from './gaSnippet.js'
 
 // Server-rendered About + FAQ page (spec-ai-search-about-faq). This is the
 // site's AI-search entity surface: plain HTML straight from Express so non-JS
@@ -153,6 +154,7 @@ const ABOUT_HTML = `<!doctype html>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0E1417" />
+    ${GA_HEAD_SNIPPET}
     <title>About Gmas List | Cannabis Deals Worth the Drive</title>
     <meta
       name="description"
