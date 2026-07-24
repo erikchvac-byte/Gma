@@ -104,8 +104,6 @@ export default function AgeGate({ children }: AgeGateProps) {
     target?.focus()
   }, [isIn, declined])
 
-  if (isIn) return <>{children}</>
-
   const confirm = () => {
     if (remember) setAgeConfirmed(true)
     else setSessionConfirmed(true)
@@ -129,39 +127,37 @@ export default function AgeGate({ children }: AgeGateProps) {
   }
 
   // ----- "out" state: declined -----
-  if (declined) {
-    return (
-      <>
-        <Backdrop />
-        <div
-          ref={dialogRef}
-          role="alertdialog"
-          aria-modal="true"
-          aria-labelledby="age-gate-out-heading"
-          onKeyDown={handleKeyDown}
-          style={overlayStyle}
-        >
-          <div style={topRowStyle}>
-            <Wordmark />
-          </div>
-          <div style={centerStyle}>
-            <div style={cardStyle}>
-              <h1 id="age-gate-out-heading" style={headingStyle}>
-                Come back at 21+
-              </h1>
-              <p style={contextStyle}>You must be 21 or older to view cannabis deals.</p>
-              <Button variant="secondary" block onClick={() => setDeclined(false)}>
-                Go back
-              </Button>
-            </div>
+  const outOverlay = (
+    <>
+      <Backdrop />
+      <div
+        ref={dialogRef}
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="age-gate-out-heading"
+        onKeyDown={handleKeyDown}
+        style={overlayStyle}
+      >
+        <div style={topRowStyle}>
+          <Wordmark />
+        </div>
+        <div style={centerStyle}>
+          <div style={cardStyle}>
+            <h1 id="age-gate-out-heading" style={headingStyle}>
+              Come back at 21+
+            </h1>
+            <p style={contextStyle}>You must be 21 or older to view cannabis deals.</p>
+            <Button variant="secondary" block onClick={() => setDeclined(false)}>
+              Go back
+            </Button>
           </div>
         </div>
-      </>
-    )
-  }
+      </div>
+    </>
+  )
 
   // ----- "ask" state -----
-  return (
+  const askOverlay = (
     <>
       <Backdrop />
       <div
@@ -207,6 +203,22 @@ export default function AgeGate({ children }: AgeGateProps) {
         </div>
         <WarningBar />
       </div>
+    </>
+  )
+
+  // Phase 0b: mount `children` in the DOM in EVERY state so JS crawlers (Googlebot)
+  // read deal content — but while gated, mark the underlying content `inert`
+  // (React 19 native) + aria-hidden so it is non-interactive, non-focusable, and
+  // invisible to assistive tech. The overlay (opaque full-bleed IconField+scrim at
+  // z-index 50, card/dialog at 51) fully occludes it, so a human sees and does
+  // exactly what they did before (zero visual/behavioral change). The focus trap
+  // keeps Tab inside the gate; the inert children can never receive focus.
+  return (
+    <>
+      <div inert={!isIn || undefined} aria-hidden={!isIn || undefined}>
+        {children}
+      </div>
+      {!isIn && (declined ? outOverlay : askOverlay)}
     </>
   )
 }

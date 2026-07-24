@@ -168,3 +168,47 @@ describe('App', () => {
     expect(gas).toBeInTheDocument()
   })
 })
+
+// Phase 0b / AC7: the deal feed ALWAYS mounts so a JS crawler that renders past the
+// age gate reaches deal content instead of the onboarding prompt. While first-run
+// onboarding is pending it is present-but-inert (aria-hidden) behind the overlay.
+describe('App — crawler-visible feed behind the onboarding gate (AC7)', () => {
+  const SNAPSHOT: ApiDataResponse = { meta, dispensaries: [] }
+
+  beforeEach(() => {
+    localStorage.clear()
+    localStorage.setItem('gma_age_confirmed', 'true') // past the age gate
+    // valid injected snapshots → useDeals/useValueDrops hydrate synchronously, no fetch
+    window.__GMA_DATA__ = SNAPSHOT
+    window.__GMA_DROPS__ = { data: { rows: [] } }
+  })
+
+  afterEach(() => {
+    delete window.__GMA_DATA__
+    delete window.__GMA_DROPS__
+    localStorage.clear()
+  })
+
+  it('mounts the deal feed INERT behind the onboarding overlay for a first-run visitor', () => {
+    render(<App />)
+
+    // the human sees the onboarding step
+    expect(screen.getByRole('dialog', { name: /where are you/i })).toBeInTheDocument()
+
+    // the feed is nonetheless in the DOM (crawler-visible) but inert + aria-hidden,
+    // so it is excluded from the a11y tree (reachable only with hidden: true)
+    const feed = screen.getByRole('region', { name: /deal feed/i, hidden: true })
+    expect(feed).toBeInTheDocument()
+    expect(feed.closest('[inert]')).not.toBeNull()
+  })
+
+  it('makes the feed interactive (not inert) once onboarding is complete', () => {
+    localStorage.setItem('gma_location_onboarded', 'true')
+    render(<App />)
+
+    expect(screen.queryByRole('dialog', { name: /where are you/i })).not.toBeInTheDocument()
+    const feed = screen.getByRole('region', { name: /deal feed/i })
+    expect(feed).toBeInTheDocument()
+    expect(feed.closest('[inert]')).toBeNull()
+  })
+})

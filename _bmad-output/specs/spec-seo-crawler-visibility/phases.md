@@ -1,5 +1,7 @@
 # Implementation Phases
 
+> **STATUS 2026-07-23 — Phase 0 SHIPPED (ADR-097, story `crawler-visible-homepage-and-agegate`).** Phase 0a perf half = ADR-082 (`__GMA_DATA__` snapshot). Phase 0a crawler-HTML half + Phase 0b = ADR-097: `shellRoute.ts` server-renders escaped deal/store HTML inside `#root` (non-JS crawlers), and both content gates (`AgeGate` + `LocationOnboarding`) now mount children `inert` behind their unchanged overlays (JS crawlers) — Erik released the 0b legal go-ahead on the ADR-066 basis. Zero human visual change. 599 client + 726 server green; live-curl-verified. Still open below: Phase 1 OG/Twitter meta + per-store `LocalBusiness` JSON-LD, Phase 1a per-store routes, Phase 6 Search Console submission.
+
 ## Phase 0 — Make the Site Visible to Crawlers (The Blocker)
 
 ### Current State

@@ -5,12 +5,18 @@ import AgeGate from './AgeGate'
 const confirmButton = () => screen.getByRole('button', { name: /i'm 21\+/i })
 const queryConfirmButton = () => screen.queryByRole('button', { name: /i'm 21\+/i })
 
+// Phase 0b: children are ALWAYS in the DOM. "Gated" now means present-but-inert
+// (non-interactive, aria-hidden, unfocusable) rather than absent — so a JS crawler
+// reads deal content while a human sees only the overlay.
+const dealText = () => screen.getByText('Deal Content')
+const dealIsInert = () => dealText().closest('[inert]') !== null
+
 describe('AgeGate', () => {
   beforeEach(() => {
     localStorage.clear()
   })
 
-  it('shows the overlay and hides children when age is not confirmed', () => {
+  it('shows the overlay and renders children INERT (present but non-interactive) when age is not confirmed', () => {
     render(
       <AgeGate>
         <p>Deal Content</p>
@@ -18,7 +24,9 @@ describe('AgeGate', () => {
     )
 
     expect(confirmButton()).toBeInTheDocument()
-    expect(screen.queryByText('Deal Content')).not.toBeInTheDocument()
+    // children are mounted (crawler-visible) but inert while gated
+    expect(dealText()).toBeInTheDocument()
+    expect(dealIsInert()).toBe(true)
   })
 
   it('exposes dialog semantics and moves focus to the confirm button', () => {
@@ -43,7 +51,9 @@ describe('AgeGate', () => {
     fireEvent.click(confirmButton())
 
     expect(queryConfirmButton()).not.toBeInTheDocument()
-    expect(screen.getByText('Deal Content')).toBeInTheDocument()
+    // children now interactive: present AND no longer inert
+    expect(dealText()).toBeInTheDocument()
+    expect(dealIsInert()).toBe(false)
     expect(localStorage.getItem('gma_age_confirmed')).toBe('true')
   })
 
@@ -71,7 +81,9 @@ describe('AgeGate', () => {
     fireEvent.click(screen.getByRole('button', { name: /no, take me back/i }))
 
     expect(screen.getByRole('heading', { name: /come back at 21/i })).toBeInTheDocument()
-    expect(screen.queryByText('Deal Content')).not.toBeInTheDocument()
+    // "out" state is still gated: children mounted but inert
+    expect(dealText()).toBeInTheDocument()
+    expect(dealIsInert()).toBe(true)
 
     fireEvent.click(screen.getByRole('button', { name: /go back/i }))
     expect(confirmButton()).toBeInTheDocument()
@@ -98,7 +110,7 @@ describe('AgeGate', () => {
     ).toBeInTheDocument()
   })
 
-  it('does not show the overlay when age is already confirmed', () => {
+  it('does not show the overlay when age is already confirmed, and children are interactive', () => {
     localStorage.setItem('gma_age_confirmed', 'true')
 
     render(
@@ -108,7 +120,8 @@ describe('AgeGate', () => {
     )
 
     expect(queryConfirmButton()).not.toBeInTheDocument()
-    expect(screen.getByText('Deal Content')).toBeInTheDocument()
+    expect(dealText()).toBeInTheDocument()
+    expect(dealIsInert()).toBe(false)
   })
 
   it.each(['1', '"yes"', '{}', '"false"'])(
@@ -123,7 +136,8 @@ describe('AgeGate', () => {
       )
 
       expect(confirmButton()).toBeInTheDocument()
-      expect(screen.queryByText('Deal Content')).not.toBeInTheDocument()
+      // corrupt flag keeps the gate up: children mounted but inert
+      expect(dealIsInert()).toBe(true)
     },
   )
 
@@ -136,9 +150,9 @@ describe('AgeGate', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /no, take me back/i }))
 
-    // decline routes to the returnable "out" state without revealing content
+    // decline routes to the returnable "out" state; content stays gated (inert)
     expect(screen.getByText('Come back at 21+')).toBeInTheDocument()
-    expect(screen.queryByText('Deal Content')).not.toBeInTheDocument()
+    expect(dealIsInert()).toBe(true)
     // confirmation flag must never be set by declining
     expect(localStorage.getItem('gma_age_confirmed')).not.toBe('true')
   })
@@ -160,6 +174,6 @@ describe('AgeGate', () => {
       </AgeGate>,
     )
     expect(confirmButton()).toBeInTheDocument()
-    expect(screen.queryByText('Deal Content')).not.toBeInTheDocument()
+    expect(dealIsInert()).toBe(true)
   })
 })
