@@ -1,5 +1,7 @@
 # GmaS Investigation Corpus — Distilled Truth (Capstone Synthesis)
 
+> 🕰 HISTORICAL SNAPSHOT (2026-07-06). Read for reasoning, not current state. Superseded facts: Pillar 5's storage deadline ("re-architect before ~2026-07-23") was met — ADR-077 SQLite substrate shipped and the git 50 MB wall is gone; the dataset size ("~24 stores / ~5k products / ~30k obs") grew ~9× after ADR-089 full-menu capture; the two loose threads (caravan-cannabis-burlington, the Weedmaps residential runner) closed when the pipeline was verified operational 2026-07-11. The five pillars' *reasoning* still stands; the numbers and the urgency do not.
+
 **Date:** 2026-07-06
 **Author:** Mary (Business Analyst) — BMad analysis pass
 **Type:** Synthesis / capstone. Treats the entire `investigations/` folder as one body of evidence and returns a single governing truth. No new data collected; every claim traces to a cited source file below.

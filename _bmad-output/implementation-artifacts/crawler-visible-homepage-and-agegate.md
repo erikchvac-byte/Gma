@@ -4,7 +4,7 @@ baseline_commit: 67730fd11ab5ab391b27c41138238074db9bb702
 
 # Story: Crawler-visible homepage HTML + AgeGate content mounting (SEO Phase 0a-HTML + 0b)
 
-Status: review
+Status: done
 
 <!-- Cross-cutting spec-driven story (no numeric epic), tracked in sprint-status.yaml
 as `crawler-visible-homepage-and-agegate`, sibling of compliance-launch-gate /

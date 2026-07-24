@@ -1,5 +1,7 @@
 # Gmas List — Design & Build Brief
 
+> ⬆ Strategy sits above this doc in [STRATEGY.md](./STRATEGY.md) (why the product wins + the priority between the engine and reach). This brief remains the binding brand / UX / legal design contract.
+
 > Single source of truth for implementation. Where this doc and older notes conflict, **this doc wins**.
 > Hand this to Claude Code as the canonical spec. Pronounced "G-ma's" (grandma's) — but never lean on that; the brand text is always `gmas list`.
 
@@ -21,6 +23,8 @@ Adjectives: **utilitarian, calm, trustworthy, dark, no-gimmick.**
 ---
 
 ## 2. Color — "Tidewater" (dark base, single teal accent)
+
+> ⚠ Superseded as the LIVE theme. The app shipped through Tidewater → Synthwave → Arcade → **Daylight** (ADR-042, AA-verified). The tokens below are the original brand baseline and the structural token model still holds; for current live values, read the theme in code, not this section.
 
 Use these as CSS custom properties. Dark is the default and primary mode.
 
