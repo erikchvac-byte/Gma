@@ -1,5 +1,5 @@
 import { render, screen, within } from '@testing-library/react'
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, afterEach } from 'vitest'
 import DealCard, { type DealView } from './DealCard'
 import { DEAL_ICON_SRC } from '../utils/dealIconAssets'
 import type { Deal, Dispensary, PriceDropRow } from '../types'
@@ -42,6 +42,10 @@ const byFullText = (text: string, selector?: string) =>
   )
 
 describe('DealCard', () => {
+  afterEach(() => {
+    delete (window as unknown as { gtag?: unknown }).gtag
+  })
+
   it('renders the store header once: name, a pink distance pill, and one gas line', () => {
     render(
       <DealCard
@@ -77,6 +81,35 @@ describe('DealCard', () => {
     expect(link).toHaveAttribute('rel', 'noopener noreferrer')
     // screen-reader-only context switch warning, no visible footprint
     expect(link).toHaveTextContent('opens in new tab')
+  })
+
+  it('fires a GA4 store_click event when the store link is clicked', () => {
+    const gtag = vi.fn()
+    ;(window as unknown as { gtag: typeof gtag }).gtag = gtag
+
+    render(
+      <DealCard
+        dispensary={makeDispensary({ id: 'remedy-tulalip', name: 'Remedy Tulalip', url: 'https://example.com/remedy' })}
+        deals={[]}
+        gasCostText={null}
+      />,
+    )
+
+    screen.getByRole('link', { name: /Remedy Tulalip/ }).click()
+
+    expect(gtag).toHaveBeenCalledWith('event', 'store_click', {
+      store_id: 'remedy-tulalip',
+      store_name: 'Remedy Tulalip',
+      link_url: 'https://example.com/remedy',
+    })
+  })
+
+  it('does not throw on click when gtag is absent (fail-soft)', () => {
+    delete (window as unknown as { gtag?: unknown }).gtag
+
+    render(<DealCard dispensary={makeDispensary({})} deals={[]} gasCostText={null} />)
+
+    expect(() => screen.getByRole('link', { name: /Alpha Greens/ }).click()).not.toThrow()
   })
 
   it('falls back to plain text when the store has no url', () => {

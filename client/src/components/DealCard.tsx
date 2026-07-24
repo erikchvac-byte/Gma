@@ -6,6 +6,7 @@ import { DEAL_ICON_LABEL, type DealIconName } from '../utils/dealIcons'
 import { DEAL_ICON_SRC, BOGO_BADGE_SRC } from '../utils/dealIconAssets'
 import { ROTATING_ICON_POOLS, type RotatingIconName, type RotatingIconSrcs } from '../utils/dealIconPools'
 import ValueDropStrip, { renderableDrops } from './ValueDropStrip'
+import { trackStoreClick } from '../utils/analytics'
 
 // a family rotates iff it has a pool; non-pool names keep their single art
 const isRotating = (name: DealIconName): name is RotatingIconName => name in ROTATING_ICON_POOLS
@@ -99,6 +100,9 @@ export default function DealCard({ dispensary, deals, gasCostText, rotatingIconS
                 target="_blank"
                 rel="noopener noreferrer"
                 className="gma-dealcard__name-link"
+                onClick={() =>
+                  trackStoreClick({ id: dispensary.id, name: dispensary.name, url: dispensary.url })
+                }
               >
                 {dispensary.name}
                 <span className="gma-sr-only"> (opens in new tab)</span>
