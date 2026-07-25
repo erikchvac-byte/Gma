@@ -192,11 +192,40 @@
         ]
       },
       {
+        "matchKey": "|babe beach|concentrate|vaporizers@1g",
+        "displayName": "Beach Babe",
+        "category": "Vaporizers",
+        "weightGrams": 1,
+        "storeOffers": [
+          {
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 38,
+            "pricePerGram": 38,
+            "lat": 48.8035532,
+            "lng": -122.3987332
+          },
+          {
+            "dispensaryId": "prc-arlington",
+            "price": 60,
+            "pricePerGram": 60,
+            "lat": 48.151669,
+            "lng": -122.161267
+          }
+        ]
+      },
+      {
         "matchKey": "|baby khalifa kush turtle|indica|flower@3.5g",
         "displayName": "Khalifa Kush - Flower - Baby Turtle - 3.5g",
         "category": "Flower",
         "weightGrams": 3.5,
         "storeOffers": [
+          {
+            "dispensaryId": "remedy-tulalip",
+            "price": 50,
+            "pricePerGram": 14.2857,
+            "lat": 48.0803125,
+            "lng": -122.1861767
+          },
           {
             "dispensaryId": "kaleafa-oak-harbor",
             "price": 53,
@@ -279,8 +308,8 @@
           },
           {
             "dispensaryId": "a-greener-today-lynnwood",
-            "price": 17.6,
-            "pricePerGram": 17.6,
+            "price": 22,
+            "pricePerGram": 22,
             "lat": 47.865948,
             "lng": -122.280987
           }
@@ -298,6 +327,13 @@
             "pricePerGram": 30,
             "lat": 48.476025,
             "lng": -122.65864
+          },
+          {
+            "dispensaryId": "kaleafa-oak-harbor",
+            "price": 38.5,
+            "pricePerGram": 38.5,
+            "lat": 48.3155,
+            "lng": -122.632917
           },
           {
             "dispensaryId": "remedy-tulalip",
@@ -319,13 +355,6 @@
             "pricePerGram": 48,
             "lat": 48.8145708,
             "lng": -122.5440798
-          },
-          {
-            "dispensaryId": "kaleafa-oak-harbor",
-            "price": 55,
-            "pricePerGram": 55,
-            "lat": 48.3155,
-            "lng": -122.632917
           }
         ]
       },
@@ -359,28 +388,6 @@
         ]
       },
       {
-        "matchKey": "|berry block|indica|flower@7g",
-        "displayName": "Block Berry",
-        "category": "Flower",
-        "weightGrams": 7,
-        "storeOffers": [
-          {
-            "dispensaryId": "northwind-anacortes",
-            "price": 42,
-            "pricePerGram": 6,
-            "lat": 48.476025,
-            "lng": -122.65864
-          },
-          {
-            "dispensaryId": "remedy-tulalip",
-            "price": 55,
-            "pricePerGram": 7.8571,
-            "lat": 48.0803125,
-            "lng": -122.1861767
-          }
-        ]
-      },
-      {
         "matchKey": "|berry mixset peach sativa|concentrate|vaporizers@1g",
         "displayName": "Peach Berry (Sativa) - 1g MIXSET Cartridge",
         "category": "Vaporizers",
@@ -388,8 +395,8 @@
         "storeOffers": [
           {
             "dispensaryId": "kaleafa-oak-harbor",
-            "price": 40,
-            "pricePerGram": 40,
+            "price": 28,
+            "pricePerGram": 28,
             "lat": 48.3155,
             "lng": -122.632917
           },
@@ -421,6 +428,28 @@
             "pricePerGram": 38,
             "lat": 48.8035532,
             "lng": -122.3987332
+          }
+        ]
+      },
+      {
+        "matchKey": "|black cherry punch|indica|flower@3.5g",
+        "displayName": "Black Cherry Punch",
+        "category": "Flower",
+        "weightGrams": 3.5,
+        "storeOffers": [
+          {
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 50,
+            "pricePerGram": 14.2857,
+            "lat": 48.8035532,
+            "lng": -122.3987332
+          },
+          {
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 50,
+            "pricePerGram": 14.2857,
+            "lat": 48.8145708,
+            "lng": -122.5440798
           }
         ]
       },
@@ -519,8 +548,8 @@
         "storeOffers": [
           {
             "dispensaryId": "a-greener-today-lynnwood",
-            "price": 32,
-            "pricePerGram": 32,
+            "price": 40,
+            "pricePerGram": 40,
             "lat": 47.865948,
             "lng": -122.280987
           },
@@ -547,18 +576,18 @@
             "lng": -122.060227
           },
           {
-            "dispensaryId": "a-greener-today-lynnwood",
-            "price": 48,
-            "pricePerGram": 13.7143,
-            "lat": 47.865948,
-            "lng": -122.280987
-          },
-          {
             "dispensaryId": "kaleafa-oak-harbor",
             "price": 53,
             "pricePerGram": 15.1429,
             "lat": 48.3155,
             "lng": -122.632917
+          },
+          {
+            "dispensaryId": "a-greener-today-lynnwood",
+            "price": 60,
+            "pricePerGram": 17.1429,
+            "lat": 47.865948,
+            "lng": -122.280987
           }
         ]
       },
@@ -606,8 +635,8 @@
           },
           {
             "dispensaryId": "kaleafa-oak-harbor",
-            "price": 33,
-            "pricePerGram": 33,
+            "price": 23.1,
+            "pricePerGram": 23.1,
             "lat": 48.3155,
             "lng": -122.632917
           }
@@ -761,28 +790,6 @@
             "pricePerGram": 8.1429,
             "lat": 48.476025,
             "lng": -122.65864
-          }
-        ]
-      },
-      {
-        "matchKey": "|boofscotti|indica|flower@3.5g",
-        "displayName": "Boofscotti",
-        "category": "Flower",
-        "weightGrams": 3.5,
-        "storeOffers": [
-          {
-            "dispensaryId": "northwind-anacortes",
-            "price": 21,
-            "pricePerGram": 6,
-            "lat": 48.476025,
-            "lng": -122.65864
-          },
-          {
-            "dispensaryId": "a-greener-today-lynnwood",
-            "price": 35,
-            "pricePerGram": 10,
-            "lat": 47.865948,
-            "lng": -122.280987
           }
         ]
       },
@@ -1106,28 +1113,6 @@
         ]
       },
       {
-        "matchKey": "|coffee creamer|indica|flower@3.5g",
-        "displayName": "Coffee Creamer 3.5g",
-        "category": "Flower",
-        "weightGrams": 3.5,
-        "storeOffers": [
-          {
-            "dispensaryId": "a-greener-today-lynnwood",
-            "price": 33.6,
-            "pricePerGram": 9.6,
-            "lat": 47.865948,
-            "lng": -122.280987
-          },
-          {
-            "dispensaryId": "remedy-tulalip",
-            "price": 42,
-            "pricePerGram": 12,
-            "lat": 48.0803125,
-            "lng": -122.1861767
-          }
-        ]
-      },
-      {
         "matchKey": "|cough trop|concentrate|concentrate|@1g",
         "displayName": "Cough Trop",
         "category": "Concentrate",
@@ -1214,8 +1199,8 @@
           },
           {
             "dispensaryId": "kaleafa-oak-harbor",
-            "price": 47,
-            "pricePerGram": 47,
+            "price": 32.9,
+            "pricePerGram": 32.9,
             "lat": 48.3155,
             "lng": -122.632917
           },
@@ -1294,28 +1279,6 @@
         ]
       },
       {
-        "matchKey": "|dirty girls white|indica|flower@3.5g",
-        "displayName": "Dirty White Girls",
-        "category": "Flower",
-        "weightGrams": 3.5,
-        "storeOffers": [
-          {
-            "dispensaryId": "a-greener-today-lynnwood",
-            "price": 38.5,
-            "pricePerGram": 11,
-            "lat": 47.865948,
-            "lng": -122.280987
-          },
-          {
-            "dispensaryId": "remedy-tulalip",
-            "price": 50,
-            "pricePerGram": 14.2857,
-            "lat": 48.0803125,
-            "lng": -122.1861767
-          }
-        ]
-      },
-      {
         "matchKey": "|distillate i punch purple regulator|n a|vaporizers@1g",
         "displayName": "Regulator: Purple Punch (I) - Distillate Cartridge",
         "category": "Vaporizers",
@@ -1345,8 +1308,8 @@
         "storeOffers": [
           {
             "dispensaryId": "kaleafa-oak-harbor",
-            "price": 30,
-            "pricePerGram": 30,
+            "price": 21,
+            "pricePerGram": 21,
             "lat": 48.3155,
             "lng": -122.632917
           },
@@ -1368,28 +1331,6 @@
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 35,
             "pricePerGram": 35,
-            "lat": 48.8145708,
-            "lng": -122.5440798
-          }
-        ]
-      },
-      {
-        "matchKey": "|fifty fold funky oranges|indica|flower@3.5g",
-        "displayName": "Fifty Fold - Funky Oranges Flower 3.5g",
-        "category": "Flower",
-        "weightGrams": 3.5,
-        "storeOffers": [
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 50,
-            "pricePerGram": 14.2857,
-            "lat": 48.8035532,
-            "lng": -122.3987332
-          },
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 50,
-            "pricePerGram": 14.2857,
             "lat": 48.8145708,
             "lng": -122.5440798
           }
@@ -1637,11 +1578,40 @@
         ]
       },
       {
+        "matchKey": "|herer jack|preroll|pre rolls@1g",
+        "displayName": "Jack Herer",
+        "category": "Pre-Rolls",
+        "weightGrams": 1,
+        "storeOffers": [
+          {
+            "dispensaryId": "kaleafa-oak-harbor",
+            "price": 6,
+            "pricePerGram": 6,
+            "lat": 48.3155,
+            "lng": -122.632917
+          },
+          {
+            "dispensaryId": "210-cannabis-arlington",
+            "price": 10,
+            "pricePerGram": 10,
+            "lat": 48.20922,
+            "lng": -122.060227
+          }
+        ]
+      },
+      {
         "matchKey": "|hybrid khalifa mints|indica|flower@3.5g",
         "displayName": "Khalifa Mints - 3.5g Hybrid",
         "category": "Flower",
         "weightGrams": 3.5,
         "storeOffers": [
+          {
+            "dispensaryId": "remedy-tulalip",
+            "price": 50,
+            "pricePerGram": 14.2857,
+            "lat": 48.0803125,
+            "lng": -122.1861767
+          },
           {
             "dispensaryId": "kaleafa-oak-harbor",
             "price": 53,
@@ -1797,24 +1767,24 @@
         ]
       },
       {
-        "matchKey": "|lemon slushee|concentrate|concentrate|@1g",
-        "displayName": "Lemon Slushee",
-        "category": "Concentrate",
-        "weightGrams": 1,
+        "matchKey": "|khalifa kush|indica|flower@3.5g",
+        "displayName": "Khalifa Kush Flower",
+        "category": "Flower",
+        "weightGrams": 3.5,
         "storeOffers": [
           {
-            "dispensaryId": "kaleafa-oak-harbor",
-            "price": 30,
-            "pricePerGram": 30,
-            "lat": 48.3155,
-            "lng": -122.632917
+            "dispensaryId": "remedy-tulalip",
+            "price": 50,
+            "pricePerGram": 14.2857,
+            "lat": 48.0803125,
+            "lng": -122.1861767
           },
           {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 36,
-            "pricePerGram": 36,
-            "lat": 48.8035532,
-            "lng": -122.3987332
+            "dispensaryId": "kaleafa-oak-harbor",
+            "price": 53,
+            "pricePerGram": 15.1429,
+            "lat": 48.3155,
+            "lng": -122.632917
           }
         ]
       },
@@ -2434,6 +2404,28 @@
         ]
       },
       {
+        "matchKey": "7 wonders|gelato km x|hybrid|flower@3.5g",
+        "displayName": "7 Wonders: KM X Gelato",
+        "category": "Flower",
+        "weightGrams": 3.5,
+        "storeOffers": [
+          {
+            "dispensaryId": "kush21-everett-evergreen",
+            "price": 15,
+            "pricePerGram": 4.2857,
+            "lat": 47.917238,
+            "lng": -122.232282
+          },
+          {
+            "dispensaryId": "kushmart-north",
+            "price": 17.5,
+            "pricePerGram": 5,
+            "lat": 47.9402444,
+            "lng": -122.2194805
+          }
+        ]
+      },
+      {
         "matchKey": "99 sunsets||preroll|pre rolls@1g",
         "displayName": "99 Sunsets",
         "category": "Pre-Rolls",
@@ -2672,6 +2664,28 @@
             "pricePerGram": 8,
             "lat": 47.9402444,
             "lng": -122.2194805
+          }
+        ]
+      },
+      {
+        "matchKey": "amber drops|cake chocolate wax wedding|hybrid|concentrate|wax@1g",
+        "displayName": "Amber Drops: Chocolate Wedding Cake - Wax",
+        "category": "Concentrate",
+        "weightGrams": 1,
+        "storeOffers": [
+          {
+            "dispensaryId": "kush21-everett-evergreen",
+            "price": 3.5,
+            "pricePerGram": 3.5,
+            "lat": 47.917238,
+            "lng": -122.232282
+          },
+          {
+            "dispensaryId": "local-roots-everett-128th",
+            "price": 4.8,
+            "pricePerGram": 4.8,
+            "lat": 47.8826827,
+            "lng": -122.240823
           }
         ]
       },
@@ -4106,22 +4120,22 @@
         ]
       },
       {
-        "matchKey": "brrd live rosin by cormorant|de dulce uva|indica|concentrate|live rosin@1g",
-        "displayName": "Dulce De Uva - Live Rosin - 1g",
-        "category": "Concentrate",
-        "weightGrams": 1,
+        "matchKey": "brl|blue buddha|preroll|pre rolls@3g",
+        "displayName": "Blue Buddha",
+        "category": "Pre-Rolls",
+        "weightGrams": 3,
         "storeOffers": [
           {
             "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 33.6,
-            "pricePerGram": 33.6,
+            "price": 28,
+            "pricePerGram": 9.3333,
             "lat": 48.8035532,
             "lng": -122.3987332
           },
           {
             "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 33.6,
-            "pricePerGram": 33.6,
+            "price": 28,
+            "pricePerGram": 9.3333,
             "lat": 48.8145708,
             "lng": -122.5440798
           }
@@ -4243,13 +4257,6 @@
         "category": "Vaporizers",
         "weightGrams": 1,
         "storeOffers": [
-          {
-            "dispensaryId": "hangar-420-everett",
-            "price": 27,
-            "pricePerGram": 27,
-            "lat": 47.8890687,
-            "lng": -122.2153644
-          },
           {
             "dispensaryId": "the-joint-everett",
             "price": 35,
@@ -4601,18 +4608,18 @@
         "weightGrams": 1,
         "storeOffers": [
           {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 25.6,
-            "pricePerGram": 25.6,
-            "lat": 48.8035532,
-            "lng": -122.3987332
-          },
-          {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 25.6,
             "pricePerGram": 25.6,
             "lat": 48.8145708,
             "lng": -122.5440798
+          },
+          {
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 30.4,
+            "pricePerGram": 30.4,
+            "lat": 48.8035532,
+            "lng": -122.3987332
           },
           {
             "dispensaryId": "happy-time-mt-vernon",
@@ -5070,6 +5077,28 @@
         ]
       },
       {
+        "matchKey": "candy concentrates|chews flavored melon|hybrid|vaporizers@1g",
+        "displayName": "Candy Concentrates: Melon Chews - Flavored Cartridge",
+        "category": "Vaporizers",
+        "weightGrams": 1,
+        "storeOffers": [
+          {
+            "dispensaryId": "kush21-everett-evergreen",
+            "price": 20,
+            "pricePerGram": 20,
+            "lat": 47.917238,
+            "lng": -122.232282
+          },
+          {
+            "dispensaryId": "cannazone-old-hwy-99",
+            "price": 48,
+            "pricePerGram": 48,
+            "lat": 48.384998,
+            "lng": -122.3357887
+          }
+        ]
+      },
+      {
         "matchKey": "candy concentrates|chews melon|hybrid|pre rolls@1g",
         "displayName": "Candy: Melon Chews Infused 1pk/ - Infused Preroll",
         "category": "Pre-Rolls",
@@ -5220,50 +5249,6 @@
             "pricePerGram": 16,
             "lat": 47.9402444,
             "lng": -122.2194805
-          }
-        ]
-      },
-      {
-        "matchKey": "canna organix|certz hce pink|hybrid|vaporizers@1g",
-        "displayName": "Pink Certz 1g HCE Cartridge (Canna Organix)",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "storeOffers": [
-          {
-            "dispensaryId": "local-roots-everett-128th",
-            "price": 15,
-            "pricePerGram": 15,
-            "lat": 47.8826827,
-            "lng": -122.240823
-          },
-          {
-            "dispensaryId": "kush21-everett-evergreen",
-            "price": 17.5,
-            "pricePerGram": 17.5,
-            "lat": 47.917238,
-            "lng": -122.232282
-          }
-        ]
-      },
-      {
-        "matchKey": "canna organix|cream hce kush pie|n a|vaporizers@1g",
-        "displayName": "Cream Pie Kush 1g HCE Cartridge (Canna Organix)",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "storeOffers": [
-          {
-            "dispensaryId": "local-roots-everett-128th",
-            "price": 15,
-            "pricePerGram": 15,
-            "lat": 47.8826827,
-            "lng": -122.240823
-          },
-          {
-            "dispensaryId": "kush21-everett-evergreen",
-            "price": 17.5,
-            "pricePerGram": 17.5,
-            "lat": 47.917238,
-            "lng": -122.232282
           }
         ]
       },
@@ -5554,28 +5539,6 @@
         ]
       },
       {
-        "matchKey": "clandestine gardens|beach champagne kief|hybrid|concentrate|kief@1g",
-        "displayName": "CLANDESTINE GARDENS - Champagne Beach Kief 1G",
-        "category": "Concentrate",
-        "weightGrams": 1,
-        "storeOffers": [
-          {
-            "dispensaryId": "salish-coast-cannabis",
-            "price": 11,
-            "pricePerGram": 11,
-            "lat": 48.4564299,
-            "lng": -122.517779
-          },
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 16,
-            "pricePerGram": 16,
-            "lat": 48.8035532,
-            "lng": -122.3987332
-          }
-        ]
-      },
-      {
         "matchKey": "clouds|digital dutch h oe treat|n a|vaporizers@1g",
         "displayName": "OE-CLOUDS - Digital Disposable - H- Dutch Treat - 1g",
         "category": "Vaporizers",
@@ -5724,28 +5687,6 @@
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 44,
             "pricePerGram": 44,
-            "lat": 48.8145708,
-            "lng": -122.5440798
-          }
-        ]
-      },
-      {
-        "matchKey": "constellation cannabis living soil cold cure|cc dav ls rosin thornberry wild|hybrid|concentrate|rosin@1g",
-        "displayName": "DAV Rosin Wild Thornberry LS CC 1g",
-        "category": "Concentrate",
-        "weightGrams": 1,
-        "storeOffers": [
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 64,
-            "pricePerGram": 64,
-            "lat": 48.8035532,
-            "lng": -122.3987332
-          },
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 64,
-            "pricePerGram": 64,
             "lat": 48.8145708,
             "lng": -122.5440798
           }
@@ -6624,28 +6565,6 @@
         ]
       },
       {
-        "matchKey": "dabstract|biscuits gravy live resin|indica|vaporizers@1g",
-        "displayName": "Dabstract: Biscuits & Gravy - Live Resin Cartridge",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "storeOffers": [
-          {
-            "dispensaryId": "kush21-everett-evergreen",
-            "price": 17.5,
-            "pricePerGram": 17.5,
-            "lat": 47.917238,
-            "lng": -122.232282
-          },
-          {
-            "dispensaryId": "kushmart-north",
-            "price": 17.5,
-            "pricePerGram": 17.5,
-            "lat": 47.9402444,
-            "lng": -122.2194805
-          }
-        ]
-      },
-      {
         "matchKey": "dabstract|black doh live resin zoap|indica|concentrate|live resin@1g",
         "displayName": "Black Zoap Live Resin | 1g (DOH)",
         "category": "Concentrate",
@@ -6662,28 +6581,6 @@
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 24,
             "pricePerGram": 24,
-            "lat": 48.8145708,
-            "lng": -122.5440798
-          }
-        ]
-      },
-      {
-        "matchKey": "dabstract|black doh live resin zoap|indica|pre rolls@1g",
-        "displayName": "Black Zoap Live Resin Infused Pre-Roll | 1g (DOH)",
-        "category": "Pre-Rolls",
-        "weightGrams": 1,
-        "storeOffers": [
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 12.8,
-            "pricePerGram": 12.8,
-            "lat": 48.8035532,
-            "lng": -122.3987332
-          },
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 12.8,
-            "pricePerGram": 12.8,
             "lat": 48.8145708,
             "lng": -122.5440798
           }
@@ -6728,28 +6625,6 @@
             "dispensaryId": "kushmart-north",
             "price": 22.5,
             "pricePerGram": 22.5,
-            "lat": 47.9402444,
-            "lng": -122.2194805
-          }
-        ]
-      },
-      {
-        "matchKey": "dabstract|cake live red resin velvet|indica|vaporizers@1g",
-        "displayName": "Red Velvet Cake Live Resin Cart (Dabstract)",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "storeOffers": [
-          {
-            "dispensaryId": "kush21-everett-evergreen",
-            "price": 17.5,
-            "pricePerGram": 17.5,
-            "lat": 47.917238,
-            "lng": -122.232282
-          },
-          {
-            "dispensaryId": "kushmart-north",
-            "price": 17.5,
-            "pricePerGram": 17.5,
             "lat": 47.9402444,
             "lng": -122.2194805
           }
@@ -6888,6 +6763,28 @@
         ]
       },
       {
+        "matchKey": "dank czar|cherry doh hash live reserve rosin trop|hybrid|concentrate|rosin@1g",
+        "displayName": "Trop Cherry - Reserve Live Hash Rosin | 1g (DOH)",
+        "category": "Concentrate",
+        "weightGrams": 1,
+        "storeOffers": [
+          {
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 52,
+            "pricePerGram": 52,
+            "lat": 48.8035532,
+            "lng": -122.3987332
+          },
+          {
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 52,
+            "pricePerGram": 52,
+            "lat": 48.8145708,
+            "lng": -122.5440798
+          }
+        ]
+      },
+      {
         "matchKey": "dank czar|cookies girl scout|hybrid|concentrate|rosin@1g",
         "displayName": "Girl Scout Cookies - 1g",
         "category": "Concentrate",
@@ -6961,28 +6858,6 @@
         ]
       },
       {
-        "matchKey": "dank czar|yellow zushi|indica|flower@3.5g",
-        "displayName": "Yellow Zushi",
-        "category": "Flower",
-        "weightGrams": 3.5,
-        "storeOffers": [
-          {
-            "dispensaryId": "local-roots-everett-128th",
-            "price": 24,
-            "pricePerGram": 6.8571,
-            "lat": 47.8826827,
-            "lng": -122.240823
-          },
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 28,
-            "pricePerGram": 8,
-            "lat": 48.8035532,
-            "lng": -122.3987332
-          }
-        ]
-      },
-      {
         "matchKey": "delectable dabs|bho sativa wax|sativa|concentrate|wax@3g",
         "displayName": "Delectable Dabs: Sativa 3pk/ - BHO Wax",
         "category": "Concentrate",
@@ -7001,6 +6876,28 @@
             "pricePerGram": 11.3333,
             "lat": 48.384998,
             "lng": -122.3357887
+          }
+        ]
+      },
+      {
+        "matchKey": "delectable dabs|cookies gelato wax|hybrid|concentrate|wax@1g",
+        "displayName": "Delectable Dabs: Gelato Cookies - Wax",
+        "category": "Concentrate",
+        "weightGrams": 1,
+        "storeOffers": [
+          {
+            "dispensaryId": "kush21-everett-evergreen",
+            "price": 5,
+            "pricePerGram": 5,
+            "lat": 47.917238,
+            "lng": -122.232282
+          },
+          {
+            "dispensaryId": "kushmart-north",
+            "price": 6,
+            "pricePerGram": 6,
+            "lat": 47.9402444,
+            "lng": -122.2194805
           }
         ]
       },
@@ -7049,30 +6946,8 @@
         ]
       },
       {
-        "matchKey": "delectable dabs|lights northern wax|indica|concentrate|wax@1g",
-        "displayName": "Northern Lights Wax (Delectable Dabs)",
-        "category": "Concentrate",
-        "weightGrams": 1,
-        "storeOffers": [
-          {
-            "dispensaryId": "kushmart-north",
-            "price": 6,
-            "pricePerGram": 6,
-            "lat": 47.9402444,
-            "lng": -122.2194805
-          },
-          {
-            "dispensaryId": "local-roots-everett-128th",
-            "price": 6,
-            "pricePerGram": 6,
-            "lat": 47.8826827,
-            "lng": -122.240823
-          }
-        ]
-      },
-      {
-        "matchKey": "delectable dabs|maui wax wowie|n a|concentrate|wax@1g",
-        "displayName": "Delectable Dabs: Maui Wowie - Wax",
+        "matchKey": "delectable dabs|leopard snow wax|n a|concentrate|wax@1g",
+        "displayName": "Delectable Dabs: Snow Leopard - Wax",
         "category": "Concentrate",
         "weightGrams": 1,
         "storeOffers": [
@@ -7093,11 +6968,62 @@
         ]
       },
       {
-        "matchKey": "delectable dabs|wagyu wax|hybrid|concentrate|wax@1g",
-        "displayName": "Wagyu Wax (Delectable Dabs)",
+        "matchKey": "delectable dabs|lights northern wax|indica|concentrate|wax@1g",
+        "displayName": "Delectable Dabs: Northern Lights - Wax",
         "category": "Concentrate",
         "weightGrams": 1,
         "storeOffers": [
+          {
+            "dispensaryId": "kush21-everett-evergreen",
+            "price": 5,
+            "pricePerGram": 5,
+            "lat": 47.917238,
+            "lng": -122.232282
+          },
+          {
+            "dispensaryId": "local-roots-everett-128th",
+            "price": 6,
+            "pricePerGram": 6,
+            "lat": 47.8826827,
+            "lng": -122.240823
+          }
+        ]
+      },
+      {
+        "matchKey": "delectable dabs|trainwreck tropical wax|sativa|concentrate|wax@1g",
+        "displayName": "Delectable Dabs: Tropical Trainwreck - Wax",
+        "category": "Concentrate",
+        "weightGrams": 1,
+        "storeOffers": [
+          {
+            "dispensaryId": "kush21-everett-evergreen",
+            "price": 5,
+            "pricePerGram": 5,
+            "lat": 47.917238,
+            "lng": -122.232282
+          },
+          {
+            "dispensaryId": "kushmart-north",
+            "price": 6,
+            "pricePerGram": 6,
+            "lat": 47.9402444,
+            "lng": -122.2194805
+          }
+        ]
+      },
+      {
+        "matchKey": "delectable dabs|wagyu wax|hybrid|concentrate|wax@1g",
+        "displayName": "Delectable Dabs: Wagyu - Wax",
+        "category": "Concentrate",
+        "weightGrams": 1,
+        "storeOffers": [
+          {
+            "dispensaryId": "kush21-everett-evergreen",
+            "price": 5,
+            "pricePerGram": 5,
+            "lat": 47.917238,
+            "lng": -122.232282
+          },
           {
             "dispensaryId": "kushmart-north",
             "price": 6,
@@ -7224,8 +7150,8 @@
           },
           {
             "dispensaryId": "hangar-420-west",
-            "price": 48,
-            "pricePerGram": 13.7143,
+            "price": 50,
+            "pricePerGram": 14.2857,
             "lat": 47.8487065,
             "lng": -122.29382
           }
@@ -7542,28 +7468,6 @@
       {
         "matchKey": "dose extracts|cream ice matcha|n a|pre rolls@1g",
         "displayName": "DOSE Matcha Ice Cream Infused Pre-roll 1g",
-        "category": "Pre-Rolls",
-        "weightGrams": 1,
-        "storeOffers": [
-          {
-            "dispensaryId": "hangar-420-everett",
-            "price": 15,
-            "pricePerGram": 15,
-            "lat": 47.8890687,
-            "lng": -122.2153644
-          },
-          {
-            "dispensaryId": "hangar-420-west",
-            "price": 15,
-            "pricePerGram": 15,
-            "lat": 47.8487065,
-            "lng": -122.29382
-          }
-        ]
-      },
-      {
-        "matchKey": "dose extracts|golden strawberries|n a|pre rolls@1g",
-        "displayName": "DOSE Golden Strawberries Infused Pre-roll 1g",
         "category": "Pre-Rolls",
         "weightGrams": 1,
         "storeOffers": [
@@ -8962,28 +8866,6 @@
         ]
       },
       {
-        "matchKey": "ez vape|doh maui wowie|sativa|vaporizers@1g",
-        "displayName": "Maui Wowie Cartridge | 1g (DOH)",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "storeOffers": [
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 20,
-            "pricePerGram": 20,
-            "lat": 48.8035532,
-            "lng": -122.3987332
-          },
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 20,
-            "pricePerGram": 20,
-            "lat": 48.8145708,
-            "lng": -122.5440798
-          }
-        ]
-      },
-      {
         "matchKey": "ez vape|doh og skywalker|indica|vaporizers@1g",
         "displayName": "Skywalker OG Cartridge | 1g (DOH)",
         "category": "Vaporizers",
@@ -9623,7 +9505,7 @@
       },
       {
         "matchKey": "fifty fold|canal hyg runtz street|hybrid|flower@3.5g",
-        "displayName": "HYG Canal Street Runtz",
+        "displayName": "HYG Canal Street Runtz 3.5g",
         "category": "Flower",
         "weightGrams": 3.5,
         "storeOffers": [
@@ -9668,28 +9550,6 @@
       {
         "matchKey": "fifty fold|doh dyno|indica|flower@3.5g",
         "displayName": "Dyno | 3.5g (DOH)",
-        "category": "Flower",
-        "weightGrams": 3.5,
-        "storeOffers": [
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 40,
-            "pricePerGram": 11.4286,
-            "lat": 48.8035532,
-            "lng": -122.3987332
-          },
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 40,
-            "pricePerGram": 11.4286,
-            "lat": 48.8145708,
-            "lng": -122.5440798
-          }
-        ]
-      },
-      {
-        "matchKey": "fifty fold|doh funky oranges|indica|flower@3.5g",
-        "displayName": "Funky Oranges (DOH)",
         "category": "Flower",
         "weightGrams": 3.5,
         "storeOffers": [
@@ -9886,28 +9746,6 @@
         ]
       },
       {
-        "matchKey": "fire bros|ape crepe|indica|flower@3.5g",
-        "displayName": "3.5g Crepe Ape - Fire Bros",
-        "category": "Flower",
-        "weightGrams": 3.5,
-        "storeOffers": [
-          {
-            "dispensaryId": "evolve-cannabis-bellingham",
-            "price": 32.4,
-            "pricePerGram": 9.2571,
-            "lat": 48.8117374,
-            "lng": -122.5419343
-          },
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 38.4,
-            "pricePerGram": 10.9714,
-            "lat": 48.8145708,
-            "lng": -122.5440798
-          }
-        ]
-      },
-      {
         "matchKey": "fire bros|biscotti cherry doh|indica|flower@3.5g",
         "displayName": "Cherry Biscotti (DOH)",
         "category": "Flower",
@@ -9970,28 +9808,6 @@
             "pricePerGram": 10.8571,
             "lat": 48.8145708,
             "lng": -122.5440798
-          }
-        ]
-      },
-      {
-        "matchKey": "fire bros|boofscotti|hybrid|flower@3.5g",
-        "displayName": "Boofscotti 3.5g Flower (Fire Bros)",
-        "category": "Flower",
-        "weightGrams": 3.5,
-        "storeOffers": [
-          {
-            "dispensaryId": "local-roots-everett-128th",
-            "price": 30,
-            "pricePerGram": 8.5714,
-            "lat": 47.8826827,
-            "lng": -122.240823
-          },
-          {
-            "dispensaryId": "evolve-cannabis-bellingham",
-            "price": 32.4,
-            "pricePerGram": 9.2571,
-            "lat": 48.8117374,
-            "lng": -122.5419343
           }
         ]
       },
@@ -10854,46 +10670,53 @@
         ]
       },
       {
-        "matchKey": "flip side|flipside gold slapple|indica|vaporizers@1g",
-        "displayName": "1g Slapple Cartridge - Flipside Gold",
-        "category": "Vaporizers",
+        "matchKey": "forbidden farms|blend house hybrid kief|hybrid|concentrate|kief@1g",
+        "displayName": "Forbidden Farms: House Blend Hybrid - Kief",
+        "category": "Concentrate",
         "weightGrams": 1,
         "storeOffers": [
           {
-            "dispensaryId": "evolve-cannabis-bellingham",
-            "price": 28.8,
-            "pricePerGram": 28.8,
-            "lat": 48.8117374,
-            "lng": -122.5419343
-          },
-          {
-            "dispensaryId": "salish-coast-cannabis",
-            "price": 45,
-            "pricePerGram": 45,
-            "lat": 48.4564299,
-            "lng": -122.517779
-          }
-        ]
-      },
-      {
-        "matchKey": "foemina|dutch hawaiian|sativa|flower@3.5g",
-        "displayName": "Foemina: Dutch Hawaiian",
-        "category": "Flower",
-        "weightGrams": 3.5,
-        "storeOffers": [
-          {
             "dispensaryId": "kush21-everett-evergreen",
-            "price": 20,
-            "pricePerGram": 5.7143,
+            "price": 10,
+            "pricePerGram": 10,
             "lat": 47.917238,
             "lng": -122.232282
           },
           {
-            "dispensaryId": "evolve-cannabis-bellingham",
-            "price": 31.2,
-            "pricePerGram": 8.9143,
-            "lat": 48.8117374,
-            "lng": -122.5419343
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 12,
+            "pricePerGram": 12,
+            "lat": 48.8145708,
+            "lng": -122.5440798
+          }
+        ]
+      },
+      {
+        "matchKey": "forbidden farms|blend house indica kief|indica|concentrate|kief@1g",
+        "displayName": "Forbidden Farms: House Blend Indica - Kief",
+        "category": "Concentrate",
+        "weightGrams": 1,
+        "storeOffers": [
+          {
+            "dispensaryId": "kush21-everett-evergreen",
+            "price": 10,
+            "pricePerGram": 10,
+            "lat": 47.917238,
+            "lng": -122.232282
+          },
+          {
+            "dispensaryId": "kushmart-north",
+            "price": 10.5,
+            "pricePerGram": 10.5,
+            "lat": 47.9402444,
+            "lng": -122.2194805
+          },
+          {
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 12,
+            "pricePerGram": 12,
+            "lat": 48.8145708,
+            "lng": -122.5440798
           }
         ]
       },
@@ -10916,28 +10739,6 @@
             "pricePerGram": 12,
             "lat": 48.8145708,
             "lng": -122.5440798
-          }
-        ]
-      },
-      {
-        "matchKey": "forbidden farms|governmint oasis premium|hybrid|pre rolls@1g",
-        "displayName": "GovernMint Oasis 1pk/1g - Premium",
-        "category": "Pre-Rolls",
-        "weightGrams": 1,
-        "storeOffers": [
-          {
-            "dispensaryId": "evolve-cannabis-bellingham",
-            "price": 2.7,
-            "pricePerGram": 2.7,
-            "lat": 48.8117374,
-            "lng": -122.5419343
-          },
-          {
-            "dispensaryId": "the-joint-everett",
-            "price": 3,
-            "pricePerGram": 3,
-            "lat": 47.9118264,
-            "lng": -122.2071576
           }
         ]
       },
@@ -10965,10 +10766,17 @@
       },
       {
         "matchKey": "forbidden farms|hash indica|indica|concentrate|hash@1g",
-        "displayName": "Forbidden Farms: Indica - Hash",
+        "displayName": "Indica Hash (Forbidden Farms)",
         "category": "Concentrate",
         "weightGrams": 1,
         "storeOffers": [
+          {
+            "dispensaryId": "kushmart-north",
+            "price": 8.4,
+            "pricePerGram": 8.4,
+            "lat": 47.9402444,
+            "lng": -122.2194805
+          },
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 10,
@@ -10987,10 +10795,17 @@
       },
       {
         "matchKey": "forbidden farms|hash sativa|sativa|concentrate|hash@1g",
-        "displayName": "Forbidden Farms: Sativa - Hash",
+        "displayName": "Sativa Hash (Forbidden Farms)",
         "category": "Concentrate",
         "weightGrams": 1,
         "storeOffers": [
+          {
+            "dispensaryId": "kushmart-north",
+            "price": 8.4,
+            "pricePerGram": 8.4,
+            "lat": 47.9402444,
+            "lng": -122.2194805
+          },
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 10,
@@ -11096,28 +10911,6 @@
         ]
       },
       {
-        "matchKey": "freddy s fuego pirate crystals|crystal doh king lyon piratre wax|sativa|concentrate|wax@1g",
-        "displayName": "Lyon King Piratre Crystal Wax | 1g (DOH)",
-        "category": "Concentrate",
-        "weightGrams": 1,
-        "storeOffers": [
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 24,
-            "pricePerGram": 24,
-            "lat": 48.8035532,
-            "lng": -122.3987332
-          },
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 24,
-            "pricePerGram": 24,
-            "lat": 48.8145708,
-            "lng": -122.5440798
-          }
-        ]
-      },
-      {
         "matchKey": "freddy s fuego pirate crystals|doh lobzta pink wax|hybrid|concentrate|wax@1g",
         "displayName": "Pink Lobzta Pirate Crystals Wax | 1g (DOH)",
         "category": "Concentrate",
@@ -11185,10 +10978,17 @@
       },
       {
         "matchKey": "fuck cancer|hybrid rso|hybrid|concentrate|rso@1g",
-        "displayName": "Hybrid 1g RSO (Fuck Cancer)",
+        "displayName": "Fuck Cancer: Hybrid - RSO",
         "category": "Concentrate",
         "weightGrams": 1,
         "storeOffers": [
+          {
+            "dispensaryId": "kush21-everett-evergreen",
+            "price": 7.5,
+            "pricePerGram": 7.5,
+            "lat": 47.917238,
+            "lng": -122.232282
+          },
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 9,
@@ -11207,10 +11007,17 @@
       },
       {
         "matchKey": "fuck cancer|indica rso|indica|concentrate|rso@1g",
-        "displayName": "Indica 1g RSO (Fuck Cancer)",
+        "displayName": "Fuck Cancer: Indica - RSO",
         "category": "Concentrate",
         "weightGrams": 1,
         "storeOffers": [
+          {
+            "dispensaryId": "kush21-everett-evergreen",
+            "price": 7.5,
+            "pricePerGram": 7.5,
+            "lat": 47.917238,
+            "lng": -122.232282
+          },
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 9,
@@ -11275,28 +11082,6 @@
             "pricePerGram": 22.4,
             "lat": 48.8145708,
             "lng": -122.5440798
-          }
-        ]
-      },
-      {
-        "matchKey": "full spec|47 ak badder concentrate quantum|sativa|concentrate|badder@1g",
-        "displayName": "AK-47 - Quantum Badder - Concentrate - 1g",
-        "category": "Concentrate",
-        "weightGrams": 1,
-        "storeOffers": [
-          {
-            "dispensaryId": "hangar-420-everett",
-            "price": 30,
-            "pricePerGram": 30,
-            "lat": 47.8890687,
-            "lng": -122.2153644
-          },
-          {
-            "dispensaryId": "happy-time-mt-vernon",
-            "price": 30,
-            "pricePerGram": 30,
-            "lat": 48.3929209,
-            "lng": -122.3347727
           }
         ]
       },
@@ -11480,28 +11265,6 @@
             "pricePerGram": 52,
             "lat": 48.846368,
             "lng": -122.486043
-          }
-        ]
-      },
-      {
-        "matchKey": "full spec|apple badder concentrate quantum sundae|sativa|concentrate|badder@1g",
-        "displayName": "Apple Sundae - Quantum Badder - Concentrate - 1g",
-        "category": "Concentrate",
-        "weightGrams": 1,
-        "storeOffers": [
-          {
-            "dispensaryId": "hangar-420-west",
-            "price": 28,
-            "pricePerGram": 28,
-            "lat": 47.8487065,
-            "lng": -122.29382
-          },
-          {
-            "dispensaryId": "hangar-420-everett",
-            "price": 30,
-            "pricePerGram": 30,
-            "lat": 47.8890687,
-            "lng": -122.2153644
           }
         ]
       },
@@ -11739,13 +11502,6 @@
         "weightGrams": 1,
         "storeOffers": [
           {
-            "dispensaryId": "local-roots-everett-128th",
-            "price": 18,
-            "pricePerGram": 18,
-            "lat": 47.8826827,
-            "lng": -122.240823
-          },
-          {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 20,
             "pricePerGram": 20,
@@ -11932,13 +11688,6 @@
             "pricePerGram": 21,
             "lat": 47.9402444,
             "lng": -122.2194805
-          },
-          {
-            "dispensaryId": "hangar-420-everett",
-            "price": 35,
-            "pricePerGram": 35,
-            "lat": 47.8890687,
-            "lng": -122.2153644
           },
           {
             "dispensaryId": "hangar-420-west",
@@ -12205,28 +11954,6 @@
         ]
       },
       {
-        "matchKey": "full spec|elite liquid live love pink potion resin|hybrid|vaporizers@1g",
-        "displayName": "Pink Love Potion - Elite Liquid Live Resin Cartridge - 1g",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "storeOffers": [
-          {
-            "dispensaryId": "local-roots-everett-128th",
-            "price": 24,
-            "pricePerGram": 24,
-            "lat": 47.8826827,
-            "lng": -122.240823
-          },
-          {
-            "dispensaryId": "kush21-everett-evergreen",
-            "price": 28,
-            "pricePerGram": 28,
-            "lat": 47.917238,
-            "lng": -122.232282
-          }
-        ]
-      },
-      {
         "matchKey": "full spec|elite liquid live night nurse resin|indica|vaporizers@1g",
         "displayName": "Night Nurse - Elite Liquid Live Resin Cartridge - 1g",
         "category": "Vaporizers",
@@ -12423,18 +12150,18 @@
             "lng": -122.3987332
           },
           {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 24,
-            "pricePerGram": 24,
-            "lat": 48.8145708,
-            "lng": -122.5440798
-          },
-          {
             "dispensaryId": "salish-coast-cannabis",
             "price": 25,
             "pricePerGram": 25,
             "lat": 48.4564299,
             "lng": -122.517779
+          },
+          {
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 30.4,
+            "pricePerGram": 30.4,
+            "lat": 48.8145708,
+            "lng": -122.5440798
           }
         ]
       },
@@ -12770,28 +12497,6 @@
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 41.6,
             "pricePerGram": 2.9714,
-            "lat": 48.8145708,
-            "lng": -122.5440798
-          }
-        ]
-      },
-      {
-        "matchKey": "good vibe tribe|trainwreck|sativa|flower@28g",
-        "displayName": "Trainwreck",
-        "category": "Flower",
-        "weightGrams": 28,
-        "storeOffers": [
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 68,
-            "pricePerGram": 2.4286,
-            "lat": 48.8035532,
-            "lng": -122.3987332
-          },
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 68,
-            "pricePerGram": 2.4286,
             "lat": 48.8145708,
             "lng": -122.5440798
           }
@@ -13839,28 +13544,6 @@
         ]
       },
       {
-        "matchKey": "hempkings|4 gg|n a|flower@28g",
-        "displayName": "GG#4 Flower (Hempkings Ounce)",
-        "category": "Flower",
-        "weightGrams": 28,
-        "storeOffers": [
-          {
-            "dispensaryId": "kushmart-north",
-            "price": 130,
-            "pricePerGram": 4.6429,
-            "lat": 47.9402444,
-            "lng": -122.2194805
-          },
-          {
-            "dispensaryId": "kush21-everett-evergreen",
-            "price": 170,
-            "pricePerGram": 6.0714,
-            "lat": 47.917238,
-            "lng": -122.232282
-          }
-        ]
-      },
-      {
         "matchKey": "hempkings|cake hemp kings kings|n a|flower@28g",
         "displayName": "Kings Cake 28g Flower (Hemp Kings Ounce)",
         "category": "Flower",
@@ -13901,6 +13584,72 @@
             "pricePerGram": 7.5,
             "lat": 47.917238,
             "lng": -122.232282
+          }
+        ]
+      },
+      {
+        "matchKey": "herb s oil|bubble runtz|hybrid|vaporizers@1g",
+        "displayName": "Bubble Runtz 1g Cartridge (Herb's Oil)",
+        "category": "Vaporizers",
+        "weightGrams": 1,
+        "storeOffers": [
+          {
+            "dispensaryId": "kushmart-north",
+            "price": 12,
+            "pricePerGram": 12,
+            "lat": 47.9402444,
+            "lng": -122.2194805
+          },
+          {
+            "dispensaryId": "local-roots-everett-128th",
+            "price": 12,
+            "pricePerGram": 12,
+            "lat": 47.8826827,
+            "lng": -122.240823
+          }
+        ]
+      },
+      {
+        "matchKey": "herb s oil|crack green|sativa|vaporizers@1g",
+        "displayName": "Green Crack 1g Cartridge (Herb's Oil)",
+        "category": "Vaporizers",
+        "weightGrams": 1,
+        "storeOffers": [
+          {
+            "dispensaryId": "kushmart-north",
+            "price": 12,
+            "pricePerGram": 12,
+            "lat": 47.9402444,
+            "lng": -122.2194805
+          },
+          {
+            "dispensaryId": "local-roots-everett-128th",
+            "price": 12,
+            "pricePerGram": 12,
+            "lat": 47.8826827,
+            "lng": -122.240823
+          }
+        ]
+      },
+      {
+        "matchKey": "herb s oil|kandy kush pops|hybrid|vaporizers@1g",
+        "displayName": "Kandy Kush Pops 1g Cartridge (Herb's Oil)",
+        "category": "Vaporizers",
+        "weightGrams": 1,
+        "storeOffers": [
+          {
+            "dispensaryId": "kushmart-north",
+            "price": 12,
+            "pricePerGram": 12,
+            "lat": 47.9402444,
+            "lng": -122.2194805
+          },
+          {
+            "dispensaryId": "local-roots-everett-128th",
+            "price": 12,
+            "pricePerGram": 12,
+            "lat": 47.8826827,
+            "lng": -122.240823
           }
         ]
       },
@@ -14631,28 +14380,6 @@
         ]
       },
       {
-        "matchKey": "hitz cannabis|crack distillate green|sativa|vaporizers@1g",
-        "displayName": "Green Crack Distillate Cart (Hitz)",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "storeOffers": [
-          {
-            "dispensaryId": "kushmart-north",
-            "price": 6,
-            "pricePerGram": 6,
-            "lat": 47.9402444,
-            "lng": -122.2194805
-          },
-          {
-            "dispensaryId": "kush21-everett-evergreen",
-            "price": 7.5,
-            "pricePerGram": 7.5,
-            "lat": 47.917238,
-            "lng": -122.232282
-          }
-        ]
-      },
-      {
         "matchKey": "hitz cannabis|express live pineapple resin|sativa|vaporizers@1g",
         "displayName": "Pineapple Express Live Resin Cart (Hitz)",
         "category": "Vaporizers",
@@ -15335,6 +15062,94 @@
         ]
       },
       {
+        "matchKey": "honeydew|blue buddha doh|n a|flower@1g",
+        "displayName": "Blue Buddha (DOH)",
+        "category": "Flower",
+        "weightGrams": 1,
+        "storeOffers": [
+          {
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 10.4,
+            "pricePerGram": 10.4,
+            "lat": 48.8035532,
+            "lng": -122.3987332
+          },
+          {
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 10.4,
+            "pricePerGram": 10.4,
+            "lat": 48.8145708,
+            "lng": -122.5440798
+          }
+        ]
+      },
+      {
+        "matchKey": "honeydew|blue buddha doh|n a|flower@3.5g",
+        "displayName": "Blue Buddha (DOH)",
+        "category": "Flower",
+        "weightGrams": 3.5,
+        "storeOffers": [
+          {
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 33.6,
+            "pricePerGram": 9.6,
+            "lat": 48.8035532,
+            "lng": -122.3987332
+          },
+          {
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 33.6,
+            "pricePerGram": 9.6,
+            "lat": 48.8145708,
+            "lng": -122.5440798
+          }
+        ]
+      },
+      {
+        "matchKey": "honeydew|blue buddha doh|n a|flower@7g",
+        "displayName": "Blue Buddha (DOH)",
+        "category": "Flower",
+        "weightGrams": 7,
+        "storeOffers": [
+          {
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 64,
+            "pricePerGram": 9.1429,
+            "lat": 48.8035532,
+            "lng": -122.3987332
+          },
+          {
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 64,
+            "pricePerGram": 9.1429,
+            "lat": 48.8145708,
+            "lng": -122.5440798
+          }
+        ]
+      },
+      {
+        "matchKey": "honeydew|bong buddies cheese doh scream|hybrid|flower@4g",
+        "displayName": "Scream Cheese Bong Buddies | 4g (DOH)",
+        "category": "Flower",
+        "weightGrams": 4,
+        "storeOffers": [
+          {
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 24,
+            "pricePerGram": 6,
+            "lat": 48.8035532,
+            "lng": -122.3987332
+          },
+          {
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 24,
+            "pricePerGram": 6,
+            "lat": 48.8145708,
+            "lng": -122.5440798
+          }
+        ]
+      },
+      {
         "matchKey": "honeydew|bong buddies doh eddy heady|hybrid|flower@4g",
         "displayName": "Heady Eddy Bong Buddies (DOH)",
         "category": "Flower",
@@ -15351,6 +15166,116 @@
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 24,
             "pricePerGram": 6,
+            "lat": 48.8145708,
+            "lng": -122.5440798
+          }
+        ]
+      },
+      {
+        "matchKey": "honeydew|bong buddies doh wa widow|sativa|flower@4g",
+        "displayName": "WA Widow Bong Buddies | 4g (DOH)",
+        "category": "Flower",
+        "weightGrams": 4,
+        "storeOffers": [
+          {
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 24,
+            "pricePerGram": 6,
+            "lat": 48.8035532,
+            "lng": -122.3987332
+          },
+          {
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 24,
+            "pricePerGram": 6,
+            "lat": 48.8145708,
+            "lng": -122.5440798
+          }
+        ]
+      },
+      {
+        "matchKey": "honeydew|bong buddies doh yummy yummy|hybrid|flower@4g",
+        "displayName": "Yummy Yummy Bong Buddies | 4g (DOH)",
+        "category": "Flower",
+        "weightGrams": 4,
+        "storeOffers": [
+          {
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 24,
+            "pricePerGram": 6,
+            "lat": 48.8035532,
+            "lng": -122.3987332
+          },
+          {
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 24,
+            "pricePerGram": 6,
+            "lat": 48.8145708,
+            "lng": -122.5440798
+          }
+        ]
+      },
+      {
+        "matchKey": "honeydew|cheese doh scream|hybrid|flower@1g",
+        "displayName": "Scream Cheese (DOH)",
+        "category": "Flower",
+        "weightGrams": 1,
+        "storeOffers": [
+          {
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 10.4,
+            "pricePerGram": 10.4,
+            "lat": 48.8035532,
+            "lng": -122.3987332
+          },
+          {
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 10.4,
+            "pricePerGram": 10.4,
+            "lat": 48.8145708,
+            "lng": -122.5440798
+          }
+        ]
+      },
+      {
+        "matchKey": "honeydew|cheese doh scream|hybrid|flower@3.5g",
+        "displayName": "Scream Cheese (DOH)",
+        "category": "Flower",
+        "weightGrams": 3.5,
+        "storeOffers": [
+          {
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 33.6,
+            "pricePerGram": 9.6,
+            "lat": 48.8035532,
+            "lng": -122.3987332
+          },
+          {
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 33.6,
+            "pricePerGram": 9.6,
+            "lat": 48.8145708,
+            "lng": -122.5440798
+          }
+        ]
+      },
+      {
+        "matchKey": "honeydew|cheese doh scream|hybrid|flower@7g",
+        "displayName": "Scream Cheese (DOH)",
+        "category": "Flower",
+        "weightGrams": 7,
+        "storeOffers": [
+          {
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 64,
+            "pricePerGram": 9.1429,
+            "lat": 48.8035532,
+            "lng": -122.3987332
+          },
+          {
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 64,
+            "pricePerGram": 9.1429,
             "lat": 48.8145708,
             "lng": -122.5440798
           }
@@ -15511,24 +15436,68 @@
         ]
       },
       {
-        "matchKey": "hustler s ambition|41 distillate gelato|hybrid|vaporizers@1g",
-        "displayName": "Hustler's Ambition: Gelato #41 - Distillate Disposable",
-        "category": "Vaporizers",
+        "matchKey": "honeydew|doh yummy yummy|hybrid|flower@1g",
+        "displayName": "Yummy Yummy (DOH)",
+        "category": "Flower",
         "weightGrams": 1,
         "storeOffers": [
           {
-            "dispensaryId": "kush21-everett-evergreen",
-            "price": 12.5,
-            "pricePerGram": 12.5,
-            "lat": 47.917238,
-            "lng": -122.232282
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 10.4,
+            "pricePerGram": 10.4,
+            "lat": 48.8035532,
+            "lng": -122.3987332
           },
           {
-            "dispensaryId": "kushmart-north",
-            "price": 20,
-            "pricePerGram": 20,
-            "lat": 47.9402444,
-            "lng": -122.2194805
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 10.4,
+            "pricePerGram": 10.4,
+            "lat": 48.8145708,
+            "lng": -122.5440798
+          }
+        ]
+      },
+      {
+        "matchKey": "honeydew|doh yummy yummy|hybrid|flower@3.5g",
+        "displayName": "Yummy Yummy (DOH)",
+        "category": "Flower",
+        "weightGrams": 3.5,
+        "storeOffers": [
+          {
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 33.6,
+            "pricePerGram": 9.6,
+            "lat": 48.8035532,
+            "lng": -122.3987332
+          },
+          {
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 33.6,
+            "pricePerGram": 9.6,
+            "lat": 48.8145708,
+            "lng": -122.5440798
+          }
+        ]
+      },
+      {
+        "matchKey": "honeydew|doh yummy yummy|hybrid|flower@7g",
+        "displayName": "Yummy Yummy (DOH)",
+        "category": "Flower",
+        "weightGrams": 7,
+        "storeOffers": [
+          {
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 64,
+            "pricePerGram": 9.1429,
+            "lat": 48.8035532,
+            "lng": -122.3987332
+          },
+          {
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 64,
+            "pricePerGram": 9.1429,
+            "lat": 48.8145708,
+            "lng": -122.5440798
           }
         ]
       },
@@ -15815,28 +15784,6 @@
             "pricePerGram": 15,
             "lat": 47.8826827,
             "lng": -122.240823
-          }
-        ]
-      },
-      {
-        "matchKey": "hustler s ambition|distillate hustlers i sangria watermelon|n a|vaporizers@1g",
-        "displayName": "Hustlers Ambition: Watermelon Sangria (I) - Distillate Cartridge",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "storeOffers": [
-          {
-            "dispensaryId": "cannazone-old-hwy-99",
-            "price": 16,
-            "pricePerGram": 16,
-            "lat": 48.384998,
-            "lng": -122.3357887
-          },
-          {
-            "dispensaryId": "cannazone-bellingham",
-            "price": 17,
-            "pricePerGram": 17,
-            "lat": 48.846368,
-            "lng": -122.486043
           }
         ]
       },
@@ -16567,6 +16514,72 @@
         ]
       },
       {
+        "matchKey": "lavish|jokerz|indica|flower@28g",
+        "displayName": "Lavish: Jokerz",
+        "category": "Flower",
+        "weightGrams": 28,
+        "storeOffers": [
+          {
+            "dispensaryId": "kush21-everett-evergreen",
+            "price": 120,
+            "pricePerGram": 4.2857,
+            "lat": 47.917238,
+            "lng": -122.232282
+          },
+          {
+            "dispensaryId": "local-roots-everett-128th",
+            "price": 144,
+            "pricePerGram": 5.1429,
+            "lat": 47.8826827,
+            "lng": -122.240823
+          }
+        ]
+      },
+      {
+        "matchKey": "lavish|jokerz|indica|flower@3.5g",
+        "displayName": "Lavish: Jokerz",
+        "category": "Flower",
+        "weightGrams": 3.5,
+        "storeOffers": [
+          {
+            "dispensaryId": "kush21-everett-evergreen",
+            "price": 15,
+            "pricePerGram": 4.2857,
+            "lat": 47.917238,
+            "lng": -122.232282
+          },
+          {
+            "dispensaryId": "local-roots-everett-128th",
+            "price": 18,
+            "pricePerGram": 5.1429,
+            "lat": 47.8826827,
+            "lng": -122.240823
+          }
+        ]
+      },
+      {
+        "matchKey": "lavish|jokerz|indica|flower@7g",
+        "displayName": "Lavish: Jokerz",
+        "category": "Flower",
+        "weightGrams": 7,
+        "storeOffers": [
+          {
+            "dispensaryId": "kush21-everett-evergreen",
+            "price": 30,
+            "pricePerGram": 4.2857,
+            "lat": 47.917238,
+            "lng": -122.232282
+          },
+          {
+            "dispensaryId": "local-roots-everett-128th",
+            "price": 36,
+            "pricePerGram": 5.1429,
+            "lat": 47.8826827,
+            "lng": -122.240823
+          }
+        ]
+      },
+      {
         "matchKey": "lavish|og runtz|hybrid|flower@3.5g",
         "displayName": "Lavish: OG Runtz",
         "category": "Flower",
@@ -16589,6 +16602,28 @@
         ]
       },
       {
+        "matchKey": "lavish|og runtz|hybrid|flower@7g",
+        "displayName": "Lavish: OG Runtz",
+        "category": "Flower",
+        "weightGrams": 7,
+        "storeOffers": [
+          {
+            "dispensaryId": "kush21-everett-evergreen",
+            "price": 30,
+            "pricePerGram": 4.2857,
+            "lat": 47.917238,
+            "lng": -122.232282
+          },
+          {
+            "dispensaryId": "local-roots-everett-128th",
+            "price": 36,
+            "pricePerGram": 5.1429,
+            "lat": 47.8826827,
+            "lng": -122.240823
+          }
+        ]
+      },
+      {
         "matchKey": "lavish|rainbow slushee|hybrid|flower@28g",
         "displayName": "Lavish: Rainbow Slushee",
         "category": "Flower",
@@ -16604,6 +16639,50 @@
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 144,
+            "pricePerGram": 5.1429,
+            "lat": 47.8826827,
+            "lng": -122.240823
+          }
+        ]
+      },
+      {
+        "matchKey": "lavish|rainbow slushee|hybrid|flower@3.5g",
+        "displayName": "Lavish: Rainbow Slushee",
+        "category": "Flower",
+        "weightGrams": 3.5,
+        "storeOffers": [
+          {
+            "dispensaryId": "kush21-everett-evergreen",
+            "price": 15,
+            "pricePerGram": 4.2857,
+            "lat": 47.917238,
+            "lng": -122.232282
+          },
+          {
+            "dispensaryId": "local-roots-everett-128th",
+            "price": 18,
+            "pricePerGram": 5.1429,
+            "lat": 47.8826827,
+            "lng": -122.240823
+          }
+        ]
+      },
+      {
+        "matchKey": "lavish|rainbow slushee|hybrid|flower@7g",
+        "displayName": "Lavish: Rainbow Slushee",
+        "category": "Flower",
+        "weightGrams": 7,
+        "storeOffers": [
+          {
+            "dispensaryId": "kush21-everett-evergreen",
+            "price": 30,
+            "pricePerGram": 4.2857,
+            "lat": 47.917238,
+            "lng": -122.232282
+          },
+          {
+            "dispensaryId": "local-roots-everett-128th",
+            "price": 36,
             "pricePerGram": 5.1429,
             "lat": 47.8826827,
             "lng": -122.240823
@@ -16853,28 +16932,6 @@
         ]
       },
       {
-        "matchKey": "legends|apples bananas doh|hybrid|flower@7g",
-        "displayName": "Apples & Bananas (DOH)",
-        "category": "Flower",
-        "weightGrams": 7,
-        "storeOffers": [
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 40,
-            "pricePerGram": 5.7143,
-            "lat": 48.8035532,
-            "lng": -122.3987332
-          },
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 40,
-            "pricePerGram": 5.7143,
-            "lat": 48.8145708,
-            "lng": -122.5440798
-          }
-        ]
-      },
-      {
         "matchKey": "legends|blue cruz dream santa|sativa|flower@3.5g",
         "displayName": "Blue Dream - Santa Cruz 3.5g Flower (Legends)",
         "category": "Flower",
@@ -16988,6 +17045,28 @@
             "pricePerGram": 5.7143,
             "lat": 48.8145708,
             "lng": -122.5440798
+          }
+        ]
+      },
+      {
+        "matchKey": "legends|boof super|hybrid|flower@28g",
+        "displayName": "Legends: Super Boof",
+        "category": "Flower",
+        "weightGrams": 28,
+        "storeOffers": [
+          {
+            "dispensaryId": "kush21-everett-evergreen",
+            "price": 85,
+            "pricePerGram": 3.0357,
+            "lat": 47.917238,
+            "lng": -122.232282
+          },
+          {
+            "dispensaryId": "local-roots-everett-128th",
+            "price": 90,
+            "pricePerGram": 3.2143,
+            "lat": 47.8826827,
+            "lng": -122.240823
           }
         ]
       },
@@ -17322,28 +17401,6 @@
         ]
       },
       {
-        "matchKey": "lifted|lift mango punch slush|n a|vaporizers@1g",
-        "displayName": "LIFT Mango Punch Slush Cartridge 1g",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "storeOffers": [
-          {
-            "dispensaryId": "hangar-420-everett",
-            "price": 20,
-            "pricePerGram": 20,
-            "lat": 47.8890687,
-            "lng": -122.2153644
-          },
-          {
-            "dispensaryId": "hangar-420-west",
-            "price": 40,
-            "pricePerGram": 40,
-            "lat": 47.8487065,
-            "lng": -122.29382
-          }
-        ]
-      },
-      {
         "matchKey": "lifted|luxor sugarstix|n a|pre rolls@1g",
         "displayName": "Luxor SugarStix 1g",
         "category": "Pre-Rolls",
@@ -17428,28 +17485,6 @@
             "pricePerGram": 18,
             "lat": 47.9402444,
             "lng": -122.2194805
-          }
-        ]
-      },
-      {
-        "matchKey": "mad scientist|bubble hash hybrid|hybrid|concentrate|hash@1g",
-        "displayName": "Hybrid Bubble Hash | 1g",
-        "category": "Concentrate",
-        "weightGrams": 1,
-        "storeOffers": [
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 24,
-            "pricePerGram": 24,
-            "lat": 48.8035532,
-            "lng": -122.3987332
-          },
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 24,
-            "pricePerGram": 24,
-            "lat": 48.8145708,
-            "lng": -122.5440798
           }
         ]
       },
@@ -17542,28 +17577,6 @@
         ]
       },
       {
-        "matchKey": "mama j s|candy cream|indica|flower@14g",
-        "displayName": "Candy Cream Flower (Mama J's)",
-        "category": "Flower",
-        "weightGrams": 14,
-        "storeOffers": [
-          {
-            "dispensaryId": "kushmart-north",
-            "price": 60,
-            "pricePerGram": 4.2857,
-            "lat": 47.9402444,
-            "lng": -122.2194805
-          },
-          {
-            "dispensaryId": "local-roots-everett-128th",
-            "price": 60,
-            "pricePerGram": 4.2857,
-            "lat": 47.8826827,
-            "lng": -122.240823
-          }
-        ]
-      },
-      {
         "matchKey": "mama j s|h live resin runtz|n a|vaporizers@1g",
         "displayName": "Mama J's: Runtz (H) - Live Resin Cartridge",
         "category": "Vaporizers",
@@ -17609,7 +17622,7 @@
       },
       {
         "matchKey": "method|4 gg methd|n a|flower@3.5g",
-        "displayName": "METHD GG #4",
+        "displayName": "METHD GG #4 3.5g",
         "category": "Flower",
         "weightGrams": 3.5,
         "storeOffers": [
@@ -21081,28 +21094,6 @@
         ]
       },
       {
-        "matchKey": "omg sykes|cookies garlic|n a|flower@7g",
-        "displayName": "OMG Garlic Cookies",
-        "category": "Flower",
-        "weightGrams": 7,
-        "storeOffers": [
-          {
-            "dispensaryId": "hangar-420-everett",
-            "price": 40,
-            "pricePerGram": 5.7143,
-            "lat": 47.8890687,
-            "lng": -122.2153644
-          },
-          {
-            "dispensaryId": "hangar-420-west",
-            "price": 40,
-            "pricePerGram": 5.7143,
-            "lat": 47.8487065,
-            "lng": -122.29382
-          }
-        ]
-      },
-      {
         "matchKey": "omg sykes|don mega|n a|flower@3.5g",
         "displayName": "OMG Don Mega",
         "category": "Flower",
@@ -21114,13 +21105,6 @@
             "pricePerGram": 4.2857,
             "lat": 47.8487065,
             "lng": -122.29382
-          },
-          {
-            "dispensaryId": "starbuds-bellingham",
-            "price": 18,
-            "pricePerGram": 5.1429,
-            "lat": 48.736074,
-            "lng": -122.4699876
           },
           {
             "dispensaryId": "hangar-420-everett",
@@ -21170,28 +21154,6 @@
             "dispensaryId": "hangar-420-west",
             "price": 27,
             "pricePerGram": 5.4,
-            "lat": 47.8487065,
-            "lng": -122.29382
-          }
-        ]
-      },
-      {
-        "matchKey": "ooowe|hydrocarbon lemonade owe sunset wax|n a|concentrate|wax@1g",
-        "displayName": "OWE Sunset Lemonade Hydrocarbon Wax 1g",
-        "category": "Concentrate",
-        "weightGrams": 1,
-        "storeOffers": [
-          {
-            "dispensaryId": "hangar-420-everett",
-            "price": 16,
-            "pricePerGram": 16,
-            "lat": 47.8890687,
-            "lng": -122.2153644
-          },
-          {
-            "dispensaryId": "hangar-420-west",
-            "price": 16,
-            "pricePerGram": 16,
             "lat": 47.8487065,
             "lng": -122.29382
           }
@@ -21418,28 +21380,6 @@
         ]
       },
       {
-        "matchKey": "ooowee|cherry gelato lemon|hybrid|pre rolls@5g",
-        "displayName": "Lemon Cherry Gelato Infused 5pk/5g - Ooowee",
-        "category": "Pre-Rolls",
-        "weightGrams": 5,
-        "storeOffers": [
-          {
-            "dispensaryId": "evolve-cannabis-bellingham",
-            "price": 24,
-            "pricePerGram": 4.8,
-            "lat": 48.8117374,
-            "lng": -122.5419343
-          },
-          {
-            "dispensaryId": "kushmart-north",
-            "price": 30,
-            "pricePerGram": 6,
-            "lat": 47.9402444,
-            "lng": -122.2194805
-          }
-        ]
-      },
-      {
         "matchKey": "ooowee|concentrate hydrocarbon lauruntz owe saint|n a|concentrate|@1g",
         "displayName": "OWE Saint Lauruntz Hydrocarbon Concentrate 1g",
         "category": "Concentrate",
@@ -21500,28 +21440,6 @@
             "dispensaryId": "evolve-cannabis-bellingham",
             "price": 22.8,
             "pricePerGram": 6.5143,
-            "lat": 48.8117374,
-            "lng": -122.5419343
-          }
-        ]
-      },
-      {
-        "matchKey": "ooowee|cough seattle strawberry|sativa|pre rolls@5g",
-        "displayName": "Seattle Strawberry Cough 5pk Preroll (Ooowee)",
-        "category": "Pre-Rolls",
-        "weightGrams": 5,
-        "storeOffers": [
-          {
-            "dispensaryId": "kushmart-north",
-            "price": 18,
-            "pricePerGram": 3.6,
-            "lat": 47.9402444,
-            "lng": -122.2194805
-          },
-          {
-            "dispensaryId": "evolve-cannabis-bellingham",
-            "price": 24,
-            "pricePerGram": 4.8,
             "lat": 48.8117374,
             "lng": -122.5419343
           }
@@ -21682,28 +21600,6 @@
         ]
       },
       {
-        "matchKey": "ooowee|marker pr|indica|pre rolls@1g",
-        "displayName": "Ooowee: Ooowee Marker - PR",
-        "category": "Pre-Rolls",
-        "weightGrams": 1,
-        "storeOffers": [
-          {
-            "dispensaryId": "kush21-everett-evergreen",
-            "price": 3,
-            "pricePerGram": 3,
-            "lat": 47.917238,
-            "lng": -122.232282
-          },
-          {
-            "dispensaryId": "salish-coast-cannabis",
-            "price": 5,
-            "pricePerGram": 5,
-            "lat": 48.4564299,
-            "lng": -122.517779
-          }
-        ]
-      },
-      {
         "matchKey": "ooowee|purple rain|n a|vaporizers@1g",
         "displayName": "Ooowee Cartridge Purple Rain",
         "category": "Vaporizers",
@@ -21722,28 +21618,6 @@
             "pricePerGram": 24,
             "lat": 47.9118264,
             "lng": -122.2071576
-          }
-        ]
-      },
-      {
-        "matchKey": "ooowee|runtz trophy|indica|flower@3.5g",
-        "displayName": "Ooowee: Trophy Runtz",
-        "category": "Flower",
-        "weightGrams": 3.5,
-        "storeOffers": [
-          {
-            "dispensaryId": "kush21-everett-evergreen",
-            "price": 21,
-            "pricePerGram": 6,
-            "lat": 47.917238,
-            "lng": -122.232282
-          },
-          {
-            "dispensaryId": "evolve-cannabis-bellingham",
-            "price": 22.8,
-            "pricePerGram": 6.5143,
-            "lat": 48.8117374,
-            "lng": -122.5419343
           }
         ]
       },
@@ -22152,7 +22026,7 @@
       },
       {
         "matchKey": "pagoda|balenci zaza|hybrid|flower@28g",
-        "displayName": "Pagoda: Balenci Zaza",
+        "displayName": "Balenci Zaza Flower (PAGODA Ounce)",
         "category": "Flower",
         "weightGrams": 28,
         "storeOffers": [
@@ -22202,35 +22076,6 @@
         ]
       },
       {
-        "matchKey": "pagoda|boof cherry super|n a|flower@3.5g",
-        "displayName": "Super Boof Cherry 3.5g Flower (Pagoda)",
-        "category": "Flower",
-        "weightGrams": 3.5,
-        "storeOffers": [
-          {
-            "dispensaryId": "kush21-everett-evergreen",
-            "price": 12.5,
-            "pricePerGram": 3.5714,
-            "lat": 47.917238,
-            "lng": -122.232282
-          },
-          {
-            "dispensaryId": "kushmart-north",
-            "price": 12.5,
-            "pricePerGram": 3.5714,
-            "lat": 47.9402444,
-            "lng": -122.2194805
-          },
-          {
-            "dispensaryId": "local-roots-everett-128th",
-            "price": 12.5,
-            "pricePerGram": 3.5714,
-            "lat": 47.8826827,
-            "lng": -122.240823
-          }
-        ]
-      },
-      {
         "matchKey": "passion flower|cbn sundae supper|indica|vaporizers@1g",
         "displayName": "PASSION FLOWER - Sundae Supper CBN Cart 1G",
         "category": "Vaporizers",
@@ -22249,6 +22094,28 @@
             "pricePerGram": 40,
             "lat": 47.9402444,
             "lng": -122.2194805
+          }
+        ]
+      },
+      {
+        "matchKey": "pastime|beanz jelly|sativa|vaporizers@1g",
+        "displayName": "Jelly Beanz Cartridge (Pastime)",
+        "category": "Vaporizers",
+        "weightGrams": 1,
+        "storeOffers": [
+          {
+            "dispensaryId": "kushmart-north",
+            "price": 20,
+            "pricePerGram": 20,
+            "lat": 47.9402444,
+            "lng": -122.2194805
+          },
+          {
+            "dispensaryId": "local-roots-everett-128th",
+            "price": 39,
+            "pricePerGram": 39,
+            "lat": 47.8826827,
+            "lng": -122.240823
           }
         ]
       },
@@ -22871,13 +22738,6 @@
             "pricePerGram": 8.5714,
             "lat": 48.846368,
             "lng": -122.486043
-          },
-          {
-            "dispensaryId": "cannazone-old-hwy-99",
-            "price": 30,
-            "pricePerGram": 8.5714,
-            "lat": 48.384998,
-            "lng": -122.3357887
           }
         ]
       },
@@ -23175,28 +23035,6 @@
         ]
       },
       {
-        "matchKey": "phat panda|distillate doh piss unicorn|indica|vaporizers@1g",
-        "displayName": "Unicorn Piss | Cartridge | Distillate | 1g (DOH)",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "storeOffers": [
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 24,
-            "pricePerGram": 24,
-            "lat": 48.8035532,
-            "lng": -122.3987332
-          },
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 24,
-            "pricePerGram": 24,
-            "lat": 48.8145708,
-            "lng": -122.5440798
-          }
-        ]
-      },
-      {
         "matchKey": "phat panda|distillate doh trainwreck tropical|sativa|vaporizers@1g",
         "displayName": "Tropical Trainwreck | Cartridge | Distillate | 1g (DOH)",
         "category": "Vaporizers",
@@ -23215,28 +23053,6 @@
             "pricePerGram": 24,
             "lat": 48.8145708,
             "lng": -122.5440798
-          }
-        ]
-      },
-      {
-        "matchKey": "phat panda|distillate huckleberry i pen|n a|vaporizers@1g",
-        "displayName": "Panda Pen: Huckleberry (I) - Distillate Cartridge",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "storeOffers": [
-          {
-            "dispensaryId": "cannazone-bellingham",
-            "price": 30,
-            "pricePerGram": 30,
-            "lat": 48.846368,
-            "lng": -122.486043
-          },
-          {
-            "dispensaryId": "cannazone-old-hwy-99",
-            "price": 30,
-            "pricePerGram": 30,
-            "lat": 48.384998,
-            "lng": -122.3357887
           }
         ]
       },
@@ -23268,13 +23084,6 @@
         "category": "Vaporizers",
         "weightGrams": 1,
         "storeOffers": [
-          {
-            "dispensaryId": "local-roots-everett-128th",
-            "price": 18,
-            "pricePerGram": 18,
-            "lat": 47.8826827,
-            "lng": -122.240823
-          },
           {
             "dispensaryId": "cannazone-bellingham",
             "price": 30,
@@ -23512,28 +23321,6 @@
         ]
       },
       {
-        "matchKey": "phat panda|firecracker granddaddy i purple|indica|pre rolls@1g",
-        "displayName": "Phat Panda Firecracker: Granddaddy Purple (I) 1pk/ - Infused Pre-Roll",
-        "category": "Pre-Rolls",
-        "weightGrams": 1,
-        "storeOffers": [
-          {
-            "dispensaryId": "cannazone-bellingham",
-            "price": 11,
-            "pricePerGram": 11,
-            "lat": 48.846368,
-            "lng": -122.486043
-          },
-          {
-            "dispensaryId": "cannazone-old-hwy-99",
-            "price": 14,
-            "pricePerGram": 14,
-            "lat": 48.384998,
-            "lng": -122.3357887
-          }
-        ]
-      },
-      {
         "matchKey": "phat panda|firecracker gsc|n a|pre rolls@1g",
         "displayName": "Firecracker | Infused Preroll | GSC",
         "category": "Pre-Rolls",
@@ -23625,28 +23412,6 @@
             "pricePerGram": 9.6,
             "lat": 48.8035532,
             "lng": -122.3987332
-          }
-        ]
-      },
-      {
-        "matchKey": "phat panda|golden hawaiian pineapple|sativa|flower@3.5g",
-        "displayName": "Hawaiian Golden Pineapple Flower (Phat Panda)",
-        "category": "Flower",
-        "weightGrams": 3.5,
-        "storeOffers": [
-          {
-            "dispensaryId": "kushmart-north",
-            "price": 15,
-            "pricePerGram": 4.2857,
-            "lat": 47.9402444,
-            "lng": -122.2194805
-          },
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 22.4,
-            "pricePerGram": 6.4,
-            "lat": 48.8145708,
-            "lng": -122.5440798
           }
         ]
       },
@@ -24169,28 +23934,6 @@
         ]
       },
       {
-        "matchKey": "plaid jacket|burger cured hash i resin|n a|vaporizers@1g",
-        "displayName": "Plaid Jacket: Hash Burger (I) - Cured Resin Disposable",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "storeOffers": [
-          {
-            "dispensaryId": "cannazone-bellingham",
-            "price": 67,
-            "pricePerGram": 67,
-            "lat": 48.846368,
-            "lng": -122.486043
-          },
-          {
-            "dispensaryId": "cannazone-old-hwy-99",
-            "price": 68,
-            "pricePerGram": 68,
-            "lat": 48.384998,
-            "lng": -122.3357887
-          }
-        ]
-      },
-      {
         "matchKey": "plaid jacket|burger doh hash thca|indica|pre rolls@1g",
         "displayName": "Hash Burger THCA Infused Pre-Roll | 1g (DOH)",
         "category": "Pre-Rolls",
@@ -24553,13 +24296,6 @@
             "pricePerGram": 24,
             "lat": 47.8826827,
             "lng": -122.240823
-          },
-          {
-            "dispensaryId": "kushmart-north",
-            "price": 27,
-            "pricePerGram": 27,
-            "lat": 47.9402444,
-            "lng": -122.2194805
           }
         ]
       },
@@ -24604,28 +24340,6 @@
             "pricePerGram": 40,
             "lat": 48.8035532,
             "lng": -122.3987332
-          }
-        ]
-      },
-      {
-        "matchKey": "plume|jealousy live og resin|hybrid|vaporizers@1g",
-        "displayName": "Jealousy OG 1g Live Resin Cartridge (Plume)",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "storeOffers": [
-          {
-            "dispensaryId": "local-roots-everett-128th",
-            "price": 18,
-            "pricePerGram": 18,
-            "lat": 47.8826827,
-            "lng": -122.240823
-          },
-          {
-            "dispensaryId": "kush21-everett-evergreen",
-            "price": 20,
-            "pricePerGram": 20,
-            "lat": 47.917238,
-            "lng": -122.232282
           }
         ]
       },
@@ -25428,28 +25142,6 @@
         ]
       },
       {
-        "matchKey": "royal tree|envy i sweet|indica|flower@3.5g",
-        "displayName": "Royal Tree: Sweet Envy (I)",
-        "category": "Flower",
-        "weightGrams": 3.5,
-        "storeOffers": [
-          {
-            "dispensaryId": "cannazone-bellingham",
-            "price": 40,
-            "pricePerGram": 11.4286,
-            "lat": 48.846368,
-            "lng": -122.486043
-          },
-          {
-            "dispensaryId": "cannazone-old-hwy-99",
-            "price": 54,
-            "pricePerGram": 15.4286,
-            "lat": 48.384998,
-            "lng": -122.3357887
-          }
-        ]
-      },
-      {
         "matchKey": "seattle bubble works|hash trainwreck|sativa|concentrate|hash@1g",
         "displayName": "Trainwreck Bubble Hash | 1g",
         "category": "Concentrate",
@@ -25644,28 +25336,6 @@
             "pricePerGram": 11.2,
             "lat": 48.8145708,
             "lng": -122.5440798
-          }
-        ]
-      },
-      {
-        "matchKey": "seattle marijuana company|colada j pina s shatter|hybrid|pre rolls@1g",
-        "displayName": "Pina Colada Shatter J's Pre-Roll | 1g",
-        "category": "Pre-Rolls",
-        "weightGrams": 1,
-        "storeOffers": [
-          {
-            "dispensaryId": "evolve-cannabis-bellingham",
-            "price": 9.6,
-            "pricePerGram": 9.6,
-            "lat": 48.8117374,
-            "lng": -122.5419343
-          },
-          {
-            "dispensaryId": "cannazone-bellingham",
-            "price": 14,
-            "pricePerGram": 14,
-            "lat": 48.846368,
-            "lng": -122.486043
           }
         ]
       },
@@ -26534,28 +26204,6 @@
         ]
       },
       {
-        "matchKey": "sky high gardens|chunk pineapple|indica|flower@1g",
-        "displayName": "Pineapple Chunk",
-        "category": "Flower",
-        "weightGrams": 1,
-        "storeOffers": [
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 12,
-            "pricePerGram": 12,
-            "lat": 48.8035532,
-            "lng": -122.3987332
-          },
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 12,
-            "pricePerGram": 12,
-            "lat": 48.8145708,
-            "lng": -122.5440798
-          }
-        ]
-      },
-      {
         "matchKey": "sky high gardens|chunk pineapple|indica|flower@3.5g",
         "displayName": "Pineapple Chunk",
         "category": "Flower",
@@ -26579,28 +26227,6 @@
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 40,
             "pricePerGram": 11.4286,
-            "lat": 48.8145708,
-            "lng": -122.5440798
-          }
-        ]
-      },
-      {
-        "matchKey": "sky high gardens|chunk pineapple|indica|flower@7g",
-        "displayName": "Pineapple Chunk",
-        "category": "Flower",
-        "weightGrams": 7,
-        "storeOffers": [
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 78.4,
-            "pricePerGram": 11.2,
-            "lat": 48.8035532,
-            "lng": -122.3987332
-          },
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 78.4,
-            "pricePerGram": 11.2,
             "lat": 48.8145708,
             "lng": -122.5440798
           }
@@ -26856,28 +26482,6 @@
         ]
       },
       {
-        "matchKey": "sky high gardens|snow tokyo|hybrid|flower@1g",
-        "displayName": "Tokyo Snow",
-        "category": "Flower",
-        "weightGrams": 1,
-        "storeOffers": [
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 12,
-            "pricePerGram": 12,
-            "lat": 48.8035532,
-            "lng": -122.3987332
-          },
-          {
-            "dispensaryId": "the-joint-everett",
-            "price": 14,
-            "pricePerGram": 14,
-            "lat": 47.9118264,
-            "lng": -122.2071576
-          }
-        ]
-      },
-      {
         "matchKey": "smokey point productions vape|doh gelato live punch resin|n a|vaporizers@1g",
         "displayName": "Gelato Punch Live Resin Disposable Vape | 1g (DOH)",
         "category": "Vaporizers",
@@ -26918,28 +26522,6 @@
             "pricePerGram": 40,
             "lat": 48.8145708,
             "lng": -122.5440798
-          }
-        ]
-      },
-      {
-        "matchKey": "smokey point productions|butter h mandarin|n a|flower@14g",
-        "displayName": "Smokey Point: Mandarin Butter (H)",
-        "category": "Flower",
-        "weightGrams": 14,
-        "storeOffers": [
-          {
-            "dispensaryId": "cannazone-bellingham",
-            "price": 80,
-            "pricePerGram": 5.7143,
-            "lat": 48.846368,
-            "lng": -122.486043
-          },
-          {
-            "dispensaryId": "cannazone-old-hwy-99",
-            "price": 110,
-            "pricePerGram": 7.8571,
-            "lat": 48.384998,
-            "lng": -122.3357887
           }
         ]
       },
@@ -26990,28 +26572,6 @@
       {
         "matchKey": "smokey point productions|cookies doh live resin tropicana|n a|vaporizers@1g",
         "displayName": "Tropicana Cookies Live Resin Cartridge | 1g (DOH)",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "storeOffers": [
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 40,
-            "pricePerGram": 40,
-            "lat": 48.8035532,
-            "lng": -122.3987332
-          },
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 40,
-            "pricePerGram": 40,
-            "lat": 48.8145708,
-            "lng": -122.5440798
-          }
-        ]
-      },
-      {
-        "matchKey": "smokey point productions|doh lime live resin sour trop|n a|vaporizers@1g",
-        "displayName": "Sour Lime Trop Live Resin Cartridge | 1g (DOH)",
         "category": "Vaporizers",
         "weightGrams": 1,
         "storeOffers": [
@@ -27567,28 +27127,6 @@
         ]
       },
       {
-        "matchKey": "subx smalls|bong buddies doh gmo|indica|flower@7g",
-        "displayName": "GMO Bong Buddies | 7g (DOH)",
-        "category": "Flower",
-        "weightGrams": 7,
-        "storeOffers": [
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 56,
-            "pricePerGram": 8,
-            "lat": 48.8035532,
-            "lng": -122.3987332
-          },
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 56,
-            "pricePerGram": 8,
-            "lat": 48.8145708,
-            "lng": -122.5440798
-          }
-        ]
-      },
-      {
         "matchKey": "subx supreme|diamond doh gmo live|indica|vaporizers@1g",
         "displayName": "GMO Live Diamond Cartridge | 1g (DOH)",
         "category": "Vaporizers",
@@ -27941,28 +27479,6 @@
         ]
       },
       {
-        "matchKey": "subx|rain sherbet|n a|flower@7g",
-        "displayName": "SubX: Sherbet Rain",
-        "category": "Flower",
-        "weightGrams": 7,
-        "storeOffers": [
-          {
-            "dispensaryId": "kush21-everett-evergreen",
-            "price": 56,
-            "pricePerGram": 8,
-            "lat": 47.917238,
-            "lng": -122.232282
-          },
-          {
-            "dispensaryId": "local-roots-everett-128th",
-            "price": 57,
-            "pricePerGram": 8.1429,
-            "lat": 47.8826827,
-            "lng": -122.240823
-          }
-        ]
-      },
-      {
         "matchKey": "sunshine co op|foot fruit i the|indica|flower@28g",
         "displayName": "Sunshine Co-Op: Fruit By The Foot (I)",
         "category": "Flower",
@@ -28298,6 +27814,13 @@
             "lng": -122.232282
           },
           {
+            "dispensaryId": "salish-coast-cannabis",
+            "price": 30,
+            "pricePerGram": 30,
+            "lat": 48.4564299,
+            "lng": -122.517779
+          },
+          {
             "dispensaryId": "cannazone-old-hwy-99",
             "price": 40,
             "pricePerGram": 40,
@@ -28340,6 +27863,13 @@
             "pricePerGram": 18,
             "lat": 47.8826827,
             "lng": -122.240823
+          },
+          {
+            "dispensaryId": "salish-coast-cannabis",
+            "price": 30,
+            "pricePerGram": 30,
+            "lat": 48.4564299,
+            "lng": -122.517779
           },
           {
             "dispensaryId": "the-joint-everett",
@@ -28405,28 +27935,6 @@
             "pricePerGram": 56,
             "lat": 47.8890687,
             "lng": -122.2153644
-          }
-        ]
-      },
-      {
-        "matchKey": "super fog|blueberry cake diamonds fire jef liquid plus space|indica|vaporizers@1g",
-        "displayName": "FIRE Liquid Diamonds 1g Jefé Plus - Blueberry Space Cake",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "storeOffers": [
-          {
-            "dispensaryId": "the-joint-everett",
-            "price": 52,
-            "pricePerGram": 52,
-            "lat": 47.9118264,
-            "lng": -122.2071576
-          },
-          {
-            "dispensaryId": "cannazone-bellingham",
-            "price": 55,
-            "pricePerGram": 55,
-            "lat": 48.846368,
-            "lng": -122.486043
           }
         ]
       },
@@ -28582,13 +28090,6 @@
         "weightGrams": 1,
         "storeOffers": [
           {
-            "dispensaryId": "the-joint-everett",
-            "price": 45,
-            "pricePerGram": 45,
-            "lat": 47.9118264,
-            "lng": -122.2071576
-          },
-          {
             "dispensaryId": "salish-coast-cannabis",
             "price": 50,
             "pricePerGram": 50,
@@ -28601,28 +28102,6 @@
             "pricePerGram": 60,
             "lat": 47.8890687,
             "lng": -122.2153644
-          },
-          {
-            "dispensaryId": "hangar-420-west",
-            "price": 60,
-            "pricePerGram": 60,
-            "lat": 47.8487065,
-            "lng": -122.29382
-          }
-        ]
-      },
-      {
-        "matchKey": "super fog|cereal diamonds fire jef liquid milk plus|hybrid|vaporizers@1g",
-        "displayName": "FIRE Liquid Diamonds 1g Jefé Plus - Cereal Milk",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "storeOffers": [
-          {
-            "dispensaryId": "local-roots-everett-128th",
-            "price": 30,
-            "pricePerGram": 30,
-            "lat": 47.8826827,
-            "lng": -122.240823
           },
           {
             "dispensaryId": "hangar-420-west",
@@ -28763,6 +28242,13 @@
             "lng": -122.2071576
           },
           {
+            "dispensaryId": "salish-coast-cannabis",
+            "price": 50,
+            "pricePerGram": 50,
+            "lat": 48.4564299,
+            "lng": -122.517779
+          },
+          {
             "dispensaryId": "cannazone-old-hwy-99",
             "price": 60,
             "pricePerGram": 60,
@@ -28806,6 +28292,13 @@
         "category": "Vaporizers",
         "weightGrams": 1,
         "storeOffers": [
+          {
+            "dispensaryId": "salish-coast-cannabis",
+            "price": 45,
+            "pricePerGram": 45,
+            "lat": 48.4564299,
+            "lng": -122.517779
+          },
           {
             "dispensaryId": "hangar-420-everett",
             "price": 55,
@@ -28954,18 +28447,33 @@
         ]
       },
       {
+        "matchKey": "super fog|edition fc jef limited plus strawberry striker twisted|sativa hybrid|vaporizers@1g",
+        "displayName": "TWISTED 1G Jefé Plus - Strawberry Striker (FC Super Fog Limited Edition)",
+        "category": "Vaporizers",
+        "weightGrams": 1,
+        "storeOffers": [
+          {
+            "dispensaryId": "salish-coast-cannabis",
+            "price": 45,
+            "pricePerGram": 45,
+            "lat": 48.4564299,
+            "lng": -122.517779
+          },
+          {
+            "dispensaryId": "hangar-420-everett",
+            "price": 60,
+            "pricePerGram": 60,
+            "lat": 47.8890687,
+            "lng": -122.2153644
+          }
+        ]
+      },
+      {
         "matchKey": "super fog|extract gas high jef loud plus stoopid terpene|hybrid|vaporizers@1g",
         "displayName": "LOUD High Terpene Extract 1g Jefé Plus - Stoopid Gas",
         "category": "Vaporizers",
         "weightGrams": 1,
         "storeOffers": [
-          {
-            "dispensaryId": "kush21-everett-evergreen",
-            "price": 27.5,
-            "pricePerGram": 27.5,
-            "lat": 47.917238,
-            "lng": -122.232282
-          },
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 30,
@@ -29033,6 +28541,13 @@
         "weightGrams": 1,
         "storeOffers": [
           {
+            "dispensaryId": "salish-coast-cannabis",
+            "price": 50,
+            "pricePerGram": 50,
+            "lat": 48.4564299,
+            "lng": -122.517779
+          },
+          {
             "dispensaryId": "hangar-420-everett",
             "price": 56,
             "pricePerGram": 56,
@@ -29069,6 +28584,13 @@
             "lng": -122.240823
           },
           {
+            "dispensaryId": "salish-coast-cannabis",
+            "price": 35,
+            "pricePerGram": 35,
+            "lat": 48.4564299,
+            "lng": -122.517779
+          },
+          {
             "dispensaryId": "the-joint-everett",
             "price": 36,
             "pricePerGram": 36,
@@ -29089,6 +28611,13 @@
             "pricePerGram": 24,
             "lat": 47.8826827,
             "lng": -122.240823
+          },
+          {
+            "dispensaryId": "salish-coast-cannabis",
+            "price": 35,
+            "pricePerGram": 35,
+            "lat": 48.4564299,
+            "lng": -122.517779
           },
           {
             "dispensaryId": "the-joint-everett",
@@ -29340,6 +28869,28 @@
         ]
       },
       {
+        "matchKey": "supernova|alien candy rock wax|indica|concentrate|wax@1g",
+        "displayName": "Supernova: Alien Rock Candy - Wax",
+        "category": "Concentrate",
+        "weightGrams": 1,
+        "storeOffers": [
+          {
+            "dispensaryId": "kush21-everett-evergreen",
+            "price": 6,
+            "pricePerGram": 6,
+            "lat": 47.917238,
+            "lng": -122.232282
+          },
+          {
+            "dispensaryId": "kushmart-north",
+            "price": 7.5,
+            "pricePerGram": 7.5,
+            "lat": 47.9402444,
+            "lng": -122.2194805
+          }
+        ]
+      },
+      {
         "matchKey": "supernova|colada pina|sativa|vaporizers@1g",
         "displayName": "Pina Colada Cart (SuperNova)",
         "category": "Vaporizers",
@@ -29406,22 +28957,66 @@
         ]
       },
       {
-        "matchKey": "supernova|pog|sativa|vaporizers@1g",
-        "displayName": "POG Cart (SuperNova)",
+        "matchKey": "supernova|live maui resin wowie|sativa|vaporizers@1g",
+        "displayName": "Supernova: Maui Wowie - Live Resin Cartridge",
+        "category": "Vaporizers",
+        "weightGrams": 1,
+        "storeOffers": [
+          {
+            "dispensaryId": "kush21-everett-evergreen",
+            "price": 15,
+            "pricePerGram": 15,
+            "lat": 47.917238,
+            "lng": -122.232282
+          },
+          {
+            "dispensaryId": "kushmart-north",
+            "price": 15,
+            "pricePerGram": 15,
+            "lat": 47.9402444,
+            "lng": -122.2194805
+          }
+        ]
+      },
+      {
+        "matchKey": "supernova|live resin sherbet sunset|indica|vaporizers@1g",
+        "displayName": "Sunset Sherbet 1g Live Resin Cartridge (Supernova)",
         "category": "Vaporizers",
         "weightGrams": 1,
         "storeOffers": [
           {
             "dispensaryId": "kushmart-north",
-            "price": 12.5,
-            "pricePerGram": 12.5,
+            "price": 15,
+            "pricePerGram": 15,
             "lat": 47.9402444,
             "lng": -122.2194805
           },
           {
             "dispensaryId": "local-roots-everett-128th",
-            "price": 12.5,
-            "pricePerGram": 12.5,
+            "price": 15,
+            "pricePerGram": 15,
+            "lat": 47.8826827,
+            "lng": -122.240823
+          }
+        ]
+      },
+      {
+        "matchKey": "supernova|live resin tangie|sativa|vaporizers@1g",
+        "displayName": "Tangie 1g Live Resin Cartridge (Supernova)",
+        "category": "Vaporizers",
+        "weightGrams": 1,
+        "storeOffers": [
+          {
+            "dispensaryId": "kushmart-north",
+            "price": 15,
+            "pricePerGram": 15,
+            "lat": 47.9402444,
+            "lng": -122.2194805
+          },
+          {
+            "dispensaryId": "local-roots-everett-128th",
+            "price": 15,
+            "pricePerGram": 15,
             "lat": 47.8826827,
             "lng": -122.240823
           }
@@ -29928,6 +29523,28 @@
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 24,
             "pricePerGram": 24,
+            "lat": 48.8145708,
+            "lng": -122.5440798
+          }
+        ]
+      },
+      {
+        "matchKey": "svin garden|doh one piece|hybrid|pre rolls@1g",
+        "displayName": "One Piece Pre-Roll | 1g (DOH)",
+        "category": "Pre-Rolls",
+        "weightGrams": 1,
+        "storeOffers": [
+          {
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 9.6,
+            "pricePerGram": 9.6,
+            "lat": 48.8035532,
+            "lng": -122.3987332
+          },
+          {
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 9.6,
+            "pricePerGram": 9.6,
             "lat": 48.8145708,
             "lng": -122.5440798
           }
@@ -30462,28 +30079,6 @@
         ]
       },
       {
-        "matchKey": "tasty terps|blueberry flavored yum yum|hybrid|vaporizers@1g",
-        "displayName": "Blueberry Yum Yum 1g Flavored Cartridge (Tasty Terps)",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "storeOffers": [
-          {
-            "dispensaryId": "local-roots-everett-128th",
-            "price": 15,
-            "pricePerGram": 15,
-            "lat": 47.8826827,
-            "lng": -122.240823
-          },
-          {
-            "dispensaryId": "kush21-everett-evergreen",
-            "price": 17.5,
-            "pricePerGram": 17.5,
-            "lat": 47.917238,
-            "lng": -122.232282
-          }
-        ]
-      },
-      {
         "matchKey": "tasty terps|caprizun|hybrid|vaporizers@1g",
         "displayName": "Tasty Terps | Caprizun | Vape Cart",
         "category": "Vaporizers",
@@ -30792,6 +30387,28 @@
         ]
       },
       {
+        "matchKey": "the farmers market|blueberry ipr muffin og|hybrid|pre rolls@1g",
+        "displayName": "The Farmers Market: Blueberry Muffin OG - IPR",
+        "category": "Pre-Rolls",
+        "weightGrams": 1,
+        "storeOffers": [
+          {
+            "dispensaryId": "kush21-everett-evergreen",
+            "price": 5,
+            "pricePerGram": 5,
+            "lat": 47.917238,
+            "lng": -122.232282
+          },
+          {
+            "dispensaryId": "kushmart-north",
+            "price": 7,
+            "pricePerGram": 7,
+            "lat": 47.9402444,
+            "lng": -122.2194805
+          }
+        ]
+      },
+      {
         "matchKey": "the farmers market|express flavored pineapple|sativa|vaporizers@1g",
         "displayName": "The Farmers Market: Pineapple Express - Flavored Disposable",
         "category": "Vaporizers",
@@ -31022,28 +30639,6 @@
             "pricePerGram": 38,
             "lat": 47.9118264,
             "lng": -122.2071576
-          }
-        ]
-      },
-      {
-        "matchKey": "thrills|all cookies erasr flavorstrains in jelly one strawberry tropicana x|sativa hybrid|vaporizers@2g",
-        "displayName": "Tropicana Cookies X Strawberry Jelly - FlavorStrains Erasr - All-In-One 2 Pack - 2g",
-        "category": "Vaporizers",
-        "weightGrams": 2,
-        "storeOffers": [
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 60,
-            "pricePerGram": 30,
-            "lat": 48.8035532,
-            "lng": -122.3987332
-          },
-          {
-            "dispensaryId": "cannazone-bellingham",
-            "price": 70,
-            "pricePerGram": 35,
-            "lat": 48.846368,
-            "lng": -122.486043
           }
         ]
       },
@@ -31375,28 +30970,6 @@
         ]
       },
       {
-        "matchKey": "thrills|flavorstrains tropical zkittlez|indica|vaporizers@1g",
-        "displayName": "Tropical Zkittlez - FlavorStrains - Cartridge - 1g",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "storeOffers": [
-          {
-            "dispensaryId": "kush21-everett-evergreen",
-            "price": 15,
-            "pricePerGram": 15,
-            "lat": 47.917238,
-            "lng": -122.232282
-          },
-          {
-            "dispensaryId": "local-roots-everett-128th",
-            "price": 24,
-            "pricePerGram": 24,
-            "lat": 47.8826827,
-            "lng": -122.240823
-          }
-        ]
-      },
-      {
         "matchKey": "thunderchief|chief comfort southern thunder|n a|flower@14g",
         "displayName": "Southern Comfort Flower (Thunder Chief)",
         "category": "Flower",
@@ -31558,28 +31131,6 @@
         ]
       },
       {
-        "matchKey": "torus|cookies key lime|hybrid|flower@3.5g",
-        "displayName": "3.5g Key Lime Cookies - Torus",
-        "category": "Flower",
-        "weightGrams": 3.5,
-        "storeOffers": [
-          {
-            "dispensaryId": "evolve-cannabis-bellingham",
-            "price": 39.6,
-            "pricePerGram": 11.3143,
-            "lat": 48.8117374,
-            "lng": -122.5419343
-          },
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 44,
-            "pricePerGram": 12.5714,
-            "lat": 48.8035532,
-            "lng": -122.3987332
-          }
-        ]
-      },
-      {
         "matchKey": "torus|flakes fritter frosted glass strawberry tip x|n a|pre rolls@1g",
         "displayName": "Strawberry Fritter x Frosted Flakes - - Glass Tip - Infused Preroll - Torus",
         "category": "Pre-Rolls",
@@ -31620,50 +31171,6 @@
             "pricePerGram": 17.1429,
             "lat": 47.9402444,
             "lng": -122.2194805
-          }
-        ]
-      },
-      {
-        "matchKey": "torus|gloss grape|indica|flower@3.5g",
-        "displayName": "3.5g Grape Gloss - Torus",
-        "category": "Flower",
-        "weightGrams": 3.5,
-        "storeOffers": [
-          {
-            "dispensaryId": "evolve-cannabis-bellingham",
-            "price": 39.6,
-            "pricePerGram": 11.3143,
-            "lat": 48.8117374,
-            "lng": -122.5419343
-          },
-          {
-            "dispensaryId": "kushmart-north",
-            "price": 60,
-            "pricePerGram": 17.1429,
-            "lat": 47.9402444,
-            "lng": -122.2194805
-          }
-        ]
-      },
-      {
-        "matchKey": "torus|guava peach|sativa|flower@3.5g",
-        "displayName": "Torus: Guava Peach",
-        "category": "Flower",
-        "weightGrams": 3.5,
-        "storeOffers": [
-          {
-            "dispensaryId": "kush21-everett-evergreen",
-            "price": 33,
-            "pricePerGram": 9.4286,
-            "lat": 47.917238,
-            "lng": -122.232282
-          },
-          {
-            "dispensaryId": "evolve-cannabis-bellingham",
-            "price": 39.6,
-            "pricePerGram": 11.3143,
-            "lat": 48.8117374,
-            "lng": -122.5419343
           }
         ]
       },
@@ -31719,24 +31226,46 @@
         ]
       },
       {
-        "matchKey": "torus|pop push strawberry|hybrid|flower@3.5g",
-        "displayName": "3.5g Strawberry Push Pop - Torus",
+        "matchKey": "trail blazin|chem doh fire|hybrid|flower@3.5g",
+        "displayName": "Chem Fire (DOH)",
         "category": "Flower",
         "weightGrams": 3.5,
         "storeOffers": [
           {
-            "dispensaryId": "evolve-cannabis-bellingham",
-            "price": 39.6,
-            "pricePerGram": 11.3143,
-            "lat": 48.8117374,
-            "lng": -122.5419343
-          },
-          {
             "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 44,
-            "pricePerGram": 12.5714,
+            "price": 30.4,
+            "pricePerGram": 8.6857,
             "lat": 48.8035532,
             "lng": -122.3987332
+          },
+          {
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 30.4,
+            "pricePerGram": 8.6857,
+            "lat": 48.8145708,
+            "lng": -122.5440798
+          }
+        ]
+      },
+      {
+        "matchKey": "treats|crunch fruit wax|hybrid|concentrate|wax@1g",
+        "displayName": "Treats: Fruit Crunch - Wax",
+        "category": "Concentrate",
+        "weightGrams": 1,
+        "storeOffers": [
+          {
+            "dispensaryId": "kush21-everett-evergreen",
+            "price": 8,
+            "pricePerGram": 8,
+            "lat": 47.917238,
+            "lng": -122.232282
+          },
+          {
+            "dispensaryId": "local-roots-everett-128th",
+            "price": 9,
+            "pricePerGram": 9,
+            "lat": 47.8826827,
+            "lng": -122.240823
           }
         ]
       },
@@ -32297,28 +31826,6 @@
             "dispensaryId": "hangar-420-west",
             "price": 40,
             "pricePerGram": 11.4286,
-            "lat": 47.8487065,
-            "lng": -122.29382
-          }
-        ]
-      },
-      {
-        "matchKey": "viking cannabis|candy mac|sativa|flower@7g",
-        "displayName": "Candy MAC - 3.5g",
-        "category": "Flower",
-        "weightGrams": 7,
-        "storeOffers": [
-          {
-            "dispensaryId": "hangar-420-everett",
-            "price": 75,
-            "pricePerGram": 10.7143,
-            "lat": 47.8890687,
-            "lng": -122.2153644
-          },
-          {
-            "dispensaryId": "hangar-420-west",
-            "price": 75,
-            "pricePerGram": 10.7143,
             "lat": 47.8487065,
             "lng": -122.29382
           }
@@ -32924,28 +32431,6 @@
         ]
       },
       {
-        "matchKey": "zen|4 glue gorilla h|hybrid|flower@3.5g",
-        "displayName": "Zen: Gorilla Glue #4 (H)",
-        "category": "Flower",
-        "weightGrams": 3.5,
-        "storeOffers": [
-          {
-            "dispensaryId": "cannazone-bellingham",
-            "price": 42,
-            "pricePerGram": 12,
-            "lat": 48.846368,
-            "lng": -122.486043
-          },
-          {
-            "dispensaryId": "cannazone-old-hwy-99",
-            "price": 50,
-            "pricePerGram": 14.2857,
-            "lat": 48.384998,
-            "lng": -122.3357887
-          }
-        ]
-      },
-      {
         "matchKey": "zen|face gas h i|indica|flower@3.5g",
         "displayName": "Zen: Gas Face (I/H)",
         "category": "Flower",
@@ -32990,9 +32475,9 @@
         ]
       }
     ],
-    "totalCells": 1439,
-    "totalStoreOffers": 3068,
-    "offersWithGeo": 3068,
+    "totalCells": 1414,
+    "totalStoreOffers": 3023,
+    "offersWithGeo": 3023,
     "missingGeoCount": 0
   },
   "excluded": [
@@ -33002,9 +32487,9 @@
     }
   ],
   "coverage": {
-    "totalCells": 1439,
-    "totalStoreOffers": 3068,
-    "offersWithGeo": 3068
+    "totalCells": 1414,
+    "totalStoreOffers": 3023,
+    "offersWithGeo": 3023
   },
-  "generatedAt": "2026-07-24T11:00:10.111Z"
+  "generatedAt": "2026-07-25T11:00:11.141Z"
 }
