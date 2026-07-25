@@ -28,6 +28,8 @@ export default defineConfig({
       // /compare + /compare/:category are server-rendered too (derivation-3.1);
       // same reason — send them to Express in dev, not the SPA fallback.
       '/compare': 'http://localhost:3001',
+      // /store/:slug per-store SSR pages (Phase 1a) — Express in dev, not Vite.
+      '/store': 'http://localhost:3001',
       // robots.txt + sitemap.xml are Express routes (ADR-080), not static files;
       // proxy them so dev serves the dynamic sitemap, not Vite's public dir.
       '/robots.txt': 'http://localhost:3001',

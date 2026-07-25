@@ -32,9 +32,16 @@ describe('renderShellBody', () => {
     )
     expect(html).toContain('<h1>Cannabis deals worth the drive at licensed Washington retailers</h1>')
     expect(html).toContain('For use only by adults 21 and older')
-    expect(html).toContain('<h2>Green Store</h2>')
+    expect(html).toContain('<h2><a href="/store/a">Green Store</a></h2>')
     expect(html).toContain('<li>25% off flower</li>')
     expect(html).toContain('<li>BOGO edibles</li>')
+  })
+
+  it('links each store heading to its per-store page (/store/<id>) for crawl discovery', () => {
+    const html = renderShellBody(
+      data([store({ id: 'remedy-tulalip', name: 'Remedy Tulalip', deals: [deal('x')] })]),
+    )
+    expect(html).toContain('<a href="/store/remedy-tulalip">Remedy Tulalip</a>')
   })
 
   it('escapes hostile store and deal text so it cannot break out of the markup', () => {
@@ -69,8 +76,8 @@ describe('renderShellBody', () => {
         store({ id: 'b', name: 'No Deals', deals: [] }),
       ]),
     )
-    expect(mixed).toContain('<h2>Has Deals</h2>')
-    expect(mixed).not.toContain('<h2>No Deals</h2>')
+    expect(mixed).toContain('<h2><a href="/store/a">Has Deals</a></h2>')
+    expect(mixed).not.toContain('>No Deals<')
 
     const empty = renderShellBody(data([store({ id: 'b', name: 'No Deals', deals: [] })]))
     expect(empty).toContain('<h1>')

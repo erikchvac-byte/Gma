@@ -16,6 +16,7 @@ import { categorySlug } from './compareRoute.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROLLUPS_PATH = path.join(__dirname, '../data/derived/disparity-rollups.json')
+const DATA_PATH = path.join(__dirname, '../data/data.json')
 
 const app = express()
 app.get('/robots.txt', robotsRoute)
@@ -74,6 +75,17 @@ describe('GET /sitemap.xml', () => {
   it('does not emit thin per-deal URLs', async () => {
     const res = await request(app).get('/sitemap.xml')
     expect(res.text).not.toMatch(/\/deal\//)
+  })
+
+  it('lists one /store/<id> URL per live store', async () => {
+    const res = await request(app).get('/sitemap.xml')
+    const ids = JSON.parse(readFileSync(DATA_PATH, 'utf-8')).dispensaries.map(
+      (d: { id: string }) => d.id,
+    )
+    expect(ids.length).toBeGreaterThan(0)
+    for (const id of ids) {
+      expect(res.text).toContain(`<loc>https://gmaslist.com/store/${id}</loc>`)
+    }
   })
 })
 
@@ -163,5 +175,17 @@ describe('buildSitemapXml (pure)', () => {
     const xml = buildSitemapXml(['A & B'], GEN)
     expect(xml).not.toContain('/compare/a & b')
     expect(xml).not.toMatch(/<loc>[^<]*&(?!amp;|lt;|gt;|quot;|apos;)/)
+  })
+
+  it('appends one /store/<id> URL per slug, de-duped, with no lastmod', () => {
+    const xml = buildSitemapXml([], GEN, ['remedy-tulalip', 'remedy-tulalip', 'kush21-everett'])
+    expect([...xml.matchAll(/\/store\/remedy-tulalip</g)]).toHaveLength(1)
+    expect(xml).toContain('<loc>https://gmaslist.com/store/kush21-everett</loc>')
+    // No fabricated lastmod on store pages (deals churn hourly).
+    expect(xml).toContain('<loc>https://gmaslist.com/store/remedy-tulalip</loc>\n  </url>')
+  })
+
+  it('omits store URLs entirely when none are supplied', () => {
+    expect(buildSitemapXml([], GEN)).not.toContain('/store/')
   })
 })
