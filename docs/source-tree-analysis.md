@@ -52,7 +52,13 @@ server/
 ├── index.ts                # ★ entry point — Express app; serves API + (in prod) client build
 ├── routes/
 │   ├── dataRoute.ts        # GET /api/data  — reads data.json, filters active deals
-│   └── ingestRoute.ts      # POST /api/ingest — shared-secret push (sole data writer)
+│   ├── ingestRoute.ts      # POST /api/ingest — shared-secret push (sole deals writer)
+│   ├── aboutRoute.ts       # GET /about — SSR entity/FAQ page + JSON-LD (ADR-078)
+│   ├── compareRoute.ts     # GET /compare[/:category] — SSR price-comparison pages (ADR-079)
+│   ├── sitemapRoute.ts     # GET /robots.txt, /sitemap.xml, /llms.txt (ADR-080/081)
+│   ├── valueRoute.ts       # GET /api/value/* — precomputed derived facts, fail-soft (ADR-077)
+│   ├── shellRoute.ts       # SPA shell w/ window.__GMA_DATA__ + __GMA_DROPS__ (ADR-082/092)
+│   └── gaSnippet.ts        # GA4 tag snippet for the SSR pages
 ├── utils/
 │   ├── applyIngest.ts      # apply pushed deals to data.json (last-known-good semantics)
 │   ├── runScrapers.ts      # in-process scrape orchestration (legacy path; CI uses ingestRun)
@@ -65,7 +71,7 @@ server/
 ├── scrapers/               # per-store scrapers + registry (index.ts = matrix source of truth)
 │   ├── index.ts            # scrapers registry + storeIds
 │   ├── remedy-tulalip.ts   # Axios+Cheerio (in-process, no Python needed)
-│   ├── the-joint-everett.ts / jet-cannabis-everett.ts / kush21-everett-evergreen.ts  # Dutchie
+│   ├── <~21 per-store modules>  # mostly Dutchie embeds, some own-site HTML + Weedmaps; index.ts registry is the matrix source of truth
 │   ├── _template.ts        # scaffold for new stores
 │   └── __fixtures__/       # captured HTML/JSON for scraper tests
 ├── scripts/
@@ -74,7 +80,8 @@ server/
 │   └── copyData.mjs        # build step: copy data/ into dist/
 ├── types/index.ts          # IngestEntry / IngestResult / LogRun (server-only contracts)
 └── data/
-    ├── data.json           # ★ flat-file data store (committed seed; ephemeral on Render)
+    ├── data.json           # ★ flat-file deals store (committed seed; ephemeral on Render)
+    ├── derived/            # precomputed derivation-engine facts served read-only by /api/value/* (ADR-077)
     └── logs.json           # scrape run log
 ```
 
@@ -102,7 +109,7 @@ scraper-svc/
 |---|---|
 | `client/src/components` | User-facing UI; `ui/` holds reusable design-system primitives |
 | `client/src/utils/gasCost.ts` | True-cost math — the product's core formula |
-| `server/routes` | The only two HTTP endpoints (`/api/data`, `/api/ingest`) |
+| `server/routes` | HTTP endpoints: `/api/data` + `/api/ingest`, the SSR SEO surfaces (`/about`, `/compare`), `robots.txt`/`sitemap.xml`/`llms.txt`, and the private `/api/value/*` derived-fact routes |
 | `server/scrapers` | Per-store scrapers; `index.ts` is the single source of truth for the CI matrix |
 | `server/scripts/ingestRun.ts` | The CI scrape-and-push entry the cron invokes |
 | `server/data/data.json` | The entire persisted data store |

@@ -4,7 +4,7 @@
 
 ## Executive summary
 
-A single-page React 19 app that fetches the deal feed from `GET /api/data`, computes **true cost** (sticker + round-trip gas), and renders deals ranked cheapest-first, grouped by store. Entry is gated behind a mandatory 21+ age gate; legal warnings are rendered from a single constants module. Theming is done entirely with CSS custom properties (current theme: Synthwave, ADR-040).
+A single-page React 19 app that fetches the deal feed from `GET /api/data`, computes **true cost** (sticker + round-trip gas), and renders deals ranked cheapest-first, grouped by store. Entry is gated behind a mandatory 21+ age gate; legal warnings are rendered from a single constants module. Theming is done entirely with CSS custom properties (current theme: Daylight, ADR-042).
 
 ## Technology stack
 
@@ -39,7 +39,7 @@ Composition root (`src/App.tsx`):
 
 1. `useDeals()` fetches `/api/data` once on mount (AbortController-cancellable), validates the response shape, and drops malformed dispensary records via `normalizeDispensaries` before they reach render (also strips non-finite `lat`/`lng` while keeping the store, ADR-057).
 2. `DealFeed` applies `applyUserDistance` (haversine × 1.3 from the user's location, ADR-057) to set each store's `distanceMiles`, resolves the user's MPG (from `useVehicleMpg`) and the meta gas price, computes per-deal gas cost via `utils/gasCost.roundTripGasCost`, sorts/groups, and renders. No location → no distance/gas; no vehicle → no gas (distance still shows).
-3. `DealCard` shows the discount, distance pill, gas line, and (deferred) happy-hour badge.
+3. `DealCard` shows the discount, distance pill, gas line, (deferred) happy-hour badge, and — when present — a "real price drop" strip (`ValueDropStrip`, ADR-088) fed by `useValueDrops` from the engine's derived facts.
 
 True-cost math lives in `utils/gasCost.ts`:
 
@@ -50,7 +50,7 @@ driveCost = distanceMiles * 2 * (gasPrice / mpg)   // null unless all inputs fin
 ## Key directories
 
 - `components/` — feature components; `components/ui/` — reusable primitives (see [Component Inventory](./component-inventory.md)).
-- `hooks/` — `useDeals`, `useVehicleMpg`, `useFuelEconomy`, `useLocalStorage`, `useNow`.
+- `hooks/` — `useDeals`, `useVehicleMpg`, `useFuelEconomy`, `useLocalStorage`, `useNow`, `useLocation` (GPS / WA-ZIP → user coords, ADR-057), `useValueDrops` (derived price-drop facts, ADR-087).
 - `utils/` — `gasCost`, `sortDeals`, `dealView`, `dealTime`, `formatTime`, `normalizeDispensaries`.
 - `constants/legal.ts` — single home for verbatim regulated-content warnings.
 - `types/index.ts` — `Deal`/`Dispensary`/`Meta`/`ApiDataResponse`, the contract shared with the server (see [Data Models](./data-models.md)).

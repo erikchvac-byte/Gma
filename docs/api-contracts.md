@@ -73,6 +73,7 @@ Used by the GitHub Actions cron (`scripts/ingestRun.ts`). Not for public use.
 
 Per-store result is one of:
 - `ok` — deals normalized & applied; dispensary marked fresh (`stale:false`).
+- `empty` — confirmed-empty scrape: the store provably has no deals; it clears cleanly and advances freshness instead of being flagged stale (ADR-083).
 - `stale` — empty/invalid deals; good data kept, dispensary flagged `stale:true`.
 - `unknown` — no dispensary with that `id` in `data.json` (nothing written).
 
@@ -86,6 +87,24 @@ Per-store result is one of:
 | `500` | `SERVER_ERROR` | unexpected failure |
 
 **Security notes:** secret compared via SHA-256 digest + `timingSafeEqual` (no length or content timing leak). Dispensaries matched by `.find(d => d.id === …)` — never index by a request-supplied key (prototype-pollution safe).
+
+---
+
+## Other Express routes (added after this Quick Scan)
+
+Beyond the two endpoints above, the server serves the SEO / AI-crawler surfaces and the derivation engine's precomputed value facts (all shipped after 2026-06-21):
+
+**Public, server-rendered (crawlable):**
+- `GET /about` — entity / FAQ page with Service/FAQPage/WebSite/Organization JSON-LD (ADR-078).
+- `GET /compare` and `GET /compare/:category` — cross-store price-comparison pages with `Dataset` JSON-LD, rendered from the derived facts (ADR-079).
+- `GET /robots.txt`, `GET /sitemap.xml`, `GET /llms.txt` — crawler policy + sitemap + llms manifest (ADR-080/081).
+- The SPA shell route injects `window.__GMA_DATA__` (deal feed) and `window.__GMA_DROPS__` (price drops) so the client hydrates without a boot fetch (ADR-082/092).
+
+**Private / internal — read precomputed derived JSON, fail-soft to an empty honesty envelope (never a 500, never a read of the raw dataset; ADR-077):**
+- `GET /api/value/disparities` — same-SKU cross-store price disparities.
+- `GET /api/value/disparity-rollups` — rollups over the disparities (by category / by store).
+- `GET /api/value/price-vs-own-median` — the flagship "real price drop" fact (a SKU below its OWN rolling median).
+- `GET /api/value/deal-scope` — deal → SKU scope-bridge report (ADR-070).
 
 ---
 

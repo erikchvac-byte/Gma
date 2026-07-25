@@ -1,6 +1,6 @@
 # Component Inventory — Client (`client/src`)
 
-> Quick Scan, 2026-06-21. React 19 function components. Nearly every entry has a colocated `*.test.tsx`. Theming via CSS custom properties (`styles/tokens.css`); current theme Synthwave (ADR-040).
+> Quick Scan, 2026-06-21. React 19 function components. Nearly every entry has a colocated `*.test.tsx`. Theming via CSS custom properties (`styles/tokens.css`); current theme Daylight (ADR-042).
 
 ## Feature components (`components/`)
 
@@ -18,6 +18,7 @@
 | `DistanceFilter` | Form / filter | Distance slider (default 50mi, ADR-038). |
 | `VehicleSelector` | Form / sheet | Bottom sheet to pick vehicle/MPG; drives gas math. Opened by `VehicleBar`. |
 | `StaleIndicator` | Display | Flags dispensaries whose last scrape failed (`stale:true`). |
+| `ValueDropStrip` | Display | Per-store "real price drops" strip inside a store's card — SKUs below their own rolling median, from the derived facts via `useValueDrops` (ADR-088). |
 | `DisclaimerFooter` | Layout / legal | Renders verbatim mandated warnings from `constants/legal.ts`. |
 
 ## UI primitives (`components/ui/`)
@@ -46,6 +47,8 @@ Reusable design-system building blocks (exported via `ui/index.ts`):
 | `useFuelEconomy` | Vehicle/MPG data helper. |
 | `useLocalStorage` | Generic persisted-state hook. |
 | `useNow` | Ticking "now" for time-window/countdown logic. |
+| `useLocation` | Resolve + persist the user's location (GPS or WA ZIP → coords); drives distance (ADR-057). |
+| `useValueDrops` | Read the derived "real price drops" fact (SKU vs own rolling median) for the in-card strip (ADR-087). |
 
 ## Logic utilities (`utils/`)
 

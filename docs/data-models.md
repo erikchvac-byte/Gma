@@ -13,6 +13,8 @@
 | Durability | ephemeral on Render (resets to seed on redeploy; re-hydrated by next hourly ingest) |
 | Run log | `server/data/logs.json` (`LogRun[]`-style records) |
 
+> **Separate substrate (ADR-077):** the derivation engine's product-pricing data lives in a local SQLite DB on the home machine (not in git, not on Render). The home runner precomputes small derived-fact JSON files into `server/data/derived/` that Render serves read-only via `/api/value/*` (fail-soft to empty). This is distinct from the `data.json` deals store modeled here. See [products-local-sqlite-ingest.md](./products-local-sqlite-ingest.md).
+
 ## Core entities
 
 ### `Deal`
@@ -61,7 +63,7 @@ Feed-level metadata used for true-cost math and freshness.
 |---|---|---|
 | `ScraperResult` | `Deal[]` | a single scraper's output |
 | `IngestEntry` | `{ dispensaryId: string, deals: Deal[] }` | one store in a `POST /api/ingest` batch |
-| `IngestResult` | `'ok' \| 'stale' \| 'unknown'` | per-store ingest outcome |
+| `IngestResult` | `'ok' \| 'empty' \| 'stale' \| 'unknown'` | per-store ingest outcome (`empty` = confirmed-empty scrape, ADR-083) |
 | `LogEntry` | `string` | `"ok"` or `` `error: ${string}` `` |
 | `LogRun` | `{ runAt: string, results: Record<string,LogEntry> }` | one scrape-run log record |
 
