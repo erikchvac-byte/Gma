@@ -33,7 +33,9 @@ export default defineConfig({
       '/robots.txt': 'http://localhost:3001',
       '/sitemap.xml': 'http://localhost:3001',
       // llms.txt is an Express route too (ADR-081) — same rule.
-      '/llms.txt': 'http://localhost:3001'
+      '/llms.txt': 'http://localhost:3001',
+      // /healthz is the Express keep-warm probe — proxy it so dev parity holds.
+      '/healthz': 'http://localhost:3001'
     }
   },
   test: {
