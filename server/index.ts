@@ -9,6 +9,7 @@ import { aboutRoute } from './routes/aboutRoute.js'
 import { compareIndexRoute, compareCategoryRoute } from './routes/compareRoute.js'
 import { robotsRoute, sitemapRoute, llmsTxtRoute } from './routes/sitemapRoute.js'
 import { makeShellRoute } from './routes/shellRoute.js'
+import { healthzRoute } from './routes/healthzRoute.js'
 import { dataRoute } from './routes/dataRoute.js'
 import { ingestRoute } from './routes/ingestRoute.js'
 import { disparitiesRoute, dealScopeRoute, disparityRollupsRoute, priceVsOwnMedianRoute } from './routes/valueRoute.js'
@@ -23,6 +24,11 @@ app.use(express.json())
 if (process.env.NODE_ENV !== 'production') {
   app.use(cors({ origin: 'http://localhost:5173' }))
 }
+
+// Keep-warm / liveness probe (registered before the SPA fallback so it returns
+// JSON, not the React shell). An external uptime monitor pings this every ~5 min
+// to defeat Render free-tier spin-down; see healthzRoute for the full rationale.
+app.get('/healthz', healthzRoute)
 
 app.get('/api/data', dataRoute)
 
