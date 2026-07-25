@@ -6,7 +6,7 @@ import type { ApiDataResponse } from '../../client/src/types/index.js'
 // client TS constant (client/src/constants/legal.ts AGE_GATE_WARNINGS) is not
 // importable across the server tsconfig — if the statute text changes, update
 // BOTH. (Story AC8, ratified 2026-07-23.)
-const AGE_NOTICE =
+export const AGE_NOTICE =
   'For use only by adults 21 and older. Keep out of the reach of children. ' +
   'This product has intoxicating effects and may be habit forming.'
 
@@ -14,6 +14,13 @@ const AGE_NOTICE =
 // Every interpolated store/deal string is scraped and hostile-by-premise.
 function escapeHtml(text: string): string {
   return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+}
+
+// Attribute-context escaping for the /store/<id> href. Store ids are controlled
+// [a-z0-9-] slugs, but escape defensively so a malformed id can never break out
+// of the attribute (mirrors compareRoute's escapeAttr).
+function escapeAttr(text: string): string {
+  return escapeHtml(text).replace(/"/g, '&quot;')
 }
 
 // Build crawler-visible, human-readable HTML of the CURRENT active deals/stores
@@ -40,7 +47,12 @@ export function renderShellBody(data: ApiDataResponse): string {
         typeof store.address === 'string' && store.address.length > 0
           ? `<p>${escapeHtml(store.address)}</p>`
           : ''
-      return `<section><h2>${escapeHtml(store.name)}</h2>${address}<ul>${deals}</ul></section>`
+      // Link the store name to its dedicated crawlable page (/store/<id>,
+      // storeRoute.ts) so crawlers have an internal link path to each store's
+      // LocalBusiness page, not just the sitemap. Crawler-only, like this whole
+      // body — createRoot wipes #root on hydration.
+      const heading = `<h2><a href="/store/${escapeAttr(store.id)}">${escapeHtml(store.name)}</a></h2>`
+      return `<section>${heading}${address}<ul>${deals}</ul></section>`
     })
     .join('')
 

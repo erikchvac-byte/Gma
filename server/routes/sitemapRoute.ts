@@ -3,6 +3,7 @@ import type { DisparityRollupsReport } from '../utils/disparityRollups.js'
 import { readDerived, EMPTY_DISPARITY_ROLLUPS_ENVELOPE } from './valueRoute.js'
 import { categorySlug } from './compareRoute.js'
 import { ENTITY_DESCRIPTION } from './aboutRoute.js'
+import { buildApiData } from '../utils/buildApiData.js'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 
@@ -38,8 +39,8 @@ Sitemap: ${BASE_URL}/sitemap.xml
 `
 
 // Stable, crawlable pages that always exist regardless of derived-data state.
-// Per-deal / per-store URLs are deliberately absent (deals churn hourly; per-store
-// routes are Phase 1a, not built yet).
+// Per-store /store/<id> URLs are added dynamically below (Phase 1a). Per-DEAL
+// URLs remain deliberately absent (deals churn hourly, no stable per-deal page).
 const STATIC_PATHS = ['/', '/about', '/compare']
 
 // sitemaps.org requires XML-escaping of loc values; our paths are ASCII and
@@ -64,7 +65,11 @@ function urlEntry(loc: string, lastmod?: string): string {
 // artifact's own timestamp — used as lastmod ONLY for the data-backed /compare
 // URLs, since that is the honest "last changed" signal for them. Static entity
 // pages (/, /about) get no lastmod rather than a fabricated one.
-export function buildSitemapXml(categories: string[], generatedAt: string): string {
+export function buildSitemapXml(
+  categories: string[],
+  generatedAt: string,
+  storeSlugs: string[] = [],
+): string {
   const staticEntries = STATIC_PATHS.map((p) => {
     // /compare is data-backed → stamp it with the artifact's generatedAt too.
     const lastmod = p === '/compare' ? generatedAt : undefined
@@ -80,11 +85,30 @@ export function buildSitemapXml(categories: string[], generatedAt: string): stri
     .sort()
     .map((slug) => urlEntry(`${BASE_URL}/compare/${slug}`, generatedAt))
 
+  // One /store/<id> per store. No lastmod: deals churn hourly, so there is no
+  // honest single "last changed" timestamp for the page (like /, /about).
+  const storeEntries = storeSlugs
+    .filter((slug) => typeof slug === 'string' && slug.length > 0)
+    .filter((slug, i, arr) => arr.indexOf(slug) === i)
+    .sort()
+    .map((slug) => urlEntry(`${BASE_URL}/store/${slug}`))
+
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${[...staticEntries, ...categoryEntries].join('\n')}
+${[...staticEntries, ...categoryEntries, ...storeEntries].join('\n')}
 </urlset>
 `
+}
+
+// Store ids for the sitemap, read fail-soft: an unreadable/malformed data.json
+// degrades to no /store URLs rather than throwing (mirrors the derived readDerived
+// posture). Kept out of buildSitemapXml so that builder stays pure/testable.
+function readStoreSlugs(): string[] {
+  try {
+    return buildApiData().dispensaries.map((d) => d.id)
+  } catch {
+    return []
+  }
 }
 
 // Pure builder (exported for tests). llms.txt (https://llmstxt.org/) is the
@@ -145,7 +169,7 @@ export function sitemapRoute(_req: Request, res: Response) {
     (c) => c.category,
   )
   res.set('Cache-Control', 'public, max-age=3600')
-  res.type('application/xml').send(buildSitemapXml(categories, rollups.generatedAt))
+  res.type('application/xml').send(buildSitemapXml(categories, rollups.generatedAt, readStoreSlugs()))
 }
 
 // GET /llms.txt — Markdown site guide for LLM crawlers/agents. Same fail-soft

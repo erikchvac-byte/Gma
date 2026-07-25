@@ -9,6 +9,7 @@ import { aboutRoute } from './routes/aboutRoute.js'
 import { compareIndexRoute, compareCategoryRoute } from './routes/compareRoute.js'
 import { robotsRoute, sitemapRoute, llmsTxtRoute } from './routes/sitemapRoute.js'
 import { makeShellRoute } from './routes/shellRoute.js'
+import { storeRoute } from './routes/storeRoute.js'
 import { healthzRoute } from './routes/healthzRoute.js'
 import { dataRoute } from './routes/dataRoute.js'
 import { ingestRoute } from './routes/ingestRoute.js'
@@ -66,6 +67,11 @@ app.get('/about', aboutRoute)
 // /about) and unconditional so dev serves them too.
 app.get('/compare', compareIndexRoute)
 app.get('/compare/:category', compareCategoryRoute)
+
+// Per-store SEO / AI-search pages (Phase 1a / CAP-3+CAP-4): one crawlable
+// /store/<id> per licensed WA retailer with LocalBusiness JSON-LD. Same reason
+// for registering before the SPA fallback, unconditional so dev serves it too.
+app.get('/store/:slug', storeRoute)
 
 // Phase 1 technical-SEO foundation (ADR-080): robots.txt + a sitemap.xml that
 // lists /about, /compare, and one URL per live /compare category. Registered
