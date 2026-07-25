@@ -600,6 +600,15 @@ article.gma-card::before {
   color: var(--text-strong);
   min-width: 0;
 }
+/* same-store explainer + honest freshness caption — sits between the heading and the rows.
+   Defines "usual" (this store's own recent typical price) and, when a real derive time is present,
+   states how fresh the drops are. Muted caption so it supports, not competes with, the figures. */
+.gma-value-drops__note {
+  margin: 0;
+  font: var(--font-caption);
+  color: var(--text-muted);
+  min-width: 0;
+}
 /* rows are a LOCAL list — not the deal feed's <ul> (a11y count preserved) */
 .gma-value-drops__list {
   list-style: none;

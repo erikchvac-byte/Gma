@@ -1,6 +1,7 @@
 import { render, screen, within } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
 import ValueDropStrip from './ValueDropStrip'
+import { formatLastUpdated } from '../utils/formatTime'
 import type { PriceDropRow } from '../types'
 
 const dropRow = (over: Partial<PriceDropRow> = {}): PriceDropRow => ({
@@ -94,6 +95,50 @@ describe('ValueDropStrip', () => {
     const strip = container.querySelector('.gma-value-drops') as HTMLElement
     expect(within(strip).getAllByRole('list')).toHaveLength(1)
     expect(within(strip).getAllByRole('listitem')).toHaveLength(1)
+  })
+
+  it('renders the same-store explainer note that defines "usual" (Fix 1a/1c)', () => {
+    render(<ValueDropStrip storeId="store-a" drops={[dropRow()]} />)
+    // "usual" is framed as THIS store's own recent typical price — not cross-store, not MSRP
+    expect(screen.getByText(/Below this store's own recent typical price\./)).toBeInTheDocument()
+  })
+
+  it('surfaces the drops derive time as an honest freshness clause when present (Fix 1b)', () => {
+    // a real past derive time — the date is formatLastUpdated(generatedAt), NOT the deal-scrape time
+    const generatedAt = new Date(Date.now() - 60_000).toISOString()
+    render(<ValueDropStrip storeId="store-a" drops={[dropRow()]} generatedAt={generatedAt} />)
+    expect(
+      screen.getByText(
+        `Below this store's own recent typical price. Prices as of ${formatLastUpdated(generatedAt)}.`,
+      ),
+    ).toBeInTheDocument()
+  })
+
+  it('omits the freshness clause when no derive time is available (default null)', () => {
+    render(<ValueDropStrip storeId="store-a" drops={[dropRow()]} />)
+    // explainer still shows; no freshness line, and never a stray date
+    expect(screen.getByText(/Below this store's own recent typical price\./)).toBeInTheDocument()
+    expect(screen.queryByText(/Prices as of/)).not.toBeInTheDocument()
+  })
+
+  it('never renders a 1970 date even if handed the epoch sentinel directly (defense-in-depth)', () => {
+    // the hook nulls epoch upstream, but the strip must be safe for any caller
+    render(
+      <ValueDropStrip
+        storeId="store-a"
+        drops={[dropRow()]}
+        generatedAt="1970-01-01T00:00:00.000Z"
+      />,
+    )
+    expect(screen.getByText(/Below this store's own recent typical price\./)).toBeInTheDocument()
+    expect(screen.queryByText(/Prices as of/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/1970/)).not.toBeInTheDocument()
+  })
+
+  it('omits the freshness clause for a future (clock-skewed) derive time', () => {
+    const future = new Date(Date.now() + 60 * 60 * 1000).toISOString()
+    render(<ValueDropStrip storeId="store-a" drops={[dropRow()]} generatedAt={future} />)
+    expect(screen.queryByText(/Prices as of/)).not.toBeInTheDocument()
   })
 
   it('draws a divider above the strip only when it follows a deal grid', () => {

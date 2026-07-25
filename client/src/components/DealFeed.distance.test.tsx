@@ -12,7 +12,7 @@ vi.mock('../hooks/useDeals')
 // Stub the additive "Real price drops" child's hook (derivation-3.2) so its on-mount fetch stays
 // out of these distance tests; ValueDrops renders nothing with no drops.
 vi.mock('../hooks/useValueDrops', () => ({
-  useValueDrops: () => ({ drops: [], isLoading: false, error: null }),
+  useValueDrops: () => ({ drops: [], generatedAt: null, isLoading: false, error: null }),
 }))
 const mockUseDeals = vi.mocked(useDeals)
 

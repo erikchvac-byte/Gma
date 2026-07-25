@@ -2,6 +2,7 @@ import { render, screen, within, act, fireEvent } from '@testing-library/react'
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import DealFeed from './DealFeed'
 import { useDeals } from '../hooks/useDeals'
+import { formatLastUpdated } from '../utils/formatTime'
 import type { ApiDataResponse, Deal, Dispensary, PriceDropRow } from '../types'
 
 vi.mock('../hooks/useDeals')
@@ -12,7 +13,7 @@ vi.mock('../hooks/useDeals')
 vi.mock('../hooks/useValueDrops', () => ({ useValueDrops: vi.fn() }))
 import { useValueDrops } from '../hooks/useValueDrops'
 const mockUseValueDrops = vi.mocked(useValueDrops)
-const noDrops = { drops: [], isLoading: false, error: null }
+const noDrops = { drops: [], generatedAt: null, isLoading: false, error: null }
 
 // applyUserDistance is unit-tested in withUserDistance.test.ts. Here it is mocked
 // to an identity so these tests can inject `distanceMiles` directly and focus on
@@ -966,7 +967,7 @@ describe('DealFeed — real price drops in cards', () => {
       isLoading: false,
       error: null,
     })
-    mockUseValueDrops.mockReturnValue({ drops: [dropRow()], isLoading: false, error: null })
+    mockUseValueDrops.mockReturnValue({ drops: [dropRow()], generatedAt: null, isLoading: false, error: null })
     render(<DealFeed />)
 
     // exactly one store card, and BOTH the banner deal and the price drop live inside it
@@ -980,13 +981,33 @@ describe('DealFeed — real price drops in cards', () => {
     expect(within(strip).getByText('19%')).toBeInTheDocument()
   })
 
+  it('threads the drops derive time (generatedAt) through to the strip freshness clause (Fix 1b)', () => {
+    // a day before the faked system time, so it is unambiguously in the past in every timezone
+    const generatedAt = '2026-06-09T12:00:00.000Z'
+    mockUseDeals.mockReturnValue({
+      data: withData([makeDispensary('a', 'Green Fields', [makeDeal({ description: 'Daily special' })])]),
+      isLoading: false,
+      error: null,
+    })
+    mockUseValueDrops.mockReturnValue({ drops: [dropRow()], generatedAt, isLoading: false, error: null })
+    render(<DealFeed />)
+
+    const strip = screen.getByRole('article').querySelector('.gma-value-drops') as HTMLElement
+    // the strip shows the DROPS derive time, sourced from useValueDrops (not the deal-scrape time)
+    expect(
+      within(strip).getByText(
+        `Below this store's own recent typical price. Prices as of ${formatLastUpdated(generatedAt)}.`,
+      ),
+    ).toBeInTheDocument()
+  })
+
   it('surfaces a fresh in-range store with a drop but NO banner deal as a card (union / no-drop-lost)', () => {
     mockUseDeals.mockReturnValue({
       data: withData([makeDispensary('a', 'Green Fields', [])]), // no deals
       isLoading: false,
       error: null,
     })
-    mockUseValueDrops.mockReturnValue({ drops: [dropRow()], isLoading: false, error: null })
+    mockUseValueDrops.mockReturnValue({ drops: [dropRow()], generatedAt: null, isLoading: false, error: null })
     render(<DealFeed />)
 
     // it would be invisible without a drop; the drop gives it a "No current deals" card + the strip
@@ -1005,6 +1026,7 @@ describe('DealFeed — real price drops in cards', () => {
     mockUseDeals.mockReturnValue({ data: withData([near, far]), isLoading: false, error: null })
     mockUseValueDrops.mockReturnValue({
       drops: [dropRow({ dispensaryId: 'b', name: 'Far Drop' })],
+      generatedAt: null,
       isLoading: false,
       error: null,
     })
@@ -1021,7 +1043,7 @@ describe('DealFeed — real price drops in cards', () => {
   it('never attaches a drops strip to a failed/stale-status store', () => {
     const failed = { ...makeDispensary('a', 'Broken', [makeDeal({ description: 'a deal' })]), status: 'failed' as const }
     mockUseDeals.mockReturnValue({ data: withData([failed]), isLoading: false, error: null })
-    mockUseValueDrops.mockReturnValue({ drops: [dropRow()], isLoading: false, error: null })
+    mockUseValueDrops.mockReturnValue({ drops: [dropRow()], generatedAt: null, isLoading: false, error: null })
     render(<DealFeed />)
 
     // the card still shows (it has a live deal), but the status gate drops its price-drop rows
@@ -1037,6 +1059,7 @@ describe('DealFeed — real price drops in cards', () => {
     mockUseDeals.mockReturnValue({ data: withData([vape, dropOnly]), isLoading: false, error: null })
     mockUseValueDrops.mockReturnValue({
       drops: [dropRow({ dispensaryId: 'a' }), dropRow({ dispensaryId: 'b', name: 'Lonely Drop' })],
+      generatedAt: null,
       isLoading: false,
       error: null,
     })

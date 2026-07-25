@@ -1,4 +1,5 @@
 import type { PriceDropRow } from '../types'
+import { formatLastUpdated } from '../utils/formatTime'
 
 // derivation-3.3 — the in-card "Real price drops" strip. Renders a store's genuine drops (a product
 // priced BELOW its own rolling median; price-vs-own-median, FR13/Gate 2) INSIDE that store's DealCard,
@@ -19,6 +20,10 @@ interface ValueDropStripProps {
   // drop-only/expired card where there is no grid to separate from (the "No current deals" line sits
   // above it instead). Purely presentational.
   divided?: boolean
+  // the drops fact's OWN derive time (envelope generatedAt via useValueDrops), NOT the deal-scrape
+  // time. Shown as an honest freshness clause when present; null/absent → clause omitted, never a
+  // wrong date. One value for the whole derive, so it repeats identically across cards by design.
+  generatedAt?: string | null
 }
 
 // whole-number percent magnitude of the (negative) drop, e.g. -0.19 → 19
@@ -28,6 +33,17 @@ function dropPercent(pctVsMedian: number): number {
 
 function money(n: number): string {
   return `$${n.toFixed(2)}`
+}
+
+// Honest freshness label for a derive time, or '' to omit the clause. Defense-in-depth so the strip
+// is safe for ANY caller (not only useValueDrops, which already nulls bad values): reject
+// absent/empty, unparseable (NaN), the epoch "never derived" sentinel (t ≤ 0 — never a 1970 date),
+// and future/clock-skewed times (t > now — a "prices as of" date can't be in the future).
+function freshnessLabel(generatedAt: string | null | undefined): string {
+  if (!generatedAt) return ''
+  const t = Date.parse(generatedAt)
+  if (Number.isNaN(t) || t <= 0 || t > Date.now()) return ''
+  return formatLastUpdated(generatedAt)
 }
 
 // The one render filter: only honest-discount rows (`pctVsMedian < 0`) whose displayed whole-number
@@ -46,10 +62,18 @@ function accessibleName(d: PriceDropRow): string {
   return `${d.name}, ${optionPart}${dropPercent(d.pctVsMedian)} percent below its usual price, ${money(d.currentPrice)} versus ${money(d.medianPrice)} usual.`
 }
 
-export default function ValueDropStrip({ storeId, drops, divided = false }: ValueDropStripProps) {
+export default function ValueDropStrip({
+  storeId,
+  drops,
+  divided = false,
+  generatedAt = null,
+}: ValueDropStripProps) {
   const rows = renderableDrops(drops)
   // no renderable drops → the strip is absent entirely (DealCard also gates on this, but stay safe)
   if (rows.length === 0) return null
+
+  // Honest freshness (Investigation Fix 1b): '' when there is no sane derive time to show.
+  const freshness = freshnessLabel(generatedAt)
 
   // unique-per-store heading id (spec §Accessibility). The strip is a plain <div>, NOT a
   // labelled <section>: a section with an accessible name is an ARIA `region` landmark, and one
@@ -64,6 +88,13 @@ export default function ValueDropStrip({ storeId, drops, divided = false }: Valu
       <h3 id={headingId} className="gma-value-drops__heading">
         Real price drops
       </h3>
+      {/* Same-store explainer — defines "usual" as THIS store's own recent typical price (30-day
+          median), reusing the wording already shipped in the crawler HTML (storeRoute.ts). A real
+          derive time appends the honest freshness clause; absent/epoch → explainer only. */}
+      <p className="gma-value-drops__note">
+        Below this store's own recent typical price.
+        {freshness !== '' && ` Prices as of ${freshness}.`}
+      </p>
       <ul className="gma-value-drops__list">
         {rows.map((d) => (
           <li

@@ -1,5 +1,11 @@
 # Deferred Work
 
+## Deferred from: code review of real-price-drops-clarity-freshness (2026-07-25)
+
+Surfaced by the 3-layer adversarial review (Blind Hunter + Edge Case Hunter + Acceptance Auditor, Opus 4.8) of the in-app drops explainer + freshness clause. Scope-expanding beyond the story's "surface `generatedAt`" intent, so held:
+
+- **"Prices as of" date has no year and no staleness window** (`client/src/utils/formatTime.ts:8-13`, consumed by `client/src/components/ValueDropStrip.tsx`). `formatLastUpdated` emits month/day/time only, so an OLD drops derive (the derive pipeline can lag behind the deal scrape) renders e.g. "Prices as of Jul 13, 6:02 PM" that reads as current-year freshness — an honesty gap when the fact is actually stale. The strip already rejects future/epoch/unparseable times; it does NOT cap age. Two options, both product decisions: (a) include the year when the derive is not same-year, or (b) omit the clause (or show "prices may be out of date") beyond a freshness window. NOT done here because `formatLastUpdated` is shared with the deals "Last updated" line — changing it would move both, and picking a staleness threshold is a product call. Also note `toLocaleString` has no explicit `timeZone`, so the calendar day shown shifts per viewer near midnight (inherited, feed-wide).
+
 ## Deferred from: code review of oracle-freshness-gate (2026-07-21)
 
 Surfaced by the 3-layer adversarial review (Blind Hunter + Edge Case Hunter + Acceptance Auditor, Opus 4.8) of Gate 6. All real; none live-reachable in the current pipeline (scraper stamps valid UTC ISO), so held as hardening / open items:
