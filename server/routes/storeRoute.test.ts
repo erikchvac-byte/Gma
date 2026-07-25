@@ -1,4 +1,4 @@
-import { vi, describe, it, expect } from 'vitest'
+import { vi, describe, it, expect, beforeEach } from 'vitest'
 import express from 'express'
 import request from 'supertest'
 
@@ -7,11 +7,31 @@ vi.mock('node:fs', async (importOriginal) => {
   return { ...actual, readFileSync: vi.fn(actual.readFileSync) }
 })
 
+// The per-store page reads the served price-vs-own-median fact for "Real price drops". Mock the
+// reader so these tests never touch the real committed derived file (which would inject
+// unpredictable real rows for a real store id like remedy-tulalip). Default: empty → no drops
+// section, so every non-drops test renders the deals-only page deterministically.
+const { mockReadDrops } = vi.hoisted(() => ({ mockReadDrops: vi.fn() }))
+vi.mock('./valueRoute.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('./valueRoute.js')>()
+  return { ...actual, readPriceVsOwnMedian: mockReadDrops }
+})
+
 import { readFileSync } from 'node:fs'
-import { storeRoute, renderStoreHtml, buildStoreJsonLd } from './storeRoute.js'
+import { storeRoute, renderStoreHtml, buildStoreJsonLd, storeDrops } from './storeRoute.js'
 import type { Dispensary } from '../../client/src/types/index.js'
+import type { PriceVsOwnMedianRow } from '../utils/priceVsOwnMedian.js'
 
 const mockedReadFileSync = vi.mocked(readFileSync)
+
+const EMPTY_DROPS_ENVELOPE = { data: { rows: [] }, excluded: [], coverage: {}, generatedAt: new Date(0).toISOString() }
+function dropsEnvelope(rows: Partial<PriceVsOwnMedianRow>[]) {
+  return { ...EMPTY_DROPS_ENVELOPE, data: { rows } }
+}
+
+beforeEach(() => {
+  mockReadDrops.mockReturnValue(EMPTY_DROPS_ENVELOPE)
+})
 
 const app = express()
 app.get('/store/:slug', storeRoute)
@@ -173,7 +193,92 @@ describe('buildStoreJsonLd (unit)', () => {
   })
 })
 
+function dropRow(overrides: Partial<PriceVsOwnMedianRow> = {}): PriceVsOwnMedianRow {
+  return {
+    dispensaryId: 'remedy-tulalip',
+    productId: 'p1',
+    name: 'Blue Dream 3.5g',
+    category: 'Flower',
+    option: '3.5g',
+    currentPrice: 9,
+    medianPrice: 18,
+    pctVsMedian: -0.5,
+    observedDays: 14,
+    ...overrides,
+  }
+}
+
+describe('GET /store/:slug — real price drops', () => {
+  it("renders this store's honest below-median drops as plain prose, never Offer/Product", async () => {
+    seedDataJson()
+    mockReadDrops.mockReturnValue(
+      dropsEnvelope([dropRow(), dropRow({ dispensaryId: 'other-store', name: 'Not Mine' })]),
+    )
+    const res = await request(app).get('/store/remedy-tulalip')
+
+    expect(res.status).toBe(200)
+    expect(res.text).toContain('Real price drops')
+    expect(res.text).toContain('Blue Dream 3.5g (3.5g) — 50% below its usual: $9.00 vs $18.00 usual')
+    // a drop belonging to another store must never appear on this store's page
+    expect(res.text).not.toContain('Not Mine')
+    // the honest discount is prose only — still no seller/commerce schema anywhere
+    expect(res.text).not.toContain('"@type":"Offer"')
+    expect(res.text).not.toContain('"@type":"Product"')
+  })
+
+  it('omits the drops section entirely when the store has no renderable drops', async () => {
+    seedDataJson()
+    mockReadDrops.mockReturnValue(EMPTY_DROPS_ENVELOPE)
+    const res = await request(app).get('/store/remedy-tulalip')
+
+    expect(res.status).toBe(200)
+    expect(res.text).not.toContain('Real price drops')
+  })
+})
+
+describe('storeDrops (unit)', () => {
+  const store = { id: 'remedy-tulalip', name: 'R', url: 'https://x.test/', deals: [] } as unknown as Dispensary
+
+  it('filters to this store, keeps only renderable drops, and sorts deepest-discount first', () => {
+    mockReadDrops.mockReturnValue(
+      dropsEnvelope([
+        dropRow({ productId: 'a', pctVsMedian: -0.1 }),
+        dropRow({ productId: 'b', pctVsMedian: -0.4 }),
+        dropRow({ productId: 'c', pctVsMedian: 0.2 }), // above-median premium → dropped
+        dropRow({ productId: 'd', pctVsMedian: -0.001 }), // sub-1% display → dropped
+        dropRow({ productId: 'e', dispensaryId: 'other-store' }), // another store → dropped
+      ]),
+    )
+    expect(storeDrops(store).map((r) => r.productId)).toEqual(['b', 'a'])
+  })
+
+  it('caps the page at 12 drops', () => {
+    const many = Array.from({ length: 20 }, (_, i) => dropRow({ productId: `p${i}`, pctVsMedian: -0.1 - i / 100 }))
+    mockReadDrops.mockReturnValue(dropsEnvelope(many))
+    expect(storeDrops(store)).toHaveLength(12)
+  })
+
+  it('returns no drops for a failed or stale store (its current price is untrustworthy)', () => {
+    mockReadDrops.mockReturnValue(dropsEnvelope([dropRow()]))
+    const stale = { ...store, status: 'stale' } as unknown as Dispensary
+    const failed = { ...store, status: 'failed' } as unknown as Dispensary
+    expect(storeDrops(stale)).toEqual([])
+    expect(storeDrops(failed)).toEqual([])
+  })
+})
+
 describe('renderStoreHtml (unit)', () => {
+  it('renders passed-in drops and applies the sub-1% display gate', () => {
+    const store = { id: 'x', name: 'X', url: 'https://x.test/', deals: [] } as unknown as Dispensary
+    const html = renderStoreHtml(store, [
+      { dispensaryId: 'x', productId: 'p', name: 'Widget', category: 'Flower', option: '1g', currentPrice: 5, medianPrice: 10, pctVsMedian: -0.5, observedDays: 10 },
+      { dispensaryId: 'x', productId: 'q', name: 'TooSmall', category: 'Flower', option: '1g', currentPrice: 5, medianPrice: 5, pctVsMedian: -0.001, observedDays: 10 },
+    ])
+    expect(html).toContain('Real price drops')
+    expect(html).toContain('Widget (1g) — 50% below its usual: $5.00 vs $10.00 usual')
+    expect(html).not.toContain('TooSmall') // sub-1% display mover suppressed
+  })
+
   it('produces exactly one canonical link and one JSON-LD block', () => {
     const store = {
       id: 'x',

@@ -1,6 +1,8 @@
 import type { Request, Response } from 'express'
 import type { Dispensary } from '../../client/src/types/index.js'
+import type { PriceVsOwnMedianRow } from '../utils/priceVsOwnMedian.js'
 import { buildApiData } from '../utils/buildApiData.js'
+import { readPriceVsOwnMedian } from './valueRoute.js'
 import { AGE_NOTICE } from '../utils/renderShellBody.js'
 import { GA_HEAD_SNIPPET } from './gaSnippet.js'
 
@@ -22,6 +24,12 @@ import { GA_HEAD_SNIPPET } from './gaSnippet.js'
 // - Deals shown are the CURRENT active set (buildApiData already filtered them).
 //   No fabricated validity dates — "active today" framing only; deals churn hourly.
 // - geo is emitted only when lat/lng are real finite numbers (Honest Math).
+// - "Real price drops" (price-vs-own-median, FR13/Gate 2) are the ONE honest discount the
+//   engine computes — a SKU priced below its OWN rolling median, NOT a banner/promo % (which
+//   carries no per-item signal). Rendered as plain prose only, never Offer/Product schema.
+//   Same gates as the in-app card (ValueDropStrip / DealFeed): a failed/stale store carries
+//   NO drops (its current price — the drop's numerator — is itself untrustworthy), and a
+//   sub-1%-display mover is suppressed. Fail-soft: a missing artifact yields no drops section.
 
 const BASE_URL = 'https://gmaslist.com'
 
@@ -50,6 +58,43 @@ function isFiniteNum(n: unknown): n is number {
 
 function isHttpUrl(u: unknown): u is string {
   return typeof u === 'string' && /^https?:\/\//i.test(u)
+}
+
+// ---- price-drop helpers (mirror client/src/components/ValueDropStrip.tsx verbatim) ----
+
+// At most this many drops on one page — deepest discounts first. A store can carry dozens of
+// movers after full-menu capture; the page shows the biggest honest drops, not an exhaustive list.
+const MAX_STORE_DROPS = 12
+
+// whole-number percent magnitude of the (negative) drop, e.g. -0.19 → 19
+function dropPercent(pctVsMedian: number): number {
+  return Math.round(Math.abs(pctVsMedian) * 100)
+}
+
+function money(n: number): string {
+  return `$${n.toFixed(2)}`
+}
+
+// The one render filter (mirrors ValueDropStrip.renderableDrops): only honest-discount rows
+// (`pctVsMedian < 0`) whose displayed whole-number percent is at least 1% survive. A sub-0.5%
+// mover would render "0% below its usual" — a claimed drop with no visible magnitude — so it is
+// suppressed (Honest Math).
+export function renderableStoreDrops(rows: PriceVsOwnMedianRow[]): PriceVsOwnMedianRow[] {
+  return rows.filter((r) => r.pctVsMedian < 0 && dropPercent(r.pctVsMedian) !== 0)
+}
+
+// This store's honest price drops, read fail-soft and gated exactly like the in-app card:
+// a failed/stale store carries NO drops (mirrors DealFeed's status gate), otherwise the served
+// price-vs-own-median rows are filtered to this store, kept only if renderable, sorted
+// deepest-discount-first, and capped. A missing/malformed artifact → [] (readPriceVsOwnMedian
+// already fail-softs), so this never throws and the section simply doesn't render.
+export function storeDrops(store: Dispensary): PriceVsOwnMedianRow[] {
+  if (store.status === 'failed' || store.status === 'stale') return []
+  const report = readPriceVsOwnMedian()
+  const rows = Array.isArray(report.data?.rows) ? report.data.rows : []
+  return renderableStoreDrops(rows.filter((r) => r.dispensaryId === store.id))
+    .sort((a, b) => a.pctVsMedian - b.pctVsMedian)
+    .slice(0, MAX_STORE_DROPS)
 }
 
 // Parse "9226 34th Avenue NE, Tulalip, WA 98271" into a schema.org PostalAddress.
@@ -115,8 +160,11 @@ const PAGE_STYLE = `body {
       .addr { color: #b6c2c6; }
       .notice { margin-top: 2.5rem; font-size: 0.85rem; color: #8a9aa0; }`
 
-// Pure page builder (exported for tests).
-export function renderStoreHtml(store: Dispensary): string {
+// Pure page builder (exported for tests). `drops` are this store's honest price drops (already
+// store-filtered + status-gated by the caller); renderableStoreDrops is re-applied here so a
+// direct caller (test) still gets the display-honesty gate. Defaults to none so the deals-only
+// page is unchanged when the price-vs-own-median fact is empty.
+export function renderStoreHtml(store: Dispensary, drops: PriceVsOwnMedianRow[] = []): string {
   const canonicalUrl = `${BASE_URL}/store/${store.id}`
   const title = `${store.name} — Cannabis Deals & Location | Gmas List`
   const description =
@@ -140,6 +188,21 @@ export function renderStoreHtml(store: Dispensary): string {
           .map((deal) => `<li>${escapeHtml(String(deal.description ?? ''))}</li>`)
           .join('')}</ul>`
       : `<p>No active deals right now. Deals are set by each retailer and change throughout the day — check back later or view the store's website.</p>`
+
+  // "Real price drops" — the one honest, per-item discount (below this SKU's own rolling median).
+  // Plain prose only; NEVER Offer/Product schema. Rendered only when this store has renderable drops.
+  const renderableDrops = renderableStoreDrops(drops)
+  const dropsHtml =
+    renderableDrops.length > 0
+      ? `<h2>Real price drops</h2>
+      <p>Products currently priced below their own recent typical price at this store, based on observed price history:</p>
+      <ul>${renderableDrops
+        .map((drop) => {
+          const optionPart = drop.option ? ` (${escapeHtml(drop.option)})` : ''
+          return `<li>${escapeHtml(drop.name)}${optionPart} — ${dropPercent(drop.pctVsMedian)}% below its usual: ${money(drop.currentPrice)} vs ${money(drop.medianPrice)} usual</li>`
+        })
+        .join('')}</ul>`
+      : ''
 
   return `<!doctype html>
 <html lang="en">
@@ -167,6 +230,8 @@ export function renderStoreHtml(store: Dispensary): string {
 
       <h2>Deals active today</h2>
       ${dealsHtml}
+
+      ${dropsHtml}
 
       <p class="notice">${escapeHtml(AGE_NOTICE)}</p>
       <p class="notice">
@@ -227,5 +292,5 @@ export function storeRoute(req: Request, res: Response) {
   // Deals churn hourly, so keep this short-lived — long enough to absorb crawl
   // bursts, short enough that the "active today" list never goes badly stale.
   res.set('Cache-Control', 'public, max-age=300')
-  res.type('html').send(renderStoreHtml(store))
+  res.type('html').send(renderStoreHtml(store, storeDrops(store)))
 }
