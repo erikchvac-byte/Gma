@@ -2,6 +2,7 @@ import { render, screen, within } from '@testing-library/react'
 import { describe, it, expect, vi, afterEach } from 'vitest'
 import DealCard, { type DealView } from './DealCard'
 import { DEAL_ICON_SRC } from '../utils/dealIconAssets'
+import { formatLastUpdated } from '../utils/formatTime'
 import type { Deal, Dispensary, PriceDropRow } from '../types'
 
 const makeDeal = (overrides: Partial<Deal>): Deal => ({
@@ -773,6 +774,26 @@ describe('DealCard — real price drops strip', () => {
     // DealFeed (not tested here) keeps one <li> per store. The strip's list holds exactly its rows.
     const strip = container.querySelector('.gma-value-drops') as HTMLElement
     expect(within(strip).getAllByRole('listitem')).toHaveLength(2)
+  })
+
+  it('forwards dropsGeneratedAt to the strip as an honest freshness clause', () => {
+    const generatedAt = new Date(Date.now() - 60_000).toISOString()
+    const { container } = render(
+      <DealCard
+        dispensary={makeDispensary({})}
+        deals={[]}
+        gasCostText={null}
+        drops={[dropRow()]}
+        dropsGeneratedAt={generatedAt}
+      />,
+    )
+    const strip = container.querySelector('.gma-value-drops') as HTMLElement
+    // assert the rendered VALUE, not just the label — a wrong/1970 date would fail this
+    expect(
+      within(strip).getByText(
+        `Below this store's own recent typical price. Prices as of ${formatLastUpdated(generatedAt)}.`,
+      ),
+    ).toBeInTheDocument()
   })
 
   it('drops sub-1%/above-median rows before deciding to show the strip', () => {

@@ -20,8 +20,26 @@ const ENDPOINT = '/api/value/price-vs-own-median'
 
 export interface UseValueDropsResult {
   drops: PriceDropRow[]
+  // The drops fact's OWN derive time (envelope `generatedAt`), distinct from the deal-scrape
+  // `lastScraperRun`. null when never derived (epoch fail-soft), absent, or malformed — so a
+  // surface can show honest freshness or omit it, never a wrong 1970 date. (Investigation Fix 1b.)
+  generatedAt: string | null
   isLoading: boolean
   error: string | null
+}
+
+// Extract the drops derive time from the honesty envelope. Returns null for absent/non-string
+// values, unparseable strings, AND any time at or before the epoch — the latter being the
+// valueRoute EMPTY_GENERATED_AT "never derived" sentinel. The check is NUMERIC (Date.parse ≤ 0),
+// not an exact string match, so it stays robust if the server ever emits epoch in a different but
+// valid ISO-8601 form (no millis, +00:00 offset, etc.). Fail-soft, mirroring selectDrops.
+export function selectGeneratedAt(raw: unknown): string | null {
+  if (raw === null || typeof raw !== 'object') return null
+  const env = raw as { generatedAt?: unknown }
+  if (typeof env.generatedAt !== 'string') return null
+  const t = Date.parse(env.generatedAt)
+  if (Number.isNaN(t) || t <= 0) return null
+  return env.generatedAt
 }
 
 function isFiniteNumber(n: unknown): n is number {
@@ -70,13 +88,17 @@ export function selectDrops(raw: unknown): PriceDropRow[] {
 }
 
 // Synchronous read of the server-injected drops snapshot. Returns the selected honest-drop rows
-// when the global is present (even []: a valid empty snapshot — skip the fetch), or null when the
-// global is absent/unreadable → fall back to the fetch. selectDrops already fail-softs any bad
-// shape to [], so a corrupted snapshot degrades to "no drops" exactly like the fetch path would.
-function readSnapshot(): PriceDropRow[] | null {
+// AND the derive time when the global is present (even []: a valid empty snapshot — skip the
+// fetch), or null when the global is absent/unreadable → fall back to the fetch. selectDrops /
+// selectGeneratedAt already fail-soft any bad shape, so a corrupted snapshot degrades exactly like
+// the fetch path would.
+function readSnapshot(): { drops: PriceDropRow[]; generatedAt: string | null } | null {
   if (typeof window === 'undefined' || window.__GMA_DROPS__ === undefined) return null
   try {
-    return selectDrops(window.__GMA_DROPS__)
+    return {
+      drops: selectDrops(window.__GMA_DROPS__),
+      generatedAt: selectGeneratedAt(window.__GMA_DROPS__),
+    }
   } catch {
     return null
   }
@@ -86,7 +108,8 @@ export function useValueDrops(): UseValueDropsResult {
   // Init from the injected snapshot so the FIRST render already carries the drops — no post-paint
   // re-render that reflows the feed (ADR-092). Absent snapshot → [] + fetch, exactly as before.
   const initial = readSnapshot()
-  const [drops, setDrops] = useState<PriceDropRow[]>(initial ?? [])
+  const [drops, setDrops] = useState<PriceDropRow[]>(initial?.drops ?? [])
+  const [generatedAt, setGeneratedAt] = useState<string | null>(initial?.generatedAt ?? null)
   const [isLoading, setIsLoading] = useState(initial === null)
   const [error, setError] = useState<string | null>(null)
   // decided once at mount: a present snapshot means skip the fetch entirely
@@ -105,7 +128,9 @@ export function useValueDrops(): UseValueDropsResult {
           setError(`Request failed with status ${response.status}`)
           return
         }
-        setDrops(selectDrops(await response.json()))
+        const envelope = await response.json()
+        setDrops(selectDrops(envelope))
+        setGeneratedAt(selectGeneratedAt(envelope))
       } catch (err) {
         // an aborted fetch (unmount) is not an error and must not update state
         if (err instanceof Error && err.name === 'AbortError') return
@@ -119,5 +144,5 @@ export function useValueDrops(): UseValueDropsResult {
     return () => controller.abort()
   }, [])
 
-  return { drops, isLoading, error }
+  return { drops, generatedAt, isLoading, error }
 }

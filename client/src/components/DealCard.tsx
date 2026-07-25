@@ -29,6 +29,9 @@ export interface DealCardProps {
   // median), already store-joined + store-status-gated by DealFeed. Rendered as a labeled strip
   // UNDER the deal grid so the drop reads together with this store's link/address/deals. Default [].
   drops?: PriceDropRow[]
+  // the drops fact's own derive time (from useValueDrops), forwarded to the strip for its honest
+  // freshness clause. One value for all cards; null/absent → no freshness line. Default null.
+  dropsGeneratedAt?: string | null
 }
 
 // url is a required field but not validated upstream (scraped/ingested data) —
@@ -44,7 +47,7 @@ function isLinkableUrl(url: string): boolean {
 
 // Purely presentational: receives data and computed values as props.
 // No fetching, no intervals, no hooks.
-export default function DealCard({ dispensary, deals, gasCostText, rotatingIconSrcs = {}, drops = [] }: DealCardProps) {
+export default function DealCard({ dispensary, deals, gasCostText, rotatingIconSrcs = {}, drops = [], dropsGeneratedAt = null }: DealCardProps) {
   // next unconsumed pool src per family; render-scoped so every render replays
   // the same assignment (the srcs themselves are stable — DealFeed derives them
   // from a per-mount seed)
@@ -222,7 +225,7 @@ export default function DealCard({ dispensary, deals, gasCostText, rotatingIconS
           divider separates it from the banner deals; on a drop-only/expired card there is no grid
           to separate from, so the divider is omitted (the "No current deals" line sits above). */}
       {dropRows.length > 0 && (
-        <ValueDropStrip storeId={dispensary.id} drops={dropRows} divided={!isExpired} />
+        <ValueDropStrip storeId={dispensary.id} drops={dropRows} divided={!isExpired} generatedAt={dropsGeneratedAt} />
       )}
     </Card>
   )

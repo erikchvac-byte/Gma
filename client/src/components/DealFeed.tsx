@@ -82,7 +82,7 @@ export default function DealFeed({ mpg = null, location = null }: DealFeedProps)
   // grouped by store below and rendered INSIDE each store's DealCard. A drop follows its store: it only
   // shows if its store's card shows (distance/fresh), and a fresh in-range store with a drop but no
   // banner deal still gets a card (union / no-drop-lost) so the drop is never lost.
-  const { drops: allDrops } = useValueDrops()
+  const { drops: allDrops, generatedAt: dropsGeneratedAt } = useValueDrops()
   const now = useNow()
   const [storedDistance, setStoredDistance] = useLocalStorage<number>(
     'gma_distance_miles',
@@ -307,6 +307,7 @@ export default function DealFeed({ mpg = null, location = null }: DealFeedProps)
                 gasCostText={gasCostText(dispensary.distanceMiles)}
                 rotatingIconSrcs={rotatingByStore[storeIndex]}
                 drops={drops}
+                dropsGeneratedAt={dropsGeneratedAt}
               />
             </li>
           ))}

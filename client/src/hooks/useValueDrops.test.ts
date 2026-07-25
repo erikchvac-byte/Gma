@@ -1,6 +1,6 @@
 import { renderHook, waitFor } from '@testing-library/react'
 import { describe, it, expect, afterEach, vi } from 'vitest'
-import { useValueDrops, selectDrops } from './useValueDrops'
+import { useValueDrops, selectDrops, selectGeneratedAt } from './useValueDrops'
 
 // A minimal envelope carrying the given rows. The served fact is movers-only, so `rows` may
 // contain BOTH below-median drops (pctVsMedian < 0) and above-median premiums (> 0).
@@ -77,6 +77,38 @@ describe('selectDrops (pure envelope → honest-discount rows)', () => {
   })
 })
 
+describe('selectGeneratedAt (pure envelope → honest freshness)', () => {
+  it('returns the derive time for a real (non-epoch) envelope', () => {
+    expect(selectGeneratedAt(envelope([drop()]))).toBe('2026-07-13T18:02:47.401Z')
+  })
+
+  it('maps the epoch fail-soft sentinel to null (never a 1970 date)', () => {
+    // valueRoute EMPTY_GENERATED_AT — "never derived" must not read as freshness
+    const epoch = { ...envelope([]), generatedAt: new Date(0).toISOString() }
+    expect(selectGeneratedAt(epoch)).toBeNull()
+  })
+
+  it('rejects the epoch instant in ANY valid ISO form (numeric guard, not string-match)', () => {
+    // guards against server-side ISO-format drift: all of these ARE the epoch and must be null,
+    // even though none string-equals the client's `new Date(0).toISOString()`.
+    for (const g of ['1970-01-01T00:00:00Z', '1970-01-01T00:00:00.000+00:00', '1969-12-31T16:00:00-08:00']) {
+      expect(selectGeneratedAt({ generatedAt: g })).toBeNull()
+    }
+  })
+
+  it('rejects an unparseable date string (never surfaces garbage as freshness)', () => {
+    expect(selectGeneratedAt({ generatedAt: 'not-a-date' })).toBeNull()
+    expect(selectGeneratedAt({ generatedAt: '' })).toBeNull()
+  })
+
+  it('fail-softs absent / non-string / non-object generatedAt to null', () => {
+    expect(selectGeneratedAt({ data: { rows: [] } })).toBeNull() // absent
+    expect(selectGeneratedAt({ generatedAt: 1720000000000 })).toBeNull() // number
+    expect(selectGeneratedAt(null)).toBeNull()
+    expect(selectGeneratedAt('nope')).toBeNull()
+  })
+})
+
 describe('useValueDrops — server snapshot (window.__GMA_DROPS__, ADR-092)', () => {
   afterEach(() => {
     delete (window as { __GMA_DROPS__?: unknown }).__GMA_DROPS__
@@ -93,6 +125,7 @@ describe('useValueDrops — server snapshot (window.__GMA_DROPS__, ADR-092)', ()
     // no loading flash, drops present on the very first render, no network call
     expect(result.current.isLoading).toBe(false)
     expect(result.current.drops).toHaveLength(1)
+    expect(result.current.generatedAt).toBe('2026-07-13T18:02:47.401Z')
     expect(result.current.error).toBeNull()
     expect(fetchMock).not.toHaveBeenCalled()
   })
@@ -118,6 +151,7 @@ describe('useValueDrops — server snapshot (window.__GMA_DROPS__, ADR-092)', ()
 
     await waitFor(() => expect(result.current.isLoading).toBe(false))
     expect(result.current.drops).toHaveLength(1)
+    expect(result.current.generatedAt).toBe('2026-07-13T18:02:47.401Z')
     expect(fetchMock).toHaveBeenCalledTimes(1)
   })
 })
