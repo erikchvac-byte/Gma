@@ -139,13 +139,26 @@ function readStoreSlugs(): string[] {
   }
 }
 
+// {id, name} per store for llms.txt (needs the display name for the link text, not
+// just the slug). Same fail-soft posture as readStoreSlugs.
+function readStores(): { id: string; name: string }[] {
+  try {
+    return buildApiData().dispensaries.map((d) => ({ id: d.id, name: d.name }))
+  } catch {
+    return []
+  }
+}
+
 // Pure builder (exported for tests). llms.txt (https://llmstxt.org/) is the
 // LLM-crawler counterpart to sitemap.xml: a Markdown file with a required H1,
 // a blockquote summary, and H2 sections of links. Before this route existed the
 // SPA fallback served index.html at /llms.txt, which Lighthouse's
 // agentic-browsing audit failed (no H1, no links). Category links come from the
 // SAME rollups source as the sitemap, so the two surfaces can never disagree.
-export function buildLlmsTxt(categories: string[]): string {
+export function buildLlmsTxt(
+  categories: string[],
+  stores: { id: string; name: string }[] = [],
+): string {
   const categoryLines = categories
     .map((c) => ({ name: c, slug: categorySlug(c) }))
     .filter(({ slug }) => slug.length > 0)
@@ -160,6 +173,22 @@ export function buildLlmsTxt(categories: string[]): string {
   const comparisonSection =
     categoryLines.length > 0 ? `\n## Price comparisons\n\n${categoryLines.join('\n')}\n` : ''
 
+  // Per-store profiles — the richest citable entity surface (each /store/<id> is a
+  // real HTML page with LocalBusiness JSON-LD, current deals, and location). The
+  // sitemap already lists these; llms.txt omitted them, hiding the store pages from
+  // LLM agents that read this file as the site guide. `[` / `]` are stripped from
+  // the link text so a store name can never break the Markdown link syntax.
+  const storeLines = stores
+    .filter((s) => typeof s?.id === 'string' && s.id.length > 0 && typeof s?.name === 'string')
+    .filter((s, i, arr) => arr.findIndex((x) => x.id === s.id) === i)
+    .sort((a, b) => a.id.localeCompare(b.id))
+    .map(
+      ({ id, name }) =>
+        `- [${name.replace(/[[\]]/g, '')}](${BASE_URL}/store/${id}): Current publicly available deals and location for ${name.replace(/[[\]]/g, '')}, a licensed Washington retailer`,
+    )
+
+  const storesSection = storeLines.length > 0 ? `\n## Stores\n\n${storeLines.join('\n')}\n` : ''
+
   return `# Gmas List
 
 > ${ENTITY_DESCRIPTION}
@@ -169,7 +198,7 @@ export function buildLlmsTxt(categories: string[]): string {
 - [Deal feed](${BASE_URL}/): Live cannabis deal feed from licensed Washington retailers, compared by savings, distance, and gas cost
 - [About Gmas List](${BASE_URL}/about): What Gmas List is, how it works, and frequently asked questions
 - [Compare prices](${BASE_URL}/compare): Cross-store price-disparity comparisons derived from observed menu prices
-${comparisonSection}
+${comparisonSection}${storesSection}
 ## Notes
 
 - Deals are set by each retailer and may change without notice — verify in store.
@@ -214,5 +243,5 @@ export function llmsTxtRoute(_req: Request, res: Response) {
   res.set('Cache-Control', 'public, max-age=3600')
   // text/plain (not text/markdown): maximally compatible, and what llms.txt
   // consumers expect from a .txt path.
-  res.type('text/plain').send(buildLlmsTxt(categories))
+  res.type('text/plain').send(buildLlmsTxt(categories, readStores()))
 }
