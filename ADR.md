@@ -1006,6 +1006,16 @@ Build-time verification (when implemented): fixture snapshot-test per store *sha
 
 ---
 
+### ADR-104: Open Graph + Twitter Card social meta on every page
+**Status**: Accepted
+**Date**: 2026-07-26
+**Context**: Social-preview meta were the last open Phase-1 SEO item. The homepage and all four SSR surfaces (`/about`, `/compare`, `/compare/:category`, `/store/:slug`) emitted `<title>`/`description`/canonical but **no `og:*` or `twitter:*` tags**, so a link shared to Facebook / LinkedIn / iMessage / Slack / X rendered bare — no title card, no image, no description.
+**Decision**: New shared `server/utils/socialMeta.ts` — `socialMetaTags({ title, description, url, type?, image?, imageAlt? })` returns the full OG + Twitter block and **self-escapes** so untrusted input (e.g. a store name in `og:title`) can't break out of the attribute. Wired into `aboutRoute`, `compareRoute`'s shared `page()`, and `storeRoute`'s `renderStoreHtml`. The homepage (`client/index.html`, static) carries an equivalent hardcoded block. **og:image** = brand art copied from `client/src/assets/hero.png` to `client/public/og-image.png`, served at a stable `/og-image.png`; card type is **`summary`** (small square) since the art is 343×361 and no 1200×630 wide asset exists.
+**Rationale**: One generator = an identical tag set + identical escaping on every surface (the homepage's static copy is the only deliberate duplicate, guarded by `indexHtml.test`). Reused Erik's existing hero art rather than inventing new art (the deal-icon-style precedent: use his art, don't redraw). `summary` not `summary_large_image` because the only asset is square/small — honest to what exists; a wide asset upgrades the card later. No compliance change: the OG copy reuses the same WA-scoped, not-a-seller description already shipped.
+**Consequences**: New `socialMeta.ts` (+`socialMeta.test.ts`, 5 cases incl. attribute-escaping + type override); OG/Twitter presence asserted in `aboutRoute`/`compareRoute`/`storeRoute`/`indexHtml` tests. `og:image` is a static `public/` asset (served by `express.static` + Vite's public copy → verified in `dist/`). Closes the Phase-1 OG/Twitter item — the last of the SEO plan's page-level meta work. **Deferred:** a dedicated 1200×630 OG image (→ `summary_large_image`) and per-page distinct images. Cross-ref ADR-078 (`/about` entity + JSON-LD), ADR-099/100 (store pages), ADR-103 (homepage canonical + robots groups, same reach pass).
+
+---
+
 ## Technical Constraints
 
 - US only, WA-focused; distance is now user-relative (ADR-057) — measured from the visitor's device GPS or typed WA ZIP, not a fixed origin
@@ -1076,6 +1086,8 @@ Build-time verification (when implemented): fixture snapshot-test per store *sha
 ---
 
 ## Change Log
+
+| 2026-07-26 | **ADR-104 added — Open Graph + Twitter Card social meta on every page.** The last open Phase-1 SEO item: homepage + all 4 SSR surfaces lacked `og:*`/`twitter:*`, so shared links rendered bare. New shared `server/utils/socialMeta.ts` (`socialMetaTags`, self-escaping) wired into aboutRoute, compareRoute's `page()`, and storeRoute; homepage `index.html` carries the static equivalent. `og:image` = Erik's hero art copied to `client/public/og-image.png` (343×361 → `summary` card, not large-image; reused his art per the deal-icon precedent, no redraw). +socialMeta.test (5 cases) + OG assertions in about/compare/store/indexHtml tests; full build clean, og-image + 12 tags verified in `dist/`. Deferred: a 1200×630 wide OG image (→ summary_large_image). |
 
 | 2026-07-26 | **ADR-103 added — explicit per-agent AI-crawler Allow groups in robots.txt + homepage canonical.** Gemini's browser reported a `GOOGLE_EXTENDED_OPT_OUT` fetch failure and fabricated an audit from it; live check confirmed the site was never opted out (`User-agent: * / Allow: /` covers Google-Extended by fallback). Hardened anyway: `robotsRoute` now emits explicit `Allow` groups for 13 named AI/citation bots (Google-Extended, GPTBot, ClaudeBot, Applebot-Extended, CCBot, Meta-ExternalAgent, OAI-SearchBot, ChatGPT-User, PerplexityBot, Perplexity-User, Claude-SearchBot, Claude-User, Bingbot) beside the `*` catch-all — un-misreadable as an opt-out; each repeats `Disallow: /api/`; changes no actual access. Also added a self-referencing homepage canonical `<link rel="canonical" href="https://gmaslist.com/" />` to `client/index.html` (PR #106) — closes the GSC "User-declared canonical: None" gap, matching the /about, /compare, /store SSR routes. Robots test rewritten (14 groups, none full-site-blocked); +indexHtml canonical assertion. Build clean; 20 sitemap + 3 indexHtml green. Lesson: Gemini confabulates audits from fetch-failure states — verify via GSC URL Inspection, not its narrative. |
 

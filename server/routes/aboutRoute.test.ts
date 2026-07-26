@@ -42,6 +42,14 @@ describe('GET /about', () => {
     expect(visibleText(res.text)).toContain(ENTITY_DESCRIPTION)
   })
 
+  it('emits Open Graph + Twitter Card social meta', async () => {
+    const res = await fetchAbout()
+    expect(res.text).toContain('<meta property="og:title" content="About Gmas List')
+    expect(res.text).toContain('<meta property="og:url" content="https://gmaslist.com/about" />')
+    expect(res.text).toContain('<meta property="og:image" content="https://gmaslist.com/og-image.png" />')
+    expect(res.text).toContain('<meta name="twitter:card" content="summary" />')
+  })
+
   it('renders every FAQ question and answer as visible text', async () => {
     const res = await fetchAbout()
     const text = visibleText(res.text)
