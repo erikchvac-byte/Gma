@@ -47,7 +47,7 @@ describe('GET /about', () => {
     expect(res.text).toContain('<meta property="og:title" content="About Gmas List')
     expect(res.text).toContain('<meta property="og:url" content="https://gmaslist.com/about" />')
     expect(res.text).toContain('<meta property="og:image" content="https://gmaslist.com/og-image.png" />')
-    expect(res.text).toContain('<meta name="twitter:card" content="summary" />')
+    expect(res.text).toContain('<meta name="twitter:card" content="summary_large_image" />')
   })
 
   it('renders every FAQ question and answer as visible text', async () => {
