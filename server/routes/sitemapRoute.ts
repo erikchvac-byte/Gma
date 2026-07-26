@@ -29,12 +29,40 @@ const BASE_URL = 'https://gmaslist.com'
 
 // robots.txt: allow the whole site to every crawler, keep the JSON API out of the
 // index (thin, non-page content), and advertise the sitemap. Phase 3 of the plan
-// settled on "allow all crawlers" (citation-search AND training), so no per-agent
-// blocks here.
+// settled on "allow all crawlers" (citation-search AND training).
+//
+// The `*` group already permits every agent, but some AI tools read the ABSENCE of
+// a dedicated group conservatively (e.g. Gemini's browser reported a bogus
+// Google-Extended opt-out). So each AI/citation crawler gets an EXPLICIT Allow
+// group — un-misreadable as an opt-out. A named group is self-contained (a crawler
+// that matches it ignores `*`), so each must repeat `Disallow: /api/`.
+const AI_CRAWLER_AGENTS = [
+  // AI training / model-usage tokens
+  'Google-Extended',
+  'GPTBot',
+  'ClaudeBot',
+  'Applebot-Extended',
+  'CCBot',
+  'Meta-ExternalAgent',
+  // AI citation / live-answer crawlers
+  'OAI-SearchBot',
+  'ChatGPT-User',
+  'PerplexityBot',
+  'Perplexity-User',
+  'Claude-SearchBot',
+  'Claude-User',
+  'Bingbot',
+]
+
+const aiCrawlerGroups = AI_CRAWLER_AGENTS.map(
+  (agent) => `User-agent: ${agent}\nAllow: /\nDisallow: /api/\n`,
+).join('\n')
+
 export const ROBOTS_TXT = `User-agent: *
 Allow: /
 Disallow: /api/
 
+${aiCrawlerGroups}
 Sitemap: ${BASE_URL}/sitemap.xml
 `
 

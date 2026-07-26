@@ -40,10 +40,34 @@ describe('GET /robots.txt', () => {
     expect(res.text).toContain('Sitemap: https://gmaslist.com/sitemap.xml')
   })
 
-  it('does not block any AI/search crawler (Phase 3: allow all)', () => {
-    // A single catch-all User-agent line, no per-agent Disallow blocks.
-    expect((ROBOTS_TXT.match(/User-agent:/g) ?? [])).toHaveLength(1)
-    expect(ROBOTS_TXT).not.toMatch(/User-agent:\s*(GPTBot|ClaudeBot|Google-Extended|PerplexityBot)/)
+  it('gives every named AI/citation crawler an explicit Allow group, and blocks none (Phase 3: allow all)', () => {
+    // Explicit per-agent groups (un-misreadable as an opt-out) for the AI bots,
+    // in addition to the `*` catch-all.
+    for (const agent of [
+      'Google-Extended',
+      'GPTBot',
+      'ClaudeBot',
+      'Applebot-Extended',
+      'CCBot',
+      'Meta-ExternalAgent',
+      'OAI-SearchBot',
+      'ChatGPT-User',
+      'PerplexityBot',
+      'Perplexity-User',
+      'Claude-SearchBot',
+      'Claude-User',
+      'Bingbot',
+    ]) {
+      expect(ROBOTS_TXT).toContain(`User-agent: ${agent}\nAllow: /`)
+    }
+    // The wildcard group is still present, and NO group ever blocks the whole
+    // site (a bare `Disallow: /` — distinct from the `Disallow: /api/` we do use).
+    expect(ROBOTS_TXT).toContain('User-agent: *')
+    expect(ROBOTS_TXT).not.toMatch(/^Disallow:\s*\/\s*$/m)
+    // Every group keeps the JSON API out: one Disallow: /api/ per User-agent group.
+    const agents = ROBOTS_TXT.match(/^User-agent:/gm) ?? []
+    const apiBlocks = ROBOTS_TXT.match(/^Disallow: \/api\/$/gm) ?? []
+    expect(apiBlocks.length).toBe(agents.length)
   })
 })
 
