@@ -78,7 +78,7 @@ describe('GET /compare (index)', () => {
     // Open Graph + Twitter Card, url matching the canonical.
     expect(res.text).toContain('<meta property="og:url" content="https://gmaslist.com/compare" />')
     expect(res.text).toContain('<meta property="og:image" content="https://gmaslist.com/og-image.png" />')
-    expect(res.text).toContain('<meta name="twitter:card" content="summary" />')
+    expect(res.text).toContain('<meta name="twitter:card" content="summary_large_image" />')
 
     const blocks = extractJsonLdBlocks(res.text)
     const dataset = blocks.find((b) => b['@type'] === 'Dataset')

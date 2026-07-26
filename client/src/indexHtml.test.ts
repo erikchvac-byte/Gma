@@ -31,11 +31,11 @@ describe('client/index.html entity markup', () => {
 
   it('carries Open Graph + Twitter Card social meta for the homepage', () => {
     // Mirrors the SSR pages' server/utils/socialMeta.ts output; og:image is the
-    // brand art at /og-image.png (small square -> summary card).
+    // branded banner at /og-image.png (2400x1260 -> large card).
     expect(html).toContain('<meta property="og:type" content="website" />')
     expect(html).toContain('<meta property="og:url" content="https://gmaslist.com/" />')
     expect(html).toContain('<meta property="og:image" content="https://gmaslist.com/og-image.png" />')
-    expect(html).toContain('<meta name="twitter:card" content="summary" />')
+    expect(html).toContain('<meta name="twitter:card" content="summary_large_image" />')
   })
 
   it('emits parseable WebSite + Organization JSON-LD with no SearchAction', () => {

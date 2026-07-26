@@ -16,8 +16,8 @@ describe('socialMetaTags', () => {
     expect(tags).toContain(`<meta property="og:image" content="${OG_IMAGE_URL}" />`)
   })
 
-  it('emits the Twitter Card tags (summary — small square art)', () => {
-    expect(tags).toContain('<meta name="twitter:card" content="summary" />')
+  it('emits the Twitter Card tags (summary_large_image — wide banner art)', () => {
+    expect(tags).toContain('<meta name="twitter:card" content="summary_large_image" />')
     expect(tags).toContain('<meta name="twitter:title" content="Store &amp; Co" />')
     expect(tags).toContain(`<meta name="twitter:image" content="${OG_IMAGE_URL}" />`)
   })

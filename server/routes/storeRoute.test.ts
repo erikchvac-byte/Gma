@@ -90,7 +90,7 @@ describe('GET /store/:slug', () => {
     // Social meta: og:title carries the store name, og:url the canonical.
     expect(res.text).toContain('<meta property="og:title" content="Remedy Tulalip')
     expect(res.text).toContain('<meta property="og:url" content="https://gmaslist.com/store/remedy-tulalip" />')
-    expect(res.text).toContain('<meta name="twitter:card" content="summary" />')
+    expect(res.text).toContain('<meta name="twitter:card" content="summary_large_image" />')
   })
 
   it('emits LocalBusiness JSON-LD with structured address + geo, never Product/Offer', async () => {

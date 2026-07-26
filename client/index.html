@@ -42,7 +42,7 @@
     />
     <!-- Open Graph + Twitter Card. The SSR /about, /compare, /store pages emit the
          same set via server/utils/socialMeta.ts; this is the homepage's static copy.
-         og:image is the brand art at /og-image.png (small square -> summary card). -->
+         og:image is the branded banner at /og-image.png (2400x1260 -> large card). -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Gmas List" />
     <meta property="og:title" content="gmas list — cannabis deals worth the drive" />
@@ -52,15 +52,17 @@
     />
     <meta property="og:url" content="https://gmaslist.com/" />
     <meta property="og:image" content="https://gmaslist.com/og-image.png" />
-    <meta property="og:image:alt" content="Gmas List — cannabis deals worth the drive" />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image:width" content="2400" />
+    <meta property="og:image:height" content="1260" />
+    <meta property="og:image:alt" content="Gmas List — is it worth the drive?" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="gmas list — cannabis deals worth the drive" />
     <meta
       name="twitter:description"
       content="Discover publicly available cannabis deals from licensed Washington retailers and compare savings, distance, and convenience — find the deals worth the drive."
     />
     <meta name="twitter:image" content="https://gmaslist.com/og-image.png" />
-    <meta name="twitter:image:alt" content="Gmas List — cannabis deals worth the drive" />
+    <meta name="twitter:image:alt" content="Gmas List — is it worth the drive?" />
     <!-- Entity identity for search/AI crawlers (spec-ai-search-about-faq).
          WebSite + Organization only; Service + FAQPage live on the
          server-rendered /about page. No SearchAction: the site has no /search. -->
