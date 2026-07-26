@@ -138,6 +138,19 @@ describe('GET /llms.txt', () => {
       expect(res.text).toContain(`(https://gmaslist.com/compare/${categorySlug(cat)})`)
     }
   })
+
+  it('links one /store/<id> URL per live store under a Stores section', async () => {
+    const res = await request(app).get('/llms.txt')
+    const stores = JSON.parse(readFileSync(DATA_PATH, 'utf-8')).dispensaries as {
+      id: string
+      name: string
+    }[]
+    expect(stores.length).toBeGreaterThan(0)
+    expect(res.text).toContain('## Stores')
+    for (const s of stores) {
+      expect(res.text).toContain(`(https://gmaslist.com/store/${s.id})`)
+    }
+  })
 })
 
 describe('buildLlmsTxt (pure)', () => {
@@ -147,6 +160,30 @@ describe('buildLlmsTxt (pure)', () => {
     expect(txt).toContain('(https://gmaslist.com/about)')
     expect(txt).not.toContain('## Price comparisons')
     expect(txt).not.toContain('/compare/')
+  })
+
+  it('omits the Stores section when no stores are supplied', () => {
+    const txt = buildLlmsTxt(['Flower'])
+    expect(txt).not.toContain('## Stores')
+    expect(txt).not.toContain('/store/')
+  })
+
+  it('lists one line per store, de-duped by id, sorted, breaking no Markdown link', () => {
+    const txt = buildLlmsTxt(
+      [],
+      [
+        { id: 'remedy-tulalip', name: 'Remedy [Tulalip]' },
+        { id: 'remedy-tulalip', name: 'Remedy Tulalip dup' },
+        { id: 'kush21-everett', name: 'Kush21 Everett' },
+      ],
+    )
+    expect(txt).toContain('## Stores')
+    // De-duped by id.
+    expect([...txt.matchAll(/\/store\/remedy-tulalip\)/g)]).toHaveLength(1)
+    // Sorted by id: kush21 before remedy.
+    expect(txt.indexOf('/store/kush21-everett')).toBeLessThan(txt.indexOf('/store/remedy-tulalip'))
+    // Brackets stripped from the name so the [text](url) link can't break.
+    expect(txt).toContain('[Remedy Tulalip](https://gmaslist.com/store/remedy-tulalip)')
   })
 
   it('de-dupes slug collisions and drops empty slugs', () => {

@@ -15,12 +15,18 @@ import { dataRoute } from './routes/dataRoute.js'
 import { ingestRoute } from './routes/ingestRoute.js'
 import { disparitiesRoute, dealScopeRoute, disparityRollupsRoute, priceVsOwnMedianRoute } from './routes/valueRoute.js'
 import { refreshGasPrice } from './utils/refreshGasPrice.js'
+import { trailingSlashRedirect } from './middleware/trailingSlashRedirect.js'
 
 const app = express()
 const PORT = process.env.PORT || 3001
 const REFRESH_INTERVAL_MS = 24 * 60 * 60 * 1000
 
 app.use(express.json())
+
+// Collapse trailing-slash URL variants (/about/ -> /about) with a 301 before any
+// route runs (SEO audit 2026-07-26). Skips /, /api*, and non-GET methods; see the
+// middleware for the full guard list.
+app.use(trailingSlashRedirect)
 
 if (process.env.NODE_ENV !== 'production') {
   app.use(cors({ origin: 'http://localhost:5173' }))
@@ -101,7 +107,23 @@ if (process.env.NODE_ENV === 'production') {
   app.get('/', shellRoute)
   app.get('/index.html', shellRoute)
 
-  app.use(express.static(clientDist, { index: false }))
+  app.use(
+    express.static(clientDist, {
+      index: false,
+      // Vite content-hashes every file it emits under /assets/ (JS, CSS, and the
+      // externalized webp art — see client/vite.config.ts): a byte change ships a
+      // NEW filename, so the bytes at a given URL are immutable. Cache them for a
+      // year to kill the per-visit revalidation the SEO audit flagged (fingerprinted
+      // assets were served `max-age=0`). Non-hashed root files (favicon.svg, og
+      // image) keep static's default short cache — their names are stable, so a
+      // long immutable cache there could pin a stale favicon.
+      setHeaders: (res, filePath) => {
+        if (filePath.includes(`${path.sep}assets${path.sep}`)) {
+          res.setHeader('Cache-Control', 'public, max-age=31536000, immutable')
+        }
+      },
+    }),
+  )
 
   // SPA fallback: any non-API route returns the injected shell so client-side
   // routing works on deep links / refresh. Express 5 (path-to-regexp v8)
