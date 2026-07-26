@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express'
 import { GA_HEAD_SNIPPET } from './gaSnippet.js'
+import { socialMetaTags } from '../utils/socialMeta.js'
 
 // Server-rendered About + FAQ page (spec-ai-search-about-faq). This is the
 // site's AI-search entity surface: plain HTML straight from Express so non-JS
@@ -161,6 +162,14 @@ const ABOUT_HTML = `<!doctype html>
       content="Gmas List is an independent information service — not a cannabis seller — that helps Washington shoppers discover publicly available deals from licensed retailers and decide which savings are worth the drive."
     />
     <link rel="canonical" href="${CANONICAL_URL}" />
+    ${socialMetaTags({
+      title: 'About Gmas List | Cannabis Deals Worth the Drive',
+      description:
+        'Gmas List is an independent information service — not a cannabis seller — ' +
+        'that helps Washington shoppers discover publicly available deals from licensed ' +
+        'retailers and decide which savings are worth the drive.',
+      url: CANONICAL_URL,
+    })}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <script type="application/ld+json">${jsonLdScript(serviceJsonLd)}</script>
     <script type="application/ld+json">${jsonLdScript(faqJsonLd)}</script>

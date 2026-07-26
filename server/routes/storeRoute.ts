@@ -5,6 +5,7 @@ import { buildApiData } from '../utils/buildApiData.js'
 import { readPriceVsOwnMedian } from './valueRoute.js'
 import { AGE_NOTICE } from '../utils/renderShellBody.js'
 import { GA_HEAD_SNIPPET } from './gaSnippet.js'
+import { socialMetaTags } from '../utils/socialMeta.js'
 
 // Per-store SEO / AI-search pages (SEO plan Phase 1a / CAP-3 + CAP-4). One stable,
 // crawlable URL per licensed WA retailer — /store/<id> — server-rendered from the
@@ -214,6 +215,7 @@ export function renderStoreHtml(store: Dispensary, drops: PriceVsOwnMedianRow[] 
     <title>${escapeHtml(title)}</title>
     <meta name="description" content="${escapeAttr(description)}" />
     <link rel="canonical" href="${escapeAttr(canonicalUrl)}" />
+    ${socialMetaTags({ title, description, url: canonicalUrl })}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <script type="application/ld+json">${jsonLdScript(buildStoreJsonLd(store, canonicalUrl))}</script>
     <style>

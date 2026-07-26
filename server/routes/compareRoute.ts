@@ -5,6 +5,7 @@ import type { MatchReport } from '../utils/crossStoreValue.js'
 import type { Disparity } from '../types/index.js'
 import type { DisparityRollupsReport } from '../utils/disparityRollups.js'
 import type { DerivedEnvelope } from '../utils/derivedEnvelope.js'
+import { socialMetaTags } from '../utils/socialMeta.js'
 import {
   readDerived,
   EMPTY_DISPARITIES_ENVELOPE,
@@ -105,6 +106,7 @@ function page(opts: {
     <title>${escapeHtml(opts.title)}</title>
     <meta name="description" content="${escapeAttr(opts.description)}" />
     <link rel="canonical" href="${opts.canonical}" />
+    ${socialMetaTags({ title: opts.title, description: opts.description, url: opts.canonical })}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <script type="application/ld+json">${jsonLdScript(opts.jsonLd)}</script>
     <style>

@@ -29,6 +29,15 @@ describe('client/index.html entity markup', () => {
     expect(html).toContain('<link rel="canonical" href="https://gmaslist.com/" />')
   })
 
+  it('carries Open Graph + Twitter Card social meta for the homepage', () => {
+    // Mirrors the SSR pages' server/utils/socialMeta.ts output; og:image is the
+    // brand art at /og-image.png (small square -> summary card).
+    expect(html).toContain('<meta property="og:type" content="website" />')
+    expect(html).toContain('<meta property="og:url" content="https://gmaslist.com/" />')
+    expect(html).toContain('<meta property="og:image" content="https://gmaslist.com/og-image.png" />')
+    expect(html).toContain('<meta name="twitter:card" content="summary" />')
+  })
+
   it('emits parseable WebSite + Organization JSON-LD with no SearchAction', () => {
     const raw = extractJsonLdRaw()
     const jsonLd = JSON.parse(raw) as Record<string, unknown>

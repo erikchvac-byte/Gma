@@ -87,6 +87,10 @@ describe('GET /store/:slug', () => {
     expect(res.text).toContain('9226 34th Avenue NE, Tulalip, WA 98271')
     expect(res.text).toContain('15% Off Edibles')
     expect(res.text).toContain('<link rel="canonical" href="https://gmaslist.com/store/remedy-tulalip" />')
+    // Social meta: og:title carries the store name, og:url the canonical.
+    expect(res.text).toContain('<meta property="og:title" content="Remedy Tulalip')
+    expect(res.text).toContain('<meta property="og:url" content="https://gmaslist.com/store/remedy-tulalip" />')
+    expect(res.text).toContain('<meta name="twitter:card" content="summary" />')
   })
 
   it('emits LocalBusiness JSON-LD with structured address + geo, never Product/Offer', async () => {
