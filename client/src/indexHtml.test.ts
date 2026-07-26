@@ -23,6 +23,12 @@ describe('client/index.html entity markup', () => {
     expect(html).toContain('independent information service')
   })
 
+  it('declares a self-referencing homepage canonical (matches the sitemap `/` entry)', () => {
+    // The /about, /compare, /store SSR routes emit their own canonicals; this
+    // is the homepage's. Trailing slash must match the sitemap + Organization url.
+    expect(html).toContain('<link rel="canonical" href="https://gmaslist.com/" />')
+  })
+
   it('emits parseable WebSite + Organization JSON-LD with no SearchAction', () => {
     const raw = extractJsonLdRaw()
     const jsonLd = JSON.parse(raw) as Record<string, unknown>

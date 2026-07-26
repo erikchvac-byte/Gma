@@ -31,6 +31,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0E1417" />
     <title>gmas list — cannabis deals worth the drive</title>
+    <!-- Self-referencing canonical for the homepage. Matches the sitemap's `/`
+         entry and the Organization url; locks tracking-param / trailing-slash
+         variants to one URL. The /about, /compare, and /store SSR routes emit
+         their own canonicals — this closes the homepage gap. -->
+    <link rel="canonical" href="https://gmaslist.com/" />
     <meta
       name="description"
       content="Gmas List is an independent information service — not a cannabis seller — that helps Washington shoppers discover publicly available deals from licensed retailers and compare savings, distance, and convenience to find deals worth the drive."
