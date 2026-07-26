@@ -20,3 +20,15 @@ surface*, not logic — edit the array, never the matching code below it.
 **Context:** introduced by story `compliance-launch-gate` (ADR-035). This is the Track-A
 operator/counsel half of that work; the Track-B engineering posture already shipped.
 See `_bmad-output/implementation-artifacts/compliance-launch-gate.md`.
+
+## Refresh the social share-card preview caches
+
+**What to do:** When you want to see the link-preview card render, paste
+`https://gmaslist.com/` into Facebook's Sharing Debugger
+(https://developers.facebook.com/tools/debug/) or X's Card Validator and hit
+**"Scrape Again"** — they cache the old no-image result, so a stale fetch will keep
+showing no card until you force a re-scrape.
+
+**Context:** the Open Graph + Twitter Card meta and the branded 2400×1260 `og:image`
+are live (ADR-104). This is purely a one-time cache-bust on the third-party preview
+tools; nothing in the repo changes.
