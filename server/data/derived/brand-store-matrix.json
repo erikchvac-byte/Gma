@@ -557,7 +557,6 @@
         "tiers": [
           1,
           3.5,
-          7,
           28
         ],
         "cheapestCells": [
@@ -2655,7 +2654,7 @@
       {
         "brandKey": "bon bombs",
         "displayBrand": "BON BOMBS",
-        "productCount": 67,
+        "productCount": 70,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -2674,7 +2673,7 @@
       {
         "brandKey": "bondi farms",
         "displayBrand": "Bondi Farms",
-        "productCount": 31,
+        "productCount": 32,
         "storesCarrying": [
           "jet-cannabis-everett"
         ],
@@ -6865,7 +6864,7 @@
       {
         "brandKey": "doozies",
         "displayBrand": "Doozies",
-        "productCount": 100,
+        "productCount": 105,
         "storesCarrying": [
           "cannazone-bellingham",
           "cannazone-old-hwy-99",
@@ -7623,7 +7622,7 @@
       {
         "brandKey": "emerald twist",
         "displayBrand": "Emerald Twist",
-        "productCount": 36,
+        "productCount": 37,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway"
@@ -7894,7 +7893,6 @@
           "the-joint-everett"
         ],
         "tiers": [
-          2.5,
           4.5,
           14,
           28
@@ -9048,17 +9046,6 @@
           {
             "matchKey": "fifty fold|doh haze lemon super|sativa|flower",
             "displayName": "Super Lemon Haze (DOH)",
-            "weightGrams": 3.5,
-            "lowPrice": 40,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          },
-          {
-            "matchKey": "fifty fold|doh lollipopz|indica|flower",
-            "displayName": "Lollipopz - (DOH)",
             "weightGrams": 3.5,
             "lowPrice": 40,
             "cheapestStores": [
@@ -12586,7 +12573,7 @@
       {
         "brandKey": "green revolution",
         "displayBrand": "Green Revolution",
-        "productCount": 147,
+        "productCount": 150,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -17604,17 +17591,6 @@
             "storesCarrying": 2
           },
           {
-            "matchKey": "mama j s|bubblegum gelato pr|indica|pre rolls",
-            "displayName": "Mama J's: Bubblegum Gelato - PR 5pk",
-            "weightGrams": 5,
-            "lowPrice": 10,
-            "cheapestStores": [
-              "kush21-everett-evergreen",
-              "kushmart-north"
-            ],
-            "storesCarrying": 2
-          },
-          {
             "matchKey": "mama j s|de dulce uva|hybrid|flower",
             "displayName": "Dulce de UVA Flower (Mama J's)",
             "weightGrams": 14,
@@ -17764,10 +17740,11 @@
       {
         "brandKey": "melt away",
         "displayBrand": "Melt Away",
-        "productCount": 9,
+        "productCount": 10,
         "storesCarrying": [
           "cannazone-old-hwy-99",
           "hangar-420-everett",
+          "hangar-420-west",
           "happy-time-mt-vernon",
           "the-joint-everett"
         ],
@@ -26246,7 +26223,7 @@
       {
         "brandKey": "sky high gardens",
         "displayBrand": "Sky High Gardens",
-        "productCount": 149,
+        "productCount": 150,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -29501,17 +29478,6 @@
             "storesCarrying": 2
           },
           {
-            "matchKey": "sweetwater farms|muerte santa swf|n a|flower",
-            "displayName": "SWF Santa Muerte",
-            "weightGrams": 3.5,
-            "lowPrice": 54,
-            "cheapestStores": [
-              "hangar-420-everett",
-              "hangar-420-west"
-            ],
-            "storesCarrying": 2
-          },
-          {
             "matchKey": "sweetwater farms|doh huckleberry pie|n a|flower",
             "displayName": "Huckleberry Pie (DOH)",
             "weightGrams": 7,
@@ -31717,7 +31683,7 @@
       {
         "brandKey": "viking",
         "displayBrand": "Viking",
-        "productCount": 31,
+        "productCount": 32,
         "storesCarrying": [
           "happy-time-mt-vernon",
           "the-joint-everett"
@@ -32521,16 +32487,6 @@
               "cannazone-bellingham"
             ],
             "storesCarrying": 2
-          },
-          {
-            "matchKey": "zen|fiestaz i|indica|flower",
-            "displayName": "Zen: Fiestaz (I)",
-            "weightGrams": 3.5,
-            "lowPrice": 42,
-            "cheapestStores": [
-              "cannazone-bellingham"
-            ],
-            "storesCarrying": 2
           }
         ]
       },
@@ -32573,14 +32529,14 @@
     ],
     "totalBrands": 1029,
     "multiStoreBrandCount": 542,
-    "cheapestCellCount": 1714,
-    "nullBrandProductCount": 1490,
+    "cheapestCellCount": 1710,
+    "nullBrandProductCount": 1499,
     "unmatchedProductCount": 0
   },
   "excluded": [
     {
       "reason": "nullBrand",
-      "count": 1490
+      "count": 1499
     },
     {
       "reason": "unmatchedProduct",
@@ -32590,7 +32546,7 @@
   "coverage": {
     "totalBrands": 1029,
     "multiStoreBrandCount": 542,
-    "cheapestCellCount": 1714
+    "cheapestCellCount": 1710
   },
-  "generatedAt": "2026-07-26T11:00:07.416Z"
+  "generatedAt": "2026-07-27T11:00:07.637Z"
 }
