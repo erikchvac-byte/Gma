@@ -1,7 +1,9 @@
 import { describe, it, expect } from 'vitest'
 import {
   hostnameMatches,
+  urlToDomain,
   checkCitation,
+  rivalDomainRanking,
   summarize,
   type CitationCheck,
   type EngineAnswer,
@@ -67,6 +69,51 @@ describe('checkCitation', () => {
     const v = checkCitation(answer({ answerText: 'Try Weedmaps or Leafly.' }))
     expect(v.mentionedInText).toBe(false)
   })
+
+  it('records all cited domains (deduped, www-stripped), incl. our own', () => {
+    const v = checkCitation(
+      answer({
+        citedUrls: [
+          'https://www.weedmaps.com/x',
+          'https://weedmaps.com/y',
+          'https://leafly.com/z',
+          'https://gmaslist.com/compare',
+          'not a url',
+        ],
+      }),
+    )
+    expect(v.citedDomains).toEqual(['weedmaps.com', 'leafly.com', 'gmaslist.com'])
+  })
+})
+
+describe('urlToDomain', () => {
+  it('lowercases and strips a leading www.', () => {
+    expect(urlToDomain('https://WWW.Weedmaps.com/deals')).toBe('weedmaps.com')
+  })
+  it('keeps non-www subdomains', () => {
+    expect(urlToDomain('https://blog.leafly.com/a')).toBe('blog.leafly.com')
+  })
+  it('returns empty string for an unparseable URL', () => {
+    expect(urlToDomain('nope')).toBe('')
+  })
+})
+
+describe('rivalDomainRanking', () => {
+  it('ranks rivals by questions cited in, excluding our own domain and errored checks', () => {
+    const checks = [
+      check({ questionId: 'a', citedDomains: ['weedmaps.com', 'leafly.com', 'gmaslist.com'] }),
+      check({ questionId: 'b', citedDomains: ['weedmaps.com', 'dutchie.com'] }),
+      check({ questionId: 'c', citedDomains: ['weedmaps.com'], error: 'boom' }), // errored → ignored
+    ]
+    const ranked = rivalDomainRanking(checks)
+    expect(ranked).toEqual([
+      { domain: 'weedmaps.com', questions: 2 },
+      { domain: 'dutchie.com', questions: 1 },
+      { domain: 'leafly.com', questions: 1 },
+    ])
+    // our own domain never appears in the rival list
+    expect(ranked.some((r) => r.domain === 'gmaslist.com')).toBe(false)
+  })
 })
 
 function check(over: Partial<CitationCheck>): CitationCheck {
@@ -79,6 +126,7 @@ function check(over: Partial<CitationCheck>): CitationCheck {
     cited: false,
     mentionedInText: false,
     matchedUrls: [],
+    citedDomains: [],
     citationCount: 0,
     answerSnippet: '',
     ...over,
@@ -100,5 +148,16 @@ describe('summarize', () => {
     expect(out).toContain('mentioned-only in 1')
     expect(out).toContain('1 error(s)')
     expect(out).toContain('✓ "Q?" → https://gmaslist.com/a')
+  })
+
+  it('includes a "who\'s winning" rival roll-up excluding our own domain', () => {
+    const out = summarize([
+      check({ questionId: 'a', cited: true, citedDomains: ['gmaslist.com', 'weedmaps.com'] }),
+      check({ questionId: 'b', citedDomains: ['weedmaps.com', 'leafly.com'] }),
+    ])
+    expect(out).toContain("Who's winning the answers")
+    expect(out).toContain('2/2  weedmaps.com')
+    expect(out).toContain('1/2  leafly.com')
+    expect(out).not.toContain('gmaslist.com') // our own domain excluded from the rival list
   })
 })
