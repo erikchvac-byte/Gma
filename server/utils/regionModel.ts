@@ -17,6 +17,15 @@ import type { RegionalPriceFloorReport, RegionalFloor } from './regionalPriceFlo
 // - `floorPrice` passes through verbatim (reconciles with disparities.json).
 // - A region is only minted for a cluster of >= MIN_REGION_STORES stores: a lone
 //   store is not a cross-store comparison, and "cheapest across 1 store" reads wrong.
+// - PAGE-LEVEL STALENESS GUARD (ADR-107): a floor names the store(s) tied at the min
+//   price. If a named store's extraction has gone `failed`/`stale`, its current price is
+//   untrustworthy — the same reason /store price-drops drop a stale store (storeDrops).
+//   So when a store status map is supplied, each floor's holders are narrowed to the
+//   NON-dead ones (a fresh store still vouches for the tied price), and a floor whose
+//   holders are ALL dead is dropped entirely — a dead store can never be crowned
+//   "cheapest." This is a partial guard: it catches a dark store, NOT a store with a
+//   today-present-but-wrong price. The complete, engine-wide fix is a today-freshness
+//   gate at buildMatchReport (the queued oracle-freshness story), which supersedes this.
 
 // A single-store cluster is not a comparison — exclude it from geo pages. (Oak
 // Harbor's 1-store cluster is the live example this guards against.)
@@ -68,6 +77,13 @@ function dominantCity(memberIds: string[], cityById: Map<string, string | null>)
   return [...freq.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))[0][0]
 }
 
+// A store whose extraction has failed or gone stale carries an untrustworthy current
+// price (mirrors the /store price-drop gate). Unknown/absent status is NOT dead
+// (fail-open: missing status info must not hide a real floor).
+export function isDeadStatus(status: string | undefined): boolean {
+  return status === 'stale' || status === 'failed'
+}
+
 // Guard the fields a floor is rendered/reduced through so one shapeless row is
 // skipped (never a 500), mirroring compareRoute.isRenderableDisparity.
 function isRenderableFloor(f: RegionalFloor): boolean {
@@ -91,6 +107,7 @@ function isRenderableFloor(f: RegionalFloor): boolean {
 export function buildRegions(
   report: RegionalPriceFloorReport | undefined,
   cityById: Map<string, string | null>,
+  statusById?: Map<string, string>,
 ): Region[] {
   const clusters = Array.isArray(report?.clusters) ? report!.clusters : []
   const regions: Region[] = []
@@ -118,7 +135,23 @@ export function buildRegions(
       ),
     ].sort((a, b) => a.localeCompare(b))
 
-    const floors = (Array.isArray(c.floors) ? c.floors : []).filter(isRenderableFloor)
+    // Shape-guard each floor, then (when statuses are known) apply the staleness guard:
+    // narrow tied holders to non-dead stores and drop any floor whose holders are all dead.
+    const floors: RegionalFloor[] = []
+    for (const f of Array.isArray(c.floors) ? c.floors : []) {
+      if (!isRenderableFloor(f)) continue
+      if (!statusById) {
+        floors.push(f)
+        continue
+      }
+      const freshHolders = f.floorDispensaryIds.filter((id) => !isDeadStatus(statusById.get(id)))
+      if (freshHolders.length === 0) continue // every store tied at this floor is dark — a dead price
+      floors.push(
+        freshHolders.length === f.floorDispensaryIds.length
+          ? f
+          : { ...f, floorDispensaryIds: freshHolders },
+      )
+    }
 
     const counts = new Map<string, number>()
     for (const f of floors) counts.set(f.category, (counts.get(f.category) ?? 0) + 1)
