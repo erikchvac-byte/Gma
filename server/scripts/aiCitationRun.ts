@@ -8,7 +8,7 @@
 //
 // Engines are PLUGGABLE (matches the "data source is a commodity" instinct). Today:
 //   - anthropic : Claude + the server-side web_search tool, which returns cited sources.
-//                 Needs ANTHROPIC_API_KEY (put it in server/.env — gitignored).
+//                 Needs ANTHROPIC_API_KEY (put it in the repo-root .env — gitignored).
 //   - dry-run   : keyless placeholder so the whole pipeline runs at zero cost.
 // Perplexity / OpenAI adapters can be added as more CitationEngine implementations.
 //
@@ -20,7 +20,7 @@
 //
 // See project_reach-launch-plan (Phase 0, item 1) and ADR-106.
 
-import 'dotenv/config'
+import { config as loadEnv } from 'dotenv'
 import fs from 'node:fs'
 import path from 'node:path'
 import os from 'node:os'
@@ -35,6 +35,12 @@ import {
 } from './citationMonitor.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
+// The project's .env lives at the REPO ROOT (where EIA_API_KEY etc. already live), not in
+// server/. This script runs with cwd=server/ (see ai-citation-local.ps1), so a bare
+// `dotenv/config` (which reads ./.env) would miss it. Load the root .env by an absolute path
+// resolved from this file's location, so ANTHROPIC_API_KEY is picked up regardless of cwd.
+loadEnv({ path: path.resolve(__dirname, '../../.env') })
 
 const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages'
 // Haiku 4.5, not Opus: this task is "search the web and list which sources were cited" —
