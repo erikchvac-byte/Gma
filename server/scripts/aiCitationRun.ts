@@ -228,6 +228,7 @@ async function main(): Promise<void> {
           cited: verdict.cited,
           mentionedInText: verdict.mentionedInText,
           matchedUrls: verdict.matchedUrls,
+          citedDomains: verdict.citedDomains,
           citationCount: answer.citationCount,
           answerSnippet: answer.answerText.slice(0, 200),
         }
@@ -237,6 +238,7 @@ async function main(): Promise<void> {
           cited: false,
           mentionedInText: false,
           matchedUrls: [],
+          citedDomains: [],
           citationCount: 0,
           answerSnippet: '',
           error: err instanceof Error ? err.message : String(err),

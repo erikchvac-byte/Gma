@@ -42,6 +42,9 @@ export interface CitationCheck {
   cited: boolean // hard signal: gmaslist.com appears in the engine's cited SOURCES
   mentionedInText: boolean // soft signal: the brand appears in the answer text
   matchedUrls: string[]
+  // Every distinct source domain the answer cited (deduped, www-stripped), incl. our own
+  // if present. This is the "who's winning the answer instead of us" record.
+  citedDomains: string[]
   citationCount: number
   answerSnippet: string
   error?: string
@@ -61,14 +64,26 @@ export function hostnameMatches(url: string, domain = TARGET_DOMAIN): boolean {
   return host === d || host.endsWith(`.${d}`)
 }
 
+// Reduce a URL to a bare registrable-ish hostname (lowercased, leading "www." stripped) for
+// tallying who gets cited. Returns '' for a URL that won't parse, so callers can drop it.
+export function urlToDomain(url: string): string {
+  try {
+    return new URL(url).hostname.toLowerCase().replace(/^www\./, '')
+  } catch {
+    return ''
+  }
+}
+
 export interface CitationVerdict {
   cited: boolean
   matchedUrls: string[]
   mentionedInText: boolean
+  // All distinct source domains the answer cited (deduped, www-stripped), our own included.
+  citedDomains: string[]
 }
 
 // The core decision: given an engine's answer, was gmaslist.com cited (hard) and/or
-// mentioned in prose (soft)? Pure and deterministic.
+// mentioned in prose (soft)? Also which domains it cited. Pure and deterministic.
 export function checkCitation(
   answer: EngineAnswer,
   domain = TARGET_DOMAIN,
@@ -77,11 +92,34 @@ export function checkCitation(
   const matchedUrls = Array.from(
     new Set(answer.citedUrls.filter((u) => hostnameMatches(u, domain))),
   )
+  const citedDomains = Array.from(
+    new Set(answer.citedUrls.map(urlToDomain).filter((h) => h.length > 0)),
+  )
   return {
     cited: matchedUrls.length > 0,
     matchedUrls,
     mentionedInText: answer.answerText.toLowerCase().includes(brandNeedle.toLowerCase()),
+    citedDomains,
   }
+}
+
+// Rank the domains cited across a run, EXCLUDING our own, by how many questions each appeared
+// in. This is the competitive picture: who is winning the AI answers we want to win. Pure.
+export function rivalDomainRanking(
+  checks: CitationCheck[],
+  domain = TARGET_DOMAIN,
+): Array<{ domain: string; questions: number }> {
+  const counts = new Map<string, number>()
+  for (const c of checks) {
+    if (c.error) continue
+    for (const d of c.citedDomains ?? []) {
+      if (d === domain) continue
+      counts.set(d, (counts.get(d) ?? 0) + 1)
+    }
+  }
+  return [...counts.entries()]
+    .map(([d, n]) => ({ domain: d, questions: n }))
+    .sort((a, b) => b.questions - a.questions || a.domain.localeCompare(b.domain))
 }
 
 // A short, human-readable roll-up of a run, printed after the log is written.
@@ -111,6 +149,17 @@ export function summarize(checks: CitationCheck[]): string {
     }
     for (const c of errored) {
       lines.push(`  ! "${c.question}" — ${c.error}`)
+    }
+  }
+
+  // Who's winning the answers instead of us — ranked across the whole run.
+  const answered = checks.filter((c) => !c.error).length
+  const rivals = rivalDomainRanking(checks)
+  if (rivals.length > 0 && answered > 0) {
+    lines.push('')
+    lines.push(`Who's winning the answers (domains cited, excluding us; across ${answered} question(s)):`)
+    for (const { domain, questions } of rivals.slice(0, 12)) {
+      lines.push(`  ${String(questions).padStart(2)}/${answered}  ${domain}`)
     }
   }
   return lines.join('\n')
