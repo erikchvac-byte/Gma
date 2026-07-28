@@ -60,6 +60,7 @@ export interface Region {
   label: string // dominant city display, e.g. "Bellingham"
   cities: string[] // distinct member cities, sorted — honest coverage disclosure
   clusterId: string
+  memberDispensaryIds: string[] // all cluster member store ids — lets a /store map to its area
   storeCount: number
   floors: RegionalFloor[] // renderable floors only
   categories: RegionCategory[] // categories present, by floor count desc then name
@@ -164,6 +165,7 @@ export function buildRegions(
       label,
       cities,
       clusterId: typeof c.clusterId === 'string' ? c.clusterId : slug,
+      memberDispensaryIds: [...c.memberDispensaryIds],
       storeCount,
       floors,
       categories,
@@ -176,6 +178,13 @@ export function buildRegions(
 export function findRegion(regions: Region[], slug: string): Region | undefined {
   const wanted = slug.toLowerCase()
   return regions.find((r) => r.slug === wanted)
+}
+
+// The region a store belongs to (its geo cluster), or undefined if the store is in
+// no >= MIN_REGION_STORES / nameable cluster. Lets a /store page link to its area's
+// cheapest-price pages (ADR-107).
+export function regionForStore(regions: Region[], storeId: string): Region | undefined {
+  return regions.find((r) => r.memberDispensaryIds.includes(storeId))
 }
 
 // This region's floors for one category, cheapest first (then name, then weight)

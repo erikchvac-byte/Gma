@@ -38,6 +38,7 @@ function bellingham(over: Partial<Region> = {}): Region {
     label: 'Bellingham',
     cities: ['Bellingham'],
     clusterId: '2020-solutions-north-bellingham',
+    memberDispensaryIds: ['2020-solutions-north-bellingham', 'star-buds-bellingham'],
     storeCount: 5,
     floors: over.floors ?? [
       floor({ displayName: 'Cheap Wax', floorPrice: 8, floorDispensaryIds: ['a', 'b'] }),

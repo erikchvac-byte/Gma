@@ -3,6 +3,8 @@ import type { Dispensary } from '../../client/src/types/index.js'
 import type { PriceVsOwnMedianRow } from '../utils/priceVsOwnMedian.js'
 import { buildApiData } from '../utils/buildApiData.js'
 import { readPriceVsOwnMedian } from './valueRoute.js'
+import { readRegions } from './compareRoute.js'
+import { parseCity, regionForStore, type Region } from '../utils/regionModel.js'
 import { AGE_NOTICE } from '../utils/renderShellBody.js'
 import { GA_HEAD_SNIPPET } from './gaSnippet.js'
 import { socialMetaTags } from '../utils/socialMeta.js'
@@ -159,13 +161,85 @@ const PAGE_STYLE = `body {
       h2 { font-size: 1.2rem; margin-top: 2.25rem; }
       a { color: #35c2a0; }
       .addr { color: #b6c2c6; }
+      .lede { border-left: 3px solid #35c2a0; padding-left: 1rem; color: #d7e0e3; }
       .notice { margin-top: 2.5rem; font-size: 0.85rem; color: #8a9aa0; }`
+
+// "Month D, YYYY" in Pacific (the app's TZ) from a store's lastFetchedAt. Empty
+// string when unparseable OR before 2021 (the never-ingested seed sentinel), so the
+// page never prints a false "as of" date. Mirrors compareRoute.asOfPhrase's posture.
+function asOfDate(iso: unknown): string {
+  if (typeof iso !== 'string') return ''
+  const t = Date.parse(iso)
+  if (Number.isNaN(t) || t < Date.UTC(2021, 0, 1)) return ''
+  return new Date(t).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    timeZone: 'America/Los_Angeles',
+  })
+}
+
+function plural(n: number, singular: string): string {
+  return `${n} ${singular}${n === 1 ? '' : 's'}`
+}
+
+// One extractable sentence an AI answer engine can lift verbatim as THE answer to
+// "deals at <store>" — honest counts only (active deals + renderable price drops,
+// both already computed for this page), city and freshness stated when known.
+export function buildDirectAnswer(
+  store: Dispensary,
+  dealCount: number,
+  dropCount: number,
+): string {
+  const asOf = asOfDate(store.lastFetchedAt)
+  const prefix = asOf ? `As of ${asOf}, ` : ''
+  const city = parseCity(store.address)
+  const place = city ? `a licensed cannabis retailer in ${city}, WA` : 'a licensed Washington cannabis retailer'
+  if (dealCount === 0 && dropCount === 0) {
+    return (
+      `${prefix}${store.name} — ${place} — has no active deals right now. ` +
+      `Deals are set by the retailer and change throughout the day; check back later.`
+    )
+  }
+  const parts: string[] = [plural(dealCount, 'active deal')]
+  if (dropCount > 0) parts.push(`${plural(dropCount, 'product')} priced below their recent usual`)
+  const has = parts.length === 2 ? `${parts[0]} and ${parts[1]}` : parts[0]
+  return (
+    `${prefix}${store.name} — ${place} — has ${has}. ` +
+    `See what is on special today and decide whether it is worth the drive.`
+  )
+}
 
 // Pure page builder (exported for tests). `drops` are this store's honest price drops (already
 // store-filtered + status-gated by the caller); renderableStoreDrops is re-applied here so a
 // direct caller (test) still gets the display-honesty gate. Defaults to none so the deals-only
 // page is unchanged when the price-vs-own-median fact is empty.
-export function renderStoreHtml(store: Dispensary, drops: PriceVsOwnMedianRow[] = []): string {
+// Internal links from a store to its geo area's cheapest-price pages (ADR-107). The
+// HONEST form of "cheapest <category> here": it points at the cross-store regional
+// floors (Gate-1-safe), not a per-store menu category-min (which would need product
+// data Render does not hold and brush the whole-catalog gate). Empty when the store
+// is in no nameable >= 2-store cluster, or that region currently has no live floors.
+export function renderAreaLinksHtml(region: Region | undefined): string {
+  if (!region || region.categories.length === 0) return ''
+  const items = region.categories
+    .map(
+      (c) =>
+        `        <li><a href="/compare/${c.slug}/${region.slug}">Cheapest ${escapeHtml(c.category)} in the ${escapeHtml(region.label)} area</a></li>`,
+    )
+    .join('\n')
+  return `<h2>Cheapest in the ${escapeHtml(region.label)} area</h2>
+      <p>Compare prices against nearby licensed ${escapeHtml(region.label)}-area stores:</p>
+      <ul>
+${items}
+        <li><a href="/compare/${region.slug}">All ${escapeHtml(region.label)}-area price comparisons</a></li>
+      </ul>`
+}
+
+export function renderStoreHtml(
+  store: Dispensary,
+  drops: PriceVsOwnMedianRow[] = [],
+  region?: Region,
+): string {
   const canonicalUrl = `${BASE_URL}/store/${store.id}`
   const title = `${store.name} — Cannabis Deals & Location | Gmas List`
   const description =
@@ -227,6 +301,7 @@ export function renderStoreHtml(store: Dispensary, drops: PriceVsOwnMedianRow[] 
       <p><a href="/">&larr; Back to the deals</a></p>
 
       <h1>${escapeHtml(store.name)}</h1>
+      <p class="lede">${escapeHtml(buildDirectAnswer(store, store.deals.length, renderableDrops.length))}</p>
       ${addressHtml}
       ${siteLinkHtml}
 
@@ -234,6 +309,8 @@ export function renderStoreHtml(store: Dispensary, drops: PriceVsOwnMedianRow[] 
       ${dealsHtml}
 
       ${dropsHtml}
+
+      ${renderAreaLinksHtml(region)}
 
       <p class="notice">${escapeHtml(AGE_NOTICE)}</p>
       <p class="notice">
@@ -291,8 +368,18 @@ export function storeRoute(req: Request, res: Response) {
     return
   }
 
+  // The store's geo area (ADR-107), for the "cheapest in the <area>" internal links.
+  // Read fail-soft: a missing/malformed regional artifact yields no region → the
+  // section simply doesn't render (readRegions already fail-softs, never throws).
+  let region
+  try {
+    region = regionForStore(readRegions().regions, store.id)
+  } catch {
+    region = undefined
+  }
+
   // Deals churn hourly, so keep this short-lived — long enough to absorb crawl
   // bursts, short enough that the "active today" list never goes badly stale.
   res.set('Cache-Control', 'public, max-age=300')
-  res.type('html').send(renderStoreHtml(store, storeDrops(store)))
+  res.type('html').send(renderStoreHtml(store, storeDrops(store), region))
 }
