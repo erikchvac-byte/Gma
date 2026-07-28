@@ -27,3 +27,6 @@ products.db-*
 
 # GIMP working files — art source, never the repo (see file-size wall, ADR-077)
 *.xcf
+
+# Codex/other-agent local MCP config — contains live API bearer tokens, machine-specific. NEVER commit.
+.codex/
