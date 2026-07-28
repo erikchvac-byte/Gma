@@ -4,10 +4,14 @@
   One-time setup for the daily AI-citation monitor (Phase-0 reach instrumentation, ADR-106).
 
 .DESCRIPTION
-  Idempotent. Run once from your main Happy checkout. It registers a daily Windows Scheduled Task
+  Idempotent. Run once from your main Happy checkout. It registers a WEEKLY Windows Scheduled Task
   that runs scripts/ai-citation-local.ps1 against THIS checkout (no worktree -- the monitor
   commits nothing and should pick up your edits to citation-questions.json).
-  -StartWhenAvailable means a missed day (PC off) simply runs at next wake.
+  -StartWhenAvailable means a missed run (PC off) simply runs at next wake.
+
+  Cadence is WEEKLY by design (ADR-106): AI-engine citations for a near-zero-traffic site move on
+  a weeks-to-months timescale, and LLM answers vary run-to-run, so daily sampling logs noise, not
+  signal. Bump to more frequent once you actually start getting cited and want to estimate a rate.
 
   The task runs as the current user when logged on (no stored credentials / prompts). Re-running
   this script is safe: the task is replaced (-Force).
@@ -27,7 +31,8 @@
 param(
     [string]$RepoPath,
     [string]$TaskName = 'GmaS AI Citation Monitor',
-    [string]$TaskTime = '05:00'
+    [string]$TaskTime = '05:00',
+    [string]$TaskDay  = 'Monday'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -45,15 +50,15 @@ if (-not (Test-Path $runner)) { throw "Runner not found at '$runner'" }
 Write-Host "Repo:   $RepoPath"
 Write-Host "Runner: $runner"
 
-if ($PSCmdlet.ShouldProcess($TaskName, "register daily scheduled task at $TaskTime")) {
+if ($PSCmdlet.ShouldProcess($TaskName, "register weekly scheduled task ($TaskDay $TaskTime)")) {
     $action = New-ScheduledTaskAction -Execute 'powershell.exe' `
         -Argument ('-NoProfile -ExecutionPolicy Bypass -File "{0}"' -f $runner)
-    $trigger  = New-ScheduledTaskTrigger -Daily -At $TaskTime
+    $trigger  = New-ScheduledTaskTrigger -Weekly -DaysOfWeek $TaskDay -At $TaskTime
     $settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -ExecutionTimeLimit (New-TimeSpan -Minutes 30)
     Register-ScheduledTask -TaskName $TaskName -Action $action -Trigger $trigger -Settings $settings `
-        -Description 'ADR-106: daily AI-citation monitor -- asks AI engines the WA-deal target questions and logs whether gmaslist.com is cited. Local-only; commits nothing.' `
+        -Description 'ADR-106: weekly AI-citation monitor -- asks AI engines the WA-deal target questions and logs whether gmaslist.com is cited. Local-only; commits nothing.' `
         -Force | Out-Null
-    Write-Host "Registered scheduled task '$TaskName' (daily $TaskTime, StartWhenAvailable)"
+    Write-Host "Registered scheduled task '$TaskName' (weekly $TaskDay $TaskTime, StartWhenAvailable)"
 }
 
 Write-Host ''

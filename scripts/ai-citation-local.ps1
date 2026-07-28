@@ -19,7 +19,7 @@
   still executes in dry-run mode (zero cost) and logs non-cited placeholders, proving the pipeline.
 
 .NOTES
-  Set up the daily task once with scripts/setup-ai-citation-task.ps1 (needs your go-ahead).
+  Set up the weekly task once with scripts/setup-ai-citation-task.ps1 (needs your go-ahead).
   Manual run:  pwsh -NoProfile -File scripts/ai-citation-local.ps1
   Dry run:     pwsh -NoProfile -File scripts/ai-citation-local.ps1 -Dry
 #>

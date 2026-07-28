@@ -14,7 +14,8 @@
 //
 // Env:
 //   ANTHROPIC_API_KEY  - enables the anthropic engine (else it is skipped)
-//   CITATION_MODEL     - Claude model id (default claude-opus-4-8; must support web_search_20260209)
+//   CITATION_MODEL     - Claude model id (default claude-haiku-4-5; if you set an Opus/Sonnet
+//                        model, switch the web_search tool version accordingly — see ask())
 //   CITATION_LOG_PATH  - JSONL log path (default ~/GmaS-data/citation-log.jsonl)
 //
 // See project_reach-launch-plan (Phase 0, item 1) and ADR-106.
@@ -36,7 +37,11 @@ import {
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages'
-const DEFAULT_MODEL = 'claude-opus-4-8'
+// Haiku 4.5, not Opus: this task is "search the web and list which sources were cited" —
+// pure retrieval + extraction, no deep reasoning — so the cheapest capable model wins
+// (~5x cheaper tokens than Opus). Override with CITATION_MODEL if you ever want a heavier
+// model, but note the web_search tool version below must match the model's support.
+const DEFAULT_MODEL = 'claude-haiku-4-5'
 const REQUEST_GAP_MS = 1500 // gentle pacing between calls to avoid rate limits
 
 // ---- config loading (pure-ish) ----
@@ -105,7 +110,12 @@ const anthropicEngine: CitationEngine = {
 
     const tools = [
       {
-        type: 'web_search_20260209',
+        // Basic web_search variant: supported by Haiku 4.5 (the default model). The newer
+        // web_search_20260209 (dynamic filtering) is Opus-4.6+/Sonnet-only and would 400 on
+        // Haiku. Result-block shape (web_search_tool_result -> web_search_result.url) is
+        // identical, so citation extraction below is unchanged. If you override CITATION_MODEL
+        // to an Opus/Sonnet model you may switch this back to web_search_20260209.
+        type: 'web_search_20250305',
         name: 'web_search',
         max_uses: 5,
         user_location: {
