@@ -146,6 +146,43 @@ export function evaluateAlert(
   return { alert: totalFailure || staleStores.length > 0, totalFailure, freshCount, staleStores }
 }
 
+// Fetch one derived surface's honesty envelope and decide whether its derive-run
+// freshness warrants an alert. Returns true on stale/never-derived/future-skew, on a
+// shape regression (no generatedAt string), or on a fetch failure — each logged with
+// its cause and the URL, so a divergence between surfaces is diagnosable. Never throws
+// (a fetch failure resolves to true), so the caller can OR results across URLs.
+async function checkDerivedFreshness(url: string, nowMs: number): Promise<boolean> {
+  try {
+    const res = await axios.get<{ generatedAt?: unknown }>(url, { timeout: 30000 })
+    const generatedAt = res.data?.generatedAt
+    if (typeof generatedAt !== 'string') {
+      // Fetch succeeded but the body isn't the envelope — a shape regression, not a
+      // network failure; diagnose it as such.
+      console.error(`[alertGate] ALERT: ${url} responded without a generatedAt string (envelope shape regression?)`)
+      return true
+    }
+    const freshness = evaluateRunFreshness(generatedAt, nowMs)
+    if (freshness.neverDerived) {
+      console.error(`[alertGate] ALERT: ${url} never-derived (empty fallback / unparseable generatedAt)`)
+    } else {
+      const ageHours = (freshness.ageMs / 3_600_000).toFixed(1)
+      const band = freshness.futureSkew ? 'FUTURE-SKEW' : freshness.stale ? 'STALE' : freshness.fresh ? 'fresh' : 'late-but-graceful'
+      console.log(`[alertGate] deriveFreshness ${url} band=${band} age=${ageHours}h stale=${freshness.stale}`)
+      if (freshness.stale) console.error(`[alertGate] ALERT: ${url} stale (~two missed daily runs)`)
+      if (freshness.futureSkew) {
+        console.error(`[alertGate] ALERT: ${url} generatedAt is implausibly far in the future (clock skew?)`)
+      }
+    }
+    return freshness.alert
+  } catch (err) {
+    // Can't read the derived surface → alert-worthy (same posture as DATA_URL fetch
+    // failure). Returning true (not throwing) lets a simultaneous store-ingest alert
+    // still print its own cause before the combined exit.
+    console.error(`[alertGate] could not fetch ${url}:`, (err as Error).message)
+    return true
+  }
+}
+
 async function main(): Promise<void> {
   const dataUrl = process.env.DATA_URL
   if (!dataUrl) {
@@ -175,37 +212,25 @@ async function main(): Promise<void> {
   // (decision D — one alert system, no new schedule). Reads generatedAt off the served
   // honesty envelope; a stalled derive reds this run's email. The log line names the cause
   // unambiguously so the cross-pipeline coupling stays diagnosable.
-  const freshnessUrl = process.env.FRESHNESS_URL ?? 'https://gmaslist.com/api/value/disparities'
+  //
+  // ADR-107: check MULTIPLE derived surfaces, not just disparities. The geo /compare pages
+  // are served from regional-price-floor.json; disparities.json alone going fresh would NOT
+  // catch that file failing to republish on its own (the canary blind spot). Both are
+  // written by the same derive run, so normally they agree — checking both closes the gap
+  // where they diverge. FRESHNESS_URL still overrides the primary (back-compat / preview
+  // origins); the sibling URL is derived from it so both stay on the same origin.
+  const primaryFreshnessUrl =
+    process.env.FRESHNESS_URL ?? 'https://gmaslist.com/api/value/disparities'
+  const siblingFreshnessUrl = primaryFreshnessUrl.replace(
+    /\/api\/value\/[^/?#]+/,
+    '/api/value/regional-price-floor',
+  )
+  const freshnessUrls = [primaryFreshnessUrl]
+  if (siblingFreshnessUrl !== primaryFreshnessUrl) freshnessUrls.push(siblingFreshnessUrl)
+
   let freshnessAlert = false
-  try {
-    const res = await axios.get<{ generatedAt?: unknown }>(freshnessUrl, { timeout: 30000 })
-    const generatedAt = res.data?.generatedAt
-    if (typeof generatedAt !== 'string') {
-      // Fetch succeeded but the body isn't the envelope — a shape regression, not a
-      // network failure; diagnose it as such.
-      console.error(`[alertGate] ALERT: ${freshnessUrl} responded without a generatedAt string (envelope shape regression?)`)
-      freshnessAlert = true
-    } else {
-      const freshness = evaluateRunFreshness(generatedAt, nowMs)
-      freshnessAlert = freshness.alert
-      if (freshness.neverDerived) {
-        console.error('[alertGate] ALERT: derive run never-derived (empty fallback / unparseable generatedAt)')
-      } else {
-        const ageHours = (freshness.ageMs / 3_600_000).toFixed(1)
-        const band = freshness.futureSkew ? 'FUTURE-SKEW' : freshness.stale ? 'STALE' : freshness.fresh ? 'fresh' : 'late-but-graceful'
-        console.log(`[alertGate] deriveFreshness=${band} age=${ageHours}h stale=${freshness.stale}`)
-        if (freshness.stale) console.error('[alertGate] ALERT: derive run stale (~two missed daily runs)')
-        if (freshness.futureSkew) {
-          console.error('[alertGate] ALERT: derive generatedAt is implausibly far in the future (clock skew?)')
-        }
-      }
-    }
-  } catch (err) {
-    // Can't read the derived surface → alert-worthy (same posture as DATA_URL fetch
-    // failure) — but fall through so a simultaneous store-ingest alert still prints
-    // its own cause before the combined exit.
-    console.error(`[alertGate] could not fetch ${freshnessUrl}:`, (err as Error).message)
-    freshnessAlert = true
+  for (const url of freshnessUrls) {
+    freshnessAlert = (await checkDerivedFreshness(url, nowMs)) || freshnessAlert
   }
 
   if (verdict.alert) {
