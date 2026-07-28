@@ -15,7 +15,7 @@
   it only calls an external API and writes a local log. It runs against your MAIN checkout, so
   edits to citation-questions.json take effect immediately.
 
-  The Anthropic key is read from server/.env (ANTHROPIC_API_KEY) via dotenv. With no key the run
+  The Anthropic key is read from the repo-root .env (ANTHROPIC_API_KEY) via dotenv. With no key the run
   still executes in dry-run mode (zero cost) and logs non-cited placeholders, proving the pipeline.
 
 .NOTES

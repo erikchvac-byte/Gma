@@ -16,8 +16,9 @@
   The task runs as the current user when logged on (no stored credentials / prompts). Re-running
   this script is safe: the task is replaced (-Force).
 
-  PREREQUISITE for live (non-dry) runs: put your key in server/.env  ->  ANTHROPIC_API_KEY=sk-ant-...
-  (server/.env is gitignored). Without a key the monitor runs in dry-run mode (zero cost).
+  PREREQUISITE for live (non-dry) runs: put your key in the repo-root .env  ->  ANTHROPIC_API_KEY=sk-ant-...
+  (the root .env is gitignored; it's where EIA_API_KEY etc. already live). Without a key the monitor
+  runs in dry-run mode (zero cost).
 
   Default run time is 05:00 -- after the 04:00 derive task -- so a fresh day's facts are live when
   the monitor probes. It does not depend on the pipeline, but staggering keeps the machine calm.
