@@ -429,15 +429,21 @@ export function readRegions(): {
   const env = readRegionalPriceFloor()
   const cityById = new Map<string, string | null>()
   const nameById = new Map<string, string>()
+  const statusById = new Map<string, string>()
   try {
     for (const d of buildApiData().dispensaries) {
       cityById.set(d.id, parseCity(d.address))
       if (typeof d.name === 'string' && d.name.length > 0) nameById.set(d.id, d.name)
+      if (typeof d.status === 'string') statusById.set(d.id, d.status)
     }
   } catch {
-    // no city/name join available → buildRegions drops un-nameable clusters → []
+    // no city/name/status join available → buildRegions drops un-nameable clusters → []
   }
-  return { regions: buildRegions(env.data, cityById), generatedAt: env.generatedAt, nameById }
+  return {
+    regions: buildRegions(env.data, cityById, statusById),
+    generatedAt: env.generatedAt,
+    nameById,
+  }
 }
 
 // Real store display name (from data.json) when known, else the title-cased slug —

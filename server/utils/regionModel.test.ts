@@ -166,6 +166,76 @@ describe('buildRegions', () => {
   })
 })
 
+describe('buildRegions — page-level staleness guard', () => {
+  const cities = new Map<string, string | null>([
+    ['fresh', 'Bellingham'],
+    ['dead', 'Bellingham'],
+    ['other', 'Bellingham'],
+  ])
+  // Members must be >= MIN_REGION_STORES with a nameable city for a region to exist.
+  const members = ['fresh', 'dead', 'other']
+
+  function build(statusById?: Map<string, string>, floors?: RegionalFloor[]) {
+    return buildRegions(
+      report([cluster({ memberDispensaryIds: members, storeCount: 3, floors })]),
+      cities,
+      statusById,
+    )
+  }
+
+  it('does not filter when no status map is supplied (back-compat)', () => {
+    const [region] = build(undefined, [floor({ floorDispensaryIds: ['dead'] })])
+    expect(region.floors).toHaveLength(1)
+  })
+
+  it('drops a floor whose only holder is failed or stale', () => {
+    const status = new Map([
+      ['dead', 'failed'],
+      ['other', 'stale'],
+    ])
+    const [region] = build(status, [
+      floor({ displayName: 'DeadA', floorDispensaryIds: ['dead'] }),
+      floor({ displayName: 'DeadB', floorDispensaryIds: ['other'] }),
+    ])
+    // both floors' sole holders are dark → no floors, no categories, region has nothing
+    expect(region?.floors ?? []).toHaveLength(0)
+    expect(region?.categories ?? []).toHaveLength(0)
+  })
+
+  it('keeps a tied floor but narrows holders to the fresh store(s)', () => {
+    const status = new Map([
+      ['fresh', 'ok'],
+      ['dead', 'failed'],
+    ])
+    const [region] = build(status, [
+      floor({ displayName: 'Tied', floorPrice: 8, floorDispensaryIds: ['dead', 'fresh'] }),
+    ])
+    expect(region.floors).toHaveLength(1)
+    // a fresh store vouches for the $8 tie; the dead store is no longer named
+    expect(region.floors[0].floorDispensaryIds).toEqual(['fresh'])
+    expect(region.floors[0].floorPrice).toBe(8)
+  })
+
+  it('keeps a floor whose holder has unknown/absent status (fail-open)', () => {
+    const status = new Map([['dead', 'failed']]) // 'other' is absent from the map
+    const [region] = build(status, [floor({ floorDispensaryIds: ['other'] })])
+    expect(region.floors).toHaveLength(1)
+  })
+
+  it('reflects dropped floors in the category counts', () => {
+    const status = new Map([
+      ['fresh', 'ok'],
+      ['dead', 'failed'],
+    ])
+    const [region] = build(status, [
+      floor({ category: 'Flower', displayName: 'LiveFlower', floorDispensaryIds: ['fresh'] }),
+      floor({ category: 'Concentrate', displayName: 'DeadConc', floorDispensaryIds: ['dead'] }),
+    ])
+    // Concentrate's only floor was dead-store-only → category gone; Flower remains
+    expect(region.categories).toEqual([{ category: 'Flower', slug: 'flower', floorCount: 1 }])
+  })
+})
+
 describe('findRegion', () => {
   it('matches case-insensitively', () => {
     const cities = new Map<string, string | null>([
