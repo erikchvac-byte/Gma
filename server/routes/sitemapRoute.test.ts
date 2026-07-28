@@ -249,4 +249,19 @@ describe('buildSitemapXml (pure)', () => {
   it('omits store URLs entirely when none are supplied', () => {
     expect(buildSitemapXml([], GEN)).not.toContain('/store/')
   })
+
+  it('appends geo region + region-category URLs, de-duped, with the region lastmod', () => {
+    const xml = buildSitemapXml([], GEN, [], [
+      { path: '/compare/bellingham', lastmod: '2026-07-28T11:00:13.684Z' },
+      { path: '/compare/concentrate/bellingham', lastmod: '2026-07-28T11:00:13.684Z' },
+      { path: '/compare/bellingham', lastmod: '2026-07-28T11:00:13.684Z' }, // dup
+    ])
+    expect([...xml.matchAll(/\/compare\/bellingham</g)]).toHaveLength(1)
+    expect(xml).toContain('<loc>https://gmaslist.com/compare/concentrate/bellingham</loc>')
+    expect(xml).toContain('<lastmod>2026-07-28T11:00:13.684Z</lastmod>')
+  })
+
+  it('omits region URLs entirely when none are supplied', () => {
+    expect(buildSitemapXml(['Flower'], GEN)).not.toContain('/compare/flower/')
+  })
 })

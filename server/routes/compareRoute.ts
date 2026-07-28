@@ -5,12 +5,23 @@ import type { MatchReport } from '../utils/crossStoreValue.js'
 import type { Disparity } from '../types/index.js'
 import type { DisparityRollupsReport } from '../utils/disparityRollups.js'
 import type { DerivedEnvelope } from '../utils/derivedEnvelope.js'
+import type { RegionalFloor } from '../utils/regionalPriceFloor.js'
 import { socialMetaTags } from '../utils/socialMeta.js'
 import {
   readDerived,
+  readRegionalPriceFloor,
   EMPTY_DISPARITIES_ENVELOPE,
   EMPTY_DISPARITY_ROLLUPS_ENVELOPE,
 } from './valueRoute.js'
+import { buildApiData } from '../utils/buildApiData.js'
+import {
+  buildRegions,
+  findRegion,
+  floorsForCategory,
+  parseCity,
+  slugify,
+  type Region,
+} from '../utils/regionModel.js'
 import { GA_HEAD_SNIPPET } from './gaSnippet.js'
 
 // Public SEO / AI-search comparison surface (derivation-3.1, epic-derivation-3).
@@ -396,6 +407,228 @@ function notFoundHtml(): string {
   })
 }
 
+// ==== geo-scoped citable pages (ADR-107) ==================================
+// /compare/<region> and /compare/<category>/<region> answer long-tail geo queries
+// ("cheapest concentrate deals Bellingham WA today") from the already-derived
+// regional-price-floor fact. Same SSR/fail-soft posture as the category pages.
+
+// At most this many floor rows on one region-category page — cheapest first, so the
+// cap keeps the lowest observed prices (the answer to "cheapest") and trims the tail.
+const MAX_REGION_CATEGORY_ROWS = 100
+
+// Read the derived regional floors + join store cities/names from data.json, then
+// project into named regions. One source for the dispatcher, the geo pages, AND the
+// sitemap, so an index link and a sitemap entry can never disagree (sitemap discipline).
+// Fail-soft throughout: an unreadable data.json degrades to empty cityById (regions
+// with no nameable city drop out), never a throw.
+export function readRegions(): {
+  regions: Region[]
+  generatedAt: string
+  nameById: Map<string, string>
+} {
+  const env = readRegionalPriceFloor()
+  const cityById = new Map<string, string | null>()
+  const nameById = new Map<string, string>()
+  try {
+    for (const d of buildApiData().dispensaries) {
+      cityById.set(d.id, parseCity(d.address))
+      if (typeof d.name === 'string' && d.name.length > 0) nameById.set(d.id, d.name)
+    }
+  } catch {
+    // no city/name join available → buildRegions drops un-nameable clusters → []
+  }
+  return { regions: buildRegions(env.data, cityById), generatedAt: env.generatedAt, nameById }
+}
+
+// Real store display name (from data.json) when known, else the title-cased slug —
+// so a floor row never shows a raw dispensary id.
+function displayStoreName(id: string, nameById: Map<string, string>): string {
+  return nameById.get(id) ?? storeName(id)
+}
+
+// "as of Month D, YYYY" in Pacific (the app's TZ). Empty string on the epoch
+// sentinel (never-derived) so no page ever prints a false 1970 date.
+function asOfPhrase(generatedAt: string): string {
+  if (!generatedAt || generatedAt === EPOCH_GENERATED_AT) return ''
+  const d = new Date(generatedAt)
+  if (Number.isNaN(d.getTime())) return ''
+  return d.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    timeZone: 'America/Los_Angeles',
+  })
+}
+
+// Human list: "A, B and C".
+function joinNames(names: string[]): string {
+  if (names.length <= 1) return names[0] ?? ''
+  if (names.length === 2) return `${names[0]} and ${names[1]}`
+  return `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`
+}
+
+function regionDatasetJsonLd(opts: {
+  id: string
+  url: string
+  name: string
+  description: string
+  label: string
+  generatedAt: string
+}) {
+  const ld: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'Dataset',
+    '@id': opts.id,
+    url: opts.url,
+    name: opts.name,
+    description: opts.description,
+    isAccessibleForFree: true,
+    creator: { '@type': 'Organization', '@id': ORG_ID, name: 'Gmas List', url: `${BASE_URL}/` },
+    // A Place (the metro area) WITHIN Washington — honest about the local scope
+    // while keeping the WA-only areaServed invariant (WAC 314-55-155).
+    spatialCoverage: {
+      '@type': 'Place',
+      name: `${opts.label}, Washington`,
+      containedInPlace: { '@type': 'State', name: 'Washington' },
+    },
+    variableMeasured: ['Lowest observed shelf price'],
+    keywords: ['cannabis price comparison', opts.label, 'Washington', 'cheapest cannabis deals'],
+  }
+  if (opts.generatedAt && opts.generatedAt !== EPOCH_GENERATED_AT) {
+    ld.dateModified = opts.generatedAt
+  }
+  return ld
+}
+
+// GET /compare/<region> — region landing: coverage + links to each category page.
+export function renderRegionIndexHtml(region: Region, generatedAt: string): string {
+  const canonical = `${BASE_URL}/compare/${region.slug}`
+  const asOf = asOfPhrase(generatedAt)
+  const name = `Cheapest cannabis prices in the ${region.label}, WA area`
+  const description =
+    `The lowest observed shelf prices on cannabis products across ${region.storeCount} licensed ` +
+    `retailers in the ${region.label}, Washington area. Compare same-product prices by category to ` +
+    `find the cheapest option and decide whether it is worth the drive.`
+
+  const jsonLd = regionDatasetJsonLd({
+    id: `${canonical}#dataset`,
+    url: canonical,
+    name,
+    description,
+    label: region.label,
+    generatedAt,
+  })
+
+  const coverage =
+    region.cities.length > 0
+      ? `Covers ${joinNames(region.cities.map(escapeHtml))}.`
+      : ''
+
+  let body: string
+  if (region.categories.length === 0) {
+    body = `      <h1>${escapeHtml(name)}</h1>
+      <p class="lede">${escapeHtml(description)}</p>
+      <p>No comparison data is available for this area right now. Please check back later.</p>`
+  } else {
+    const catList = region.categories
+      .map(
+        (c) =>
+          `        <li><a href="/compare/${c.slug}/${region.slug}">Cheapest ${escapeHtml(c.category)} in ${escapeHtml(region.label)}</a> — ` +
+          `${c.floorCount} same-product price${c.floorCount === 1 ? '' : 's'} compared</li>`,
+      )
+      .join('\n')
+
+    const asOfSentence = asOf ? ` Prices observed as of ${escapeHtml(asOf)}.` : ''
+    body = `      <h1>${escapeHtml(name)}</h1>
+      <p class="lede">${escapeHtml(description)}</p>
+
+      <h2>Compare by category</h2>
+      <ul>
+${catList}
+      </ul>
+
+      <p class="accounting">${coverage} Based on the lowest observed shelf price for each product carried by ${region.storeCount} licensed ${escapeHtml(region.label)}-area stores.${asOfSentence} Prices are shelf prices, not discounts, and can change without notice. Verify in store.</p>`
+  }
+
+  return page({
+    title: `Cheapest cannabis deals in ${region.label}, WA | Gmas List`,
+    description,
+    canonical,
+    jsonLd,
+    bodyHtml: body,
+  })
+}
+
+// GET /compare/<category>/<region> — the canonical long-tail answer page: this
+// area's lowest observed price on each product in one category, cheapest first.
+export function renderRegionCategoryHtml(
+  region: Region,
+  category: string,
+  generatedAt: string,
+  nameById: Map<string, string>,
+): string {
+  const catSlug = slugify(category)
+  const canonical = `${BASE_URL}/compare/${catSlug}/${region.slug}`
+  const asOf = asOfPhrase(generatedAt)
+  const name = `Cheapest ${category} in the ${region.label}, WA area`
+  // HONESTY: frame as the lowest price on EACH product, never "the cheapest
+  // <category> is $X" (that would be a Gate-1 category leaderboard). Each row is a
+  // same-product min.
+  const description =
+    `The lowest observed shelf price on each ${category.toLowerCase()} product carried by two or ` +
+    `more licensed retailers in the ${region.label}, Washington area. Same-product prices only, ` +
+    `not a category ranking — decide which deal is worth the drive.`
+
+  const jsonLd = regionDatasetJsonLd({
+    id: `${canonical}#dataset`,
+    url: canonical,
+    name,
+    description,
+    label: region.label,
+    generatedAt,
+  })
+
+  const all = floorsForCategory(region, category)
+  const shown = all.slice(0, MAX_REGION_CATEGORY_ROWS)
+
+  let body: string
+  if (all.length === 0) {
+    body = `      <h1>${escapeHtml(name)}</h1>
+      <p class="lede">${escapeHtml(description)}</p>
+      <p>No ${escapeHtml(category.toLowerCase())} comparisons are available in this area right now.</p>`
+  } else {
+    const items = shown
+      .map((f: RegionalFloor) => {
+        const stores = joinNames(
+          f.floorDispensaryIds.map((id) => escapeHtml(displayStoreName(id, nameById))),
+        )
+        return `        <li>${escapeHtml(f.displayName)} (${f.weightGrams}g) — ${formatUsd(f.floorPrice)} at ${stores}</li>`
+      })
+      .join('\n')
+
+    const capNote =
+      all.length > shown.length ? ` Showing the ${shown.length} lowest-priced of ${all.length}.` : ''
+    const asOfSentence = asOf ? ` Prices observed as of ${escapeHtml(asOf)}.` : ''
+    const coverage =
+      region.cities.length > 0 ? ` Covers ${joinNames(region.cities.map(escapeHtml))}.` : ''
+
+    body = `      <h1>${escapeHtml(name)}</h1>
+      <p class="lede">${escapeHtml(description)}</p>
+      <ul>
+${items}
+      </ul>
+      <p class="accounting">${all.length} same-product ${escapeHtml(category.toLowerCase())} comparison${all.length === 1 ? '' : 's'} across ${region.storeCount} licensed ${escapeHtml(region.label)}-area stores.${coverage}${capNote} Each row is the lowest observed shelf price for that exact product and weight among the area stores that carry it — a per-product low, not a discount or a category ranking.${asOfSentence} Verify in store.</p>`
+  }
+
+  return page({
+    title: `Cheapest ${category} in ${region.label}, WA — cannabis price comparison | Gmas List`,
+    description,
+    canonical,
+    jsonLd,
+    bodyHtml: body,
+  })
+}
+
 // ---- route handlers ----
 
 // GET /compare — index over all cross-store price-disparity categories.
@@ -432,4 +665,43 @@ export function compareCategoryRoute(req: Request, res: Response) {
   const disparities = readDerived<MatchReport>(DISPARITIES_PATH, EMPTY_DISPARITIES_ENVELOPE)
   res.set('Cache-Control', 'public, max-age=3600')
   res.type('html').send(renderCategoryHtml(match, disparities))
+}
+
+// GET /compare/:category — single-segment dispatcher. The one path segment is
+// EITHER a geo region (bellingham) OR a price-disparity category (concentrate);
+// the two slug sets are disjoint. A region slug renders the region landing page,
+// anything else falls through to the existing category behavior (which 404s an
+// unknown slug). Registered in place of compareCategoryRoute so both live at one
+// route pattern.
+export function compareSegmentRoute(req: Request, res: Response) {
+  const slug = String(req.params.category ?? '').toLowerCase()
+  const { regions, generatedAt } = readRegions()
+  const region = findRegion(regions, slug)
+  if (region) {
+    res.set('Cache-Control', 'public, max-age=3600')
+    res.type('html').send(renderRegionIndexHtml(region, generatedAt))
+    return
+  }
+  compareCategoryRoute(req, res)
+}
+
+// GET /compare/:category/:region — this area's cheapest same-product prices in one
+// category. Both segments are validated against readRegions() (the SAME source the
+// region index links from), so an index link can never point at a slug this 404s.
+export function compareCategoryRegionRoute(req: Request, res: Response) {
+  const regionSlug = String(req.params.region ?? '').toLowerCase()
+  const catSlug = String(req.params.category ?? '').toLowerCase()
+  const { regions, generatedAt, nameById } = readRegions()
+
+  const region = findRegion(regions, regionSlug)
+  const category = region?.categories.find((c) => c.slug === catSlug)?.category
+
+  if (!region || !category) {
+    // Short cache: a slug invalid now may become valid when a fresh artifact lands.
+    res.status(404).set('Cache-Control', 'public, max-age=60').type('html').send(notFoundHtml())
+    return
+  }
+
+  res.set('Cache-Control', 'public, max-age=3600')
+  res.type('html').send(renderRegionCategoryHtml(region, category, generatedAt, nameById))
 }

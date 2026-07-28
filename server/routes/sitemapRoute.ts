@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express'
 import type { DisparityRollupsReport } from '../utils/disparityRollups.js'
 import { readDerived, EMPTY_DISPARITY_ROLLUPS_ENVELOPE } from './valueRoute.js'
-import { categorySlug } from './compareRoute.js'
+import { categorySlug, readRegions } from './compareRoute.js'
 import { ENTITY_DESCRIPTION } from './aboutRoute.js'
 import { buildApiData } from '../utils/buildApiData.js'
 import { fileURLToPath } from 'node:url'
@@ -97,6 +97,7 @@ export function buildSitemapXml(
   categories: string[],
   generatedAt: string,
   storeSlugs: string[] = [],
+  regionPaths: { path: string; lastmod?: string }[] = [],
 ): string {
   const staticEntries = STATIC_PATHS.map((p) => {
     // /compare is data-backed → stamp it with the artifact's generatedAt too.
@@ -121,9 +122,18 @@ export function buildSitemapXml(
     .sort()
     .map((slug) => urlEntry(`${BASE_URL}/store/${slug}`))
 
+  // Geo-scoped citable pages (ADR-107): /compare/<region> and
+  // /compare/<category>/<region>. De-duped; stamped with the regional-floor
+  // artifact's own generatedAt (its honest "last changed" signal).
+  const regionEntries = regionPaths
+    .filter((r) => typeof r?.path === 'string' && r.path.length > 0)
+    .filter((r, i, arr) => arr.findIndex((x) => x.path === r.path) === i)
+    .sort((a, b) => a.path.localeCompare(b.path))
+    .map((r) => urlEntry(`${BASE_URL}${r.path}`, r.lastmod))
+
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${[...staticEntries, ...categoryEntries, ...storeEntries].join('\n')}
+${[...staticEntries, ...categoryEntries, ...regionEntries, ...storeEntries].join('\n')}
 </urlset>
 `
 }
@@ -134,6 +144,26 @@ ${[...staticEntries, ...categoryEntries, ...storeEntries].join('\n')}
 function readStoreSlugs(): string[] {
   try {
     return buildApiData().dispensaries.map((d) => d.id)
+  } catch {
+    return []
+  }
+}
+
+// Geo region + region-category paths for the sitemap, read fail-soft from the SAME
+// readRegions() source the /compare/<region> pages use (so a listed URL always
+// resolves). Each region also gets one path per category present. Stamped lastmod is
+// the regional-floor artifact's generatedAt. Degrades to [] on any read failure.
+function readRegionPaths(): { path: string; lastmod?: string }[] {
+  try {
+    const { regions, generatedAt } = readRegions()
+    const paths: { path: string; lastmod?: string }[] = []
+    for (const r of regions) {
+      paths.push({ path: `/compare/${r.slug}`, lastmod: generatedAt })
+      for (const c of r.categories) {
+        paths.push({ path: `/compare/${c.slug}/${r.slug}`, lastmod: generatedAt })
+      }
+    }
+    return paths
   } catch {
     return []
   }
@@ -226,7 +256,9 @@ export function sitemapRoute(_req: Request, res: Response) {
     (c) => c.category,
   )
   res.set('Cache-Control', 'public, max-age=3600')
-  res.type('application/xml').send(buildSitemapXml(categories, rollups.generatedAt, readStoreSlugs()))
+  res
+    .type('application/xml')
+    .send(buildSitemapXml(categories, rollups.generatedAt, readStoreSlugs(), readRegionPaths()))
 }
 
 // GET /llms.txt — Markdown site guide for LLM crawlers/agents. Same fail-soft

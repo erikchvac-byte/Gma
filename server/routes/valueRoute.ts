@@ -6,6 +6,7 @@ import type { MatchReport } from '../utils/crossStoreValue.js'
 import type { DealScopeReport } from '../types/index.js'
 import type { DisparityRollupsReport } from '../utils/disparityRollups.js'
 import type { PriceVsOwnMedianReport } from '../utils/priceVsOwnMedian.js'
+import type { RegionalPriceFloorReport } from '../utils/regionalPriceFloor.js'
 import { isEnvelope, type DerivedEnvelope } from '../utils/derivedEnvelope.js'
 
 // ADR-077 Phase 1 — these two private/internal routes NO LONGER compute anything at request
@@ -24,6 +25,7 @@ const DISPARITIES_PATH = path.join(DERIVED_DIR, 'disparities.json')
 const DEAL_SCOPE_PATH = path.join(DERIVED_DIR, 'deal-scope.json')
 const DISPARITY_ROLLUPS_PATH = path.join(DERIVED_DIR, 'disparity-rollups.json')
 const PRICE_VS_OWN_MEDIAN_PATH = path.join(DERIVED_DIR, 'price-vs-own-median.json')
+const REGIONAL_PRICE_FLOOR_PATH = path.join(DERIVED_DIR, 'regional-price-floor.json')
 
 // derivation-1.1: served artifacts are wrapped in the honesty envelope (decision E). The
 // empty fallback's `generatedAt` is a FIXED value, not "now" — the fail-soft output must stay
@@ -92,6 +94,25 @@ export const EMPTY_PRICE_VS_OWN_MEDIAN_ENVELOPE: DerivedEnvelope<PriceVsOwnMedia
   generatedAt: EMPTY_GENERATED_AT,
 }
 
+// derivation-2.3 / ADR-086 regional price floors + availability gaps, geo-clustered.
+// The substrate for the geo-scoped /compare/<category>/<region> citable pages (ADR-107).
+// Empty report mirrors buildRegionalPriceFloorReport's shape with every counter zeroed.
+export const EMPTY_REGIONAL_PRICE_FLOOR_ENVELOPE: DerivedEnvelope<RegionalPriceFloorReport> = {
+  data: {
+    clusters: [],
+    categoryUniverse: [],
+    totalClusters: 0,
+    clusteredStoreCount: 0,
+    unclusteredStoreCount: 0,
+    totalFloors: 0,
+    singleStoreFloorCount: 0,
+    suppressedGapClusterCount: 0,
+  },
+  excluded: [],
+  coverage: {},
+  generatedAt: EMPTY_GENERATED_AT,
+}
+
 // Read a precomputed derived fact file, fail-soft to the given empty envelope. A missing file
 // (home machine never ran / first deploy), an unparseable one, or one that parses but doesn't
 // match the envelope shape all degrade to empty rather than throwing — never a 500, never a
@@ -146,4 +167,21 @@ export function readPriceVsOwnMedian(): DerivedEnvelope<PriceVsOwnMedianReport> 
 
 export function priceVsOwnMedianRoute(_req: Request, res: Response) {
   res.json(readPriceVsOwnMedian())
+}
+
+// Shared reader for the regional-price-floor envelope — used by the private API
+// route below AND by compareRoute's geo pages (the /compare/<category>/<region>
+// citable surfaces, ADR-107). Same fail-soft posture: missing/malformed → empty.
+export function readRegionalPriceFloor(): DerivedEnvelope<RegionalPriceFloorReport> {
+  return readDerived<RegionalPriceFloorReport>(
+    REGIONAL_PRICE_FLOOR_PATH,
+    EMPTY_REGIONAL_PRICE_FLOOR_ENVELOPE,
+  )
+}
+
+// GET /api/value/regional-price-floor (ADR-086 fact, ADR-107 surface). Same
+// private/decoupled/fail-soft posture as the other value routes; served from the
+// precomputed server/data/derived/regional-price-floor.json.
+export function regionalPriceFloorRoute(_req: Request, res: Response) {
+  res.json(readRegionalPriceFloor())
 }

@@ -6,14 +6,18 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import 'dotenv/config'
 import { aboutRoute } from './routes/aboutRoute.js'
-import { compareIndexRoute, compareCategoryRoute } from './routes/compareRoute.js'
+import {
+  compareIndexRoute,
+  compareSegmentRoute,
+  compareCategoryRegionRoute,
+} from './routes/compareRoute.js'
 import { robotsRoute, sitemapRoute, llmsTxtRoute } from './routes/sitemapRoute.js'
 import { makeShellRoute } from './routes/shellRoute.js'
 import { storeRoute } from './routes/storeRoute.js'
 import { healthzRoute } from './routes/healthzRoute.js'
 import { dataRoute } from './routes/dataRoute.js'
 import { ingestRoute } from './routes/ingestRoute.js'
-import { disparitiesRoute, dealScopeRoute, disparityRollupsRoute, priceVsOwnMedianRoute } from './routes/valueRoute.js'
+import { disparitiesRoute, dealScopeRoute, disparityRollupsRoute, priceVsOwnMedianRoute, regionalPriceFloorRoute } from './routes/valueRoute.js'
 import { refreshGasPrice } from './utils/refreshGasPrice.js'
 import { trailingSlashRedirect } from './middleware/trailingSlashRedirect.js'
 
@@ -61,6 +65,9 @@ app.get('/api/value/disparity-rollups', disparityRollupsRoute)
 // surface's data source. Same private/decoupled/fail-soft posture; served from the precomputed
 // server/data/derived/price-vs-own-median.json. Registered before the SPA fallback below.
 app.get('/api/value/price-vs-own-median', priceVsOwnMedianRoute)
+// Regional price floors + availability gaps (ADR-086), the substrate for the
+// geo-scoped /compare/<category>/<region> pages. Same private/decoupled/fail-soft posture.
+app.get('/api/value/regional-price-floor', regionalPriceFloorRoute)
 
 // Server-rendered About + FAQ entity page (spec-ai-search-about-faq). Must be
 // registered BEFORE the production SPA fallback below so crawlers get real
@@ -72,7 +79,12 @@ app.get('/about', aboutRoute)
 // facts, with Dataset JSON-LD. Registered BEFORE the SPA fallback (same reason as
 // /about) and unconditional so dev serves them too.
 app.get('/compare', compareIndexRoute)
-app.get('/compare/:category', compareCategoryRoute)
+// Geo-scoped citable pages (ADR-107): /compare/<category>/<region> is the canonical
+// answer to "cheapest <category> deals <city> WA today". The two-segment route is
+// registered before the single-segment dispatcher; the dispatcher resolves its one
+// segment as either a region (landing page) or a category (existing behavior).
+app.get('/compare/:category/:region', compareCategoryRegionRoute)
+app.get('/compare/:category', compareSegmentRoute)
 
 // Per-store SEO / AI-search pages (Phase 1a / CAP-3+CAP-4): one crawlable
 // /store/<id> per licensed WA retailer with LocalBusiness JSON-LD. Same reason
