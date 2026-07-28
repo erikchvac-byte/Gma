@@ -17,10 +17,21 @@ vi.mock('./valueRoute.js', async (importOriginal) => {
   return { ...actual, readPriceVsOwnMedian: mockReadDrops }
 })
 
+// The page now resolves the store's geo region (ADR-107) for the "cheapest in the
+// <area>" links. Mock readRegions so route tests stay deterministic and never read
+// the real committed regional-price-floor.json / data.json. Default: no regions →
+// no area section, so the deals-only assertions render deterministically.
+const { mockReadRegions } = vi.hoisted(() => ({ mockReadRegions: vi.fn() }))
+vi.mock('./compareRoute.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('./compareRoute.js')>()
+  return { ...actual, readRegions: mockReadRegions }
+})
+
 import { readFileSync } from 'node:fs'
-import { storeRoute, renderStoreHtml, buildStoreJsonLd, storeDrops } from './storeRoute.js'
+import { storeRoute, renderStoreHtml, buildStoreJsonLd, storeDrops, buildDirectAnswer, renderAreaLinksHtml } from './storeRoute.js'
 import type { Dispensary } from '../../client/src/types/index.js'
 import type { PriceVsOwnMedianRow } from '../utils/priceVsOwnMedian.js'
+import type { Region } from '../utils/regionModel.js'
 
 const mockedReadFileSync = vi.mocked(readFileSync)
 
@@ -31,7 +42,25 @@ function dropsEnvelope(rows: Partial<PriceVsOwnMedianRow>[]) {
 
 beforeEach(() => {
   mockReadDrops.mockReturnValue(EMPTY_DROPS_ENVELOPE)
+  mockReadRegions.mockReturnValue({ regions: [], generatedAt: new Date(0).toISOString(), nameById: new Map() })
 })
+
+function makeRegion(over: Partial<Region> = {}): Region {
+  return {
+    slug: 'everett',
+    label: 'Everett',
+    cities: ['Everett'],
+    clusterId: 'a-store',
+    memberDispensaryIds: ['remedy-tulalip', 'a-store'],
+    storeCount: 12,
+    floors: [],
+    categories: [
+      { category: 'Concentrate', slug: 'concentrate', floorCount: 63 },
+      { category: 'Flower', slug: 'flower', floorCount: 151 },
+    ],
+    ...over,
+  }
+}
 
 const app = express()
 app.get('/store/:slug', storeRoute)
@@ -297,5 +326,87 @@ describe('renderStoreHtml (unit)', () => {
 
     expect(html.match(/rel="canonical"/g)).toHaveLength(1)
     expect(html.match(/application\/ld\+json/g)).toHaveLength(1)
+  })
+})
+
+describe('buildDirectAnswer (extractable lede)', () => {
+  const base = {
+    id: 'remedy-tulalip',
+    name: 'Remedy Tulalip',
+    url: 'https://x.test/',
+    address: '9226 34th Avenue NE, Tulalip, WA 98271',
+    lastFetchedAt: '2026-07-28T18:00:00.000Z',
+    deals: [],
+  } as unknown as Dispensary
+
+  it('states freshness, city, and honest counts of deals and drops', () => {
+    const s = buildDirectAnswer(base, 4, 2)
+    expect(s).toContain('As of July 28, 2026,')
+    expect(s).toContain('Remedy Tulalip — a licensed cannabis retailer in Tulalip, WA —')
+    expect(s).toContain('has 4 active deals and 2 products priced below their recent usual')
+    expect(s).toContain('worth the drive')
+  })
+
+  it('singularizes counts and drops the drops clause when there are none', () => {
+    expect(buildDirectAnswer(base, 1, 0)).toContain('has 1 active deal.')
+    expect(buildDirectAnswer(base, 1, 0)).not.toContain('below their recent usual')
+  })
+
+  it('renders an honest empty state when there is nothing active', () => {
+    expect(buildDirectAnswer(base, 0, 0)).toContain('has no active deals right now')
+  })
+
+  it('omits the "As of" date on an unparseable / never-ingested timestamp', () => {
+    const seed = { ...base, lastFetchedAt: new Date(0).toISOString() } as Dispensary
+    expect(buildDirectAnswer(seed, 3, 0)).not.toContain('As of')
+    expect(buildDirectAnswer(seed, 3, 0)).toContain('Remedy Tulalip')
+  })
+
+  it('falls back to a generic place when the address has no parseable city', () => {
+    const noCity = { ...base, address: undefined } as Dispensary
+    expect(buildDirectAnswer(noCity, 2, 0)).toContain('a licensed Washington cannabis retailer')
+  })
+})
+
+describe('renderAreaLinksHtml (store → area cheapest pages)', () => {
+  it('links each of the region categories plus the region index', () => {
+    const html = renderAreaLinksHtml(makeRegion())
+    expect(html).toContain('Cheapest in the Everett area')
+    expect(html).toContain('href="/compare/concentrate/everett">Cheapest Concentrate in the Everett area')
+    expect(html).toContain('href="/compare/flower/everett">Cheapest Flower in the Everett area')
+    expect(html).toContain('href="/compare/everett">All Everett-area price comparisons')
+  })
+
+  it('renders nothing when the store is in no region or the region has no live floors', () => {
+    expect(renderAreaLinksHtml(undefined)).toBe('')
+    expect(renderAreaLinksHtml(makeRegion({ categories: [] }))).toBe('')
+  })
+})
+
+describe('GET /store/:slug — geo deepening (ADR-107)', () => {
+  it('injects the direct-answer lede and the area links when the store is in a region', async () => {
+    seedDataJson()
+    mockReadRegions.mockReturnValue({
+      regions: [makeRegion()],
+      generatedAt: new Date().toISOString(),
+      nameById: new Map(),
+    })
+    const res = await request(app).get('/store/remedy-tulalip')
+
+    expect(res.status).toBe(200)
+    expect(res.text).toContain('class="lede"')
+    expect(res.text).toContain('Remedy Tulalip — a licensed cannabis retailer in Tulalip, WA —')
+    expect(res.text).toContain('Cheapest in the Everett area')
+    expect(res.text).toContain('href="/compare/concentrate/everett"')
+  })
+
+  it('omits the area section for a store in no region, still 200', async () => {
+    seedDataJson()
+    // default mockReadRegions returns no regions
+    const res = await request(app).get('/store/remedy-tulalip')
+    expect(res.status).toBe(200)
+    expect(res.text).not.toContain('area price comparisons')
+    // the lede still renders (it does not depend on a region)
+    expect(res.text).toContain('class="lede"')
   })
 })
