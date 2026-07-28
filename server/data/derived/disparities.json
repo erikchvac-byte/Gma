@@ -145,11 +145,6 @@
             "quantityAvailable": null
           },
           {
-            "dispensaryId": "kaleafa-oak-harbor",
-            "price": 9.8,
-            "quantityAvailable": null
-          },
-          {
             "dispensaryId": "remedy-tulalip",
             "price": 10,
             "quantityAvailable": null
@@ -157,6 +152,11 @@
           {
             "dispensaryId": "210-cannabis-arlington",
             "price": 12,
+            "quantityAvailable": null
+          },
+          {
+            "dispensaryId": "kaleafa-oak-harbor",
+            "price": 14,
             "quantityAvailable": null
           },
           {
@@ -210,7 +210,7 @@
           },
           {
             "dispensaryId": "remedy-tulalip",
-            "price": 25,
+            "price": 21.25,
             "quantityAvailable": null
           },
           {
@@ -241,13 +241,13 @@
             "quantityAvailable": null
           },
           {
-            "dispensaryId": "kaleafa-oak-harbor",
-            "price": 24,
+            "dispensaryId": "remedy-tulalip",
+            "price": 21.25,
             "quantityAvailable": null
           },
           {
-            "dispensaryId": "remedy-tulalip",
-            "price": 25,
+            "dispensaryId": "kaleafa-oak-harbor",
+            "price": 24,
             "quantityAvailable": null
           },
           {
@@ -329,33 +329,6 @@
         ]
       },
       {
-        "matchKey": "|apple jack|concentrate|vaporizers@1g",
-        "displayName": "Apple Jack",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "lowPrice": 25,
-        "highPrice": 60,
-        "spread": 35,
-        "spreadPct": 1.4,
-        "storesCarrying": [
-          {
-            "dispensaryId": "prc-arlington",
-            "price": 25,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 32,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "remedy-tulalip",
-            "price": 60,
-            "quantityAvailable": null
-          }
-        ]
-      },
-      {
         "matchKey": "candy concentrates|chews flavored melon|hybrid|vaporizers@1g",
         "displayName": "Candy Concentrates: Melon Chews - Flavored Cartridge",
         "category": "Vaporizers",
@@ -390,12 +363,61 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 21,
-            "quantityAvailable": 11
+            "quantityAvailable": 8
           },
           {
             "dispensaryId": "hangar-420-west",
             "price": 50,
             "quantityAvailable": 3
+          }
+        ]
+      },
+      {
+        "matchKey": "|herer jack|preroll|pre rolls@1g",
+        "displayName": "Jack Herer",
+        "category": "Pre-Rolls",
+        "weightGrams": 1,
+        "lowPrice": 4.2,
+        "highPrice": 10,
+        "spread": 5.8,
+        "spreadPct": 1.38,
+        "storesCarrying": [
+          {
+            "dispensaryId": "kaleafa-oak-harbor",
+            "price": 4.2,
+            "quantityAvailable": null
+          },
+          {
+            "dispensaryId": "210-cannabis-arlington",
+            "price": 10,
+            "quantityAvailable": null
+          }
+        ]
+      },
+      {
+        "matchKey": "|kandyland sugar wax|concentrate|concentrate|@1g",
+        "displayName": "Kandyland 1g Sugar Wax",
+        "category": "Concentrate",
+        "weightGrams": 1,
+        "lowPrice": 8.5,
+        "highPrice": 20,
+        "spread": 11.5,
+        "spreadPct": 1.35,
+        "storesCarrying": [
+          {
+            "dispensaryId": "remedy-tulalip",
+            "price": 8.5,
+            "quantityAvailable": null
+          },
+          {
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 15,
+            "quantityAvailable": null
+          },
+          {
+            "dispensaryId": "western-bud-burlington",
+            "price": 20,
+            "quantityAvailable": null
           }
         ]
       },
@@ -412,7 +434,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 22.5,
-            "quantityAvailable": 6
+            "quantityAvailable": 5
           },
           {
             "dispensaryId": "2020-solutions-north-bellingham",
@@ -461,7 +483,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 27.5,
-            "quantityAvailable": 3
+            "quantityAvailable": 1
           },
           {
             "dispensaryId": "hangar-420-everett",
@@ -510,12 +532,12 @@
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 24,
-            "quantityAvailable": 8
+            "quantityAvailable": 7
           },
           {
             "dispensaryId": "hangar-420-west",
             "price": 52,
-            "quantityAvailable": 10
+            "quantityAvailable": 9
           }
         ]
       },
@@ -532,7 +554,7 @@
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 27,
-            "quantityAvailable": 22
+            "quantityAvailable": 21
           },
           {
             "dispensaryId": "cannazone-bellingham",
@@ -613,33 +635,6 @@
         ]
       },
       {
-        "matchKey": "torus|1 cherry lemon pastry|n a|flower@3.5g",
-        "displayName": "Torus: Lemon Cherry Pastry #1",
-        "category": "Flower",
-        "weightGrams": 3.5,
-        "lowPrice": 33,
-        "highPrice": 70,
-        "spread": 37,
-        "spreadPct": 1.12,
-        "storesCarrying": [
-          {
-            "dispensaryId": "kush21-everett-evergreen",
-            "price": 33,
-            "quantityAvailable": 1
-          },
-          {
-            "dispensaryId": "hangar-420-everett",
-            "price": 55,
-            "quantityAvailable": 6
-          },
-          {
-            "dispensaryId": "hangar-420-west",
-            "price": 70,
-            "quantityAvailable": 1
-          }
-        ]
-      },
-      {
         "matchKey": "|chem og|indica|flower@28g",
         "displayName": "OG Chem",
         "category": "Flower",
@@ -684,7 +679,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 27,
-            "quantityAvailable": 3
+            "quantityAvailable": 2
           },
           {
             "dispensaryId": "salish-coast-cannabis",
@@ -733,7 +728,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 24,
-            "quantityAvailable": 5
+            "quantityAvailable": 4
           },
           {
             "dispensaryId": "hangar-420-west",
@@ -770,39 +765,29 @@
         ]
       },
       {
-        "matchKey": "phat panda|golden pineapple|sativa|flower@3.5g",
-        "displayName": "Golden Pineapple",
-        "category": "Flower",
-        "weightGrams": 3.5,
-        "lowPrice": 15,
-        "highPrice": 30,
-        "spread": 15,
-        "spreadPct": 1,
+        "matchKey": "|apple jack|concentrate|vaporizers@1g",
+        "displayName": "Apple Jack",
+        "category": "Vaporizers",
+        "weightGrams": 1,
+        "lowPrice": 25,
+        "highPrice": 51,
+        "spread": 26,
+        "spreadPct": 1.04,
         "storesCarrying": [
           {
-            "dispensaryId": "kushmart-north",
-            "price": 15,
-            "quantityAvailable": 6
+            "dispensaryId": "prc-arlington",
+            "price": 25,
+            "quantityAvailable": null
           },
           {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 22.4,
-            "quantityAvailable": 5
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 32,
+            "quantityAvailable": null
           },
           {
-            "dispensaryId": "cannazone-old-hwy-99",
-            "price": 30,
-            "quantityAvailable": 5
-          },
-          {
-            "dispensaryId": "cannazone-bellingham",
-            "price": 30,
-            "quantityAvailable": 3
-          },
-          {
-            "dispensaryId": "the-joint-everett",
-            "price": 30,
-            "quantityAvailable": 1
+            "dispensaryId": "remedy-tulalip",
+            "price": 51,
+            "quantityAvailable": null
           }
         ]
       },
@@ -819,7 +804,7 @@
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 30,
-            "quantityAvailable": 3
+            "quantityAvailable": 2
           },
           {
             "dispensaryId": "cannazone-old-hwy-99",
@@ -846,7 +831,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 20,
-            "quantityAvailable": 10
+            "quantityAvailable": 7
           },
           {
             "dispensaryId": "the-joint-everett",
@@ -1030,7 +1015,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 20,
-            "quantityAvailable": 8
+            "quantityAvailable": 7
           },
           {
             "dispensaryId": "the-joint-everett",
@@ -1116,33 +1101,6 @@
         ]
       },
       {
-        "matchKey": "|kandyland sugar wax|concentrate|concentrate|@1g",
-        "displayName": "Kandyland 1g Sugar Wax",
-        "category": "Concentrate",
-        "weightGrams": 1,
-        "lowPrice": 10,
-        "highPrice": 20,
-        "spread": 10,
-        "spreadPct": 1,
-        "storesCarrying": [
-          {
-            "dispensaryId": "remedy-tulalip",
-            "price": 10,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 15,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "western-bud-burlington",
-            "price": 20,
-            "quantityAvailable": null
-          }
-        ]
-      },
-      {
         "matchKey": "super fog|diamonds fire jef liquid marker permanent plus|indica|vaporizers@1g",
         "displayName": "FIRE Liquid Diamonds 1g Jefé Plus - Permanent Marker",
         "category": "Vaporizers",
@@ -1192,7 +1150,7 @@
           {
             "dispensaryId": "cannazone-old-hwy-99",
             "price": 12,
-            "quantityAvailable": 3
+            "quantityAvailable": 1
           }
         ]
       },
@@ -1339,28 +1297,6 @@
         ]
       },
       {
-        "matchKey": "presidential|blunt moon rock xxx|indica|pre rolls@1g",
-        "displayName": "XXX 1g Infused Moon Rock Blunt (Presidential)",
-        "category": "Pre-Rolls",
-        "weightGrams": 1,
-        "lowPrice": 15,
-        "highPrice": 30,
-        "spread": 15,
-        "spreadPct": 1,
-        "storesCarrying": [
-          {
-            "dispensaryId": "local-roots-everett-128th",
-            "price": 15,
-            "quantityAvailable": 2
-          },
-          {
-            "dispensaryId": "kushmart-north",
-            "price": 30,
-            "quantityAvailable": 18
-          }
-        ]
-      },
-      {
         "matchKey": "presidential|blunt moon rock waui|sativa|pre rolls@1g",
         "displayName": "Waui 1g Infused Moon Rock Blunt (Presidential)",
         "category": "Pre-Rolls",
@@ -1384,28 +1320,6 @@
             "dispensaryId": "kushmart-north",
             "price": 30,
             "quantityAvailable": 13
-          }
-        ]
-      },
-      {
-        "matchKey": "presidential|blunt moon rock skywalker|indica|pre rolls@1g",
-        "displayName": "Skywalker 1g Infused Moon Rock Blunt (Presidential)",
-        "category": "Pre-Rolls",
-        "weightGrams": 1,
-        "lowPrice": 15,
-        "highPrice": 30,
-        "spread": 15,
-        "spreadPct": 1,
-        "storesCarrying": [
-          {
-            "dispensaryId": "local-roots-everett-128th",
-            "price": 15,
-            "quantityAvailable": 1
-          },
-          {
-            "dispensaryId": "kushmart-north",
-            "price": 30,
-            "quantityAvailable": 17
           }
         ]
       },
@@ -1444,12 +1358,12 @@
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 18,
-            "quantityAvailable": 6
+            "quantityAvailable": 5
           },
           {
             "dispensaryId": "salish-coast-cannabis",
             "price": 30,
-            "quantityAvailable": 7
+            "quantityAvailable": 6
           },
           {
             "dispensaryId": "the-joint-everett",
@@ -1471,12 +1385,12 @@
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 15,
-            "quantityAvailable": 10
+            "quantityAvailable": 9
           },
           {
             "dispensaryId": "kushmart-north",
             "price": 30,
-            "quantityAvailable": 8
+            "quantityAvailable": 6
           }
         ]
       },
@@ -1528,11 +1442,6 @@
             "quantityAvailable": 11
           },
           {
-            "dispensaryId": "kush21-everett-evergreen",
-            "price": 25,
-            "quantityAvailable": 2
-          },
-          {
             "dispensaryId": "the-joint-everett",
             "price": 36,
             "quantityAvailable": 1
@@ -1557,7 +1466,7 @@
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 18,
-            "quantityAvailable": 12
+            "quantityAvailable": 11
           },
           {
             "dispensaryId": "hangar-420-everett",
@@ -1616,7 +1525,7 @@
           {
             "dispensaryId": "hangar-420-west",
             "price": 35,
-            "quantityAvailable": 4
+            "quantityAvailable": 2
           },
           {
             "dispensaryId": "happy-time-mt-vernon",
@@ -1829,7 +1738,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 7.5,
-            "quantityAvailable": 23
+            "quantityAvailable": 17
           },
           {
             "dispensaryId": "local-roots-everett-128th",
@@ -1856,7 +1765,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 7.5,
-            "quantityAvailable": 9
+            "quantityAvailable": 8
           },
           {
             "dispensaryId": "local-roots-everett-128th",
@@ -1910,7 +1819,7 @@
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 27,
-            "quantityAvailable": 9
+            "quantityAvailable": 8
           },
           {
             "dispensaryId": "cannazone-old-hwy-99",
@@ -1920,8 +1829,8 @@
         ]
       },
       {
-        "matchKey": "rove|cough diamond live melted reload resin strawberry vaporizer|sativa|vaporizers@1g",
-        "displayName": "Strawberry Cough | Melted Diamond Live Resin Vaporizer | 1g (Reload)",
+        "matchKey": "lifted|cake cured resin wedding|indica|vaporizers@1g",
+        "displayName": "Lifted: Wedding Cake - Cured Resin Disposable",
         "category": "Vaporizers",
         "weightGrams": 1,
         "lowPrice": 32.5,
@@ -1937,7 +1846,29 @@
           {
             "dispensaryId": "kushmart-north",
             "price": 60,
-            "quantityAvailable": 12
+            "quantityAvailable": 8
+          }
+        ]
+      },
+      {
+        "matchKey": "lifted|coffee creamer cured resin|indica|vaporizers@1g",
+        "displayName": "Lifted: Coffee Creamer - Cured Resin Disposable",
+        "category": "Vaporizers",
+        "weightGrams": 1,
+        "lowPrice": 32.5,
+        "highPrice": 60,
+        "spread": 27.5,
+        "spreadPct": 0.85,
+        "storesCarrying": [
+          {
+            "dispensaryId": "kush21-everett-evergreen",
+            "price": 32.5,
+            "quantityAvailable": 5
+          },
+          {
+            "dispensaryId": "kushmart-north",
+            "price": 60,
+            "quantityAvailable": 7
           }
         ]
       },
@@ -1958,7 +1889,7 @@
           },
           {
             "dispensaryId": "remedy-tulalip",
-            "price": 45,
+            "price": 38.25,
             "quantityAvailable": null
           },
           {
@@ -1981,7 +1912,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 23,
-            "quantityAvailable": 3
+            "quantityAvailable": 1
           },
           {
             "dispensaryId": "cannazone-bellingham",
@@ -2025,7 +1956,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 8,
-            "quantityAvailable": 5
+            "quantityAvailable": 4
           },
           {
             "dispensaryId": "2020-solutions-north-bellingham",
@@ -2058,6 +1989,28 @@
             "dispensaryId": "cannazone-bellingham",
             "price": 60,
             "quantityAvailable": 2
+          }
+        ]
+      },
+      {
+        "matchKey": "sky high gardens|dipped double strawberries|n a|flower@3.5g",
+        "displayName": "Double Dipped Strawberries",
+        "category": "Flower",
+        "weightGrams": 3.5,
+        "lowPrice": 33.6,
+        "highPrice": 60,
+        "spread": 26.4,
+        "spreadPct": 0.79,
+        "storesCarrying": [
+          {
+            "dispensaryId": "local-roots-everett-128th",
+            "price": 33.6,
+            "quantityAvailable": 15
+          },
+          {
+            "dispensaryId": "hangar-420-west",
+            "price": 60,
+            "quantityAvailable": 4
           }
         ]
       },
@@ -2128,12 +2081,39 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 22.5,
-            "quantityAvailable": 20
+            "quantityAvailable": 18
           },
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 40,
             "quantityAvailable": 3
+          }
+        ]
+      },
+      {
+        "matchKey": "|gelato punch sugar wax|concentrate|concentrate|@1g",
+        "displayName": "Gelato Punch 1g Sugar Wax",
+        "category": "Concentrate",
+        "weightGrams": 1,
+        "lowPrice": 8.5,
+        "highPrice": 15,
+        "spread": 6.5,
+        "spreadPct": 0.76,
+        "storesCarrying": [
+          {
+            "dispensaryId": "remedy-tulalip",
+            "price": 8.5,
+            "quantityAvailable": null
+          },
+          {
+            "dispensaryId": "kaleafa-oak-harbor",
+            "price": 14,
+            "quantityAvailable": null
+          },
+          {
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 15,
+            "quantityAvailable": null
           }
         ]
       },
@@ -2150,7 +2130,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 20,
-            "quantityAvailable": 10
+            "quantityAvailable": 9
           },
           {
             "dispensaryId": "2020-solutions-north-bellingham",
@@ -2166,6 +2146,50 @@
             "dispensaryId": "cannazone-bellingham",
             "price": 35,
             "quantityAvailable": 8
+          }
+        ]
+      },
+      {
+        "matchKey": "|lights northern|concentrate|vaporizers@1g",
+        "displayName": "Northern Lights",
+        "category": "Vaporizers",
+        "weightGrams": 1,
+        "lowPrice": 29.75,
+        "highPrice": 52,
+        "spread": 22.25,
+        "spreadPct": 0.75,
+        "storesCarrying": [
+          {
+            "dispensaryId": "remedy-tulalip",
+            "price": 29.75,
+            "quantityAvailable": null
+          },
+          {
+            "dispensaryId": "western-bud-burlington",
+            "price": 52,
+            "quantityAvailable": null
+          }
+        ]
+      },
+      {
+        "matchKey": "sky high gardens|dipped double rosin strawberries|n a|concentrate|rosin@1g",
+        "displayName": "Double Dipped Strawberries 1g Rosin (Sky High Gardens)",
+        "category": "Concentrate",
+        "weightGrams": 1,
+        "lowPrice": 45.6,
+        "highPrice": 80,
+        "spread": 34.4,
+        "spreadPct": 0.75,
+        "storesCarrying": [
+          {
+            "dispensaryId": "local-roots-everett-128th",
+            "price": 45.6,
+            "quantityAvailable": 8
+          },
+          {
+            "dispensaryId": "hangar-420-west",
+            "price": 80,
+            "quantityAvailable": 2
           }
         ]
       },
@@ -2263,6 +2287,28 @@
         ]
       },
       {
+        "matchKey": "skord|ceramic chocolate river|n a|vaporizers@1g",
+        "displayName": "Skord: Chocolate River - Ceramic Cartridge",
+        "category": "Vaporizers",
+        "weightGrams": 1,
+        "lowPrice": 35,
+        "highPrice": 60,
+        "spread": 25,
+        "spreadPct": 0.71,
+        "storesCarrying": [
+          {
+            "dispensaryId": "kush21-everett-evergreen",
+            "price": 35,
+            "quantityAvailable": 7
+          },
+          {
+            "dispensaryId": "hangar-420-west",
+            "price": 60,
+            "quantityAvailable": 1
+          }
+        ]
+      },
+      {
         "matchKey": "phat panda|chicken line n platinum waffles|hybrid|flower@3.5g",
         "displayName": "Chicken N Waffles Platinum Line",
         "category": "Flower",
@@ -2280,6 +2326,28 @@
           {
             "dispensaryId": "cannazone-old-hwy-99",
             "price": 36,
+            "quantityAvailable": 9
+          }
+        ]
+      },
+      {
+        "matchKey": "skord|ceramic souped up|n a|vaporizers@1g",
+        "displayName": "Skord: Souped Up - Ceramic Cartridge",
+        "category": "Vaporizers",
+        "weightGrams": 1,
+        "lowPrice": 35,
+        "highPrice": 60,
+        "spread": 25,
+        "spreadPct": 0.71,
+        "storesCarrying": [
+          {
+            "dispensaryId": "kush21-everett-evergreen",
+            "price": 35,
+            "quantityAvailable": 25
+          },
+          {
+            "dispensaryId": "hangar-420-everett",
+            "price": 60,
             "quantityAvailable": 9
           }
         ]
@@ -2346,7 +2414,7 @@
           {
             "dispensaryId": "hangar-420-west",
             "price": 35,
-            "quantityAvailable": 4
+            "quantityAvailable": 2
           }
         ]
       },
@@ -2429,7 +2497,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 15,
-            "quantityAvailable": 10
+            "quantityAvailable": 9
           },
           {
             "dispensaryId": "kushmart-north",
@@ -2493,7 +2561,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 4.8,
-            "quantityAvailable": 8
+            "quantityAvailable": 7
           },
           {
             "dispensaryId": "salish-coast-cannabis",
@@ -2542,7 +2610,29 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 12.5,
-            "quantityAvailable": 9
+            "quantityAvailable": 8
+          }
+        ]
+      },
+      {
+        "matchKey": "|platinum|preroll|pre rolls@1g",
+        "displayName": "Platinum",
+        "category": "Pre-Rolls",
+        "weightGrams": 1,
+        "lowPrice": 4.2,
+        "highPrice": 7,
+        "spread": 2.8,
+        "spreadPct": 0.67,
+        "storesCarrying": [
+          {
+            "dispensaryId": "kaleafa-oak-harbor",
+            "price": 4.2,
+            "quantityAvailable": null
+          },
+          {
+            "dispensaryId": "210-cannabis-arlington",
+            "price": 7,
+            "quantityAvailable": null
           }
         ]
       },
@@ -2565,28 +2655,6 @@
             "dispensaryId": "happy-time-mt-vernon",
             "price": 30,
             "quantityAvailable": 3
-          }
-        ]
-      },
-      {
-        "matchKey": "|herer jack|preroll|pre rolls@1g",
-        "displayName": "Jack Herer",
-        "category": "Pre-Rolls",
-        "weightGrams": 1,
-        "lowPrice": 6,
-        "highPrice": 10,
-        "spread": 4,
-        "spreadPct": 0.67,
-        "storesCarrying": [
-          {
-            "dispensaryId": "kaleafa-oak-harbor",
-            "price": 6,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "210-cannabis-arlington",
-            "price": 10,
-            "quantityAvailable": null
           }
         ]
       },
@@ -2635,7 +2703,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 28,
-            "quantityAvailable": 1
+            "quantityAvailable": 11
           },
           {
             "dispensaryId": "starbuds-bellingham",
@@ -2689,7 +2757,7 @@
           {
             "dispensaryId": "cannazone-old-hwy-99",
             "price": 16,
-            "quantityAvailable": 2
+            "quantityAvailable": 1
           }
         ]
       },
@@ -2728,7 +2796,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 15,
-            "quantityAvailable": 16
+            "quantityAvailable": 15
           },
           {
             "dispensaryId": "kushmart-north",
@@ -2777,7 +2845,7 @@
           {
             "dispensaryId": "hangar-420-west",
             "price": 35,
-            "quantityAvailable": 3
+            "quantityAvailable": 2
           }
         ]
       },
@@ -2794,7 +2862,7 @@
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 4.8,
-            "quantityAvailable": 10
+            "quantityAvailable": 6
           },
           {
             "dispensaryId": "kushmart-north",
@@ -2816,7 +2884,7 @@
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 30,
-            "quantityAvailable": 10
+            "quantityAvailable": 6
           },
           {
             "dispensaryId": "hangar-420-everett",
@@ -2838,7 +2906,7 @@
           {
             "dispensaryId": "kushmart-north",
             "price": 18,
-            "quantityAvailable": 8
+            "quantityAvailable": 7
           },
           {
             "dispensaryId": "cannazone-bellingham",
@@ -2860,7 +2928,7 @@
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 30,
-            "quantityAvailable": 11
+            "quantityAvailable": 10
           },
           {
             "dispensaryId": "salish-coast-cannabis",
@@ -2887,7 +2955,7 @@
           {
             "dispensaryId": "cannazone-old-hwy-99",
             "price": 58,
-            "quantityAvailable": 9
+            "quantityAvailable": 8
           }
         ]
       },
@@ -2992,12 +3060,12 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 5,
-            "quantityAvailable": 25
+            "quantityAvailable": 24
           },
           {
             "dispensaryId": "kushmart-north",
             "price": 6,
-            "quantityAvailable": 9
+            "quantityAvailable": 6
           },
           {
             "dispensaryId": "the-joint-everett",
@@ -3008,33 +3076,6 @@
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 8,
             "quantityAvailable": 1
-          }
-        ]
-      },
-      {
-        "matchKey": "super fog|fire ion marker permanent tank|indica|vaporizers@1g",
-        "displayName": "FIRE 1g Ion Tank - Permanent Marker",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "lowPrice": 22.5,
-        "highPrice": 36,
-        "spread": 13.5,
-        "spreadPct": 0.6,
-        "storesCarrying": [
-          {
-            "dispensaryId": "kush21-everett-evergreen",
-            "price": 22.5,
-            "quantityAvailable": 1
-          },
-          {
-            "dispensaryId": "local-roots-everett-128th",
-            "price": 24,
-            "quantityAvailable": 3
-          },
-          {
-            "dispensaryId": "the-joint-everett",
-            "price": 36,
-            "quantityAvailable": 2
           }
         ]
       },
@@ -3083,12 +3124,12 @@
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 27,
-            "quantityAvailable": 17
+            "quantityAvailable": 16
           },
           {
             "dispensaryId": "kushmart-north",
             "price": 31.5,
-            "quantityAvailable": 15
+            "quantityAvailable": 14
           },
           {
             "dispensaryId": "kush21-everett-evergreen",
@@ -3176,7 +3217,7 @@
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 24,
-            "quantityAvailable": 4
+            "quantityAvailable": 3
           },
           {
             "dispensaryId": "the-joint-everett",
@@ -3186,7 +3227,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 30.4,
-            "quantityAvailable": 7
+            "quantityAvailable": 6
           },
           {
             "dispensaryId": "hangar-420-west",
@@ -3257,12 +3298,39 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 28,
-            "quantityAvailable": 5
+            "quantityAvailable": 4
           },
           {
             "dispensaryId": "hangar-420-everett",
             "price": 44,
             "quantityAvailable": 3
+          }
+        ]
+      },
+      {
+        "matchKey": "|cbd charlotte s web|indica|flower@3.5g",
+        "displayName": "Charlotte’s Web CBD",
+        "category": "Flower",
+        "weightGrams": 3.5,
+        "lowPrice": 31.5,
+        "highPrice": 49,
+        "spread": 17.5,
+        "spreadPct": 0.56,
+        "storesCarrying": [
+          {
+            "dispensaryId": "northwind-anacortes",
+            "price": 31.5,
+            "quantityAvailable": null
+          },
+          {
+            "dispensaryId": "remedy-tulalip",
+            "price": 42,
+            "quantityAvailable": null
+          },
+          {
+            "dispensaryId": "kaleafa-oak-harbor",
+            "price": 49,
+            "quantityAvailable": null
           }
         ]
       },
@@ -3360,7 +3428,51 @@
           {
             "dispensaryId": "salish-coast-cannabis",
             "price": 35,
-            "quantityAvailable": 4
+            "quantityAvailable": 3
+          }
+        ]
+      },
+      {
+        "matchKey": "foemina|dutch hawaiian|sativa|flower@3.5g",
+        "displayName": "Foemina: Dutch Hawaiian",
+        "category": "Flower",
+        "weightGrams": 3.5,
+        "lowPrice": 20,
+        "highPrice": 31.2,
+        "spread": 11.2,
+        "spreadPct": 0.56,
+        "storesCarrying": [
+          {
+            "dispensaryId": "kush21-everett-evergreen",
+            "price": 20,
+            "quantityAvailable": 10
+          },
+          {
+            "dispensaryId": "evolve-cannabis-bellingham",
+            "price": 31.2,
+            "quantityAvailable": 6
+          }
+        ]
+      },
+      {
+        "matchKey": "flip side|flipside gold slapple|indica|vaporizers@1g",
+        "displayName": "1g Slapple Cartridge - Flipside Gold",
+        "category": "Vaporizers",
+        "weightGrams": 1,
+        "lowPrice": 28.8,
+        "highPrice": 45,
+        "spread": 16.2,
+        "spreadPct": 0.56,
+        "storesCarrying": [
+          {
+            "dispensaryId": "evolve-cannabis-bellingham",
+            "price": 28.8,
+            "quantityAvailable": 10
+          },
+          {
+            "dispensaryId": "salish-coast-cannabis",
+            "price": 45,
+            "quantityAvailable": 7
           }
         ]
       },
@@ -3383,6 +3495,116 @@
             "dispensaryId": "cannazone-bellingham",
             "price": 52,
             "quantityAvailable": 16
+          }
+        ]
+      },
+      {
+        "matchKey": "equinox|kush og|n a|pre rolls@1g",
+        "displayName": "OG Kush 1g Infused Preroll (Equinox)",
+        "category": "Pre-Rolls",
+        "weightGrams": 1,
+        "lowPrice": 7.8,
+        "highPrice": 12,
+        "spread": 4.2,
+        "spreadPct": 0.54,
+        "storesCarrying": [
+          {
+            "dispensaryId": "local-roots-everett-128th",
+            "price": 7.8,
+            "quantityAvailable": 12
+          },
+          {
+            "dispensaryId": "the-joint-everett",
+            "price": 12,
+            "quantityAvailable": 1
+          }
+        ]
+      },
+      {
+        "matchKey": "equinox|milf|n a|pre rolls@1g",
+        "displayName": "MILF 1g Infused Preroll (Equinox)",
+        "category": "Pre-Rolls",
+        "weightGrams": 1,
+        "lowPrice": 7.8,
+        "highPrice": 12,
+        "spread": 4.2,
+        "spreadPct": 0.54,
+        "storesCarrying": [
+          {
+            "dispensaryId": "local-roots-everett-128th",
+            "price": 7.8,
+            "quantityAvailable": 13
+          },
+          {
+            "dispensaryId": "the-joint-everett",
+            "price": 12,
+            "quantityAvailable": 7
+          }
+        ]
+      },
+      {
+        "matchKey": "equinox|crack green|n a|pre rolls@1g",
+        "displayName": "Green Crack 1g Infused Preroll (Equinox)",
+        "category": "Pre-Rolls",
+        "weightGrams": 1,
+        "lowPrice": 7.8,
+        "highPrice": 12,
+        "spread": 4.2,
+        "spreadPct": 0.54,
+        "storesCarrying": [
+          {
+            "dispensaryId": "local-roots-everett-128th",
+            "price": 7.8,
+            "quantityAvailable": 13
+          },
+          {
+            "dispensaryId": "the-joint-everett",
+            "price": 12,
+            "quantityAvailable": 4
+          }
+        ]
+      },
+      {
+        "matchKey": "equinox|death star|n a|pre rolls@1g",
+        "displayName": "Death Star 1g Infused Preroll (Equinox)",
+        "category": "Pre-Rolls",
+        "weightGrams": 1,
+        "lowPrice": 7.8,
+        "highPrice": 12,
+        "spread": 4.2,
+        "spreadPct": 0.54,
+        "storesCarrying": [
+          {
+            "dispensaryId": "local-roots-everett-128th",
+            "price": 7.8,
+            "quantityAvailable": 13
+          },
+          {
+            "dispensaryId": "the-joint-everett",
+            "price": 12,
+            "quantityAvailable": 6
+          }
+        ]
+      },
+      {
+        "matchKey": "torus|gloss grape|indica|flower@3.5g",
+        "displayName": "3.5g Grape Gloss - Torus",
+        "category": "Flower",
+        "weightGrams": 3.5,
+        "lowPrice": 39.6,
+        "highPrice": 60,
+        "spread": 20.4,
+        "spreadPct": 0.52,
+        "storesCarrying": [
+          {
+            "dispensaryId": "evolve-cannabis-bellingham",
+            "price": 39.6,
+            "quantityAvailable": 1
+          },
+          {
+            "dispensaryId": "kushmart-north",
+            "price": 60,
+            "quantityAvailable": 18
           }
         ]
       },
@@ -3436,7 +3658,7 @@
           {
             "dispensaryId": "salish-coast-cannabis",
             "price": 35,
-            "quantityAvailable": 8
+            "quantityAvailable": 7
           },
           {
             "dispensaryId": "the-joint-everett",
@@ -3468,60 +3690,6 @@
         ]
       },
       {
-        "matchKey": "|gelato punch sugar wax|concentrate|concentrate|@1g",
-        "displayName": "Gelato Punch 1g Sugar Wax",
-        "category": "Concentrate",
-        "weightGrams": 1,
-        "lowPrice": 10,
-        "highPrice": 15,
-        "spread": 5,
-        "spreadPct": 0.5,
-        "storesCarrying": [
-          {
-            "dispensaryId": "remedy-tulalip",
-            "price": 10,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "kaleafa-oak-harbor",
-            "price": 14,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 15,
-            "quantityAvailable": null
-          }
-        ]
-      },
-      {
-        "matchKey": "super fog|fire haze ion lemon tank|sativa|vaporizers@1g",
-        "displayName": "FIRE 1g Ion Tank - Super Lemon Haze",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "lowPrice": 24,
-        "highPrice": 36,
-        "spread": 12,
-        "spreadPct": 0.5,
-        "storesCarrying": [
-          {
-            "dispensaryId": "local-roots-everett-128th",
-            "price": 24,
-            "quantityAvailable": 19
-          },
-          {
-            "dispensaryId": "salish-coast-cannabis",
-            "price": 35,
-            "quantityAvailable": 4
-          },
-          {
-            "dispensaryId": "the-joint-everett",
-            "price": 36,
-            "quantityAvailable": 1
-          }
-        ]
-      },
-      {
         "matchKey": "viking cannabis|lemons old school|sativa|flower@3.5g",
         "displayName": "Old School Lemons - 3.5g",
         "category": "Flower",
@@ -3534,7 +3702,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 28,
-            "quantityAvailable": 2
+            "quantityAvailable": 12
           },
           {
             "dispensaryId": "the-joint-everett",
@@ -3544,7 +3712,7 @@
           {
             "dispensaryId": "hangar-420-west",
             "price": 40,
-            "quantityAvailable": 4
+            "quantityAvailable": 3
           },
           {
             "dispensaryId": "cannazone-old-hwy-99",
@@ -3610,12 +3778,12 @@
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 12,
-            "quantityAvailable": 23
+            "quantityAvailable": 22
           },
           {
             "dispensaryId": "kushmart-north",
             "price": 18,
-            "quantityAvailable": 25
+            "quantityAvailable": 24
           }
         ]
       },
@@ -3638,6 +3806,28 @@
             "dispensaryId": "kushmart-north",
             "price": 18,
             "quantityAvailable": 25
+          }
+        ]
+      },
+      {
+        "matchKey": "super fog|fire ion marker permanent tank|indica|vaporizers@1g",
+        "displayName": "FIRE 1g Ion Tank - Permanent Marker",
+        "category": "Vaporizers",
+        "weightGrams": 1,
+        "lowPrice": 24,
+        "highPrice": 36,
+        "spread": 12,
+        "spreadPct": 0.5,
+        "storesCarrying": [
+          {
+            "dispensaryId": "local-roots-everett-128th",
+            "price": 24,
+            "quantityAvailable": 3
+          },
+          {
+            "dispensaryId": "the-joint-everett",
+            "price": 36,
+            "quantityAvailable": 2
           }
         ]
       },
@@ -3686,7 +3876,7 @@
           {
             "dispensaryId": "kushmart-north",
             "price": 160,
-            "quantityAvailable": 8
+            "quantityAvailable": 7
           }
         ]
       },
@@ -3740,28 +3930,6 @@
         ]
       },
       {
-        "matchKey": "|lights northern|concentrate|vaporizers@1g",
-        "displayName": "Northern Lights",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "lowPrice": 35,
-        "highPrice": 52,
-        "spread": 17,
-        "spreadPct": 0.49,
-        "storesCarrying": [
-          {
-            "dispensaryId": "remedy-tulalip",
-            "price": 35,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "western-bud-burlington",
-            "price": 52,
-            "quantityAvailable": null
-          }
-        ]
-      },
-      {
         "matchKey": "phat panda|chem colorado|sativa|flower@3.5g",
         "displayName": "Colorado Chem",
         "category": "Flower",
@@ -3780,60 +3948,6 @@
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 22.4,
             "quantityAvailable": 6
-          }
-        ]
-      },
-      {
-        "matchKey": "|baby khalifa kush turtle|indica|flower@3.5g",
-        "displayName": "Khalifa Kush - Flower - Baby Turtle - 3.5g",
-        "category": "Flower",
-        "weightGrams": 3.5,
-        "lowPrice": 37.1,
-        "highPrice": 55,
-        "spread": 17.9,
-        "spreadPct": 0.48,
-        "storesCarrying": [
-          {
-            "dispensaryId": "kaleafa-oak-harbor",
-            "price": 37.1,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "remedy-tulalip",
-            "price": 50,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 55,
-            "quantityAvailable": null
-          }
-        ]
-      },
-      {
-        "matchKey": "|hybrid khalifa mints|indica|flower@3.5g",
-        "displayName": "Khalifa Mints - 3.5g Hybrid",
-        "category": "Flower",
-        "weightGrams": 3.5,
-        "lowPrice": 37.1,
-        "highPrice": 55,
-        "spread": 17.9,
-        "spreadPct": 0.48,
-        "storesCarrying": [
-          {
-            "dispensaryId": "kaleafa-oak-harbor",
-            "price": 37.1,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "remedy-tulalip",
-            "price": 50,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 55,
-            "quantityAvailable": null
           }
         ]
       },
@@ -3877,7 +3991,7 @@
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 24,
-            "quantityAvailable": 7
+            "quantityAvailable": 6
           },
           {
             "dispensaryId": "2020-solutions-pacific-highway",
@@ -3941,6 +4055,33 @@
         ]
       },
       {
+        "matchKey": "|berry block|indica|flower@3.5g",
+        "displayName": "Block Berry",
+        "category": "Flower",
+        "weightGrams": 3.5,
+        "lowPrice": 24,
+        "highPrice": 35,
+        "spread": 11,
+        "spreadPct": 0.46,
+        "storesCarrying": [
+          {
+            "dispensaryId": "northwind-anacortes",
+            "price": 24,
+            "quantityAvailable": null
+          },
+          {
+            "dispensaryId": "remedy-tulalip",
+            "price": 30,
+            "quantityAvailable": null
+          },
+          {
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 35,
+            "quantityAvailable": null
+          }
+        ]
+      },
+      {
         "matchKey": "buddies|doh gmo|indica|vaporizers@1g",
         "displayName": "GMO | 1g | DOH",
         "category": "Vaporizers",
@@ -3964,6 +4105,28 @@
             "dispensaryId": "happy-time-mt-vernon",
             "price": 35,
             "quantityAvailable": 3
+          }
+        ]
+      },
+      {
+        "matchKey": "super fog|fire haze ion lemon tank|sativa|vaporizers@1g",
+        "displayName": "FIRE 1g Ion Tank - Super Lemon Haze",
+        "category": "Vaporizers",
+        "weightGrams": 1,
+        "lowPrice": 24,
+        "highPrice": 35,
+        "spread": 11,
+        "spreadPct": 0.46,
+        "storesCarrying": [
+          {
+            "dispensaryId": "local-roots-everett-128th",
+            "price": 24,
+            "quantityAvailable": 17
+          },
+          {
+            "dispensaryId": "salish-coast-cannabis",
+            "price": 35,
+            "quantityAvailable": 4
           }
         ]
       },
@@ -4002,7 +4165,7 @@
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 24,
-            "quantityAvailable": 5
+            "quantityAvailable": 4
           },
           {
             "dispensaryId": "happy-time-mt-vernon",
@@ -4035,6 +4198,28 @@
             "dispensaryId": "cannazone-bellingham",
             "price": 14,
             "quantityAvailable": 12
+          }
+        ]
+      },
+      {
+        "matchKey": "seattle marijuana company|colada j pina s shatter|hybrid|pre rolls@1g",
+        "displayName": "Pina Colada Shatter J's Pre-Roll | 1g",
+        "category": "Pre-Rolls",
+        "weightGrams": 1,
+        "lowPrice": 9.6,
+        "highPrice": 14,
+        "spread": 4.4,
+        "spreadPct": 0.46,
+        "storesCarrying": [
+          {
+            "dispensaryId": "evolve-cannabis-bellingham",
+            "price": 9.6,
+            "quantityAvailable": 7
+          },
+          {
+            "dispensaryId": "cannazone-bellingham",
+            "price": 14,
+            "quantityAvailable": 10
           }
         ]
       },
@@ -4144,7 +4329,7 @@
           {
             "dispensaryId": "starbuds-bellingham",
             "price": 30,
-            "quantityAvailable": 4
+            "quantityAvailable": 3
           }
         ]
       },
@@ -4237,12 +4422,12 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 28,
-            "quantityAvailable": 2
+            "quantityAvailable": 16
           },
           {
             "dispensaryId": "salish-coast-cannabis",
             "price": 30,
-            "quantityAvailable": 4
+            "quantityAvailable": 3
           },
           {
             "dispensaryId": "starbuds-bellingham",
@@ -4257,29 +4442,7 @@
           {
             "dispensaryId": "hangar-420-west",
             "price": 40,
-            "quantityAvailable": 4
-          }
-        ]
-      },
-      {
-        "matchKey": "dougie|blunt cheesecake distillate huckleberry s|sativa|pre rolls@1g",
-        "displayName": "Dougie: Huckleberry Cheesecake (S) 1pk/ - Distillate Infused Blunt",
-        "category": "Pre-Rolls",
-        "weightGrams": 1,
-        "lowPrice": 14,
-        "highPrice": 20,
-        "spread": 6,
-        "spreadPct": 0.43,
-        "storesCarrying": [
-          {
-            "dispensaryId": "cannazone-bellingham",
-            "price": 14,
-            "quantityAvailable": 1
-          },
-          {
-            "dispensaryId": "cannazone-old-hwy-99",
-            "price": 20,
-            "quantityAvailable": 2
+            "quantityAvailable": 3
           }
         ]
       },
@@ -4318,7 +4481,7 @@
           {
             "dispensaryId": "kushmart-north",
             "price": 8.4,
-            "quantityAvailable": 7
+            "quantityAvailable": 6
           },
           {
             "dispensaryId": "kush21-everett-evergreen",
@@ -4399,7 +4562,7 @@
           {
             "dispensaryId": "kushmart-north",
             "price": 12.6,
-            "quantityAvailable": 8
+            "quantityAvailable": 7
           },
           {
             "dispensaryId": "kush21-everett-evergreen",
@@ -4421,12 +4584,93 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 45,
-            "quantityAvailable": 6
+            "quantityAvailable": 5
           },
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 64,
             "quantityAvailable": 4
+          }
+        ]
+      },
+      {
+        "matchKey": "|indica mango mixset strawberry|concentrate|vaporizers@1g",
+        "displayName": "Mango Strawberry (Indica) - 1g MIXSET Cartridge",
+        "category": "Vaporizers",
+        "weightGrams": 1,
+        "lowPrice": 29.75,
+        "highPrice": 42,
+        "spread": 12.25,
+        "spreadPct": 0.41,
+        "storesCarrying": [
+          {
+            "dispensaryId": "remedy-tulalip",
+            "price": 29.75,
+            "quantityAvailable": null
+          },
+          {
+            "dispensaryId": "northwind-anacortes",
+            "price": 30,
+            "quantityAvailable": null
+          },
+          {
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 42,
+            "quantityAvailable": null
+          }
+        ]
+      },
+      {
+        "matchKey": "|hybrid mixset pineapple watermelon|concentrate|vaporizers@1g",
+        "displayName": "Watermelon Pineapple (Hybrid) - 1g MIXSET Cartridge",
+        "category": "Vaporizers",
+        "weightGrams": 1,
+        "lowPrice": 29.75,
+        "highPrice": 42,
+        "spread": 12.25,
+        "spreadPct": 0.41,
+        "storesCarrying": [
+          {
+            "dispensaryId": "remedy-tulalip",
+            "price": 29.75,
+            "quantityAvailable": null
+          },
+          {
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 42,
+            "quantityAvailable": null
+          }
+        ]
+      },
+      {
+        "matchKey": "|blue concentrate raz slushie|concentrate|concentrate|@1g",
+        "displayName": "Blue Raz Slushie Concentrate 1G",
+        "category": "Concentrate",
+        "weightGrams": 1,
+        "lowPrice": 21.25,
+        "highPrice": 30,
+        "spread": 8.75,
+        "spreadPct": 0.41,
+        "storesCarrying": [
+          {
+            "dispensaryId": "remedy-tulalip",
+            "price": 21.25,
+            "quantityAvailable": null
+          },
+          {
+            "dispensaryId": "210-cannabis-arlington",
+            "price": 25,
+            "quantityAvailable": null
+          },
+          {
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 30,
+            "quantityAvailable": null
+          },
+          {
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 30,
+            "quantityAvailable": null
           }
         ]
       },
@@ -4487,39 +4731,12 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 20,
-            "quantityAvailable": 12
+            "quantityAvailable": 11
           },
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 28,
             "quantityAvailable": 5
-          }
-        ]
-      },
-      {
-        "matchKey": "|indica mango mixset strawberry|concentrate|vaporizers@1g",
-        "displayName": "Mango Strawberry (Indica) - 1g MIXSET Cartridge",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "lowPrice": 30,
-        "highPrice": 42,
-        "spread": 12,
-        "spreadPct": 0.4,
-        "storesCarrying": [
-          {
-            "dispensaryId": "northwind-anacortes",
-            "price": 30,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "remedy-tulalip",
-            "price": 35,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 42,
-            "quantityAvailable": null
           }
         ]
       },
@@ -4695,7 +4912,7 @@
           {
             "dispensaryId": "cannazone-bellingham",
             "price": 40,
-            "quantityAvailable": 11
+            "quantityAvailable": 10
           },
           {
             "dispensaryId": "cannazone-old-hwy-99",
@@ -4722,7 +4939,7 @@
           {
             "dispensaryId": "kushmart-north",
             "price": 55,
-            "quantityAvailable": 13
+            "quantityAvailable": 12
           }
         ]
       },
@@ -4766,29 +4983,7 @@
           {
             "dispensaryId": "kushmart-north",
             "price": 55,
-            "quantityAvailable": 9
-          }
-        ]
-      },
-      {
-        "matchKey": "fairwinds|1 1 ratio|hybrid|vaporizers@1g",
-        "displayName": "1:1 Ratio Cartridge",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "lowPrice": 28.8,
-        "highPrice": 40,
-        "spread": 11.2,
-        "spreadPct": 0.39,
-        "storesCarrying": [
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 28.8,
-            "quantityAvailable": 2
-          },
-          {
-            "dispensaryId": "kushmart-north",
-            "price": 40,
-            "quantityAvailable": 4
+            "quantityAvailable": 8
           }
         ]
       },
@@ -4881,7 +5076,7 @@
           {
             "dispensaryId": "hangar-420-west",
             "price": 55,
-            "quantityAvailable": 2
+            "quantityAvailable": 1
           }
         ]
       },
@@ -4902,11 +5097,6 @@
           },
           {
             "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 55,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
             "price": 55,
             "quantityAvailable": null
           }
@@ -4947,7 +5137,7 @@
           {
             "dispensaryId": "cannazone-bellingham",
             "price": 40,
-            "quantityAvailable": 5
+            "quantityAvailable": 4
           },
           {
             "dispensaryId": "cannazone-old-hwy-99",
@@ -5001,24 +5191,61 @@
         ]
       },
       {
-        "matchKey": "o geez|express pineapple|sativa|flower@28g",
-        "displayName": "Pineapple Express Flower (O'Geez Ounce)",
-        "category": "Flower",
-        "weightGrams": 28,
-        "lowPrice": 31.5,
-        "highPrice": 43,
-        "spread": 11.5,
+        "matchKey": "|double mint profilez|concentrate|vaporizers@1g",
+        "displayName": "Double Mint Profilez Cartridge 1g",
+        "category": "Vaporizers",
+        "weightGrams": 1,
+        "lowPrice": 25.5,
+        "highPrice": 35,
+        "spread": 9.5,
         "spreadPct": 0.37,
         "storesCarrying": [
           {
-            "dispensaryId": "kushmart-north",
-            "price": 31.5,
-            "quantityAvailable": 12
+            "dispensaryId": "remedy-tulalip",
+            "price": 25.5,
+            "quantityAvailable": null
           },
           {
-            "dispensaryId": "kush21-everett-evergreen",
-            "price": 43,
-            "quantityAvailable": 2
+            "dispensaryId": "kaleafa-oak-harbor",
+            "price": 30,
+            "quantityAvailable": null
+          },
+          {
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 35,
+            "quantityAvailable": null
+          },
+          {
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 35,
+            "quantityAvailable": null
+          }
+        ]
+      },
+      {
+        "matchKey": "|blueberry dream profilez|concentrate|vaporizers@1g",
+        "displayName": "Blueberry Dream Profilez Cartridge 1g",
+        "category": "Vaporizers",
+        "weightGrams": 1,
+        "lowPrice": 25.5,
+        "highPrice": 35,
+        "spread": 9.5,
+        "spreadPct": 0.37,
+        "storesCarrying": [
+          {
+            "dispensaryId": "remedy-tulalip",
+            "price": 25.5,
+            "quantityAvailable": null
+          },
+          {
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 35,
+            "quantityAvailable": null
+          },
+          {
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 35,
+            "quantityAvailable": null
           }
         ]
       },
@@ -5040,7 +5267,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 43,
-            "quantityAvailable": 5
+            "quantityAvailable": 3
           }
         ]
       },
@@ -5057,12 +5284,12 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 3.5,
-            "quantityAvailable": 18
+            "quantityAvailable": 12
           },
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 4.8,
-            "quantityAvailable": 10
+            "quantityAvailable": 9
           }
         ]
       },
@@ -5079,7 +5306,7 @@
           {
             "dispensaryId": "kushmart-north",
             "price": 5.5,
-            "quantityAvailable": 8
+            "quantityAvailable": 5
           },
           {
             "dispensaryId": "kush21-everett-evergreen",
@@ -5123,7 +5350,7 @@
           {
             "dispensaryId": "cannazone-bellingham",
             "price": 44,
-            "quantityAvailable": 4
+            "quantityAvailable": 2
           },
           {
             "dispensaryId": "cannazone-old-hwy-99",
@@ -5160,50 +5387,6 @@
         ]
       },
       {
-        "matchKey": "|khalifa kush|indica|flower@3.5g",
-        "displayName": "Khalifa Kush Flower",
-        "category": "Flower",
-        "weightGrams": 3.5,
-        "lowPrice": 37.1,
-        "highPrice": 50,
-        "spread": 12.9,
-        "spreadPct": 0.35,
-        "storesCarrying": [
-          {
-            "dispensaryId": "kaleafa-oak-harbor",
-            "price": 37.1,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "remedy-tulalip",
-            "price": 50,
-            "quantityAvailable": null
-          }
-        ]
-      },
-      {
-        "matchKey": "|khalifa kush sky violet|indica|flower@3.5g",
-        "displayName": "Violet Sky: Flower (3.5g) - Khalifa Kush",
-        "category": "Flower",
-        "weightGrams": 3.5,
-        "lowPrice": 37.1,
-        "highPrice": 50,
-        "spread": 12.9,
-        "spreadPct": 0.35,
-        "storesCarrying": [
-          {
-            "dispensaryId": "kaleafa-oak-harbor",
-            "price": 37.1,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "remedy-tulalip",
-            "price": 50,
-            "quantityAvailable": null
-          }
-        ]
-      },
-      {
         "matchKey": "plume|hash papaya rosin runtz|indica|vaporizers@1g",
         "displayName": "Plume: Papaya Runtz - Hash Rosin Cartridge",
         "category": "Vaporizers",
@@ -5216,12 +5399,44 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 20,
-            "quantityAvailable": 4
+            "quantityAvailable": 2
           },
           {
             "dispensaryId": "kushmart-north",
             "price": 27,
             "quantityAvailable": 4
+          }
+        ]
+      },
+      {
+        "matchKey": "phat panda|golden pineapple|sativa|flower@3.5g",
+        "displayName": "Golden Pineapple",
+        "category": "Flower",
+        "weightGrams": 3.5,
+        "lowPrice": 22.4,
+        "highPrice": 30,
+        "spread": 7.6,
+        "spreadPct": 0.34,
+        "storesCarrying": [
+          {
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 22.4,
+            "quantityAvailable": 5
+          },
+          {
+            "dispensaryId": "cannazone-old-hwy-99",
+            "price": 30,
+            "quantityAvailable": 5
+          },
+          {
+            "dispensaryId": "cannazone-bellingham",
+            "price": 30,
+            "quantityAvailable": 3
+          },
+          {
+            "dispensaryId": "the-joint-everett",
+            "price": 30,
+            "quantityAvailable": 1
           }
         ]
       },
@@ -5243,7 +5458,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 33.6,
-            "quantityAvailable": 3
+            "quantityAvailable": 2
           },
           {
             "dispensaryId": "happy-time-mt-vernon",
@@ -5269,28 +5484,6 @@
           },
           {
             "dispensaryId": "hangar-420-everett",
-            "price": 75,
-            "quantityAvailable": 1
-          }
-        ]
-      },
-      {
-        "matchKey": "viking cannabis|cherries white|hybrid|flower@7g",
-        "displayName": "White Cherries - 7g",
-        "category": "Flower",
-        "weightGrams": 7,
-        "lowPrice": 56,
-        "highPrice": 75,
-        "spread": 19,
-        "spreadPct": 0.34,
-        "storesCarrying": [
-          {
-            "dispensaryId": "the-joint-everett",
-            "price": 56,
-            "quantityAvailable": 1
-          },
-          {
-            "dispensaryId": "hangar-420-west",
             "price": 75,
             "quantityAvailable": 1
           }
@@ -5358,12 +5551,34 @@
           {
             "dispensaryId": "salish-coast-cannabis",
             "price": 45,
-            "quantityAvailable": 8
+            "quantityAvailable": 7
           },
           {
             "dispensaryId": "hangar-420-everett",
             "price": 60,
             "quantityAvailable": 15
+          }
+        ]
+      },
+      {
+        "matchKey": "ooowee|cough seattle strawberry|sativa|pre rolls@5g",
+        "displayName": "Seattle Strawberry Cough 5pk Preroll (Ooowee)",
+        "category": "Pre-Rolls",
+        "weightGrams": 5,
+        "lowPrice": 18,
+        "highPrice": 24,
+        "spread": 6,
+        "spreadPct": 0.33,
+        "storesCarrying": [
+          {
+            "dispensaryId": "kushmart-north",
+            "price": 18,
+            "quantityAvailable": 17
+          },
+          {
+            "dispensaryId": "evolve-cannabis-bellingham",
+            "price": 24,
+            "quantityAvailable": 10
           }
         ]
       },
@@ -5434,7 +5649,7 @@
           {
             "dispensaryId": "salish-coast-cannabis",
             "price": 45,
-            "quantityAvailable": 14
+            "quantityAvailable": 13
           },
           {
             "dispensaryId": "hangar-420-everett",
@@ -5445,55 +5660,6 @@
             "dispensaryId": "hangar-420-west",
             "price": 60,
             "quantityAvailable": 5
-          }
-        ]
-      },
-      {
-        "matchKey": "|cbd charlotte s web|indica|flower@3.5g",
-        "displayName": "Charlotte’s Web CBD",
-        "category": "Flower",
-        "weightGrams": 3.5,
-        "lowPrice": 31.5,
-        "highPrice": 42,
-        "spread": 10.5,
-        "spreadPct": 0.33,
-        "storesCarrying": [
-          {
-            "dispensaryId": "northwind-anacortes",
-            "price": 31.5,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "kaleafa-oak-harbor",
-            "price": 34.3,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "remedy-tulalip",
-            "price": 42,
-            "quantityAvailable": null
-          }
-        ]
-      },
-      {
-        "matchKey": "|ambition hustler lights northern s|concentrate|vaporizers@1g",
-        "displayName": "Hustler's Ambition - Northern Lights Cartridge 1g",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "lowPrice": 15,
-        "highPrice": 20,
-        "spread": 5,
-        "spreadPct": 0.33,
-        "storesCarrying": [
-          {
-            "dispensaryId": "a-greener-today-lynnwood",
-            "price": 15,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "remedy-tulalip",
-            "price": 20,
-            "quantityAvailable": null
           }
         ]
       },
@@ -5510,12 +5676,12 @@
           {
             "dispensaryId": "salish-coast-cannabis",
             "price": 45,
-            "quantityAvailable": 14
+            "quantityAvailable": 12
           },
           {
             "dispensaryId": "hangar-420-west",
             "price": 60,
-            "quantityAvailable": 12
+            "quantityAvailable": 11
           },
           {
             "dispensaryId": "hangar-420-everett",
@@ -5537,7 +5703,7 @@
           {
             "dispensaryId": "hangar-420-west",
             "price": 15,
-            "quantityAvailable": 4
+            "quantityAvailable": 2
           },
           {
             "dispensaryId": "hangar-420-everett",
@@ -5608,7 +5774,7 @@
           {
             "dispensaryId": "salish-coast-cannabis",
             "price": 30,
-            "quantityAvailable": 7
+            "quantityAvailable": 6
           },
           {
             "dispensaryId": "cannazone-old-hwy-99",
@@ -5657,7 +5823,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 24,
-            "quantityAvailable": 9
+            "quantityAvailable": 8
           }
         ]
       },
@@ -5750,7 +5916,7 @@
           {
             "dispensaryId": "kushmart-north",
             "price": 22.5,
-            "quantityAvailable": 15
+            "quantityAvailable": 13
           },
           {
             "dispensaryId": "kush21-everett-evergreen",
@@ -5799,7 +5965,7 @@
           {
             "dispensaryId": "kushmart-north",
             "price": 20,
-            "quantityAvailable": 18
+            "quantityAvailable": 17
           }
         ]
       },
@@ -5838,7 +6004,7 @@
           {
             "dispensaryId": "kushmart-north",
             "price": 6,
-            "quantityAvailable": 25
+            "quantityAvailable": 23
           },
           {
             "dispensaryId": "2020-solutions-pacific-highway",
@@ -6068,6 +6234,28 @@
         ]
       },
       {
+        "matchKey": "|full spec|wax|concentrate|@1g",
+        "displayName": "Full Spec",
+        "category": "Concentrate",
+        "weightGrams": 1,
+        "lowPrice": 21.25,
+        "highPrice": 28,
+        "spread": 6.75,
+        "spreadPct": 0.32,
+        "storesCarrying": [
+          {
+            "dispensaryId": "remedy-tulalip",
+            "price": 21.25,
+            "quantityAvailable": null
+          },
+          {
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 28,
+            "quantityAvailable": null
+          }
+        ]
+      },
+      {
         "matchKey": "buddies|doh maui wowie|sativa|vaporizers@1g",
         "displayName": "Maui Wowie | 1g | DOH",
         "category": "Vaporizers",
@@ -6102,7 +6290,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 85,
-            "quantityAvailable": 10
+            "quantityAvailable": 9
           },
           {
             "dispensaryId": "2020-solutions-north-bellingham",
@@ -6381,28 +6569,6 @@
         ]
       },
       {
-        "matchKey": "|blue limeade|indica|flower@3.5g",
-        "displayName": "Blue Limeade",
-        "category": "Flower",
-        "weightGrams": 3.5,
-        "lowPrice": 37.1,
-        "highPrice": 48,
-        "spread": 10.9,
-        "spreadPct": 0.29,
-        "storesCarrying": [
-          {
-            "dispensaryId": "kaleafa-oak-harbor",
-            "price": 37.1,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "a-greener-today-lynnwood",
-            "price": 48,
-            "quantityAvailable": null
-          }
-        ]
-      },
-      {
         "matchKey": "lavish|diamonds n pink runtz terps|indica|concentrate|diamonds@1g",
         "displayName": "Lavish: Pink Runtz - Terps N Diamonds",
         "category": "Concentrate",
@@ -6415,7 +6581,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 17.5,
-            "quantityAvailable": 2
+            "quantityAvailable": 1
           },
           {
             "dispensaryId": "kushmart-north",
@@ -6557,33 +6723,6 @@
         ]
       },
       {
-        "matchKey": "sky high gardens|chunk pineapple|indica|flower@3.5g",
-        "displayName": "Pineapple Chunk",
-        "category": "Flower",
-        "weightGrams": 3.5,
-        "lowPrice": 31.2,
-        "highPrice": 40,
-        "spread": 8.8,
-        "spreadPct": 0.28,
-        "storesCarrying": [
-          {
-            "dispensaryId": "local-roots-everett-128th",
-            "price": 31.2,
-            "quantityAvailable": 5
-          },
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 40,
-            "quantityAvailable": 4
-          },
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 40,
-            "quantityAvailable": 6
-          }
-        ]
-      },
-      {
         "matchKey": "super fog|blueberry extract high jef loud muffin plus terpene|indica|vaporizers@1g",
         "displayName": "LOUD High Terpene Extract 1g Jefé Plus - Blueberry Muffin",
         "category": "Vaporizers",
@@ -6596,7 +6735,7 @@
           {
             "dispensaryId": "salish-coast-cannabis",
             "price": 50,
-            "quantityAvailable": 13
+            "quantityAvailable": 8
           },
           {
             "dispensaryId": "hangar-420-west",
@@ -6628,7 +6767,7 @@
           {
             "dispensaryId": "cannazone-old-hwy-99",
             "price": 64,
-            "quantityAvailable": 4
+            "quantityAvailable": 2
           }
         ]
       },
@@ -6672,7 +6811,7 @@
           {
             "dispensaryId": "cannazone-old-hwy-99",
             "price": 32,
-            "quantityAvailable": 22
+            "quantityAvailable": 21
           }
         ]
       },
@@ -6721,7 +6860,7 @@
           {
             "dispensaryId": "hangar-420-west",
             "price": 60,
-            "quantityAvailable": 2
+            "quantityAvailable": 1
           }
         ]
       },
@@ -6738,7 +6877,7 @@
           {
             "dispensaryId": "salish-coast-cannabis",
             "price": 25,
-            "quantityAvailable": 4
+            "quantityAvailable": 3
           },
           {
             "dispensaryId": "2020-solutions-north-bellingham",
@@ -6760,39 +6899,12 @@
           {
             "dispensaryId": "salish-coast-cannabis",
             "price": 25,
-            "quantityAvailable": 7
+            "quantityAvailable": 6
           },
           {
             "dispensaryId": "the-joint-everett",
             "price": 32,
             "quantityAvailable": 2
-          }
-        ]
-      },
-      {
-        "matchKey": "ganja cat|huckleberry|hybrid|vaporizers@1g",
-        "displayName": "Huckleberry Cartridge | 1g",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "lowPrice": 24,
-        "highPrice": 30.4,
-        "spread": 6.4,
-        "spreadPct": 0.27,
-        "storesCarrying": [
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 24,
-            "quantityAvailable": 2
-          },
-          {
-            "dispensaryId": "salish-coast-cannabis",
-            "price": 25,
-            "quantityAvailable": 5
-          },
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 30.4,
-            "quantityAvailable": 1
           }
         ]
       },
@@ -6815,6 +6927,28 @@
             "dispensaryId": "salish-coast-cannabis",
             "price": 29,
             "quantityAvailable": 5
+          }
+        ]
+      },
+      {
+        "matchKey": "torus|1 cherry lemon pastry|n a|flower@3.5g",
+        "displayName": "TORUS Lemon Cherry Pastry #1 3.5g",
+        "category": "Flower",
+        "weightGrams": 3.5,
+        "lowPrice": 55,
+        "highPrice": 70,
+        "spread": 15,
+        "spreadPct": 0.27,
+        "storesCarrying": [
+          {
+            "dispensaryId": "hangar-420-everett",
+            "price": 55,
+            "quantityAvailable": 6
+          },
+          {
+            "dispensaryId": "hangar-420-west",
+            "price": 70,
+            "quantityAvailable": 1
           }
         ]
       },
@@ -6880,7 +7014,7 @@
           {
             "dispensaryId": "cannazone-bellingham",
             "price": 11,
-            "quantityAvailable": 9
+            "quantityAvailable": 8
           },
           {
             "dispensaryId": "cannazone-old-hwy-99",
@@ -6908,6 +7042,33 @@
             "dispensaryId": "the-joint-everett",
             "price": 35,
             "quantityAvailable": 5
+          }
+        ]
+      },
+      {
+        "matchKey": "|mwah|concentrate|vaporizers@1g",
+        "displayName": "MWAH",
+        "category": "Vaporizers",
+        "weightGrams": 1,
+        "lowPrice": 42.5,
+        "highPrice": 54,
+        "spread": 11.5,
+        "spreadPct": 0.27,
+        "storesCarrying": [
+          {
+            "dispensaryId": "remedy-tulalip",
+            "price": 42.5,
+            "quantityAvailable": null
+          },
+          {
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 54,
+            "quantityAvailable": null
+          },
+          {
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 54,
+            "quantityAvailable": null
           }
         ]
       },
@@ -7083,7 +7244,7 @@
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 18,
-            "quantityAvailable": 8
+            "quantityAvailable": 6
           },
           {
             "dispensaryId": "kush21-everett-evergreen",
@@ -7111,28 +7272,6 @@
             "dispensaryId": "the-joint-everett",
             "price": 26,
             "quantityAvailable": 5
-          }
-        ]
-      },
-      {
-        "matchKey": "|berry block|indica|flower@3.5g",
-        "displayName": "Block Berry",
-        "category": "Flower",
-        "weightGrams": 3.5,
-        "lowPrice": 24,
-        "highPrice": 30,
-        "spread": 6,
-        "spreadPct": 0.25,
-        "storesCarrying": [
-          {
-            "dispensaryId": "northwind-anacortes",
-            "price": 24,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "remedy-tulalip",
-            "price": 30,
-            "quantityAvailable": null
           }
         ]
       },
@@ -7177,33 +7316,6 @@
             "dispensaryId": "hangar-420-everett",
             "price": 30,
             "quantityAvailable": 1
-          }
-        ]
-      },
-      {
-        "matchKey": "viking cannabis|aio cured lemons old resin school|sativa|vaporizers@1g",
-        "displayName": "Old School Lemons - Cured Resin - AIO - 1g",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "lowPrice": 32,
-        "highPrice": 40,
-        "spread": 8,
-        "spreadPct": 0.25,
-        "storesCarrying": [
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 32,
-            "quantityAvailable": 1
-          },
-          {
-            "dispensaryId": "salish-coast-cannabis",
-            "price": 33,
-            "quantityAvailable": 6
-          },
-          {
-            "dispensaryId": "starbuds-bellingham",
-            "price": 40,
-            "quantityAvailable": 2
           }
         ]
       },
@@ -7340,12 +7452,12 @@
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 4.8,
-            "quantityAvailable": 14
+            "quantityAvailable": 13
           },
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 6,
-            "quantityAvailable": 4
+            "quantityAvailable": 3
           }
         ]
       },
@@ -7389,7 +7501,7 @@
           {
             "dispensaryId": "hangar-420-west",
             "price": 38,
-            "quantityAvailable": 6
+            "quantityAvailable": 4
           }
         ]
       },
@@ -7548,7 +7660,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 12.8,
-            "quantityAvailable": 6
+            "quantityAvailable": 5
           },
           {
             "dispensaryId": "2020-solutions-north-bellingham",
@@ -7624,6 +7736,33 @@
         ]
       },
       {
+        "matchKey": "viking cannabis|aio cured lemons old resin school|sativa|vaporizers@1g",
+        "displayName": "Old School Lemons - Cured Resin - AIO - 1g",
+        "category": "Vaporizers",
+        "weightGrams": 1,
+        "lowPrice": 32,
+        "highPrice": 40,
+        "spread": 8,
+        "spreadPct": 0.25,
+        "storesCarrying": [
+          {
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 32,
+            "quantityAvailable": 5
+          },
+          {
+            "dispensaryId": "salish-coast-cannabis",
+            "price": 33,
+            "quantityAvailable": 5
+          },
+          {
+            "dispensaryId": "starbuds-bellingham",
+            "price": 40,
+            "quantityAvailable": 2
+          }
+        ]
+      },
+      {
         "matchKey": "supernova|alien candy rock wax|indica|concentrate|wax@1g",
         "displayName": "Supernova: Alien Rock Candy - Wax",
         "category": "Concentrate",
@@ -7636,7 +7775,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 6,
-            "quantityAvailable": 6
+            "quantityAvailable": 5
           },
           {
             "dispensaryId": "kushmart-north",
@@ -7817,7 +7956,7 @@
           {
             "dispensaryId": "salish-coast-cannabis",
             "price": 25,
-            "quantityAvailable": 7
+            "quantityAvailable": 6
           },
           {
             "dispensaryId": "2020-solutions-north-bellingham",
@@ -7839,7 +7978,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 32,
-            "quantityAvailable": 5
+            "quantityAvailable": 4
           },
           {
             "dispensaryId": "the-joint-everett",
@@ -7883,7 +8022,7 @@
           {
             "dispensaryId": "salish-coast-cannabis",
             "price": 25,
-            "quantityAvailable": 7
+            "quantityAvailable": 6
           },
           {
             "dispensaryId": "2020-solutions-pacific-highway",
@@ -8074,7 +8213,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 15,
-            "quantityAvailable": 14
+            "quantityAvailable": 13
           },
           {
             "dispensaryId": "local-roots-everett-128th",
@@ -8140,7 +8279,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 30,
-            "quantityAvailable": 15
+            "quantityAvailable": 14
           },
           {
             "dispensaryId": "local-roots-everett-128th",
@@ -8184,7 +8323,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 30,
-            "quantityAvailable": 15
+            "quantityAvailable": 12
           },
           {
             "dispensaryId": "local-roots-everett-128th",
@@ -8260,7 +8399,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 15,
-            "quantityAvailable": 3
+            "quantityAvailable": 2
           }
         ]
       },
@@ -8292,28 +8431,6 @@
           {
             "dispensaryId": "210-cannabis-arlington",
             "price": 30,
-            "quantityAvailable": null
-          }
-        ]
-      },
-      {
-        "matchKey": "|hybrid mixset pineapple watermelon|concentrate|vaporizers@1g",
-        "displayName": "Watermelon Pineapple (Hybrid) - 1g MIXSET Cartridge",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "lowPrice": 35,
-        "highPrice": 42,
-        "spread": 7,
-        "spreadPct": 0.2,
-        "storesCarrying": [
-          {
-            "dispensaryId": "remedy-tulalip",
-            "price": 35,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 42,
             "quantityAvailable": null
           }
         ]
@@ -8358,7 +8475,7 @@
           {
             "dispensaryId": "hangar-420-west",
             "price": 60,
-            "quantityAvailable": 3
+            "quantityAvailable": 1
           },
           {
             "dispensaryId": "hangar-420-everett",
@@ -8439,38 +8556,6 @@
         ]
       },
       {
-        "matchKey": "|blue concentrate raz slushie|concentrate|concentrate|@1g",
-        "displayName": "Blue Raz Slushie Concentrate 1G",
-        "category": "Concentrate",
-        "weightGrams": 1,
-        "lowPrice": 25,
-        "highPrice": 30,
-        "spread": 5,
-        "spreadPct": 0.2,
-        "storesCarrying": [
-          {
-            "dispensaryId": "remedy-tulalip",
-            "price": 25,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "210-cannabis-arlington",
-            "price": 25,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 30,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 30,
-            "quantityAvailable": null
-          }
-        ]
-      },
-      {
         "matchKey": "bodhi high original|apple doh fritter live resin|hybrid|vaporizers@1g",
         "displayName": "Apple Fritter Live Resin Cartridge | 1g (DOH)",
         "category": "Vaporizers",
@@ -8489,28 +8574,6 @@
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 33.6,
             "quantityAvailable": 6
-          }
-        ]
-      },
-      {
-        "matchKey": "seattle s private reserve|fuel lemonder|n a|flower@3.5g",
-        "displayName": "Seattle's Private Reserve: Lemonder Fuel",
-        "category": "Flower",
-        "weightGrams": 3.5,
-        "lowPrice": 22.5,
-        "highPrice": 27,
-        "spread": 4.5,
-        "spreadPct": 0.2,
-        "storesCarrying": [
-          {
-            "dispensaryId": "kush21-everett-evergreen",
-            "price": 22.5,
-            "quantityAvailable": 1
-          },
-          {
-            "dispensaryId": "local-roots-everett-128th",
-            "price": 27,
-            "quantityAvailable": 11
           }
         ]
       },
@@ -8571,7 +8634,7 @@
           {
             "dispensaryId": "hangar-420-west",
             "price": 50,
-            "quantityAvailable": 6
+            "quantityAvailable": 5
           },
           {
             "dispensaryId": "hangar-420-everett",
@@ -8691,7 +8754,29 @@
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 18,
+            "quantityAvailable": 4
+          }
+        ]
+      },
+      {
+        "matchKey": "fire bros|pinyatti s|n a|flower@3.5g",
+        "displayName": "Fire Bros: Pinyatti (S)",
+        "category": "Flower",
+        "weightGrams": 3.5,
+        "lowPrice": 45,
+        "highPrice": 54,
+        "spread": 9,
+        "spreadPct": 0.2,
+        "storesCarrying": [
+          {
+            "dispensaryId": "cannazone-bellingham",
+            "price": 45,
             "quantityAvailable": 5
+          },
+          {
+            "dispensaryId": "cannazone-old-hwy-99",
+            "price": 54,
+            "quantityAvailable": 3
           }
         ]
       },
@@ -8713,7 +8798,7 @@
           {
             "dispensaryId": "cannazone-old-hwy-99",
             "price": 36,
-            "quantityAvailable": 7
+            "quantityAvailable": 6
           }
         ]
       },
@@ -8823,7 +8908,7 @@
           {
             "dispensaryId": "kushmart-north",
             "price": 24,
-            "quantityAvailable": 6
+            "quantityAvailable": 4
           }
         ]
       },
@@ -8884,7 +8969,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 5,
-            "quantityAvailable": 9
+            "quantityAvailable": 8
           },
           {
             "dispensaryId": "kushmart-north",
@@ -8906,7 +8991,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 25,
-            "quantityAvailable": 2
+            "quantityAvailable": 1
           },
           {
             "dispensaryId": "local-roots-everett-128th",
@@ -8928,7 +9013,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 10,
-            "quantityAvailable": 10
+            "quantityAvailable": 9
           },
           {
             "dispensaryId": "local-roots-everett-128th",
@@ -8950,7 +9035,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 20,
-            "quantityAvailable": 11
+            "quantityAvailable": 9
           },
           {
             "dispensaryId": "local-roots-everett-128th",
@@ -8994,12 +9079,12 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 5,
-            "quantityAvailable": 23
+            "quantityAvailable": 19
           },
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 6,
-            "quantityAvailable": 5
+            "quantityAvailable": 3
           }
         ]
       },
@@ -9104,7 +9189,7 @@
           {
             "dispensaryId": "salish-coast-cannabis",
             "price": 50,
-            "quantityAvailable": 9
+            "quantityAvailable": 8
           },
           {
             "dispensaryId": "hangar-420-everett",
@@ -9153,7 +9238,7 @@
           {
             "dispensaryId": "cannazone-old-hwy-99",
             "price": 15,
-            "quantityAvailable": 6
+            "quantityAvailable": 4
           },
           {
             "dispensaryId": "cannazone-bellingham",
@@ -9197,7 +9282,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 10,
-            "quantityAvailable": 7
+            "quantityAvailable": 5
           },
           {
             "dispensaryId": "kushmart-north",
@@ -9273,7 +9358,7 @@
           {
             "dispensaryId": "kushmart-north",
             "price": 6,
-            "quantityAvailable": 12
+            "quantityAvailable": 11
           }
         ]
       },
@@ -9290,7 +9375,7 @@
           {
             "dispensaryId": "cannazone-bellingham",
             "price": 42,
-            "quantityAvailable": 4
+            "quantityAvailable": 1
           },
           {
             "dispensaryId": "cannazone-old-hwy-99",
@@ -9312,7 +9397,7 @@
           {
             "dispensaryId": "cannazone-bellingham",
             "price": 42,
-            "quantityAvailable": 5
+            "quantityAvailable": 4
           },
           {
             "dispensaryId": "cannazone-old-hwy-99",
@@ -9384,6 +9469,28 @@
             "dispensaryId": "the-joint-everett",
             "price": 40,
             "quantityAvailable": 3
+          }
+        ]
+      },
+      {
+        "matchKey": "sky high gardens|chunk pineapple|indica|flower@3.5g",
+        "displayName": "Pineapple Chunk",
+        "category": "Flower",
+        "weightGrams": 3.5,
+        "lowPrice": 33.6,
+        "highPrice": 40,
+        "spread": 6.4,
+        "spreadPct": 0.19,
+        "storesCarrying": [
+          {
+            "dispensaryId": "local-roots-everett-128th",
+            "price": 33.6,
+            "quantityAvailable": 9
+          },
+          {
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 40,
+            "quantityAvailable": 6
           }
         ]
       },
@@ -9469,11 +9576,6 @@
             "quantityAvailable": 4
           },
           {
-            "dispensaryId": "salish-coast-cannabis",
-            "price": 36,
-            "quantityAvailable": 1
-          },
-          {
             "dispensaryId": "cannazone-bellingham",
             "price": 40,
             "quantityAvailable": 4
@@ -9503,6 +9605,28 @@
         ]
       },
       {
+        "matchKey": "fire bros|ape crepe|indica|flower@3.5g",
+        "displayName": "3.5g Crepe Ape - Fire Bros",
+        "category": "Flower",
+        "weightGrams": 3.5,
+        "lowPrice": 32.4,
+        "highPrice": 38.4,
+        "spread": 6,
+        "spreadPct": 0.19,
+        "storesCarrying": [
+          {
+            "dispensaryId": "evolve-cannabis-bellingham",
+            "price": 32.4,
+            "quantityAvailable": 3
+          },
+          {
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 38.4,
+            "quantityAvailable": 9
+          }
+        ]
+      },
+      {
         "matchKey": "bff|baby bs doh flavored live resin shark|indica|vaporizers@1g",
         "displayName": "BS - Baby Shark | Flavored Live Resin | 1g | DOH",
         "category": "Vaporizers",
@@ -9521,6 +9645,28 @@
             "dispensaryId": "the-joint-everett",
             "price": 40,
             "quantityAvailable": 4
+          }
+        ]
+      },
+      {
+        "matchKey": "|airox black mamba sativa|concentrate|vaporizers@1g",
+        "displayName": "AiroX - Black Mamba - Sativa - 1g",
+        "category": "Vaporizers",
+        "weightGrams": 1,
+        "lowPrice": 38.25,
+        "highPrice": 45,
+        "spread": 6.75,
+        "spreadPct": 0.18,
+        "storesCarrying": [
+          {
+            "dispensaryId": "remedy-tulalip",
+            "price": 38.25,
+            "quantityAvailable": null
+          },
+          {
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 45,
+            "quantityAvailable": null
           }
         ]
       },
@@ -9630,7 +9776,7 @@
           {
             "dispensaryId": "kushmart-north",
             "price": 8.4,
-            "quantityAvailable": 6
+            "quantityAvailable": 5
           }
         ]
       },
@@ -9657,114 +9803,6 @@
         ]
       },
       {
-        "matchKey": "|double mint profilez|concentrate|vaporizers@1g",
-        "displayName": "Double Mint Profilez Cartridge 1g",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "lowPrice": 30,
-        "highPrice": 35,
-        "spread": 5,
-        "spreadPct": 0.17,
-        "storesCarrying": [
-          {
-            "dispensaryId": "remedy-tulalip",
-            "price": 30,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "kaleafa-oak-harbor",
-            "price": 30,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 35,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 35,
-            "quantityAvailable": null
-          }
-        ]
-      },
-      {
-        "matchKey": "|blueberry dream profilez|concentrate|vaporizers@1g",
-        "displayName": "Blueberry Dream Profilez Cartridge 1g",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "lowPrice": 30,
-        "highPrice": 35,
-        "spread": 5,
-        "spreadPct": 0.17,
-        "storesCarrying": [
-          {
-            "dispensaryId": "remedy-tulalip",
-            "price": 30,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 35,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 35,
-            "quantityAvailable": null
-          }
-        ]
-      },
-      {
-        "matchKey": "|cobbler peach profilez|concentrate|vaporizers@1g",
-        "displayName": "Peach Cobbler Profilez Cartridge 1g",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "lowPrice": 30,
-        "highPrice": 35,
-        "spread": 5,
-        "spreadPct": 0.17,
-        "storesCarrying": [
-          {
-            "dispensaryId": "remedy-tulalip",
-            "price": 30,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 35,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 35,
-            "quantityAvailable": null
-          }
-        ]
-      },
-      {
-        "matchKey": "|platinum|preroll|pre rolls@1g",
-        "displayName": "Platinum",
-        "category": "Pre-Rolls",
-        "weightGrams": 1,
-        "lowPrice": 6,
-        "highPrice": 7,
-        "spread": 1,
-        "spreadPct": 0.17,
-        "storesCarrying": [
-          {
-            "dispensaryId": "kaleafa-oak-harbor",
-            "price": 6,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "210-cannabis-arlington",
-            "price": 7,
-            "quantityAvailable": null
-          }
-        ]
-      },
-      {
         "matchKey": "ganga cat|flavored ganja guava h i|n a|vaporizers@1g",
         "displayName": "Ganja Cat: Guava (I/H) - Flavored Cartridge",
         "category": "Vaporizers",
@@ -9782,7 +9820,7 @@
           {
             "dispensaryId": "cannazone-bellingham",
             "price": 35,
-            "quantityAvailable": 11
+            "quantityAvailable": 10
           }
         ]
       },
@@ -9804,7 +9842,7 @@
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 28,
-            "quantityAvailable": 5
+            "quantityAvailable": 11
           }
         ]
       },
@@ -9865,7 +9903,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 15,
-            "quantityAvailable": 25
+            "quantityAvailable": 24
           },
           {
             "dispensaryId": "kushmart-north",
@@ -9892,7 +9930,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 17.5,
-            "quantityAvailable": 9
+            "quantityAvailable": 7
           }
         ]
       },
@@ -9953,7 +9991,7 @@
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 4.8,
-            "quantityAvailable": 18
+            "quantityAvailable": 13
           },
           {
             "dispensaryId": "kushmart-north",
@@ -9997,7 +10035,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 30,
-            "quantityAvailable": 14
+            "quantityAvailable": 10
           },
           {
             "dispensaryId": "kushmart-north",
@@ -10046,7 +10084,7 @@
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 18,
-            "quantityAvailable": 6
+            "quantityAvailable": 5
           },
           {
             "dispensaryId": "kushmart-north",
@@ -10068,12 +10106,12 @@
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 15,
-            "quantityAvailable": 13
+            "quantityAvailable": 12
           },
           {
             "dispensaryId": "kushmart-north",
             "price": 17.5,
-            "quantityAvailable": 11
+            "quantityAvailable": 10
           }
         ]
       },
@@ -10090,7 +10128,7 @@
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 21,
-            "quantityAvailable": 6
+            "quantityAvailable": 2
           },
           {
             "dispensaryId": "kushmart-north",
@@ -10134,7 +10172,7 @@
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 18,
-            "quantityAvailable": 7
+            "quantityAvailable": 6
           },
           {
             "dispensaryId": "kushmart-north",
@@ -10354,7 +10392,7 @@
           {
             "dispensaryId": "cannazone-bellingham",
             "price": 50,
-            "quantityAvailable": 10
+            "quantityAvailable": 8
           },
           {
             "dispensaryId": "cannazone-old-hwy-99",
@@ -10376,7 +10414,7 @@
           {
             "dispensaryId": "cannazone-bellingham",
             "price": 50,
-            "quantityAvailable": 6
+            "quantityAvailable": 5
           },
           {
             "dispensaryId": "cannazone-old-hwy-99",
@@ -10579,7 +10617,7 @@
           {
             "dispensaryId": "cannazone-bellingham",
             "price": 14,
-            "quantityAvailable": 5
+            "quantityAvailable": 4
           },
           {
             "dispensaryId": "cannazone-old-hwy-99",
@@ -10606,28 +10644,6 @@
           {
             "dispensaryId": "cannazone-old-hwy-99",
             "price": 16,
-            "quantityAvailable": 4
-          }
-        ]
-      },
-      {
-        "matchKey": "cookies concentrates|cannabis gas grape terps|indica|vaporizers@1g",
-        "displayName": "Grape Gas - Cannabis Terps - Cartridge - 1g",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "lowPrice": 42,
-        "highPrice": 48,
-        "spread": 6,
-        "spreadPct": 0.14,
-        "storesCarrying": [
-          {
-            "dispensaryId": "cannazone-bellingham",
-            "price": 42,
-            "quantityAvailable": 1
-          },
-          {
-            "dispensaryId": "cannazone-old-hwy-99",
-            "price": 48,
             "quantityAvailable": 3
           }
         ]
@@ -10667,12 +10683,12 @@
           {
             "dispensaryId": "cannazone-bellingham",
             "price": 65,
-            "quantityAvailable": 7
+            "quantityAvailable": 6
           },
           {
             "dispensaryId": "cannazone-old-hwy-99",
             "price": 74,
-            "quantityAvailable": 8
+            "quantityAvailable": 6
           }
         ]
       },
@@ -10716,7 +10732,7 @@
           {
             "dispensaryId": "cannazone-old-hwy-99",
             "price": 16,
-            "quantityAvailable": 12
+            "quantityAvailable": 11
           }
         ]
       },
@@ -10743,6 +10759,28 @@
         ]
       },
       {
+        "matchKey": "|ambition hustler lights northern s|concentrate|vaporizers@1g",
+        "displayName": "Hustler's Ambition - Northern Lights Cartridge 1g",
+        "category": "Vaporizers",
+        "weightGrams": 1,
+        "lowPrice": 15,
+        "highPrice": 17,
+        "spread": 2,
+        "spreadPct": 0.13,
+        "storesCarrying": [
+          {
+            "dispensaryId": "a-greener-today-lynnwood",
+            "price": 15,
+            "quantityAvailable": null
+          },
+          {
+            "dispensaryId": "remedy-tulalip",
+            "price": 17,
+            "quantityAvailable": null
+          }
+        ]
+      },
+      {
         "matchKey": "delectable dabs|bho sativa wax|sativa|concentrate|wax@3g",
         "displayName": "Delectable Dabs: Sativa 3pk/ - BHO Wax",
         "category": "Concentrate",
@@ -10760,7 +10798,7 @@
           {
             "dispensaryId": "cannazone-old-hwy-99",
             "price": 34,
-            "quantityAvailable": 8
+            "quantityAvailable": 6
           }
         ]
       },
@@ -10782,7 +10820,7 @@
           {
             "dispensaryId": "kushmart-north",
             "price": 22.5,
-            "quantityAvailable": 15
+            "quantityAvailable": 14
           }
         ]
       },
@@ -10848,7 +10886,7 @@
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 9,
-            "quantityAvailable": 2
+            "quantityAvailable": 1
           }
         ]
       },
@@ -10887,7 +10925,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 24,
-            "quantityAvailable": 9
+            "quantityAvailable": 8
           },
           {
             "dispensaryId": "local-roots-everett-128th",
@@ -10919,28 +10957,6 @@
         ]
       },
       {
-        "matchKey": "|full spec|wax|concentrate|@1g",
-        "displayName": "Full Spec",
-        "category": "Concentrate",
-        "weightGrams": 1,
-        "lowPrice": 25,
-        "highPrice": 28,
-        "spread": 3,
-        "spreadPct": 0.12,
-        "storesCarrying": [
-          {
-            "dispensaryId": "remedy-tulalip",
-            "price": 25,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 28,
-            "quantityAvailable": null
-          }
-        ]
-      },
-      {
         "matchKey": "bodhi brands|cherry h high live pure resin trop ultra|hybrid|vaporizers@1g",
         "displayName": "Bodhi High Ultra Pure: Trop Cherry (H) Live Resin Cartridge",
         "category": "Vaporizers",
@@ -10963,6 +10979,28 @@
         ]
       },
       {
+        "matchKey": "torus|cookies key lime|hybrid|flower@3.5g",
+        "displayName": "3.5g Key Lime Cookies - Torus",
+        "category": "Flower",
+        "weightGrams": 3.5,
+        "lowPrice": 39.6,
+        "highPrice": 44,
+        "spread": 4.4,
+        "spreadPct": 0.11,
+        "storesCarrying": [
+          {
+            "dispensaryId": "evolve-cannabis-bellingham",
+            "price": 39.6,
+            "quantityAvailable": 3
+          },
+          {
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 44,
+            "quantityAvailable": 1
+          }
+        ]
+      },
+      {
         "matchKey": "kelso kandy|runtz tropical|hybrid|flower@28g",
         "displayName": "Tropical Runtz 28g Flower (Kelso Kandy Ounce)",
         "category": "Flower",
@@ -10980,7 +11018,7 @@
           {
             "dispensaryId": "kushmart-north",
             "price": 30,
-            "quantityAvailable": 9
+            "quantityAvailable": 7
           }
         ]
       },
@@ -11013,28 +11051,6 @@
             "dispensaryId": "salish-coast-cannabis",
             "price": 40,
             "quantityAvailable": 11
-          }
-        ]
-      },
-      {
-        "matchKey": "plaid jacket|alien cookies miracle|n a|flower@3.5g",
-        "displayName": "Plaid Jacket | Flower | Miracle Alien Cookies",
-        "category": "Flower",
-        "weightGrams": 3.5,
-        "lowPrice": 45,
-        "highPrice": 50,
-        "spread": 5,
-        "spreadPct": 0.11,
-        "storesCarrying": [
-          {
-            "dispensaryId": "the-joint-everett",
-            "price": 45,
-            "quantityAvailable": 1
-          },
-          {
-            "dispensaryId": "salish-coast-cannabis",
-            "price": 50,
-            "quantityAvailable": 1
           }
         ]
       },
@@ -11088,28 +11104,6 @@
         ]
       },
       {
-        "matchKey": "cascade crest|banana h runtz|hybrid|flower@28g",
-        "displayName": "Cascade Crest: Banana Runtz (H)",
-        "category": "Flower",
-        "weightGrams": 28,
-        "lowPrice": 65,
-        "highPrice": 72,
-        "spread": 7,
-        "spreadPct": 0.11,
-        "storesCarrying": [
-          {
-            "dispensaryId": "cannazone-bellingham",
-            "price": 65,
-            "quantityAvailable": 1
-          },
-          {
-            "dispensaryId": "cannazone-old-hwy-99",
-            "price": 72,
-            "quantityAvailable": 1
-          }
-        ]
-      },
-      {
         "matchKey": "the farmers market|apple flavored pie washington|hybrid|vaporizers@1g",
         "displayName": "Washington Apple Pie 1g Flavored Cartridge (The Farmers Market)",
         "category": "Vaporizers",
@@ -11122,11 +11116,33 @@
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 18,
-            "quantityAvailable": 3
+            "quantityAvailable": 2
           },
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 20,
+            "quantityAvailable": 13
+          }
+        ]
+      },
+      {
+        "matchKey": "torus|pop push strawberry|hybrid|flower@3.5g",
+        "displayName": "3.5g Strawberry Push Pop - Torus",
+        "category": "Flower",
+        "weightGrams": 3.5,
+        "lowPrice": 39.6,
+        "highPrice": 44,
+        "spread": 4.4,
+        "spreadPct": 0.11,
+        "storesCarrying": [
+          {
+            "dispensaryId": "evolve-cannabis-bellingham",
+            "price": 39.6,
+            "quantityAvailable": 8
+          },
+          {
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 44,
             "quantityAvailable": 13
           }
         ]
@@ -11210,7 +11226,7 @@
           {
             "dispensaryId": "cannazone-bellingham",
             "price": 45,
-            "quantityAvailable": 3
+            "quantityAvailable": 2
           },
           {
             "dispensaryId": "cannazone-old-hwy-99",
@@ -11259,7 +11275,7 @@
           {
             "dispensaryId": "cannazone-old-hwy-99",
             "price": 50,
-            "quantityAvailable": 8
+            "quantityAvailable": 7
           }
         ]
       },
@@ -11281,7 +11297,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 8,
-            "quantityAvailable": 11
+            "quantityAvailable": 9
           }
         ]
       },
@@ -11386,7 +11402,7 @@
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 18,
-            "quantityAvailable": 17
+            "quantityAvailable": 16
           },
           {
             "dispensaryId": "kush21-everett-evergreen",
@@ -11435,7 +11451,7 @@
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 21,
-            "quantityAvailable": 6
+            "quantityAvailable": 5
           }
         ]
       },
@@ -11484,6 +11500,50 @@
         ]
       },
       {
+        "matchKey": "forbidden farms|governmint oasis premium|hybrid|pre rolls@1g",
+        "displayName": "GovernMint Oasis 1pk/1g - Premium",
+        "category": "Pre-Rolls",
+        "weightGrams": 1,
+        "lowPrice": 2.7,
+        "highPrice": 3,
+        "spread": 0.3,
+        "spreadPct": 0.11,
+        "storesCarrying": [
+          {
+            "dispensaryId": "evolve-cannabis-bellingham",
+            "price": 2.7,
+            "quantityAvailable": 22
+          },
+          {
+            "dispensaryId": "the-joint-everett",
+            "price": 3,
+            "quantityAvailable": 12
+          }
+        ]
+      },
+      {
+        "matchKey": "equinox|cookies girl scout|n a|flower@4.5g",
+        "displayName": "Equinox: Girl Scout Cookies - 4.5g",
+        "category": "Flower",
+        "weightGrams": 4.5,
+        "lowPrice": 20,
+        "highPrice": 22.2,
+        "spread": 2.2,
+        "spreadPct": 0.11,
+        "storesCarrying": [
+          {
+            "dispensaryId": "kush21-everett-evergreen",
+            "price": 20,
+            "quantityAvailable": 7
+          },
+          {
+            "dispensaryId": "local-roots-everett-128th",
+            "price": 22.2,
+            "quantityAvailable": 5
+          }
+        ]
+      },
+      {
         "matchKey": "torus|cold cure i pie rosin zkittlez|n a|concentrate|rosin@1g",
         "displayName": "Torus: Zkittlez Pie (I) - Cold Cure Rosin",
         "category": "Concentrate",
@@ -11502,6 +11562,82 @@
             "dispensaryId": "cannazone-old-hwy-99",
             "price": 82,
             "quantityAvailable": 1
+          }
+        ]
+      },
+      {
+        "matchKey": "|baby khalifa kush turtle|indica|flower@3.5g",
+        "displayName": "Khalifa Kush - Flower - Baby Turtle - 3.5g",
+        "category": "Flower",
+        "weightGrams": 3.5,
+        "lowPrice": 50,
+        "highPrice": 55,
+        "spread": 5,
+        "spreadPct": 0.1,
+        "storesCarrying": [
+          {
+            "dispensaryId": "remedy-tulalip",
+            "price": 50,
+            "quantityAvailable": null
+          },
+          {
+            "dispensaryId": "kaleafa-oak-harbor",
+            "price": 53,
+            "quantityAvailable": null
+          },
+          {
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 55,
+            "quantityAvailable": null
+          }
+        ]
+      },
+      {
+        "matchKey": "|hybrid khalifa mints|indica|flower@3.5g",
+        "displayName": "Khalifa Mints - 3.5g Hybrid",
+        "category": "Flower",
+        "weightGrams": 3.5,
+        "lowPrice": 50,
+        "highPrice": 55,
+        "spread": 5,
+        "spreadPct": 0.1,
+        "storesCarrying": [
+          {
+            "dispensaryId": "remedy-tulalip",
+            "price": 50,
+            "quantityAvailable": null
+          },
+          {
+            "dispensaryId": "kaleafa-oak-harbor",
+            "price": 53,
+            "quantityAvailable": null
+          },
+          {
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 55,
+            "quantityAvailable": null
+          }
+        ]
+      },
+      {
+        "matchKey": "|blue limeade|indica|flower@3.5g",
+        "displayName": "Blue Limeade",
+        "category": "Flower",
+        "weightGrams": 3.5,
+        "lowPrice": 48,
+        "highPrice": 53,
+        "spread": 5,
+        "spreadPct": 0.1,
+        "storesCarrying": [
+          {
+            "dispensaryId": "a-greener-today-lynnwood",
+            "price": 48,
+            "quantityAvailable": null
+          },
+          {
+            "dispensaryId": "kaleafa-oak-harbor",
+            "price": 53,
+            "quantityAvailable": null
           }
         ]
       },
@@ -11545,7 +11681,7 @@
           {
             "dispensaryId": "cannazone-old-hwy-99",
             "price": 22,
-            "quantityAvailable": 9
+            "quantityAvailable": 8
           }
         ]
       },
@@ -11567,7 +11703,7 @@
           {
             "dispensaryId": "starbuds-bellingham",
             "price": 11,
-            "quantityAvailable": 10
+            "quantityAvailable": 9
           }
         ]
       },
@@ -11650,7 +11786,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 30,
-            "quantityAvailable": 7
+            "quantityAvailable": 6
           },
           {
             "dispensaryId": "local-roots-everett-128th",
@@ -11792,6 +11928,28 @@
         ]
       },
       {
+        "matchKey": "ooowee|runtz trophy|indica|flower@3.5g",
+        "displayName": "Ooowee: Trophy Runtz",
+        "category": "Flower",
+        "weightGrams": 3.5,
+        "lowPrice": 21,
+        "highPrice": 22.8,
+        "spread": 1.8,
+        "spreadPct": 0.09,
+        "storesCarrying": [
+          {
+            "dispensaryId": "kush21-everett-evergreen",
+            "price": 21,
+            "quantityAvailable": 5
+          },
+          {
+            "dispensaryId": "evolve-cannabis-bellingham",
+            "price": 22.8,
+            "quantityAvailable": 4
+          }
+        ]
+      },
+      {
         "matchKey": "treehaus|cosmic crispy hash rosin treat|hybrid|vaporizers@1g",
         "displayName": "Treehaus: Cosmic Crispy Treat - Hash Rosin Disposable",
         "category": "Vaporizers",
@@ -11804,7 +11962,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 30,
-            "quantityAvailable": 10
+            "quantityAvailable": 9
           },
           {
             "dispensaryId": "kushmart-north",
@@ -11848,7 +12006,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 25,
-            "quantityAvailable": 12
+            "quantityAvailable": 11
           },
           {
             "dispensaryId": "local-roots-everett-128th",
@@ -11942,33 +12100,6 @@
             "dispensaryId": "cannazone-bellingham",
             "price": 65,
             "quantityAvailable": 2
-          }
-        ]
-      },
-      {
-        "matchKey": "|mwah|concentrate|vaporizers@1g",
-        "displayName": "MWAH",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "lowPrice": 50,
-        "highPrice": 54,
-        "spread": 4,
-        "spreadPct": 0.08,
-        "storesCarrying": [
-          {
-            "dispensaryId": "remedy-tulalip",
-            "price": 50,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 54,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 54,
-            "quantityAvailable": null
           }
         ]
       },
@@ -12144,7 +12275,7 @@
           {
             "dispensaryId": "cannazone-bellingham",
             "price": 30,
-            "quantityAvailable": 10
+            "quantityAvailable": 7
           },
           {
             "dispensaryId": "cannazone-old-hwy-99",
@@ -12181,28 +12312,6 @@
         ]
       },
       {
-        "matchKey": "super fog|extract high jef loud pacific plus punch terpene|sativa|vaporizers@1g",
-        "displayName": "LOUD High Terpene Extract 1g Jefé Plus - Pacific Punch",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "lowPrice": 60,
-        "highPrice": 64,
-        "spread": 4,
-        "spreadPct": 0.07,
-        "storesCarrying": [
-          {
-            "dispensaryId": "hangar-420-west",
-            "price": 60,
-            "quantityAvailable": 1
-          },
-          {
-            "dispensaryId": "cannazone-old-hwy-99",
-            "price": 64,
-            "quantityAvailable": 2
-          }
-        ]
-      },
-      {
         "matchKey": "viking cannabis|face gas|indica|flower@3.5g",
         "displayName": "Gas Face - 3.5g",
         "category": "Flower",
@@ -12215,38 +12324,16 @@
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 28,
-            "quantityAvailable": 8
+            "quantityAvailable": 12
+          },
+          {
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 28,
+            "quantityAvailable": 9
           },
           {
             "dispensaryId": "salish-coast-cannabis",
             "price": 30,
-            "quantityAvailable": 5
-          }
-        ]
-      },
-      {
-        "matchKey": "buddies|d doh sour|sativa|vaporizers@1g",
-        "displayName": "Sour D | 1g | DOH",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "lowPrice": 24,
-        "highPrice": 25.6,
-        "spread": 1.6,
-        "spreadPct": 0.07,
-        "storesCarrying": [
-          {
-            "dispensaryId": "local-roots-everett-128th",
-            "price": 24,
-            "quantityAvailable": 1
-          },
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 25.6,
-            "quantityAvailable": 5
-          },
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 25.6,
             "quantityAvailable": 5
           }
         ]
@@ -12308,7 +12395,7 @@
           {
             "dispensaryId": "kushmart-north",
             "price": 5.6,
-            "quantityAvailable": 11
+            "quantityAvailable": 9
           },
           {
             "dispensaryId": "kush21-everett-evergreen",
@@ -12352,7 +12439,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 28,
-            "quantityAvailable": 7
+            "quantityAvailable": 6
           },
           {
             "dispensaryId": "kushmart-north",
@@ -12374,7 +12461,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 28,
-            "quantityAvailable": 18
+            "quantityAvailable": 17
           },
           {
             "dispensaryId": "local-roots-everett-128th",
@@ -12396,7 +12483,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 28,
-            "quantityAvailable": 11
+            "quantityAvailable": 9
           },
           {
             "dispensaryId": "local-roots-everett-128th",
@@ -12418,7 +12505,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 22.5,
-            "quantityAvailable": 9
+            "quantityAvailable": 7
           },
           {
             "dispensaryId": "local-roots-everett-128th",
@@ -12489,7 +12576,7 @@
           {
             "dispensaryId": "hangar-420-west",
             "price": 16,
-            "quantityAvailable": 24
+            "quantityAvailable": 20
           }
         ]
       },
@@ -12604,28 +12691,6 @@
         ]
       },
       {
-        "matchKey": "phat panda|cupcakes guava h s|n a|flower@7g",
-        "displayName": "Phat Panda: Guava Cupcakes (S/H)",
-        "category": "Flower",
-        "weightGrams": 7,
-        "lowPrice": 56,
-        "highPrice": 60,
-        "spread": 4,
-        "spreadPct": 0.07,
-        "storesCarrying": [
-          {
-            "dispensaryId": "cannazone-old-hwy-99",
-            "price": 56,
-            "quantityAvailable": 1
-          },
-          {
-            "dispensaryId": "cannazone-bellingham",
-            "price": 60,
-            "quantityAvailable": 1
-          }
-        ]
-      },
-      {
         "matchKey": "torus|lobster white|n a|flower@3.5g",
         "displayName": "Torus: White Lobster",
         "category": "Flower",
@@ -12644,11 +12709,28 @@
             "dispensaryId": "hangar-420-everett",
             "price": 70,
             "quantityAvailable": 7
+          }
+        ]
+      },
+      {
+        "matchKey": "|khalifa kush sky violet|indica|flower@3.5g",
+        "displayName": "Violet Sky: Flower (3.5g) - Khalifa Kush",
+        "category": "Flower",
+        "weightGrams": 3.5,
+        "lowPrice": 50,
+        "highPrice": 53,
+        "spread": 3,
+        "spreadPct": 0.06,
+        "storesCarrying": [
+          {
+            "dispensaryId": "remedy-tulalip",
+            "price": 50,
+            "quantityAvailable": null
           },
           {
-            "dispensaryId": "hangar-420-west",
-            "price": 70,
-            "quantityAvailable": 1
+            "dispensaryId": "kaleafa-oak-harbor",
+            "price": 53,
+            "quantityAvailable": null
           }
         ]
       },
@@ -12687,7 +12769,7 @@
           {
             "dispensaryId": "cannazone-old-hwy-99",
             "price": 16,
-            "quantityAvailable": 10
+            "quantityAvailable": 9
           },
           {
             "dispensaryId": "cannazone-bellingham",
@@ -12709,7 +12791,7 @@
           {
             "dispensaryId": "cannazone-old-hwy-99",
             "price": 16,
-            "quantityAvailable": 17
+            "quantityAvailable": 16
           },
           {
             "dispensaryId": "cannazone-bellingham",
@@ -12731,7 +12813,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 85,
-            "quantityAvailable": 6
+            "quantityAvailable": 5
           },
           {
             "dispensaryId": "local-roots-everett-128th",
@@ -12780,7 +12862,7 @@
           {
             "dispensaryId": "kushmart-north",
             "price": 21,
-            "quantityAvailable": 12
+            "quantityAvailable": 10
           }
         ]
       },
@@ -12824,7 +12906,7 @@
           {
             "dispensaryId": "cannazone-old-hwy-99",
             "price": 42,
-            "quantityAvailable": 4
+            "quantityAvailable": 3
           }
         ]
       },
@@ -12841,12 +12923,12 @@
           {
             "dispensaryId": "cannazone-old-hwy-99",
             "price": 20,
-            "quantityAvailable": 9
+            "quantityAvailable": 8
           },
           {
             "dispensaryId": "cannazone-bellingham",
             "price": 21,
-            "quantityAvailable": 4
+            "quantityAvailable": 2
           }
         ]
       },
@@ -12885,7 +12967,7 @@
           {
             "dispensaryId": "cannazone-old-hwy-99",
             "price": 20,
-            "quantityAvailable": 5
+            "quantityAvailable": 2
           },
           {
             "dispensaryId": "cannazone-bellingham",
@@ -13061,7 +13143,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 20,
-            "quantityAvailable": 4
+            "quantityAvailable": 3
           },
           {
             "dispensaryId": "local-roots-everett-128th",
@@ -13137,6 +13219,28 @@
         ]
       },
       {
+        "matchKey": "ganja cat|huckleberry|hybrid|vaporizers@1g",
+        "displayName": "Huckleberry Cartridge | 1g",
+        "category": "Vaporizers",
+        "weightGrams": 1,
+        "lowPrice": 24,
+        "highPrice": 25,
+        "spread": 1,
+        "spreadPct": 0.04,
+        "storesCarrying": [
+          {
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 24,
+            "quantityAvailable": 2
+          },
+          {
+            "dispensaryId": "salish-coast-cannabis",
+            "price": 25,
+            "quantityAvailable": 3
+          }
+        ]
+      },
+      {
         "matchKey": "legit|cherry gold rainier|sativa|pre rolls@1g",
         "displayName": "Rainier Cherry Gold Infused Pre-Roll | 1g",
         "category": "Pre-Rolls",
@@ -13198,7 +13302,7 @@
           {
             "dispensaryId": "cannazone-old-hwy-99",
             "price": 26,
-            "quantityAvailable": 17
+            "quantityAvailable": 16
           }
         ]
       },
@@ -13220,7 +13324,7 @@
           {
             "dispensaryId": "cannazone-old-hwy-99",
             "price": 26,
-            "quantityAvailable": 12
+            "quantityAvailable": 11
           }
         ]
       },
@@ -13264,7 +13368,7 @@
           {
             "dispensaryId": "cannazone-bellingham",
             "price": 25,
-            "quantityAvailable": 3
+            "quantityAvailable": 2
           }
         ]
       },
@@ -13287,28 +13391,6 @@
             "dispensaryId": "cannazone-bellingham",
             "price": 25,
             "quantityAvailable": 5
-          }
-        ]
-      },
-      {
-        "matchKey": "snickle fritz|distillate lemon s twisted|n a|vaporizers@1g",
-        "displayName": "Snickle Fritz: Twisted Lemon (S) - Distillate Cartridge",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "lowPrice": 24,
-        "highPrice": 25,
-        "spread": 1,
-        "spreadPct": 0.04,
-        "storesCarrying": [
-          {
-            "dispensaryId": "cannazone-old-hwy-99",
-            "price": 24,
-            "quantityAvailable": 8
-          },
-          {
-            "dispensaryId": "cannazone-bellingham",
-            "price": 25,
-            "quantityAvailable": 1
           }
         ]
       },
@@ -13391,7 +13473,7 @@
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 24,
-            "quantityAvailable": 18
+            "quantityAvailable": 17
           },
           {
             "dispensaryId": "kush21-everett-evergreen",
@@ -13445,7 +13527,7 @@
           {
             "dispensaryId": "salish-coast-cannabis",
             "price": 25,
-            "quantityAvailable": 6
+            "quantityAvailable": 5
           }
         ]
       },
@@ -13506,12 +13588,12 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 23,
-            "quantityAvailable": 5
+            "quantityAvailable": 4
           },
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 24,
-            "quantityAvailable": 6
+            "quantityAvailable": 5
           }
         ]
       },
@@ -13533,29 +13615,7 @@
           {
             "dispensaryId": "hangar-420-west",
             "price": 35,
-            "quantityAvailable": 7
-          }
-        ]
-      },
-      {
-        "matchKey": "super fog|blueberry cake fire ion space tank|indica|vaporizers@1g",
-        "displayName": "FIRE 1g Ion Tank - Blueberry Space Cake",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "lowPrice": 35,
-        "highPrice": 36,
-        "spread": 1,
-        "spreadPct": 0.03,
-        "storesCarrying": [
-          {
-            "dispensaryId": "salish-coast-cannabis",
-            "price": 35,
-            "quantityAvailable": 1
-          },
-          {
-            "dispensaryId": "the-joint-everett",
-            "price": 36,
-            "quantityAvailable": 3
+            "quantityAvailable": 5
           }
         ]
       },
@@ -13621,29 +13681,7 @@
           {
             "dispensaryId": "cannazone-old-hwy-99",
             "price": 60,
-            "quantityAvailable": 7
-          }
-        ]
-      },
-      {
-        "matchKey": "plaid jacket|cured resin singapore sling|sativa|vaporizers@1g",
-        "displayName": "Plaid Jacket: Singapore Sling - Cured Resin Cartridge",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "lowPrice": 38,
-        "highPrice": 39,
-        "spread": 1,
-        "spreadPct": 0.03,
-        "storesCarrying": [
-          {
-            "dispensaryId": "kush21-everett-evergreen",
-            "price": 38,
-            "quantityAvailable": 2
-          },
-          {
-            "dispensaryId": "local-roots-everett-128th",
-            "price": 39,
-            "quantityAvailable": 7
+            "quantityAvailable": 6
           }
         ]
       },
@@ -13682,7 +13720,7 @@
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 32,
-            "quantityAvailable": 3
+            "quantityAvailable": 2
           },
           {
             "dispensaryId": "2020-solutions-pacific-highway",
@@ -13692,29 +13730,7 @@
           {
             "dispensaryId": "salish-coast-cannabis",
             "price": 33,
-            "quantityAvailable": 3
-          }
-        ]
-      },
-      {
-        "matchKey": "super fog|fire ion ko kush tank|hybrid|vaporizers@1g",
-        "displayName": "FIRE 1g Ion Tank - KO Kush",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "lowPrice": 35,
-        "highPrice": 36,
-        "spread": 1,
-        "spreadPct": 0.03,
-        "storesCarrying": [
-          {
-            "dispensaryId": "salish-coast-cannabis",
-            "price": 35,
-            "quantityAvailable": 5
-          },
-          {
-            "dispensaryId": "the-joint-everett",
-            "price": 36,
-            "quantityAvailable": 2
+            "quantityAvailable": 1
           }
         ]
       },
@@ -13737,28 +13753,6 @@
             "dispensaryId": "cannazone-old-hwy-99",
             "price": 36,
             "quantityAvailable": 7
-          }
-        ]
-      },
-      {
-        "matchKey": "plaid jacket|cured elevated h resin s singapore sling thc|thc|vaporizers@1g",
-        "displayName": "Plaid Jacket: Singapore Sling (S/H) - Elevated THC Cured Resin Cartridge",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "lowPrice": 64,
-        "highPrice": 65,
-        "spread": 1,
-        "spreadPct": 0.02,
-        "storesCarrying": [
-          {
-            "dispensaryId": "cannazone-old-hwy-99",
-            "price": 64,
-            "quantityAvailable": 2
-          },
-          {
-            "dispensaryId": "cannazone-bellingham",
-            "price": 65,
-            "quantityAvailable": 9
           }
         ]
       },
@@ -13863,7 +13857,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 24,
-            "quantityAvailable": 12
+            "quantityAvailable": 9
           },
           {
             "dispensaryId": "kushmart-north",
@@ -14049,7 +14043,7 @@
           {
             "dispensaryId": "kushmart-north",
             "price": 87.5,
-            "quantityAvailable": 5
+            "quantityAvailable": 4
           }
         ]
       },
@@ -14132,7 +14126,7 @@
           {
             "dispensaryId": "hangar-420-west",
             "price": 100,
-            "quantityAvailable": 3
+            "quantityAvailable": 2
           },
           {
             "dispensaryId": "hangar-420-everett",
@@ -14160,28 +14154,6 @@
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 60,
             "quantityAvailable": 2
-          }
-        ]
-      },
-      {
-        "matchKey": "ez puff|doh planet sherb|indica|flower@28g",
-        "displayName": "Planet Sherb (DOH)",
-        "category": "Flower",
-        "weightGrams": 28,
-        "lowPrice": 104,
-        "highPrice": 104,
-        "spread": 0,
-        "spreadPct": 0,
-        "storesCarrying": [
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 104,
-            "quantityAvailable": 2
-          },
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 104,
-            "quantityAvailable": 1
           }
         ]
       },
@@ -14555,7 +14527,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 41.6,
-            "quantityAvailable": 9
+            "quantityAvailable": 8
           }
         ]
       },
@@ -14792,7 +14764,7 @@
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 52,
-            "quantityAvailable": 3
+            "quantityAvailable": 2
           },
           {
             "dispensaryId": "2020-solutions-pacific-highway",
@@ -14836,7 +14808,7 @@
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 12.8,
-            "quantityAvailable": 10
+            "quantityAvailable": 9
           },
           {
             "dispensaryId": "2020-solutions-pacific-highway",
@@ -14990,12 +14962,12 @@
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 12.8,
-            "quantityAvailable": 5
+            "quantityAvailable": 3
           },
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 12.8,
-            "quantityAvailable": 3
+            "quantityAvailable": 2
           }
         ]
       },
@@ -15034,7 +15006,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 16,
-            "quantityAvailable": 2
+            "quantityAvailable": 1
           },
           {
             "dispensaryId": "2020-solutions-north-bellingham",
@@ -15144,7 +15116,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 24,
-            "quantityAvailable": 19
+            "quantityAvailable": 18
           },
           {
             "dispensaryId": "2020-solutions-north-bellingham",
@@ -15166,7 +15138,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 48,
-            "quantityAvailable": 3
+            "quantityAvailable": 2
           },
           {
             "dispensaryId": "2020-solutions-north-bellingham",
@@ -15325,7 +15297,7 @@
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 25.6,
-            "quantityAvailable": 7
+            "quantityAvailable": 6
           }
         ]
       },
@@ -15430,7 +15402,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 20.8,
-            "quantityAvailable": 11
+            "quantityAvailable": 10
           },
           {
             "dispensaryId": "2020-solutions-north-bellingham",
@@ -15518,7 +15490,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 30,
-            "quantityAvailable": 7
+            "quantityAvailable": 5
           },
           {
             "dispensaryId": "local-roots-everett-128th",
@@ -15567,7 +15539,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 11.2,
-            "quantityAvailable": 22
+            "quantityAvailable": 21
           }
         ]
       },
@@ -15606,7 +15578,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 36,
-            "quantityAvailable": 3
+            "quantityAvailable": 2
           },
           {
             "dispensaryId": "2020-solutions-north-bellingham",
@@ -15721,7 +15693,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 32,
-            "quantityAvailable": 6
+            "quantityAvailable": 5
           }
         ]
       },
@@ -15760,12 +15732,12 @@
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 11.2,
-            "quantityAvailable": 25
+            "quantityAvailable": 24
           },
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 11.2,
-            "quantityAvailable": 23
+            "quantityAvailable": 21
           }
         ]
       },
@@ -15848,12 +15820,12 @@
           {
             "dispensaryId": "hangar-420-everett",
             "price": 54,
-            "quantityAvailable": 6
+            "quantityAvailable": 5
           },
           {
             "dispensaryId": "hangar-420-west",
             "price": 54,
-            "quantityAvailable": 6
+            "quantityAvailable": 4
           }
         ]
       },
@@ -16056,28 +16028,6 @@
         ]
       },
       {
-        "matchKey": "emerald twist|hindu kush|indica|flower@3.5g",
-        "displayName": "Hindu Kush",
-        "category": "Flower",
-        "weightGrams": 3.5,
-        "lowPrice": 14.4,
-        "highPrice": 14.4,
-        "spread": 0,
-        "spreadPct": 0,
-        "storesCarrying": [
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 14.4,
-            "quantityAvailable": 6
-          },
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 14.4,
-            "quantityAvailable": 5
-          }
-        ]
-      },
-      {
         "matchKey": "flip side|doh sugar watermelon|indica|vaporizers@1g",
         "displayName": "Watermelon Sugar Disposable | 1g - (DOH)",
         "category": "Vaporizers",
@@ -16095,7 +16045,7 @@
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 36,
-            "quantityAvailable": 7
+            "quantityAvailable": 6
           }
         ]
       },
@@ -16205,28 +16155,6 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 36,
-            "quantityAvailable": 1
-          }
-        ]
-      },
-      {
-        "matchKey": "cascade crest|distillate fruit haze loops|hybrid|vaporizers@1g",
-        "displayName": "Fruit Loops Haze Distillate Disposable | 1g",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "lowPrice": 28,
-        "highPrice": 28,
-        "spread": 0,
-        "spreadPct": 0,
-        "storesCarrying": [
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 28,
-            "quantityAvailable": 1
-          },
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 28,
             "quantityAvailable": 1
           }
         ]
@@ -16354,7 +16282,7 @@
           {
             "dispensaryId": "hangar-420-west",
             "price": 60,
-            "quantityAvailable": 3
+            "quantityAvailable": 2
           },
           {
             "dispensaryId": "hangar-420-everett",
@@ -16469,7 +16397,7 @@
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 36,
-            "quantityAvailable": 3
+            "quantityAvailable": 2
           }
         ]
       },
@@ -16672,28 +16600,6 @@
         ]
       },
       {
-        "matchKey": "|airox black mamba sativa|concentrate|vaporizers@1g",
-        "displayName": "AiroX - Black Mamba - Sativa - 1g",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "lowPrice": 45,
-        "highPrice": 45,
-        "spread": 0,
-        "spreadPct": 0,
-        "storesCarrying": [
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 45,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "remedy-tulalip",
-            "price": 45,
-            "quantityAvailable": null
-          }
-        ]
-      },
-      {
         "matchKey": "|grape profilez stomper|concentrate|vaporizers@1g",
         "displayName": "Grape Stomper Profilez Cartridge 1g",
         "category": "Vaporizers",
@@ -16777,6 +16683,28 @@
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 25,
+            "quantityAvailable": null
+          }
+        ]
+      },
+      {
+        "matchKey": "|cobbler peach profilez|concentrate|vaporizers@1g",
+        "displayName": "Peach Cobbler Profilez Cartridge 1g",
+        "category": "Vaporizers",
+        "weightGrams": 1,
+        "lowPrice": 35,
+        "highPrice": 35,
+        "spread": 0,
+        "spreadPct": 0,
+        "storesCarrying": [
+          {
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 35,
+            "quantityAvailable": null
+          },
+          {
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 35,
             "quantityAvailable": null
           }
         ]
@@ -16909,33 +16837,11 @@
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 22.4,
-            "quantityAvailable": 3
+            "quantityAvailable": 2
           },
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 22.4,
-            "quantityAvailable": 1
-          }
-        ]
-      },
-      {
-        "matchKey": "good vibe tribe|trainwreck|sativa|flower@14g",
-        "displayName": "Trainwreck",
-        "category": "Flower",
-        "weightGrams": 14,
-        "lowPrice": 41.6,
-        "highPrice": 41.6,
-        "spread": 0,
-        "spreadPct": 0,
-        "storesCarrying": [
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 41.6,
-            "quantityAvailable": 10
-          },
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 41.6,
             "quantityAvailable": 1
           }
         ]
@@ -16958,7 +16864,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 56,
-            "quantityAvailable": 2
+            "quantityAvailable": 1
           }
         ]
       },
@@ -17046,7 +16952,7 @@
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 14.4,
-            "quantityAvailable": 6
+            "quantityAvailable": 5
           }
         ]
       },
@@ -17178,7 +17084,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 30.4,
-            "quantityAvailable": 9
+            "quantityAvailable": 8
           }
         ]
       },
@@ -17200,7 +17106,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 30.4,
-            "quantityAvailable": 9
+            "quantityAvailable": 8
           }
         ]
       },
@@ -17266,7 +17172,7 @@
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 24,
-            "quantityAvailable": 13
+            "quantityAvailable": 12
           }
         ]
       },
@@ -17283,7 +17189,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 160,
-            "quantityAvailable": 4
+            "quantityAvailable": 3
           },
           {
             "dispensaryId": "2020-solutions-north-bellingham",
@@ -17310,29 +17216,7 @@
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 7.2,
-            "quantityAvailable": 11
-          }
-        ]
-      },
-      {
-        "matchKey": "green haven|pancakes|indica|flower@3.5g",
-        "displayName": "Pancakes",
-        "category": "Flower",
-        "weightGrams": 3.5,
-        "lowPrice": 24,
-        "highPrice": 24,
-        "spread": 0,
-        "spreadPct": 0,
-        "storesCarrying": [
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 24,
-            "quantityAvailable": 1
-          },
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 24,
-            "quantityAvailable": 21
+            "quantityAvailable": 10
           }
         ]
       },
@@ -17415,7 +17299,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 44,
-            "quantityAvailable": 10
+            "quantityAvailable": 9
           },
           {
             "dispensaryId": "2020-solutions-north-bellingham",
@@ -17469,28 +17353,6 @@
         ]
       },
       {
-        "matchKey": "chill billy boys|herer jack live resin|n a|vaporizers@1g",
-        "displayName": "Chill Billy Boys Cartridge Live Resin Jack Herer",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "lowPrice": 15,
-        "highPrice": 15,
-        "spread": 0,
-        "spreadPct": 0,
-        "storesCarrying": [
-          {
-            "dispensaryId": "starbuds-bellingham",
-            "price": 15,
-            "quantityAvailable": 22
-          },
-          {
-            "dispensaryId": "the-joint-everett",
-            "price": 15,
-            "quantityAvailable": 1
-          }
-        ]
-      },
-      {
         "matchKey": "kelso kandy|berry gelato|hybrid|vaporizers@1g",
         "displayName": "Kelso Kandy | Berry Gelato | Vape Cart",
         "category": "Vaporizers",
@@ -17508,7 +17370,7 @@
           {
             "dispensaryId": "kushmart-north",
             "price": 12,
-            "quantityAvailable": 8
+            "quantityAvailable": 7
           }
         ]
       },
@@ -17574,7 +17436,7 @@
           {
             "dispensaryId": "hangar-420-west",
             "price": 54,
-            "quantityAvailable": 5
+            "quantityAvailable": 4
           }
         ]
       },
@@ -17635,7 +17497,7 @@
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 22.5,
-            "quantityAvailable": 7
+            "quantityAvailable": 6
           },
           {
             "dispensaryId": "kushmart-north",
@@ -17777,28 +17639,6 @@
         ]
       },
       {
-        "matchKey": "111 ranch|1 cold cure doh guava nectar rosin tier|sativa|concentrate|rosin@1g",
-        "displayName": "Guava Nectar Cold Cure Tier 1 Rosin | 1g (DOH)",
-        "category": "Concentrate",
-        "weightGrams": 1,
-        "lowPrice": 56,
-        "highPrice": 56,
-        "spread": 0,
-        "spreadPct": 0,
-        "storesCarrying": [
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 56,
-            "quantityAvailable": 4
-          },
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 56,
-            "quantityAvailable": 1
-          }
-        ]
-      },
-      {
         "matchKey": "headies|boof cold cure rosin super|hybrid|concentrate|rosin@1g",
         "displayName": "Super Boof Cold Cure Rosin | 1g",
         "category": "Concentrate",
@@ -17904,7 +17744,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 68,
-            "quantityAvailable": 4
+            "quantityAvailable": 3
           }
         ]
       },
@@ -17970,7 +17810,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 9.6,
-            "quantityAvailable": 15
+            "quantityAvailable": 14
           }
         ]
       },
@@ -18339,7 +18179,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 16,
-            "quantityAvailable": 2
+            "quantityAvailable": 1
           },
           {
             "dispensaryId": "2020-solutions-north-bellingham",
@@ -18569,28 +18409,6 @@
         ]
       },
       {
-        "matchKey": "|and apples bananas|concentrate|vaporizers@1g",
-        "displayName": "Apples and Bananas",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "lowPrice": 60,
-        "highPrice": 60,
-        "spread": 0,
-        "spreadPct": 0,
-        "storesCarrying": [
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 60,
-            "quantityAvailable": null
-          },
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 60,
-            "quantityAvailable": null
-          }
-        ]
-      },
-      {
         "matchKey": "supernova|live resin tangie|sativa|vaporizers@1g",
         "displayName": "Tangie 1g Live Resin Cartridge (Supernova)",
         "category": "Vaporizers",
@@ -18603,7 +18421,7 @@
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 15,
-            "quantityAvailable": 9
+            "quantityAvailable": 8
           },
           {
             "dispensaryId": "kushmart-north",
@@ -18630,7 +18448,7 @@
           {
             "dispensaryId": "kushmart-north",
             "price": 15,
-            "quantityAvailable": 11
+            "quantityAvailable": 8
           }
         ]
       },
@@ -18669,12 +18487,12 @@
           {
             "dispensaryId": "hangar-420-everett",
             "price": 15,
-            "quantityAvailable": 3
+            "quantityAvailable": 2
           },
           {
             "dispensaryId": "hangar-420-west",
             "price": 15,
-            "quantityAvailable": 3
+            "quantityAvailable": 2
           }
         ]
       },
@@ -18718,7 +18536,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 30.4,
-            "quantityAvailable": 8
+            "quantityAvailable": 5
           }
         ]
       },
@@ -18828,7 +18646,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 12.8,
-            "quantityAvailable": 17
+            "quantityAvailable": 16
           }
         ]
       },
@@ -18867,7 +18685,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 7.2,
-            "quantityAvailable": 8
+            "quantityAvailable": 7
           },
           {
             "dispensaryId": "2020-solutions-north-bellingham",
@@ -18933,7 +18751,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 160,
-            "quantityAvailable": 2
+            "quantityAvailable": 1
           },
           {
             "dispensaryId": "2020-solutions-north-bellingham",
@@ -18955,7 +18773,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 30.4,
-            "quantityAvailable": 4
+            "quantityAvailable": 3
           },
           {
             "dispensaryId": "2020-solutions-north-bellingham",
@@ -19005,28 +18823,6 @@
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 56,
             "quantityAvailable": 3
-          }
-        ]
-      },
-      {
-        "matchKey": "walden|5 doh lights northern|sativa|vaporizers@1g",
-        "displayName": "Northern Lights #5 Cartridge | 1g (DOH)",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "lowPrice": 20.8,
-        "highPrice": 20.8,
-        "spread": 0,
-        "spreadPct": 0,
-        "storesCarrying": [
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 20.8,
-            "quantityAvailable": 1
-          },
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 20.8,
-            "quantityAvailable": 1
           }
         ]
       },
@@ -19087,7 +18883,7 @@
           {
             "dispensaryId": "hangar-420-west",
             "price": 20,
-            "quantityAvailable": 3
+            "quantityAvailable": 2
           },
           {
             "dispensaryId": "hangar-420-everett",
@@ -19307,7 +19103,7 @@
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 25.6,
-            "quantityAvailable": 2
+            "quantityAvailable": 1
           },
           {
             "dispensaryId": "2020-solutions-pacific-highway",
@@ -19466,7 +19262,7 @@
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 36,
-            "quantityAvailable": 7
+            "quantityAvailable": 5
           }
         ]
       },
@@ -19664,7 +19460,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 24,
-            "quantityAvailable": 2
+            "quantityAvailable": 1
           }
         ]
       },
@@ -19818,29 +19614,7 @@
           {
             "dispensaryId": "hangar-420-west",
             "price": 70,
-            "quantityAvailable": 5
-          }
-        ]
-      },
-      {
-        "matchKey": "omg sykes|cookies garlic|n a|flower@3.5g",
-        "displayName": "OMG Garlic Cookies",
-        "category": "Flower",
-        "weightGrams": 3.5,
-        "lowPrice": 20,
-        "highPrice": 20,
-        "spread": 0,
-        "spreadPct": 0,
-        "storesCarrying": [
-          {
-            "dispensaryId": "hangar-420-west",
-            "price": 20,
-            "quantityAvailable": 4
-          },
-          {
-            "dispensaryId": "hangar-420-everett",
-            "price": 20,
-            "quantityAvailable": 1
+            "quantityAvailable": 3
           }
         ]
       },
@@ -19945,12 +19719,34 @@
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 20,
-            "quantityAvailable": 3
+            "quantityAvailable": 2
           },
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 20,
             "quantityAvailable": 3
+          }
+        ]
+      },
+      {
+        "matchKey": "buddies|d doh sour|sativa|vaporizers@1g",
+        "displayName": "Sour D | 1g | DOH",
+        "category": "Vaporizers",
+        "weightGrams": 1,
+        "lowPrice": 25.6,
+        "highPrice": 25.6,
+        "spread": 0,
+        "spreadPct": 0,
+        "storesCarrying": [
+          {
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 25.6,
+            "quantityAvailable": 5
+          },
+          {
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 25.6,
+            "quantityAvailable": 4
           }
         ]
       },
@@ -20104,7 +19900,7 @@
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 36,
-            "quantityAvailable": 2
+            "quantityAvailable": 1
           }
         ]
       },
@@ -20253,7 +20049,7 @@
           {
             "dispensaryId": "cannazone-old-hwy-99",
             "price": 6,
-            "quantityAvailable": 22
+            "quantityAvailable": 20
           },
           {
             "dispensaryId": "cannazone-bellingham",
@@ -20319,7 +20115,7 @@
           {
             "dispensaryId": "cannazone-old-hwy-99",
             "price": 18,
-            "quantityAvailable": 2
+            "quantityAvailable": 1
           },
           {
             "dispensaryId": "cannazone-bellingham",
@@ -20341,7 +20137,7 @@
           {
             "dispensaryId": "cannazone-old-hwy-99",
             "price": 30,
-            "quantityAvailable": 3
+            "quantityAvailable": 2
           },
           {
             "dispensaryId": "cannazone-bellingham",
@@ -20363,7 +20159,7 @@
           {
             "dispensaryId": "cannazone-old-hwy-99",
             "price": 30,
-            "quantityAvailable": 8
+            "quantityAvailable": 7
           },
           {
             "dispensaryId": "cannazone-bellingham",
@@ -20385,7 +20181,7 @@
           {
             "dispensaryId": "cannazone-old-hwy-99",
             "price": 30,
-            "quantityAvailable": 5
+            "quantityAvailable": 4
           },
           {
             "dispensaryId": "cannazone-bellingham",
@@ -20473,7 +20269,7 @@
           {
             "dispensaryId": "cannazone-old-hwy-99",
             "price": 30,
-            "quantityAvailable": 15
+            "quantityAvailable": 14
           },
           {
             "dispensaryId": "cannazone-bellingham",
@@ -20495,7 +20291,7 @@
           {
             "dispensaryId": "cannazone-old-hwy-99",
             "price": 30,
-            "quantityAvailable": 10
+            "quantityAvailable": 9
           },
           {
             "dispensaryId": "cannazone-bellingham",
@@ -20627,7 +20423,7 @@
           {
             "dispensaryId": "kushmart-north",
             "price": 30,
-            "quantityAvailable": 10
+            "quantityAvailable": 8
           },
           {
             "dispensaryId": "local-roots-everett-128th",
@@ -20698,7 +20494,7 @@
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 15,
-            "quantityAvailable": 22
+            "quantityAvailable": 18
           }
         ]
       },
@@ -20764,7 +20560,7 @@
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 7.2,
-            "quantityAvailable": 23
+            "quantityAvailable": 17
           }
         ]
       },
@@ -20781,7 +20577,7 @@
           {
             "dispensaryId": "kushmart-north",
             "price": 7.2,
-            "quantityAvailable": 25
+            "quantityAvailable": 23
           },
           {
             "dispensaryId": "local-roots-everett-128th",
@@ -20803,7 +20599,7 @@
           {
             "dispensaryId": "kushmart-north",
             "price": 12.5,
-            "quantityAvailable": 11
+            "quantityAvailable": 10
           },
           {
             "dispensaryId": "local-roots-everett-128th",
@@ -20830,29 +20626,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 17.5,
-            "quantityAvailable": 24
-          }
-        ]
-      },
-      {
-        "matchKey": "supernova|gsc live resin|indica|vaporizers@1g",
-        "displayName": "GSC Live Resin Cart (SuperNova)",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "lowPrice": 15,
-        "highPrice": 15,
-        "spread": 0,
-        "spreadPct": 0,
-        "storesCarrying": [
-          {
-            "dispensaryId": "kushmart-north",
-            "price": 15,
-            "quantityAvailable": 8
-          },
-          {
-            "dispensaryId": "local-roots-everett-128th",
-            "price": 15,
-            "quantityAvailable": 2
+            "quantityAvailable": 21
           }
         ]
       },
@@ -20874,7 +20648,7 @@
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 6,
-            "quantityAvailable": 18
+            "quantityAvailable": 17
           }
         ]
       },
@@ -20891,7 +20665,7 @@
           {
             "dispensaryId": "local-roots-everett-128th",
             "price": 15,
-            "quantityAvailable": 2
+            "quantityAvailable": 1
           },
           {
             "dispensaryId": "kush21-everett-evergreen",
@@ -21001,12 +20775,12 @@
           {
             "dispensaryId": "hangar-420-everett",
             "price": 14,
-            "quantityAvailable": 14
+            "quantityAvailable": 13
           },
           {
             "dispensaryId": "hangar-420-west",
             "price": 14,
-            "quantityAvailable": 25
+            "quantityAvailable": 22
           }
         ]
       },
@@ -21138,7 +20912,7 @@
           {
             "dispensaryId": "hangar-420-west",
             "price": 14,
-            "quantityAvailable": 7
+            "quantityAvailable": 5
           }
         ]
       },
@@ -21248,7 +21022,7 @@
           {
             "dispensaryId": "hangar-420-west",
             "price": 27,
-            "quantityAvailable": 5
+            "quantityAvailable": 3
           }
         ]
       },
@@ -21314,7 +21088,7 @@
           {
             "dispensaryId": "hangar-420-west",
             "price": 27,
-            "quantityAvailable": 14
+            "quantityAvailable": 12
           }
         ]
       },
@@ -21385,28 +21159,6 @@
         ]
       },
       {
-        "matchKey": "dose extracts|wifi|n a|pre rolls@1g",
-        "displayName": "DOSE WIFI Infused Pre-roll 1g",
-        "category": "Pre-Rolls",
-        "weightGrams": 1,
-        "lowPrice": 15,
-        "highPrice": 15,
-        "spread": 0,
-        "spreadPct": 0,
-        "storesCarrying": [
-          {
-            "dispensaryId": "hangar-420-everett",
-            "price": 15,
-            "quantityAvailable": 3
-          },
-          {
-            "dispensaryId": "hangar-420-west",
-            "price": 15,
-            "quantityAvailable": 25
-          }
-        ]
-      },
-      {
         "matchKey": "dose extracts|blunt cake creme king palm royal|n a|pre rolls@1g",
         "displayName": "DOSE Royal Creme Cake Infused King Palm Blunt 1g",
         "category": "Pre-Rolls",
@@ -21441,7 +21193,7 @@
           {
             "dispensaryId": "hangar-420-everett",
             "price": 15,
-            "quantityAvailable": 4
+            "quantityAvailable": 3
           },
           {
             "dispensaryId": "hangar-420-west",
@@ -21754,7 +21506,7 @@
           {
             "dispensaryId": "hangar-420-west",
             "price": 24,
-            "quantityAvailable": 5
+            "quantityAvailable": 4
           }
         ]
       },
@@ -21803,28 +21555,6 @@
         ]
       },
       {
-        "matchKey": "oz gardenz|cello og|n a|flower@3.5g",
-        "displayName": "Oz Gardenz Cello OG 3.5g",
-        "category": "Flower",
-        "weightGrams": 3.5,
-        "lowPrice": 55,
-        "highPrice": 55,
-        "spread": 0,
-        "spreadPct": 0,
-        "storesCarrying": [
-          {
-            "dispensaryId": "hangar-420-everett",
-            "price": 55,
-            "quantityAvailable": 3
-          },
-          {
-            "dispensaryId": "hangar-420-west",
-            "price": 55,
-            "quantityAvailable": 1
-          }
-        ]
-      },
-      {
         "matchKey": "oz gardenz|black ozg super|n a|flower@3.5g",
         "displayName": "OZG Super Black 3.5g",
         "category": "Flower",
@@ -21864,7 +21594,7 @@
           {
             "dispensaryId": "hangar-420-west",
             "price": 55,
-            "quantityAvailable": 3
+            "quantityAvailable": 2
           }
         ]
       },
@@ -22238,7 +21968,7 @@
           {
             "dispensaryId": "hangar-420-west",
             "price": 55,
-            "quantityAvailable": 4
+            "quantityAvailable": 3
           }
         ]
       },
@@ -22480,7 +22210,7 @@
           {
             "dispensaryId": "hangar-420-west",
             "price": 40,
-            "quantityAvailable": 4
+            "quantityAvailable": 3
           }
         ]
       },
@@ -22524,7 +22254,7 @@
           {
             "dispensaryId": "hangar-420-west",
             "price": 55,
-            "quantityAvailable": 17
+            "quantityAvailable": 16
           }
         ]
       },
@@ -22717,12 +22447,12 @@
           {
             "dispensaryId": "hangar-420-everett",
             "price": 15,
-            "quantityAvailable": 2
+            "quantityAvailable": 1
           },
           {
             "dispensaryId": "hangar-420-west",
             "price": 15,
-            "quantityAvailable": 3
+            "quantityAvailable": 1
           }
         ]
       },
@@ -22881,6 +22611,28 @@
         ]
       },
       {
+        "matchKey": "|i mb popz rocket|n a|vaporizers@1g",
+        "displayName": "MB Rocket Popz (I) Disposable 1g",
+        "category": "Vaporizers",
+        "weightGrams": 1,
+        "lowPrice": 60,
+        "highPrice": 60,
+        "spread": 0,
+        "spreadPct": 0,
+        "storesCarrying": [
+          {
+            "dispensaryId": "hangar-420-west",
+            "price": 60,
+            "quantityAvailable": 4
+          },
+          {
+            "dispensaryId": "hangar-420-everett",
+            "price": 60,
+            "quantityAvailable": 1
+          }
+        ]
+      },
+      {
         "matchKey": "mini budz|blue cruz dream s santa|sativa|flower@3.5g",
         "displayName": "Mini Budz: Blue Dream Santa Cruz (S)",
         "category": "Flower",
@@ -22898,28 +22650,6 @@
           {
             "dispensaryId": "cannazone-old-hwy-99",
             "price": 18,
-            "quantityAvailable": 3
-          }
-        ]
-      },
-      {
-        "matchKey": "phat panda|blue distillate dream pen s|sativa|vaporizers@1g",
-        "displayName": "Panda Pen: Blue Dream (S) - Distillate Cartridge",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "lowPrice": 30,
-        "highPrice": 30,
-        "spread": 0,
-        "spreadPct": 0,
-        "storesCarrying": [
-          {
-            "dispensaryId": "cannazone-bellingham",
-            "price": 30,
-            "quantityAvailable": 1
-          },
-          {
-            "dispensaryId": "cannazone-old-hwy-99",
-            "price": 30,
             "quantityAvailable": 1
           }
         ]
@@ -23602,7 +23332,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 28,
-            "quantityAvailable": 6
+            "quantityAvailable": 4
           }
         ]
       },
@@ -23866,7 +23596,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 38.4,
-            "quantityAvailable": 5
+            "quantityAvailable": 4
           }
         ]
       },
@@ -24059,7 +23789,7 @@
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 25.6,
-            "quantityAvailable": 3
+            "quantityAvailable": 2
           },
           {
             "dispensaryId": "2020-solutions-pacific-highway",
@@ -24125,12 +23855,12 @@
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 12,
-            "quantityAvailable": 2
+            "quantityAvailable": 1
           },
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 12,
-            "quantityAvailable": 3
+            "quantityAvailable": 2
           }
         ]
       },
@@ -24443,28 +24173,6 @@
         ]
       },
       {
-        "matchKey": "phat panda|doh heads lemon|sativa|flower@14g",
-        "displayName": "Lemon Heads (DOH)",
-        "category": "Flower",
-        "weightGrams": 14,
-        "lowPrice": 88,
-        "highPrice": 88,
-        "spread": 0,
-        "spreadPct": 0,
-        "storesCarrying": [
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 88,
-            "quantityAvailable": 1
-          },
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 88,
-            "quantityAvailable": 1
-          }
-        ]
-      },
-      {
         "matchKey": "svin garden signature series|doh krumblez|hybrid|flower@3.5g",
         "displayName": "Krumblez (DOH)",
         "category": "Flower",
@@ -24614,7 +24322,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 24,
-            "quantityAvailable": 5
+            "quantityAvailable": 4
           }
         ]
       },
@@ -25120,7 +24828,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 88,
-            "quantityAvailable": 2
+            "quantityAvailable": 1
           }
         ]
       },
@@ -25186,7 +24894,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 78.4,
-            "quantityAvailable": 3
+            "quantityAvailable": 2
           }
         ]
       },
@@ -25340,7 +25048,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 40,
-            "quantityAvailable": 4
+            "quantityAvailable": 3
           }
         ]
       },
@@ -25604,7 +25312,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 38.4,
-            "quantityAvailable": 7
+            "quantityAvailable": 6
           }
         ]
       },
@@ -25846,7 +25554,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 20,
-            "quantityAvailable": 5
+            "quantityAvailable": 4
           }
         ]
       },
@@ -25863,34 +25571,12 @@
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 16,
-            "quantityAvailable": 12
+            "quantityAvailable": 11
           },
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 16,
             "quantityAvailable": 14
-          }
-        ]
-      },
-      {
-        "matchKey": "treehaus|cake zkittlez|n a|vaporizers@1g",
-        "displayName": "Zkittlez Cake Disposable | 1g",
-        "category": "Vaporizers",
-        "weightGrams": 1,
-        "lowPrice": 40,
-        "highPrice": 40,
-        "spread": 0,
-        "spreadPct": 0,
-        "storesCarrying": [
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 40,
-            "quantityAvailable": 2
-          },
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 40,
-            "quantityAvailable": 1
           }
         ]
       },
@@ -26022,7 +25708,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 25.6,
-            "quantityAvailable": 5
+            "quantityAvailable": 4
           }
         ]
       },
@@ -26176,7 +25862,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 40,
-            "quantityAvailable": 6
+            "quantityAvailable": 5
           }
         ]
       },
@@ -26567,7 +26253,7 @@
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 40,
-            "quantityAvailable": 10
+            "quantityAvailable": 9
           },
           {
             "dispensaryId": "2020-solutions-pacific-highway",
@@ -26748,7 +26434,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 12.8,
-            "quantityAvailable": 17
+            "quantityAvailable": 16
           }
         ]
       },
@@ -26897,7 +26583,7 @@
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 36,
-            "quantityAvailable": 7
+            "quantityAvailable": 6
           },
           {
             "dispensaryId": "2020-solutions-pacific-highway",
@@ -27007,7 +26693,7 @@
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 20.8,
-            "quantityAvailable": 2
+            "quantityAvailable": 1
           },
           {
             "dispensaryId": "2020-solutions-pacific-highway",
@@ -27078,7 +26764,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 33.6,
-            "quantityAvailable": 7
+            "quantityAvailable": 6
           }
         ]
       },
@@ -27095,12 +26781,12 @@
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 12.8,
-            "quantityAvailable": 11
+            "quantityAvailable": 10
           },
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 12.8,
-            "quantityAvailable": 15
+            "quantityAvailable": 14
           }
         ]
       },
@@ -27117,7 +26803,7 @@
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 52,
-            "quantityAvailable": 2
+            "quantityAvailable": 1
           },
           {
             "dispensaryId": "2020-solutions-pacific-highway",
@@ -27315,12 +27001,12 @@
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 36,
-            "quantityAvailable": 3
+            "quantityAvailable": 2
           },
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 36,
-            "quantityAvailable": 7
+            "quantityAvailable": 6
           }
         ]
       },
@@ -27364,7 +27050,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 33.6,
-            "quantityAvailable": 4
+            "quantityAvailable": 3
           }
         ]
       },
@@ -27562,7 +27248,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 33.6,
-            "quantityAvailable": 8
+            "quantityAvailable": 7
           }
         ]
       },
@@ -27738,7 +27424,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 28,
-            "quantityAvailable": 9
+            "quantityAvailable": 8
           }
         ]
       },
@@ -28095,28 +27781,6 @@
         ]
       },
       {
-        "matchKey": "freddy s fuego pirate crystals|doh lobzta pink wax|hybrid|concentrate|wax@1g",
-        "displayName": "Pink Lobzta Pirate Crystals Wax | 1g (DOH)",
-        "category": "Concentrate",
-        "weightGrams": 1,
-        "lowPrice": 24,
-        "highPrice": 24,
-        "spread": 0,
-        "spreadPct": 0,
-        "storesCarrying": [
-          {
-            "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 24,
-            "quantityAvailable": 3
-          },
-          {
-            "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 24,
-            "quantityAvailable": 1
-          }
-        ]
-      },
-      {
         "matchKey": "falcanna thca isolate|olh tiger water wax|thc|concentrate|isolate@1g",
         "displayName": "OLH Wax Isolate Water Tiger THCA 1g",
         "category": "Concentrate",
@@ -28332,7 +27996,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 68,
-            "quantityAvailable": 2
+            "quantityAvailable": 1
           }
         ]
       },
@@ -28376,7 +28040,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 22.4,
-            "quantityAvailable": 2
+            "quantityAvailable": 1
           }
         ]
       },
@@ -28601,23 +28265,23 @@
         ]
       },
       {
-        "matchKey": "hashbreak by torus|blue doh hash powerade rosin|indica hybrid|concentrate|rosin@1g",
+        "matchKey": "torus hash rosin cold cure|blue doh powerade|indica hybrid|concentrate|rosin@1g",
         "displayName": "Blue Powerade Hash Rosin | 1g (DOH)",
         "category": "Concentrate",
         "weightGrams": 1,
-        "lowPrice": 56,
-        "highPrice": 56,
+        "lowPrice": 68,
+        "highPrice": 68,
         "spread": 0,
         "spreadPct": 0,
         "storesCarrying": [
           {
             "dispensaryId": "2020-solutions-north-bellingham",
-            "price": 56,
+            "price": 68,
             "quantityAvailable": 4
           },
           {
             "dispensaryId": "2020-solutions-pacific-highway",
-            "price": 56,
+            "price": 68,
             "quantityAvailable": 3
           }
         ]
@@ -28882,7 +28546,7 @@
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 17.6,
-            "quantityAvailable": 15
+            "quantityAvailable": 14
           }
         ]
       },
@@ -28905,6 +28569,28 @@
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 24,
             "quantityAvailable": 6
+          }
+        ]
+      },
+      {
+        "matchKey": "viking cannabis|510 berry block cured resin|sativa|vaporizers@1g",
+        "displayName": "Block Berry - Cured Resin - 510 Cart - 1g",
+        "category": "Vaporizers",
+        "weightGrams": 1,
+        "lowPrice": 28,
+        "highPrice": 28,
+        "spread": 0,
+        "spreadPct": 0,
+        "storesCarrying": [
+          {
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 28,
+            "quantityAvailable": 7
+          },
+          {
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 28,
+            "quantityAvailable": 4
           }
         ]
       },
@@ -29036,7 +28722,7 @@
           {
             "dispensaryId": "kush21-everett-evergreen",
             "price": 15,
-            "quantityAvailable": 17
+            "quantityAvailable": 15
           }
         ]
       },
@@ -29075,7 +28761,7 @@
           {
             "dispensaryId": "cannazone-old-hwy-99",
             "price": 30,
-            "quantityAvailable": 8
+            "quantityAvailable": 5
           },
           {
             "dispensaryId": "cannazone-bellingham",
@@ -29295,7 +28981,7 @@
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 38.4,
-            "quantityAvailable": 9
+            "quantityAvailable": 8
           },
           {
             "dispensaryId": "2020-solutions-pacific-highway",
@@ -29317,7 +29003,7 @@
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 76,
-            "quantityAvailable": 2
+            "quantityAvailable": 1
           },
           {
             "dispensaryId": "2020-solutions-pacific-highway",
@@ -29383,7 +29069,7 @@
           {
             "dispensaryId": "cannazone-bellingham",
             "price": 30,
-            "quantityAvailable": 3
+            "quantityAvailable": 2
           },
           {
             "dispensaryId": "cannazone-old-hwy-99",
@@ -29405,7 +29091,7 @@
           {
             "dispensaryId": "cannazone-bellingham",
             "price": 30,
-            "quantityAvailable": 2
+            "quantityAvailable": 1
           },
           {
             "dispensaryId": "cannazone-old-hwy-99",
@@ -29498,7 +29184,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 7.2,
-            "quantityAvailable": 7
+            "quantityAvailable": 6
           }
         ]
       },
@@ -29581,7 +29267,7 @@
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 7.2,
-            "quantityAvailable": 4
+            "quantityAvailable": 3
           },
           {
             "dispensaryId": "2020-solutions-pacific-highway",
@@ -29674,7 +29360,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 12,
-            "quantityAvailable": 19
+            "quantityAvailable": 17
           }
         ]
       },
@@ -29691,7 +29377,7 @@
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 12,
-            "quantityAvailable": 13
+            "quantityAvailable": 12
           },
           {
             "dispensaryId": "2020-solutions-pacific-highway",
@@ -29713,7 +29399,7 @@
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 12,
-            "quantityAvailable": 15
+            "quantityAvailable": 14
           },
           {
             "dispensaryId": "2020-solutions-pacific-highway",
@@ -29801,12 +29487,12 @@
           {
             "dispensaryId": "2020-solutions-north-bellingham",
             "price": 44,
-            "quantityAvailable": 9
+            "quantityAvailable": 8
           },
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 44,
-            "quantityAvailable": 9
+            "quantityAvailable": 8
           }
         ]
       },
@@ -29933,7 +29619,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 24,
-            "quantityAvailable": 4
+            "quantityAvailable": 3
           },
           {
             "dispensaryId": "2020-solutions-north-bellingham",
@@ -30109,7 +29795,7 @@
           {
             "dispensaryId": "2020-solutions-pacific-highway",
             "price": 64,
-            "quantityAvailable": 3
+            "quantityAvailable": 2
           },
           {
             "dispensaryId": "2020-solutions-north-bellingham",
@@ -30139,23 +29825,89 @@
             "quantityAvailable": null
           }
         ]
+      },
+      {
+        "matchKey": "viking cannabis|510 cured doh oil resin tanker|indica|vaporizers@1g",
+        "displayName": "Oil Tanker - Cured Resin - 510 Cart - 1g (DOH)",
+        "category": "Vaporizers",
+        "weightGrams": 1,
+        "lowPrice": 28,
+        "highPrice": 28,
+        "spread": 0,
+        "spreadPct": 0,
+        "storesCarrying": [
+          {
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 28,
+            "quantityAvailable": 4
+          },
+          {
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 28,
+            "quantityAvailable": 5
+          }
+        ]
+      },
+      {
+        "matchKey": "viking cannabis|510 cured doh lemons old resin school|sativa|vaporizers@1g",
+        "displayName": "Old School Lemons - Cured Resin - 510 Cart - 1g (DOH)",
+        "category": "Vaporizers",
+        "weightGrams": 1,
+        "lowPrice": 28,
+        "highPrice": 28,
+        "spread": 0,
+        "spreadPct": 0,
+        "storesCarrying": [
+          {
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 28,
+            "quantityAvailable": 4
+          },
+          {
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 28,
+            "quantityAvailable": 7
+          }
+        ]
+      },
+      {
+        "matchKey": "viking cannabis|510 candy cured doh mac resin|sativa|vaporizers@1g",
+        "displayName": "Candy MAC - Cured Resin - 510 Cart - 1g (DOH)",
+        "category": "Vaporizers",
+        "weightGrams": 1,
+        "lowPrice": 28,
+        "highPrice": 28,
+        "spread": 0,
+        "spreadPct": 0,
+        "storesCarrying": [
+          {
+            "dispensaryId": "2020-solutions-north-bellingham",
+            "price": 28,
+            "quantityAvailable": 3
+          },
+          {
+            "dispensaryId": "2020-solutions-pacific-highway",
+            "price": 28,
+            "quantityAvailable": 7
+          }
+        ]
       }
     ],
-    "totalRecords": 30100,
+    "totalRecords": 30530,
     "unmatchedCount": 2,
-    "excludedFlagCount": 4612,
-    "nonComparableCategoryCount": 4764,
-    "placedRecords": 15995,
-    "staleRecords": 4727
+    "excludedFlagCount": 4693,
+    "nonComparableCategoryCount": 4820,
+    "placedRecords": 16694,
+    "staleRecords": 4321
   },
   "excluded": [
     {
       "reason": "nonComparableCategory",
-      "count": 4764
+      "count": 4820
     },
     {
       "reason": "excludedFlag",
-      "count": 4612
+      "count": 4693
     },
     {
       "reason": "unmatched",
@@ -30163,14 +29915,14 @@
     },
     {
       "reason": "stale",
-      "count": 4727
+      "count": 4321
     }
   ],
   "coverage": {
-    "totalRecords": 30100,
-    "placedRecords": 15995,
-    "staleRecords": 4727,
-    "disparityCount": 1332
+    "totalRecords": 30530,
+    "placedRecords": 16694,
+    "staleRecords": 4321,
+    "disparityCount": 1323
   },
-  "generatedAt": "2026-07-27T11:00:05.206Z"
+  "generatedAt": "2026-07-28T11:00:05.961Z"
 }
