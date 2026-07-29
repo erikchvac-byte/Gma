@@ -108,6 +108,17 @@ describe('renderRegionCategoryHtml (the long-tail answer page)', () => {
     })
   })
 
+  it('surfaces the colloquial area-code handle in copy + JSON-LD keywords, never as areaServed', () => {
+    // Bellingham (Whatcom) = 360, western-WA overlay 564.
+    expect(visibleText(html)).toContain('Locals sometimes call the Bellingham area "the 360."')
+    const ld = jsonLd(html)
+    expect(ld.keywords).toContain('the 360')
+    expect(ld.keywords).toContain('564')
+    // Honesty: an NPA is never emitted as a service area.
+    expect(ld.areaServed).toBeUndefined()
+    expect(JSON.stringify(ld)).not.toContain('telephone')
+  })
+
   it('shows the Pacific "as of" date, and omits it on the never-derived epoch', () => {
     expect(visibleText(html)).toContain('as of July 28, 2026')
     const epoch = renderRegionCategoryHtml(bellingham(), 'Concentrate', new Date(0).toISOString(), new Map())
@@ -127,6 +138,11 @@ describe('renderRegionIndexHtml (region landing)', () => {
     expect(html).toContain('<link rel="canonical" href="https://gmaslist.com/compare/bellingham" />')
     expect(html).toContain('href="/compare/concentrate/bellingham"')
     expect(visibleText(html)).toContain('Covers Bellingham.')
+  })
+
+  it('names the area-code handle and keywords it (region landing)', () => {
+    expect(visibleText(html)).toContain('Locals sometimes call the Bellingham area "the 360."')
+    expect(jsonLd(html).keywords).toContain('the 360')
   })
 
   it('carries the not-a-seller positioning disclaimer (shared page() footer)', () => {
