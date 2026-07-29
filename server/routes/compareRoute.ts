@@ -24,6 +24,7 @@ import {
 } from '../utils/regionModel.js'
 import { GA_HEAD_SNIPPET } from './gaSnippet.js'
 import { positioningDisclaimerHtml } from '../utils/positioningDisclaimer.js'
+import { areaCodeKeywords, areaCodeNicknameSentence } from '../utils/areaCodes.js'
 
 // Public SEO / AI-search comparison surface (derivation-3.1, epic-derivation-3).
 // Server-rendered pages that expose the SHIPPED Epic 1 cross-store price-disparity
@@ -482,6 +483,7 @@ function regionDatasetJsonLd(opts: {
   name: string
   description: string
   label: string
+  regionSlug: string
   generatedAt: string
 }) {
   const ld: Record<string, unknown> = {
@@ -501,7 +503,15 @@ function regionDatasetJsonLd(opts: {
       containedInPlace: { '@type': 'State', name: 'Washington' },
     },
     variableMeasured: ['Lowest observed shelf price'],
-    keywords: ['cannabis price comparison', opts.label, 'Washington', 'cheapest cannabis deals'],
+    // Area-code handles ("425", "the 425") are appended as colloquial locality KEYWORDS
+    // only — never as areaServed/telephone (an NPA is a phone prefix, not a service area).
+    keywords: [
+      'cannabis price comparison',
+      opts.label,
+      'Washington',
+      'cheapest cannabis deals',
+      ...areaCodeKeywords(opts.regionSlug),
+    ],
   }
   if (opts.generatedAt && opts.generatedAt !== EPOCH_GENERATED_AT) {
     ld.dateModified = opts.generatedAt
@@ -525,6 +535,7 @@ export function renderRegionIndexHtml(region: Region, generatedAt: string): stri
     name,
     description,
     label: region.label,
+    regionSlug: region.slug,
     generatedAt,
   })
 
@@ -532,6 +543,9 @@ export function renderRegionIndexHtml(region: Region, generatedAt: string): stri
     region.cities.length > 0
       ? `Covers ${joinNames(region.cities.map(escapeHtml))}.`
       : ''
+  // Colloquial area-code handle ("locals call it the 360") — a visible, crawlable token so
+  // this page answers "…in the 360" phrasing. '' when the region has no mapped NPA.
+  const nickname = escapeHtml(areaCodeNicknameSentence(region.slug, region.label))
 
   let body: string
   if (region.categories.length === 0) {
@@ -556,7 +570,7 @@ export function renderRegionIndexHtml(region: Region, generatedAt: string): stri
 ${catList}
       </ul>
 
-      <p class="accounting">${coverage} Based on the lowest observed shelf price for each product carried by ${region.storeCount} licensed ${escapeHtml(region.label)}-area stores.${asOfSentence} Prices are shelf prices, not discounts, and can change without notice. Verify in store.</p>`
+      <p class="accounting">${coverage}${nickname ? ` ${nickname}` : ''} Based on the lowest observed shelf price for each product carried by ${region.storeCount} licensed ${escapeHtml(region.label)}-area stores.${asOfSentence} Prices are shelf prices, not discounts, and can change without notice. Verify in store.</p>`
   }
 
   return page({
@@ -594,9 +608,11 @@ export function renderRegionCategoryHtml(
     name,
     description,
     label: region.label,
+    regionSlug: region.slug,
     generatedAt,
   })
 
+  const nickname = escapeHtml(areaCodeNicknameSentence(region.slug, region.label))
   const all = floorsForCategory(region, category)
   const shown = all.slice(0, MAX_REGION_CATEGORY_ROWS)
 
@@ -626,7 +642,7 @@ export function renderRegionCategoryHtml(
       <ul>
 ${items}
       </ul>
-      <p class="accounting">${all.length} same-product ${escapeHtml(category.toLowerCase())} comparison${all.length === 1 ? '' : 's'} across ${region.storeCount} licensed ${escapeHtml(region.label)}-area stores.${coverage}${capNote} Each row is the lowest observed shelf price for that exact product and weight among the area stores that carry it — a per-product low, not a discount or a category ranking.${asOfSentence} Verify in store.</p>`
+      <p class="accounting">${all.length} same-product ${escapeHtml(category.toLowerCase())} comparison${all.length === 1 ? '' : 's'} across ${region.storeCount} licensed ${escapeHtml(region.label)}-area stores.${coverage}${nickname ? ` ${nickname}` : ''}${capNote} Each row is the lowest observed shelf price for that exact product and weight among the area stores that carry it — a per-product low, not a discount or a category ranking.${asOfSentence} Verify in store.</p>`
   }
 
   return page({

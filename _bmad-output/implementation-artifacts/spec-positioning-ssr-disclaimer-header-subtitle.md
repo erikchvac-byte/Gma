@@ -2,7 +2,7 @@
 title: 'Uniform SSR positioning disclaimer + header subtitle'
 type: 'feature'
 created: '2026-07-28'
-status: 'in-review'
+status: 'done'
 baseline_commit: '2dc82be'
 context:
   - '{project-root}/investigations/positioning-footer-audit-investigation.md'
