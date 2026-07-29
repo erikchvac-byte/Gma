@@ -646,7 +646,7 @@ ${items}
   }
 
   return page({
-    title: `Cheapest ${category} in ${region.label}, WA — cannabis price comparison | Gmas List`,
+    title: `Cheapest ${category} in ${region.label}, WA | Gmas List`,
     description,
     canonical,
     jsonLd,
