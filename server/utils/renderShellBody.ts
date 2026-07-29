@@ -1,4 +1,5 @@
 import type { ApiDataResponse } from '../../client/src/types/index.js'
+import { positioningDisclaimerHtml } from './positioningDisclaimer.js'
 
 // WA WAC 314-55-155 age/health notice, rendered into the crawler-visible server
 // HTML so a non-JS crawler (and the sub-second pre-hydration DOM) sees an age
@@ -59,6 +60,10 @@ export function renderShellBody(data: ApiDataResponse): string {
   return (
     '<h1>Cannabis deals worth the drive at licensed Washington retailers</h1>' +
     `<p>${escapeHtml(AGE_NOTICE)}</p>` +
-    sections
+    sections +
+    // Entity-positioning disclaimer (independent info service, not a seller) — the
+    // audit found this crawler-visible body carried no negation. No class: this body
+    // is spliced inside #root and wiped on hydration, so only the text is load-bearing.
+    positioningDisclaimerHtml()
   )
 }

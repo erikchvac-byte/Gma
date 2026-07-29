@@ -198,3 +198,20 @@ describe('fail-soft (missing/malformed artifact)', () => {
     expect(html).not.toContain('<div id="root">')
   })
 })
+
+describe('positioning disclaimer (shared page() footer)', () => {
+  // Every /compare surface routes through page(); assert the negation footer on the
+  // index and category renderers (region variants share page() — covered in
+  // compareRegionRoute.test.ts). Present even on the fail-soft empty pages.
+  it('appends the not-a-seller disclaimer to the index page', () => {
+    const html = renderIndexHtml(EMPTY_DISPARITY_ROLLUPS_ENVELOPE)
+    expect(html).toContain('not a cannabis seller')
+    expect(html).toContain('href="/about"')
+    expect(html).toContain('class="disclaimer"')
+  })
+
+  it('appends the not-a-seller disclaimer to a category page', () => {
+    const html = renderCategoryHtml('Flower', EMPTY_DISPARITIES_ENVELOPE)
+    expect(html).toContain('not a cannabis seller')
+  })
+})

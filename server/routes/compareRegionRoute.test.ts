@@ -128,6 +128,15 @@ describe('renderRegionIndexHtml (region landing)', () => {
     expect(html).toContain('href="/compare/concentrate/bellingham"')
     expect(visibleText(html)).toContain('Covers Bellingham.')
   })
+
+  it('carries the not-a-seller positioning disclaimer (shared page() footer)', () => {
+    expect(html).toContain('not a cannabis seller')
+    expect(html).toContain('href="/about"')
+    // region category page shares the same footer
+    expect(renderRegionCategoryHtml(bellingham(), 'Concentrate', GENERATED_AT, new Map())).toContain(
+      'not a cannabis seller',
+    )
+  })
 })
 
 describe('GET /compare/:category dispatcher + /compare/:category/:region', () => {

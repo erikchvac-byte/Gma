@@ -84,4 +84,12 @@ describe('renderShellBody', () => {
     expect(empty).toContain('adults 21 and older')
     expect(empty).not.toContain('<section>')
   })
+
+  it('carries the independent-information-service positioning disclaimer for crawlers', () => {
+    // present even when nothing is on special, so the entity framing always travels
+    // with the deal facts a crawler lifts (audit: this body carried no negation)
+    const html = renderShellBody(data([store({ id: 'b', name: 'No Deals', deals: [] })]))
+    expect(html).toContain('not a cannabis seller')
+    expect(html).toContain('href="/about"')
+  })
 })

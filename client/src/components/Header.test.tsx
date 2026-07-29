@@ -10,6 +10,16 @@ describe('Header', () => {
     expect(screen.getByRole('heading', { level: 1, name: 'gmas list' })).toBeInTheDocument()
   })
 
+  it('shows a positioning subtitle without adding a second heading', () => {
+    render(<Header />)
+
+    expect(
+      screen.getByText('Independent guide to WA cannabis deals worth the drive'),
+    ).toBeInTheDocument()
+    // the wordmark must remain the ONLY heading on the page (doc semantics)
+    expect(screen.getAllByRole('heading')).toHaveLength(1)
+  })
+
   it('no longer carries a settings/gear button (vehicle opens from VehicleBar, CAP-5)', () => {
     render(<Header />)
 
