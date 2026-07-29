@@ -6,6 +6,7 @@ import { readPriceVsOwnMedian } from './valueRoute.js'
 import { readRegions } from './compareRoute.js'
 import { parseCity, regionForStore, type Region } from '../utils/regionModel.js'
 import { AGE_NOTICE } from '../utils/renderShellBody.js'
+import { positioningDisclaimerHtml } from '../utils/positioningDisclaimer.js'
 import { GA_HEAD_SNIPPET } from './gaSnippet.js'
 import { socialMetaTags } from '../utils/socialMeta.js'
 
@@ -313,12 +314,7 @@ export function renderStoreHtml(
       ${renderAreaLinksHtml(region)}
 
       <p class="notice">${escapeHtml(AGE_NOTICE)}</p>
-      <p class="notice">
-        Gmas List is an independent information service — not a cannabis seller. It organizes
-        publicly available deals from licensed Washington retailers so shoppers can decide whether a
-        deal is <a href="/about">worth the drive</a>. See <a href="/compare">cross-store price
-        comparisons</a>.
-      </p>
+      ${positioningDisclaimerHtml('notice')}
     </main>
   </body>
 </html>

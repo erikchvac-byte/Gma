@@ -23,6 +23,7 @@ import {
   type Region,
 } from '../utils/regionModel.js'
 import { GA_HEAD_SNIPPET } from './gaSnippet.js'
+import { positioningDisclaimerHtml } from '../utils/positioningDisclaimer.js'
 
 // Public SEO / AI-search comparison surface (derivation-3.1, epic-derivation-3).
 // Server-rendered pages that expose the SHIPPED Epic 1 cross-store price-disparity
@@ -136,12 +137,14 @@ function page(opts: {
       ul { padding-left: 1.1rem; }
       li { margin: 0.35rem 0; }
       .accounting { color: #9fb0b5; font-size: 0.9rem; margin-top: 2.5rem; }
+      .disclaimer { color: #9fb0b5; font-size: 0.9rem; margin-top: 2.5rem; border-top: 1px solid #223; padding-top: 1.25rem; }
     </style>
   </head>
   <body>
     <main>
       <p><a href="/">&larr; Back to the deals</a></p>
 ${opts.bodyHtml}
+      ${positioningDisclaimerHtml('disclaimer')}
     </main>
   </body>
 </html>

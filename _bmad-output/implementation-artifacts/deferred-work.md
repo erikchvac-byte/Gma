@@ -1,5 +1,11 @@
 # Deferred Work
 
+## Deferred from: positioning-footer-audit quick-dev split (2026-07-28)
+
+Erik split the positioning-footer audit's fixes (`investigations/positioning-footer-audit-investigation.md`). Goal #1+#2 (uniform SSR negation footer + header subtitle) taken now via `spec-positioning-ssr-disclaimer-header-subtitle`. Deferred:
+
+- **#3 — Area-code geo discoverability ("best weed in the 425").** Real users use WA telephone area codes (425 Everett/Snohomish, 360 Bellingham/Mount Vernon/Whatcom+Skagit, 206 Seattle, plus 564 overlay) as colloquial region handles — NOT zip codes, despite the phrasing. To be citable for those queries, surface each region's area code(s) as an alias in the region-page copy + JSON-LD `keywords` (e.g. `/compare/<region>` and `/compare/<category>/<region>` in `compareRoute.ts` via `regionModel.ts`). Needs: (a) a static WA region→area-code reference map (area codes are geographic NPAs, stable); (b) an honesty-framing decision (an area code is a phone prefix, not a legal service area — must not imply areaServed beyond WA / must stay a keyword alias, not a claim); (c) decide surfaces — keyword-only vs. visible "Serving the 425/360 area" line. Its own spec + review. NOT started; Erik must name it.
+
 ## Deferred from: code review of real-price-drops-clarity-freshness (2026-07-25)
 
 Surfaced by the 3-layer adversarial review (Blind Hunter + Edge Case Hunter + Acceptance Auditor, Opus 4.8) of the in-app drops explainer + freshness clause. Scope-expanding beyond the story's "surface `generatedAt`" intent, so held:
