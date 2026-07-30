@@ -20,12 +20,19 @@ import { ingestRoute } from './routes/ingestRoute.js'
 import { disparitiesRoute, dealScopeRoute, disparityRollupsRoute, priceVsOwnMedianRoute, regionalPriceFloorRoute } from './routes/valueRoute.js'
 import { refreshGasPrice } from './utils/refreshGasPrice.js'
 import { trailingSlashRedirect } from './middleware/trailingSlashRedirect.js'
+import { crawlerLogger } from './middleware/crawlerLogger.js'
 
 const app = express()
 const PORT = process.env.PORT || 3001
 const REFRESH_INTERVAL_MS = 24 * 60 * 60 * 1000
 
 app.use(express.json())
+
+// Standing crawler-visibility log (investigation discovery-crawl-bottleneck):
+// emits one `[crawler] ...` stdout line per bot request so Render's app logs
+// answer "are Bing/AI bots fetching?" — the question GSC (Google-only) can't.
+// Registered first so it observes every request regardless of route/redirect.
+app.use(crawlerLogger)
 
 // Collapse trailing-slash URL variants (/about/ -> /about) with a 301 before any
 // route runs (SEO audit 2026-07-26). Skips /, /api*, and non-GET methods; see the
