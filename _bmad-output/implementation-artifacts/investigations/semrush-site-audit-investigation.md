@@ -207,3 +207,79 @@ Title lengths: region-category titles run **73–80 chars** (`Cheapest Concentra
 ### Updated Conclusion
 
 **Confidence: High.** Clean bill of health with one honest structural fact: the thinnest 21 pages are the per-store entity pages (18) and region link-hubs (3) — **not** the geo answer pages, which are rich. Nothing is broken, nothing is blocked from crawlers. Two cheap, honesty-safe cleanups: (a) trim the region-category `<title>` boilerplate tail; (b) optionally add one crawlable fact sentence to each store page. Neither is urgent.
+
+## Follow-up: 2026-07-29 (Google Search Console index-status pull) — settles Hypothesis 1 vs 2
+
+Pulled live GSC (sc-domain:gmaslist.com) to answer the one unresolved question: do the thin auto-pages *help or hurt* indexing/citation? Word count can't answer it; index status can.
+
+### New Evidence (GSC, read 2026-07-29)
+
+| GSC surface | Reading |
+| ----------- | ------- |
+| Performance (last 3 mo) | **0 web-search clicks**, impressions ~0. |
+| Indexing → Pages | **1 indexed, 3 not-indexed.** The 3 not-indexed carry ONE reason: **"Page with redirect"** — and they are the homepage's non-canonical variants (`http://gmaslist.com/`, `http://www.gmaslist.com/`, `https://www.gmaslist.com/`), i.e. correct apex/https redirects. |
+| Indexing → reasons | **No "Crawled – currently not indexed" bucket. No "Discovered – currently not indexed" bucket.** Thin content is rejecting *nothing*. |
+| Sitemaps | `sitemap.xml` **Success**, last read **2026-07-29**, **40 pages discovered**, 0 videos. |
+| URL Inspection — `/store/remedy-tulalip` (representative store page) | **"URL is not on Google — Discovered, currently not indexed."** Discovery source: the sitemap. **Last crawl: N/A — Google has never fetched the page.** |
+
+### Finding 7 (Confirmed): the store pages are *uncrawled*, not thin-rejected
+
+Google discovered the 40 sitemap URLs (read today) but has **not crawled** the store/compare pages — the inspected store page shows `Last crawl: N/A`. A page Google has never fetched **cannot** have been judged on word count. So the "21 low word count" warning is causing **zero** indexing harm right now, by construction. The only pages Google has actually processed are the homepage (indexed) + its 3 redirect twins.
+
+### Resolution of the hypotheses
+
+- **Hypothesis 1 (thin = reach liability, "crawled-but-not-indexed") — REFUTED on current evidence.** The store pages are *Discovered → not yet crawled*, a crawl-budget/site-authority state, not a thin-content rejection. There is no crawled-not-indexed or discovered-not-indexed thin bucket at all.
+- **Hypothesis 2 (thinness is acceptable) — not contradicted**, but for a different reason than assumed: it's moot for Google right now because content depth isn't the gate — **crawl is**.
+- **The real binding constraint is discovery/crawl, not word count.** For a brand-new, near-zero-authority property, Google is sitting on the sitemap URLs in a low-priority crawl queue. The lever that moves this is authority/links, internal linking, `Request Indexing`, and freshness — NOT padding pages.
+
+### Decision on the store-page-enrichment story
+
+**Hold / de-prioritize `store-page-crawlable-enrichment` as a word-count fix — the evidence shows no word-count harm to fix.** Enriching store pages has real value *as citation quality once the pages are actually crawled*, but it is not urgent and does not address the current bottleneck. Do not build it to clear a Semrush warning that GSC shows is inert. Reach effort is better spent on (a) getting Google to crawl the discovered URLs, and (b) the AI-citation track (Phase-0 monitor, currently 0/8), which crawls independently of Google and is the actual strategic north star.
+
+**Caveat:** GSC is Google-specific. AI answer engines (Perplexity/ChatGPT/Claude) fetch on their own schedules and may crawl what Google hasn't; the Phase-0 citation monitor remains the instrument for that question. This pull settles the Google side only — but it does refute the "thin content is hurting us" reading that motivated the enrichment story.
+
+## Follow-up: 2026-07-29 (crawl/discovery levers) — the actual bottleneck + what moves it
+
+Given Finding 7 (the store pages are uncrawled, not thin-rejected), the real question becomes: what gets Google to *crawl* the 40 discovered URLs? Pulled the supporting GSC signals.
+
+### New Evidence
+
+| Signal | Reading | Implication |
+| ------ | ------- | ----------- |
+| Homepage URL inspection | **Indexed. Last crawl Jul 2, 2026** (Googlebot smartphone, fetch Successful). Referring page: `/compare/concentrate`. | Google's homepage snapshot is 3 weeks stale **and predates the 2026-07-23 ship (ADR-097) that first added `/store/*` internal links to the homepage HTML.** So Google's cached homepage links to NO store pages. |
+| Store page (`/store/remedy-tulalip`) | Discovered via sitemap; Referring page **None detected**; Last crawl **N/A**. | Store pages are **sitemap-only discovery** — nothing Google has crawled links to them (its homepage copy is pre-links). Sitemap-only URLs are the lowest crawl priority. |
+| Links report | **"Processing data, check again in a day or so"** (no data). | Effectively **~0 external backlinks** — near-zero domain authority, the dominant crawl-budget input for a new property. |
+| `/compare/concentrate` | Crawled (it's the homepage's referring page). | The compare surface is at least partially in Google's crawl graph. |
+
+### Finding 8 (Confirmed): the store pages are stranded on sitemap-only discovery because Google's homepage snapshot predates their internal links
+
+The homepage is the hub that links to all 18 store pages (`renderShellBody.ts:55`), but Google last crawled it **Jul 2** — before those links existed (added 2026-07-23). Until Google re-crawls the homepage, it sees the store pages only through the sitemap, and deprioritizes them. This is a **crawl-graph staleness + low-authority** problem, not a content problem.
+
+### The levers (priority order)
+
+1. **Re-crawl the homepage (highest leverage, zero cost).** The homepage now links to all 18 store pages, but Google's copy is the pre-link Jul-2 snapshot. `Request Indexing` on `https://gmaslist.com/` forces a fresh fetch → Google picks up 18 internal store links → store pages gain a real referring page and crawl priority. One click. (Homepage content also changes hourly, so a re-crawl is overdue regardless.)
+2. **Request Indexing on a few flagship URLs directly (GSC allows ~10/day).** Prioritize the richest geo answer pages (e.g. `/compare/concentrate/mount-vernon`, `/compare/flower/bellingham`) + 2–3 flagship store pages. Injects them into the crawl queue instead of waiting weeks.
+3. **External backlinks — the durable, sitewide lever (~0 today).** A handful of real inbound links from indexed pages (local subreddit, local news, a WA cannabis directory *that links out*) raises crawl budget across all 40 URLs at once. This is the true unlock and is already the reach plan's Phase 2 (Reddit) + local-news channels. Nothing on-page substitutes for it.
+4. **Internal-link depth pass (small, optional).** Confirm the region hubs + region-category pages are linked from a crawled page, not sitemap-only. The homepage→store and store→compare→category links exist; the `/compare/<region>` hubs may still be sitemap-only. A single "browse by area" block on `/compare` or `/about` would fold them into the crawl graph. Lower priority than 1–3.
+5. **Patience.** New, ~zero-authority property; Google throttles new-site crawl for weeks regardless. Nothing is broken.
+
+**What does NOT help:** padding thin content — the pages aren't crawled, so word count is moot (Finding 7). Do not spend there.
+
+**AI-citation note:** Google's new-site throttling does not bind AI engines, but they weight authority/links too — so lever 3 helps both Google reach *and* the AI-citation goal. The crawler-visible SSR is already shipped, so any engine that fetches sees real content.
+
+## Follow-up: 2026-07-29 (Levers 1 & 2 executed) — Request Indexing submitted for 6 URLs
+
+Ran Levers 1 and 2 with Erik's go-ahead, driving GSC URL Inspection on `sc-domain:gmaslist.com`. Each target was inspected first, then `Request Indexing` clicked; all 6 returned **"Indexing requested — URL was added to a priority crawl queue."**
+
+| # | URL | Pre-state (inspected) | Result |
+| - | --- | --------------------- | ------ |
+| 1 | `https://gmaslist.com/` (Lever 1) | URL is on Google / **indexed**, last crawl Jul 2 | Indexing requested |
+| 2 | `/compare/concentrate/mount-vernon` | Discovered–not indexed, Referring page None, **Last crawl N/A** | Indexing requested |
+| 3 | `/compare/flower/bellingham` | Discovered–not indexed, **Last crawl N/A** | Indexing requested |
+| 4 | `/compare/flower/everett` | Discovered–not indexed, **Last crawl N/A** | Indexing requested |
+| 5 | `/store/happy-time-mt-vernon` | Discovered–not indexed, **Last crawl N/A** | Indexing requested |
+| 6 | `/store/local-roots-everett-128th` | Discovered–not indexed, **Last crawl N/A** | Indexing requested |
+
+Every Lever-2 target inspection independently reconfirmed Finding 7/8: `Discovered – currently not indexed`, Referring page `None detected`, Last crawl `N/A` — i.e. never fetched, so word count is moot. The thin `/compare/<region>` hubs were deliberately excluded.
+
+**Expectation:** Request Indexing only queues a crawl; Google decides timing (days, not minutes). The homepage re-crawl (target 1) is the leveraged one — once refetched it exposes the 18 post-ADR-097 internal store links, giving the store pages a real referring page. **Verification checkpoint (~1–2 weeks, on/after ~2026-08-12):** re-inspect the homepage (Last crawl should advance past Jul 2 and its crawled HTML should contain `/store/*` links) and 1–2 store pages (Referring page should flip from `None detected` to the homepage; Coverage may move toward Crawled/Indexed). Backlinks (Lever 3) remain the durable unlock — this batch is a one-time nudge, not a fix.
