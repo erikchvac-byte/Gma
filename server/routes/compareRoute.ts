@@ -561,7 +561,16 @@ export function renderRegionIndexHtml(region: Region, generatedAt: string): stri
       )
       .join('\n')
 
-    const asOfSentence = asOf ? ` Prices observed as of ${escapeHtml(asOf)}.` : ''
+    // If every floor in the region is currently stale (all member stores dark), the
+    // whole landing is last-known data (ADR-111) — caveat it rather than imply freshness.
+    const allStale = region.floors.length > 0 && region.floors.every((f) => f.stale)
+    const asOfSentence = allStale
+      ? asOf
+        ? ` Prices last observed as of ${escapeHtml(asOf)}; freshness currently unverified.`
+        : ' Freshness of these prices is currently unverified.'
+      : asOf
+        ? ` Prices observed as of ${escapeHtml(asOf)}.`
+        : ''
     body = `      <h1>${escapeHtml(name)}</h1>
       <p class="lede">${escapeHtml(description)}</p>
 
@@ -627,13 +636,27 @@ export function renderRegionCategoryHtml(
         const stores = joinNames(
           f.floorDispensaryIds.map((id) => escapeHtml(displayStoreName(id, nameById))),
         )
-        return `        <li>${escapeHtml(f.displayName)} (${f.weightGrams}g) — ${formatUsd(f.floorPrice)} at ${stores}</li>`
+        // A row whose every tied store has a stale/failed extraction is a last-known
+        // price (ADR-111): keep it (URL durability) but never present it as currently
+        // verified — mark it so no stale low reads as a fresh low (honesty inheritance).
+        const staleMark = f.stale ? ' — freshness unverified' : ''
+        return `        <li>${escapeHtml(f.displayName)} (${f.weightGrams}g) — ${formatUsd(f.floorPrice)} at ${stores}${staleMark}</li>`
       })
       .join('\n')
 
     const capNote =
       all.length > shown.length ? ` Showing the ${shown.length} lowest-priced of ${all.length}.` : ''
-    const asOfSentence = asOf ? ` Prices observed as of ${escapeHtml(asOf)}.` : ''
+    // When EVERY shown row is stale the whole page is last-known data — say so at the
+    // page level (Ruling A(b)); a mixed page keeps the normal "observed as of" line and
+    // relies on the per-row marker above. Epoch (never-derived) → no date to print.
+    const allStale = shown.length > 0 && shown.every((f) => f.stale)
+    const asOfSentence = allStale
+      ? asOf
+        ? ` Prices last observed as of ${escapeHtml(asOf)}; freshness currently unverified.`
+        : ' Freshness of these prices is currently unverified.'
+      : asOf
+        ? ` Prices observed as of ${escapeHtml(asOf)}.`
+        : ''
     const coverage =
       region.cities.length > 0 ? ` Covers ${joinNames(region.cities.map(escapeHtml))}.` : ''
 

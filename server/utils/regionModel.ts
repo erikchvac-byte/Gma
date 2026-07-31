@@ -136,8 +136,21 @@ export function buildRegions(
       ),
     ].sort((a, b) => a.localeCompare(b))
 
-    // Shape-guard each floor, then (when statuses are known) apply the staleness guard:
-    // narrow tied holders to non-dead stores and drop any floor whose holders are all dead.
+    // Shape-guard each committed floor, then (when statuses are known) apply the
+    // staleness guard. DURABILITY DECOUPLING (ADR-111): the guard NO LONGER drops an
+    // all-dark floor — dropping it emptied a whole category on an ingest lapse, which
+    // 404'd the citable /compare/<cat>/<region> page and pulled it out of the sitemap,
+    // making the SEO surface wink in and out on hourly freshness (investigation:
+    // geo-page-volatility). A page's EXISTENCE (categories → URL/sitemap) must be a
+    // function of the STABLE committed floors, not the request-time freshness overlay.
+    // So every renderable committed floor is kept; the guard only annotates rows:
+    //  - all holders fresh          → pass through verbatim
+    //  - some fresh, some dark       → narrow to the fresh holder(s): a fresh store still
+    //                                  vouches for the tied price (unchanged honesty)
+    //  - every holder dark           → keep the row but mark it `stale` (Ruling A(b)): the
+    //                                  render shows the last-known price with a "freshness
+    //                                  unverified" caveat, never dropped, never uncaveated.
+    // `categories` below therefore counts the committed floors and is freshness-invariant.
     const floors: RegionalFloor[] = []
     for (const f of Array.isArray(c.floors) ? c.floors : []) {
       if (!isRenderableFloor(f)) continue
@@ -146,12 +159,13 @@ export function buildRegions(
         continue
       }
       const freshHolders = f.floorDispensaryIds.filter((id) => !isDeadStatus(statusById.get(id)))
-      if (freshHolders.length === 0) continue // every store tied at this floor is dark — a dead price
-      floors.push(
-        freshHolders.length === f.floorDispensaryIds.length
-          ? f
-          : { ...f, floorDispensaryIds: freshHolders },
-      )
+      if (freshHolders.length === f.floorDispensaryIds.length) {
+        floors.push(f) // all holders fresh
+      } else if (freshHolders.length > 0) {
+        floors.push({ ...f, floorDispensaryIds: freshHolders }) // a fresh store vouches for the tie
+      } else {
+        floors.push({ ...f, stale: true }) // every holder dark — keep as an unverified last-known price
+      }
     }
 
     const counts = new Map<string, number>()

@@ -111,6 +111,25 @@ describe('GET /sitemap.xml', () => {
       expect(res.text).toContain(`<loc>https://gmaslist.com/store/${id}</loc>`)
     }
   })
+
+  it('emits the geo region + region-category URLs from the committed derived data (ADR-111 durability)', async () => {
+    // These are the richest citable long-tail pages. Their presence must not depend on
+    // request-time store freshness — the sitemap builds them from the STABLE committed
+    // regional-price-floor structure via readRegions(). readRegions() derives store
+    // status from data.json at request time, so this test also proves the geo URLs
+    // survive whatever the live freshness happens to be at run time.
+    const res = await request(app).get('/sitemap.xml')
+    const geoLocs = [...res.text.matchAll(/<loc>https:\/\/gmaslist\.com(\/compare\/[^<]+)<\/loc>/g)].map(
+      (m) => m[1],
+    )
+    // hub pages (one path segment that is a region, not a category) + region-category pages
+    const regionCategoryUrls = geoLocs.filter((p) => p.split('/').length === 4) // /compare/<cat>/<region>
+    expect(regionCategoryUrls.length).toBeGreaterThan(0)
+    // every emitted region-category URL must resolve against the same source (a live
+    // curl already confirms bellingham/everett/mount-vernon × 4 categories today)
+    expect(res.text).toContain('<loc>https://gmaslist.com/compare/bellingham</loc>')
+    expect(res.text).toContain('<loc>https://gmaslist.com/compare/concentrate/bellingham</loc>')
+  })
 })
 
 describe('GET /llms.txt', () => {

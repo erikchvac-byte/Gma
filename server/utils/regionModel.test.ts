@@ -188,21 +188,26 @@ describe('buildRegions — page-level staleness guard', () => {
     expect(region.floors).toHaveLength(1)
   })
 
-  it('drops a floor whose only holder is failed or stale', () => {
+  it('KEEPS an all-dark floor marked stale (durability), never dropping it (ADR-111)', () => {
     const status = new Map([
       ['dead', 'failed'],
       ['other', 'stale'],
     ])
     const [region] = build(status, [
-      floor({ displayName: 'DeadA', floorDispensaryIds: ['dead'] }),
-      floor({ displayName: 'DeadB', floorDispensaryIds: ['other'] }),
+      floor({ category: 'Concentrate', displayName: 'DeadA', floorDispensaryIds: ['dead'] }),
+      floor({ category: 'Concentrate', displayName: 'DeadB', floorDispensaryIds: ['other'] }),
     ])
-    // both floors' sole holders are dark → no floors, no categories, region has nothing
-    expect(region?.floors ?? []).toHaveLength(0)
-    expect(region?.categories ?? []).toHaveLength(0)
+    // both rows are retained (so the /compare/<cat>/<region> URL never 404s on an ingest
+    // lapse), marked stale, with their ORIGINAL committed holders preserved for the row copy
+    expect(region.floors).toHaveLength(2)
+    expect(region.floors.every((f) => f.stale === true)).toBe(true)
+    expect(region.floors.map((f) => f.floorDispensaryIds)).toEqual([['dead'], ['other']])
+    expect(region.categories).toEqual([
+      { category: 'Concentrate', slug: 'concentrate', floorCount: 2 },
+    ])
   })
 
-  it('keeps a tied floor but narrows holders to the fresh store(s)', () => {
+  it('keeps a tied floor but narrows holders to the fresh store(s), NOT marked stale', () => {
     const status = new Map([
       ['fresh', 'ok'],
       ['dead', 'failed'],
@@ -211,18 +216,21 @@ describe('buildRegions — page-level staleness guard', () => {
       floor({ displayName: 'Tied', floorPrice: 8, floorDispensaryIds: ['dead', 'fresh'] }),
     ])
     expect(region.floors).toHaveLength(1)
-    // a fresh store vouches for the $8 tie; the dead store is no longer named
+    // a fresh store vouches for the $8 tie; the dead store is no longer named, and the
+    // row is a verified low (a fresh holder remains) → not stale
     expect(region.floors[0].floorDispensaryIds).toEqual(['fresh'])
     expect(region.floors[0].floorPrice).toBe(8)
+    expect(region.floors[0].stale).toBeFalsy()
   })
 
-  it('keeps a floor whose holder has unknown/absent status (fail-open)', () => {
+  it('keeps a floor whose holder has unknown/absent status (fail-open), NOT stale', () => {
     const status = new Map([['dead', 'failed']]) // 'other' is absent from the map
     const [region] = build(status, [floor({ floorDispensaryIds: ['other'] })])
     expect(region.floors).toHaveLength(1)
+    expect(region.floors[0].stale).toBeFalsy()
   })
 
-  it('reflects dropped floors in the category counts', () => {
+  it('keeps categories freshness-invariant — a fully-stale category still yields a URL', () => {
     const status = new Map([
       ['fresh', 'ok'],
       ['dead', 'failed'],
@@ -231,8 +239,15 @@ describe('buildRegions — page-level staleness guard', () => {
       floor({ category: 'Flower', displayName: 'LiveFlower', floorDispensaryIds: ['fresh'] }),
       floor({ category: 'Concentrate', displayName: 'DeadConc', floorDispensaryIds: ['dead'] }),
     ])
-    // Concentrate's only floor was dead-store-only → category gone; Flower remains
-    expect(region.categories).toEqual([{ category: 'Flower', slug: 'flower', floorCount: 1 }])
+    // BOTH categories survive (URL/sitemap existence is freshness-independent); tie on
+    // floorCount breaks alphabetically → Concentrate before Flower
+    expect(region.categories).toEqual([
+      { category: 'Concentrate', slug: 'concentrate', floorCount: 1 },
+      { category: 'Flower', slug: 'flower', floorCount: 1 },
+    ])
+    // the dead-only Concentrate row is marked stale; the fresh Flower row is not
+    expect(region.floors.find((f) => f.category === 'Concentrate')?.stale).toBe(true)
+    expect(region.floors.find((f) => f.category === 'Flower')?.stale).toBeFalsy()
   })
 })
 

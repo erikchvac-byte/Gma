@@ -69,6 +69,11 @@ export interface RegionalFloor {
   floorPrice: number
   floorDispensaryIds: string[]
   storeCountInCluster: number
+  // Set only by the region PROJECTION (regionModel.buildRegions), never by this
+  // derive: true when every store tied at this floor has a stale/failed extraction,
+  // so the row is a last-known price whose current freshness is unverified. The
+  // derive itself is freshness-blind and leaves this undefined.
+  stale?: boolean
 }
 
 export interface RegionalCluster {

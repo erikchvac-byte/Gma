@@ -27,6 +27,7 @@ function floor(over: Partial<RegionalFloor> = {}): RegionalFloor {
     floorPrice: over.floorPrice ?? 10,
     floorDispensaryIds: over.floorDispensaryIds ?? ['star-buds-bellingham'],
     storeCountInCluster: over.storeCountInCluster ?? 1,
+    stale: over.stale,
   }
 }
 
@@ -129,6 +130,45 @@ describe('renderRegionCategoryHtml (the long-tail answer page)', () => {
   it('degrades to a safe empty state when a category has no floors here', () => {
     const empty = renderRegionCategoryHtml(bellingham({ floors: [] }), 'Concentrate', GENERATED_AT, new Map())
     expect(visibleText(empty)).toContain('No concentrate comparisons are available in this area')
+  })
+})
+
+describe('renderRegionCategoryHtml — stale-freshness durability (ADR-111, Ruling A(b))', () => {
+  function countMatches(text: string, needle: string): number {
+    return text.split(needle).length - 1
+  }
+
+  it('keeps the last-known rows + a page caveat when EVERY row is stale (not the empty state)', () => {
+    const region = bellingham({
+      floors: [
+        floor({ displayName: 'Cheap Wax', floorPrice: 8, floorDispensaryIds: ['a'], stale: true }),
+        floor({ displayName: 'Mid Rosin', floorPrice: 20, floorDispensaryIds: ['b'], stale: true }),
+      ],
+      categories: [{ category: 'Concentrate', slug: 'concentrate', floorCount: 2 }],
+    })
+    const text = visibleText(renderRegionCategoryHtml(region, 'Concentrate', GENERATED_AT, new Map()))
+    // rows are STILL shown (URL/page durability) — NOT the empty state
+    expect(text).toContain('Cheap Wax (1g) — $8.00')
+    expect(text).not.toContain('No concentrate comparisons are available')
+    // page-level caveat present (all-stale), and each row carries its own marker
+    expect(text).toContain('freshness currently unverified')
+    expect(countMatches(text, 'freshness unverified')).toBe(2) // two row markers; page uses "currently unverified"
+  })
+
+  it('marks only the stale row on a mixed page, keeping the normal as-of line', () => {
+    const region = bellingham({
+      floors: [
+        floor({ displayName: 'Fresh Wax', floorPrice: 8, floorDispensaryIds: ['a'] }),
+        floor({ displayName: 'Old Rosin', floorPrice: 20, floorDispensaryIds: ['b'], stale: true }),
+      ],
+      categories: [{ category: 'Concentrate', slug: 'concentrate', floorCount: 2 }],
+    })
+    const text = visibleText(renderRegionCategoryHtml(region, 'Concentrate', GENERATED_AT, new Map()))
+    // exactly one row marker (the stale row); the page keeps the plain observed-as-of line
+    expect(countMatches(text, 'freshness unverified')).toBe(1)
+    expect(text).toContain('Old Rosin (1g) — $20.00')
+    expect(text).toContain('Prices observed as of July 28, 2026')
+    expect(text).not.toContain('freshness currently unverified')
   })
 })
 

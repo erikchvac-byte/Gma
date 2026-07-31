@@ -1,5 +1,9 @@
 # Deferred Work
 
+## Deferred from: geo-page-sitemap-durability (ADR-111, 2026-07-31)
+
+- **Region dominant-city slug FLIP has a loud guard but no live redirect.** A region's URL family (`/compare/<region>` + `/compare/<category>/<region>`) is named after the cluster's modal member city (`regionModel.dominantCity`). It is stable today (guarded by `server/routes/regionSlugStability.test.ts`, pinned to `bellingham`/`everett`/`mount-vernon`) and can only change on a daily re-cluster, not on the request-time freshness overlay. Margin is comfortable except the Mount Vernon cluster (Mount Vernon 3 vs Anacortes 1, +2 unparseable) — a 2-store swing. When a flip eventually happens the CI guard FAILS (by design) so a human notices; but there is **no 301/alias machinery** to carry the old (already-indexed) slugs to the new ones, so the old URLs would 404 until re-crawled. If/when a flip occurs (or before geo pages become a proven citation channel): add a small committed `oldSlug → currentSlug` alias map that 301s stale region URLs, then update the guard snapshot. Not built now — a flip is not imminent and the redirect is only worth it once a real rename forces the question. See `investigations/geo-page-volatility-investigation.md` Hyp 1.
+
 ## Deferred from: positioning-footer-audit quick-dev split (2026-07-28)
 
 Erik split the positioning-footer audit's fixes (`investigations/positioning-footer-audit-investigation.md`). Goal #1+#2 (uniform SSR negation footer + header subtitle) taken now via `spec-positioning-ssr-disclaimer-header-subtitle`. Deferred:
