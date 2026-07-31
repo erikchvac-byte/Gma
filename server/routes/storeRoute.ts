@@ -218,8 +218,11 @@ export function buildDirectAnswer(
 // Internal links from a store to its geo area's cheapest-price pages (ADR-107). The
 // HONEST form of "cheapest <category> here": it points at the cross-store regional
 // floors (Gate-1-safe), not a per-store menu category-min (which would need product
-// data Render does not hold and brush the whole-catalog gate). Empty when the store
-// is in no nameable >= 2-store cluster, or that region currently has no live floors.
+// data Render does not hold and brush the whole-catalog gate). Empty only when the store
+// is in no nameable >= 2-store cluster. Since ADR-111 made region.categories
+// freshness-invariant, this section no longer auto-hides when a region's floors are all
+// stale — it still renders and links to the /compare pages (which carry their own
+// "freshness unverified" caveat).
 export function renderAreaLinksHtml(region: Region | undefined): string {
   if (!region || region.categories.length === 0) return ''
   const items = region.categories
