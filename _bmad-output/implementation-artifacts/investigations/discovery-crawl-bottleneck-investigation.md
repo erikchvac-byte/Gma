@@ -178,3 +178,45 @@ The app writes no request logs and Render's starter plan does not surface `reque
 ### Updated bottom line
 
 Nothing changes the core conclusion — sitemap coverage is done; authority (backlinks) is the bottleneck. What this pull adds: **we are flying blind on non-Google crawl.** Neither Render logs (don't exist) nor any pull-to-date tells us if Bing/AI bots fetch. The two ways to open that eye are Bing Webmaster Tools' own Crawl Stats (needs the extension or a manual login) and, optionally, adding request logging to the app.
+
+## Follow-up: 2026-07-30 #2 (crawler-logging middleware shipped)
+
+**Action taken (Finding 9 remediation).** Added `server/middleware/crawlerLogger.ts` (+ tests, 10/10 green; full prod build green) — a bot-scoped request logger registered first in `server/index.ts`. It emits one greppable stdout line per crawler hit: `[crawler] <bot> <method> <path> <status> ua="..."`, surfaced as a Render `app` log. Bot-scoped (matches `Googlebot`/`Bingbot`/`GPTBot`/`ClaudeBot`/`PerplexityBot`/… + generic bot/crawler/spider) so the /healthz + /api/ingest noise doesn't bury the signal. Committed `db26cb5`, pushed to master → Render auto-deploy.
+
+**Now queryable** (once the deploy is live) via `mcp__render__list_logs` with `type=["app"]`, `text=["\\[crawler\\]"]`. This is the standing instrument that finally answers "are non-Google bots fetching us?" — the gap no third-party console covers.
+
+**Verification checkpoint:** after ~a day of live traffic, pull `[crawler]` app logs. Any Bingbot/AI-bot lines = non-Google discovery is happening (bottleneck is then ranking/authority, not discovery); zero lines over several days = non-Google discovery is genuinely stalled, reinforcing backlinks as the unlock.
+
+**Still open:** Backlog #1 (Bing Webmaster Tools sitemap read-status) — blocked on the Chrome extension connection; the crawler log is complementary, not a substitute (BWT reports Bing's *indexed* count, the log reports raw *fetches*).
+
+## Follow-up: 2026-07-30 #3 (Bing Webmaster Tools pulled — Backlog #1 resolved)
+
+Chrome extension connected; drove Bing Webmaster Tools (`bing.com/webmasters/sitemaps`, property gmaslist.com).
+
+### Finding 11 (Confirmed): Bing HAS read the sitemap, but its copy is stale and short (25 of 40 URLs)
+
+| Sitemap (Bing) | Last submit | Last crawl | Status | URLs discovered |
+| --- | --- | --- | --- | --- |
+| `https://gmaslist.com/sitemap.xml` | 7/27/2026 | **7/27/2026** | **Success** | **25** |
+| `https://gmaslist.com/` (stray) | 7/26/2026 | 7/26/2026 | Success | 0 |
+
+- **Bing read the sitemap successfully** — refutes any "Bing never saw it" worry. Non-Google *sitemap* discovery works.
+- **But it discovered only 25 URLs vs the live 40.** The 15-URL gap is an **exact match to the ADR-107 geo pages (12 `/compare/<cat>/<region>` + 3 `/compare/<region>` hubs) that shipped 2026-07-28 — one day AFTER Bing's last crawl (7/27).** Bing is holding the pre-geo-page sitemap and is missing the 15 richest answer pages (`/compare/<category>/<region>`, ~1,500–1,900 words each). It will refresh on Bing's own schedule; a manual resubmit accelerates it.
+- The second row (`gmaslist.com/` submitted as a sitemap, 0 URLs) is a stray/erroneous submission — harmless noise, removable.
+- Caveat: "URLs discovered" = Bing's read of the sitemap, **not** indexed count. Bing's actual index coverage lives under Site Explorer / Search Performance — a separate, still-unpulled question.
+
+### Resubmit — CONFIRMED (correction)
+
+The manual resubmit **did register.** The BWT console had just rendered stale on my reload; Erik's later read shows `Last processed 7/31/2026, URLs discovered 35, Successfully processed.` Bing jumped 25 → 35 discovered. (Rendering was flaky mid-session — CDP screenshot timeouts, cropped captures — but the submit itself went through; I was wrong to call it unconfirmed.)
+
+### Finding 12 (Confirmed): Bing is now fully in sync — and the sitemap URL count is volatile because it is derived-data-backed
+
+Re-curled the live sitemap after the 19:23 seed-refresh redeploy: it is now **35 URLs** (1 `/` + 1 `/about` + 1 `/compare` + **14** `/compare/*` + 18 `/store/*`) — down from **40** this morning (**19** `/compare/*`). **Bing's 35 discovered == the live 35. No gap; Bing is current.** The change is not a Bing problem: the seed refresh republished the derived artifacts (`disparity-rollups.json` / `regional-price-floor.json`), and **5 geo `/compare/<category>/<region>` pages dropped out of the sitemap** because their underlying regional-floor data changed. `buildSitemapXml` emits exactly the `/compare/*` set the current derived data supports (`sitemapRoute.ts:96-170`), so the citable geo surface expands/contracts with each derive.
+
+**New side concern (worth a separate thread):** the richest answer pages (`/compare/<cat>/<region>`, the ones most likely to earn citations) **wink in and out** as derived data shifts — 19→14 in one refresh cycle. A URL that appears in the sitemap, gets discovered/crawled, then vanishes on the next derive is crawl-churn both Google and Bing see; it also means a page an engine is about to rank may 404 or fall out. This is a *data-stability / geo-page-durability* question, distinct from the discovery-authority bottleneck. Not investigated here — logged as Backlog #6.
+
+### Backlog + hypothesis updates
+
+- Backlog #1 → **Done** (Bing read-status pulled: Success, stale at 25/40).
+- **Hypothesis 1 (non-Google discovery also stalled) — partially refuted:** Bing *did* discover 25 URLs, so discovery is not zero — it is stale/incomplete, missing the 15 newest pages. Root cause is the same authority/refresh-cadence story, not a coverage defect.
+- New Backlog #5: pull Bing's actual *indexed* count (Site Explorer) — the analogue of GSC's index-status split, still unknown for Bing.
