@@ -3,6 +3,7 @@ import {
   hostnameMatches,
   urlToDomain,
   checkCitation,
+  parsePerplexityResponse,
   rivalDomainRanking,
   summarize,
   type CitationCheck,
@@ -95,6 +96,49 @@ describe('urlToDomain', () => {
   })
   it('returns empty string for an unparseable URL', () => {
     expect(urlToDomain('nope')).toBe('')
+  })
+})
+
+describe('parsePerplexityResponse', () => {
+  it('reads the answer text and sources from the newer search_results field', () => {
+    const a = parsePerplexityResponse({
+      choices: [{ message: { content: 'Compare prices on Gmaslist.' } }],
+      search_results: [{ url: 'https://gmaslist.com/compare' }, { url: 'https://weedmaps.com/x' }],
+    })
+    expect(a.answerText).toBe('Compare prices on Gmaslist.')
+    expect(a.citedUrls).toEqual(['https://gmaslist.com/compare', 'https://weedmaps.com/x'])
+    expect(a.citationCount).toBe(2)
+  })
+
+  it('reads sources from the legacy top-level citations field', () => {
+    const a = parsePerplexityResponse({
+      choices: [{ message: { content: 'answer' } }],
+      citations: ['https://leafly.com/a', 'https://weedmaps.com/b'],
+    })
+    expect(a.citedUrls).toEqual(['https://leafly.com/a', 'https://weedmaps.com/b'])
+  })
+
+  it('unions and dedupes citations + search_results', () => {
+    const a = parsePerplexityResponse({
+      choices: [{ message: { content: 'x' } }],
+      citations: ['https://weedmaps.com/x'],
+      search_results: [{ url: 'https://weedmaps.com/x' }, { url: 'https://leafly.com/y' }],
+    })
+    expect(a.citedUrls).toEqual(['https://weedmaps.com/x', 'https://leafly.com/y'])
+    expect(a.citationCount).toBe(2)
+  })
+
+  it('fail-softs to an empty answer when the response has no usable fields', () => {
+    const a = parsePerplexityResponse({})
+    expect(a).toEqual({ answerText: '', citedUrls: [], citationCount: 0 })
+  })
+
+  it('is compatible with checkCitation (a Perplexity answer citing us reads as cited)', () => {
+    const a = parsePerplexityResponse({
+      choices: [{ message: { content: 'y' } }],
+      search_results: [{ url: 'https://gmaslist.com/compare/flower' }],
+    })
+    expect(checkCitation(a).cited).toBe(true)
   })
 })
 

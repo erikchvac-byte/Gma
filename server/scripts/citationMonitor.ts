@@ -103,6 +103,35 @@ export function checkCitation(
   }
 }
 
+// ---- Perplexity response parsing (pure, so it is unit-testable without a network call) ----
+
+// Minimal shape of the bits of a Perplexity Sonar chat-completions response we read.
+// Perplexity is OpenAI-compatible: the answer is choices[0].message.content, and the sources
+// it consulted arrive as URLs — top-level `citations` (string[]) on older responses, and/or
+// `search_results[].url` on newer ones. We read BOTH and union them so a schema shift on their
+// side doesn't silently zero out our citation signal.
+export interface PerplexityResponse {
+  choices?: Array<{ message?: { content?: string } }>
+  citations?: string[]
+  search_results?: Array<{ url?: string }>
+}
+
+// Map a Perplexity response into the engine-agnostic EngineAnswer. citationCount is the number
+// of distinct sources the grounded answer leaned on (deduped), matching the "trend context"
+// intent of the field.
+export function parsePerplexityResponse(data: PerplexityResponse): EngineAnswer {
+  const answerText = data.choices?.[0]?.message?.content ?? ''
+  const urls: string[] = []
+  for (const u of data.citations ?? []) {
+    if (typeof u === 'string' && u) urls.push(u)
+  }
+  for (const r of data.search_results ?? []) {
+    if (r?.url) urls.push(r.url)
+  }
+  const citedUrls = Array.from(new Set(urls))
+  return { answerText, citedUrls, citationCount: citedUrls.length }
+}
+
 // Rank the domains cited across a run, EXCLUDING our own, by how many questions each appeared
 // in. This is the competitive picture: who is winning the AI answers we want to win. Pure.
 export function rivalDomainRanking(

@@ -7,15 +7,19 @@
 //   Dry run:     cd server ; npx tsx scripts/aiCitationRun.ts --dry   (no key/cost)
 //
 // Engines are PLUGGABLE (matches the "data source is a commodity" instinct). Today:
-//   - anthropic : Claude + the server-side web_search tool, which returns cited sources.
-//                 Needs ANTHROPIC_API_KEY (put it in the repo-root .env — gitignored).
-//   - dry-run   : keyless placeholder so the whole pipeline runs at zero cost.
-// Perplexity / OpenAI adapters can be added as more CitationEngine implementations.
+//   - anthropic  : Claude + the server-side web_search tool, which returns cited sources.
+//                  Needs ANTHROPIC_API_KEY (put it in the repo-root .env — gitignored).
+//   - perplexity : Perplexity Sonar (a grounded consumer answer-engine that cites its sources).
+//                  Needs PERPLEXITY_API_KEY (repo-root .env). Skipped when the key is absent.
+//   - dry-run    : keyless placeholder so the whole pipeline runs at zero cost.
+// OpenAI / Gemini adapters can be added the same way (one more CitationEngine implementation).
 //
 // Env:
 //   ANTHROPIC_API_KEY  - enables the anthropic engine (else it is skipped)
 //   CITATION_MODEL     - Claude model id (default claude-haiku-4-5; if you set an Opus/Sonnet
 //                        model, switch the web_search tool version accordingly — see ask())
+//   PERPLEXITY_API_KEY - enables the perplexity engine (else it is skipped)
+//   PERPLEXITY_MODEL   - Perplexity model id (default sonar — cheapest search-grounded tier)
 //   CITATION_LOG_PATH  - JSONL log path (default ~/GmaS-data/citation-log.jsonl)
 //
 // See project_reach-launch-plan (Phase 0, item 1) and ADR-106.
@@ -27,10 +31,12 @@ import os from 'node:os'
 import { fileURLToPath } from 'node:url'
 import {
   checkCitation,
+  parsePerplexityResponse,
   summarize,
   type CitationCheck,
   type CitationEngine,
   type EngineAnswer,
+  type PerplexityResponse,
   type TargetQuestion,
 } from './citationMonitor.js'
 
@@ -181,9 +187,48 @@ const anthropicEngine: CitationEngine = {
   },
 }
 
+// ---- Perplexity Sonar engine ----
+
+const PERPLEXITY_URL = 'https://api.perplexity.ai/chat/completions'
+// `sonar` is Perplexity's cheapest search-grounded tier. Our task is "search the web and list
+// which sources were cited" — pure retrieval, no deep reasoning — so sonar-pro / sonar-reasoning
+// would just cost more for no gain. Override with PERPLEXITY_MODEL if ever needed.
+const DEFAULT_PERPLEXITY_MODEL = 'sonar'
+const PERPLEXITY_MODEL = process.env.PERPLEXITY_MODEL || DEFAULT_PERPLEXITY_MODEL
+
+// Perplexity's public API is OpenAI-compatible chat-completions; the model does its own web
+// search server-side and returns the sources it used. parsePerplexityResponse (pure, tested)
+// turns the response into the engine-agnostic EngineAnswer, reading both the legacy top-level
+// `citations` and the newer `search_results[].url`.
+const perplexityEngine: CitationEngine = {
+  name: 'perplexity',
+  available: () => Boolean(process.env.PERPLEXITY_API_KEY),
+  async ask(question: string): Promise<EngineAnswer> {
+    const key = process.env.PERPLEXITY_API_KEY
+    if (!key) throw new Error('PERPLEXITY_API_KEY not set')
+
+    const res = await fetch(PERPLEXITY_URL, {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${key}`,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: PERPLEXITY_MODEL,
+        messages: [{ role: 'user', content: question }],
+      }),
+    })
+    if (!res.ok) {
+      throw new Error(`Perplexity API ${res.status}: ${(await res.text()).slice(0, 300)}`)
+    }
+    const data = (await res.json()) as PerplexityResponse
+    return parsePerplexityResponse(data)
+  },
+}
+
 function selectEngines(forceDry: boolean): CitationEngine[] {
   if (forceDry) return [dryRunEngine]
-  const real = [anthropicEngine].filter((e) => e.available())
+  const real = [anthropicEngine, perplexityEngine].filter((e) => e.available())
   return real.length > 0 ? real : [dryRunEngine]
 }
 
@@ -207,7 +252,12 @@ async function main(): Promise<void> {
   const checks: CitationCheck[] = []
   let first = true
   for (const engine of engines) {
-    const model = engine.name === 'anthropic' ? CITATION_MODEL : engine.name
+    const model =
+      engine.name === 'anthropic'
+        ? CITATION_MODEL
+        : engine.name === 'perplexity'
+          ? PERPLEXITY_MODEL
+          : engine.name
     for (const q of questions) {
       if (!first) await sleep(REQUEST_GAP_MS)
       first = false
