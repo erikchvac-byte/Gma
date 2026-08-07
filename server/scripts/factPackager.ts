@@ -35,7 +35,7 @@ export const POSITIONING_LINE = 'Gmas List is an independent information service
 // US-state / neighboring-locality tokens that signal a NON-WA ask. Pragmatic and extensible: the
 // whole dataset is WA-only, so a geo naming one of these is honestly refused rather than answered
 // with a WA fact under a non-WA label (FR-4 / AC-1).
-const NON_WA_TOKENS = new Set([
+export const NON_WA_TOKENS = new Set([
   'or', 'oregon', 'portland', 'eugene', 'salem',
   'id', 'idaho', 'boise', 'coeur',
   'ca', 'california', 'ak', 'alaska',
