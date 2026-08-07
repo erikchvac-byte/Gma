@@ -34,11 +34,11 @@ import {
   EMPTY_PRICE_VS_OWN_MEDIAN_ENVELOPE,
   EMPTY_REGIONAL_PRICE_FLOOR_ENVELOPE,
 } from '../routes/valueRoute.js'
-import { resolveGeo, selectFact, renderResult, slugifyForFile } from './factPackager.js'
+import { resolveGeo, selectFact, renderResult, slugifyForFile, type PackagerSources } from './factPackager.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-function derivedDir(): string {
+export function derivedDir(): string {
   return process.env.DERIVED_DIR ?? path.join(__dirname, '../data/derived')
 }
 function outputDir(): string {
@@ -91,10 +91,13 @@ function atomicWrite(filePath: string, contents: string): void {
   fs.renameSync(tmp, filePath)
 }
 
-function main(): void {
-  const { topic, geo, channel } = parseArgs(process.argv.slice(2))
-  const dir = derivedDir()
-
+// Read the three committed derived facts (the SAME server/data/derived/*.json served on SSR
+// /compare/* + /store/*) and project the region model into a PackagerSources — the single source of
+// truth for BOTH the fact packager (Story 1.2) and the opportunity finder (Story 1.3), so the
+// load-bearing freshness-overlay omission in loadRegions lives in ONE place. Fail-soft: a missing/
+// empty/malformed file yields empty arrays via the exported empty envelopes; region projection
+// wrapped in try/catch → [] (statewide facts still work).
+export function loadPackagerSources(dir: string): PackagerSources {
   const disparities = readDerived<MatchReport>(
     path.join(dir, 'disparities.json'),
     EMPTY_DISPARITIES_ENVELOPE,
@@ -107,14 +110,20 @@ function main(): void {
     path.join(dir, 'price-vs-own-median.json'),
     EMPTY_PRICE_VS_OWN_MEDIAN_ENVELOPE,
   )
-
-  const regions = loadRegions(floors.data)
-  const geoRes = resolveGeo(geo, regions)
-  const result = selectFact(topic, geoRes, {
+  return {
     disparities: Array.isArray(disparities.data.disparities) ? disparities.data.disparities : [],
-    regions,
+    regions: loadRegions(floors.data),
     ownMedianRows: Array.isArray(ownMedian.data.rows) ? ownMedian.data.rows : [],
-  })
+  }
+}
+
+function main(): void {
+  const { topic, geo, channel } = parseArgs(process.argv.slice(2))
+  const dir = derivedDir()
+
+  const sources = loadPackagerSources(dir)
+  const geoRes = resolveGeo(geo, sources.regions)
+  const result = selectFact(topic, geoRes, sources)
 
   const copy = renderResult(result, topic, geo, channel)
 
