@@ -98,7 +98,12 @@ const WA_LOCALITY_HINTS = new Set<string>([
 // Extract the model's JSON array of candidates from free-text answer output. Tolerates ```json
 // fences, surrounding prose, a single object instead of an array, and junk — returns [] rather
 // than throwing on anything unparseable. Only entries with a non-empty string `url` are kept.
-export function parseCandidates(answerText: string): RawCandidate[] {
+// Extract the model's loose JSON from free-text answer output and normalize it to an array.
+// Tolerates ```json fences, surrounding prose, a single object instead of an array, and junk —
+// returns [] rather than throwing on anything unparseable (NFR-1). Shared by the opportunity
+// finder (parseCandidates, below) and the unlinked-mention finder (parseMentions) so the one
+// tolerant-extraction cascade has a single source of truth.
+export function looseJsonArray(answerText: string): unknown[] {
   const text = (answerText ?? '').trim()
   if (!text) return []
 
@@ -110,7 +115,8 @@ export function parseCandidates(answerText: string): RawCandidate[] {
     }
   }
 
-  // 1) whole thing; 2) inside a ```json ... ``` (or bare ```) fence; 3) the widest [ ... ] slice.
+  // 1) whole thing; 2) inside a ```json ... ``` (or bare ```) fence; 3) the widest [ ... ] slice;
+  // 4) the widest { ... } slice.
   let parsed: unknown = tryParse(text)
   if (parsed === undefined) {
     const fence = text.match(/```(?:json)?\s*([\s\S]*?)```/i)
@@ -128,9 +134,12 @@ export function parseCandidates(answerText: string): RawCandidate[] {
   }
   if (parsed === undefined) return []
 
-  const arr = Array.isArray(parsed) ? parsed : [parsed]
+  return Array.isArray(parsed) ? parsed : [parsed]
+}
+
+export function parseCandidates(answerText: string): RawCandidate[] {
   const out: RawCandidate[] = []
-  for (const item of arr) {
+  for (const item of looseJsonArray(answerText)) {
     if (!item || typeof item !== 'object') continue
     const o = item as Record<string, unknown>
     const url = typeof o.url === 'string' ? o.url.trim() : ''
