@@ -112,6 +112,22 @@ try {
     foreach ($line in $trackerOut) { Write-Log $line }
     if ($trackerExit -ne 0) { Write-Log "WARN: citation-share tracker exited $trackerExit -- see output above" }
 
+    # --- unlinked-mention finder (Story 1.4 / ADR-116) ---
+    # Searches the web (shared search stack, no new monitor calls) for public "gmaslist"/"gma's list"
+    # mentions that don't link to gmaslist.com, dedupes against a monotonic known-mention ledger, and
+    # writes a chase list of NEW-since-last-run mentions under ~/GmaS-data/ (private, not committed).
+    # NON-FATAL: a finder failure must never fail this weekly run, so its exit code is logged but not
+    # propagated. (Erik granted the AR-4 go-ahead to wire this onto the weekly Mon 05:00 Task.)
+    Push-Location $serverDir
+    try {
+        $mentionOut = & npx tsx scripts/unlinkedMentionFinderRun.ts 2>&1 | ForEach-Object { $_.ToString() }
+        $mentionExit = $LASTEXITCODE
+    } finally {
+        Pop-Location
+    }
+    foreach ($line in $mentionOut) { Write-Log $line }
+    if ($mentionExit -ne 0) { Write-Log "WARN: unlinked-mention finder exited $mentionExit -- see output above" }
+
     exit 0
 }
 finally {
