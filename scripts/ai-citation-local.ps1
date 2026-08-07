@@ -97,6 +97,21 @@ try {
     } else {
         Write-Log 'WARN: monitor exited non-zero -- see output above'
     }
+
+    # --- citation-share tracker (Story 1.1 / ADR-113) ---
+    # Folds the monitor's JSONL log (just appended above) into a dated citation-share time series +
+    # markdown, under ~/GmaS-data/ (private, not committed). Makes NO engine calls. NON-FATAL: a
+    # tracker failure must never fail this weekly run, so its exit code is logged but not propagated.
+    Push-Location $serverDir
+    try {
+        $trackerOut = & npx tsx scripts/citationShareRun.ts 2>&1 | ForEach-Object { $_.ToString() }
+        $trackerExit = $LASTEXITCODE
+    } finally {
+        Pop-Location
+    }
+    foreach ($line in $trackerOut) { Write-Log $line }
+    if ($trackerExit -ne 0) { Write-Log "WARN: citation-share tracker exited $trackerExit -- see output above" }
+
     exit 0
 }
 finally {
