@@ -23,7 +23,9 @@ import {
   topicMatchesCategory,
   renderCopy,
   NON_WA_TOKENS,
+  WA_LOCALITY_TOKENS,
   type CitableFact,
+  type GeoResolution,
   type PackagerSources,
 } from './factPackager.js'
 import type { Region } from '../utils/regionModel.js'
@@ -87,11 +89,8 @@ export const RIVAL_DOMAINS = new Set<string>([
 ])
 
 // Well-known WA localities treated as a WA signal in free text even when they are not a covered
-// region city. Deliberately excludes ambiguous names (e.g. "vancouver" — WA vs BC).
-const WA_LOCALITY_HINTS = new Set<string>([
-  'seattle', 'tacoma', 'spokane', 'olympia', 'everett', 'bellevue', 'kent', 'renton',
-  'marysville', 'bellingham', 'yakima', 'redmond', 'kirkland', 'auburn', 'puyallup',
-])
+// region city — shared with the packager's resolveGeo (WA_LOCALITY_TOKENS) so both use one WA
+// gazetteer. Deliberately excludes ambiguous names (e.g. "vancouver" — WA vs BC).
 
 // ---- candidate parsing (NFR-1: never throws) ----
 
@@ -180,23 +179,27 @@ export function candidateGeoIsWa(candidate: RawCandidate, regions: Region[]): bo
   if (geoRes.kind === 'region' || geoRes.kind === 'statewide') return true
 
   const text = `${candidate.title ?? ''} ${candidate.snippet ?? ''} ${candidate.geo ?? ''}`.toLowerCase()
-  const tokens = text.split(/[^a-z0-9]+/).filter(Boolean)
-  const tokenSet = new Set(tokens)
-  const hasNonWa = tokens.some((t) => NON_WA_TOKENS.has(t))
-
-  const waCities = new Set<string>(WA_LOCALITY_HINTS)
-  for (const r of regions) {
-    for (const c of r.cities) waCities.add(c.toLowerCase())
-    waCities.add(r.slug.toLowerCase())
-    waCities.add(r.label.toLowerCase())
+  // Whole-word phrase presence (word-boundary), so "kent" never matches "kentucky", "or" never
+  // matches the conjunction, and a multi-word place like "mount vernon" matches spaced prose.
+  const norm = ` ${text.replace(/[^a-z0-9]+/g, ' ').trim()} `
+  const hasPhrase = (place: string): boolean => {
+    const p = place.replace(/[^a-z0-9]+/g, ' ').trim()
+    return p.length > 0 && norm.includes(` ${p} `)
   }
-  const hasWa =
-    tokenSet.has('wa') ||
-    tokenSet.has('washington') ||
-    [...waCities].some((city) => city.length > 0 && text.includes(city))
 
-  if (hasWa && !hasNonWa) return true
-  return false
+  // A non-WA signal only from UNAMBIGUOUS full place names (>=3 chars) — never the 2-letter state
+  // abbreviations (or/id/ca/…), which collide with common English words in prose.
+  const hasNonWa = [...NON_WA_TOKENS].some((t) => t.length >= 3 && hasPhrase(t))
+
+  const waPlaces = new Set<string>(WA_LOCALITY_TOKENS)
+  for (const r of regions) {
+    for (const c of r.cities) waPlaces.add(c.toLowerCase())
+    waPlaces.add(r.slug.toLowerCase())
+    waPlaces.add(r.label.toLowerCase())
+  }
+  const hasWa = hasPhrase('wa') || hasPhrase('washington') || [...waPlaces].some((p) => hasPhrase(p))
+
+  return hasWa && !hasNonWa
 }
 
 // ---- fact pairing (FR-7, delegates to factPackager — AC-4) ----
@@ -210,7 +213,11 @@ export function matchFact(
 ): CitableFact | null {
   const topic = (candidate.topic ?? defaults.topic ?? '').trim()
   const geoStr = (candidate.geo ?? defaults.geo ?? '').trim()
-  const geo = resolveGeo(geoStr, sources.regions)
+  const resolved = resolveGeo(geoStr, sources.regions)
+  // candidateGeoIsWa already established WA-relevance upstream, so an unrecognized locality string
+  // must NOT now trip factPackager's WA-allowlist refusal — fall back to a statewide lookup.
+  const geo: GeoResolution =
+    resolved.kind === 'region' || resolved.kind === 'statewide' ? resolved : { kind: 'statewide' }
   const fact = selectFact(topic, geo, sources)
   return fact.kind === 'none' ? null : fact
 }

@@ -42,6 +42,16 @@ export const NON_WA_TOKENS = new Set([
   'mt', 'montana', 'nv', 'nevada', 'az', 'arizona',
 ])
 
+// Recognized WA localities (single-token) that are NOT one of the covered named regions. A geo
+// naming one of these resolves to `statewide` (a WA fact under a WA label) rather than being
+// refused as unrecognized — so the operator can ask for "Seattle" without appending "WA". Shared
+// with the opportunity finder (candidateGeoIsWa) so both speak the same WA gazetteer. Ambiguous
+// names (e.g. "vancouver" — WA vs BC) are deliberately excluded.
+export const WA_LOCALITY_TOKENS = new Set<string>([
+  'seattle', 'tacoma', 'spokane', 'olympia', 'everett', 'bellevue', 'kent', 'renton',
+  'marysville', 'bellingham', 'yakima', 'redmond', 'kirkland', 'auburn', 'puyallup',
+])
+
 // ---- source-reference URLs (the live pages that already publish each fact, AR-7) ----
 // Category slug uses regionModel.slugify — byte-identical to compareRoute.categorySlug — so the
 // cited /compare URL truly renders the fact. Region slug is the Region.slug from buildRegions.
@@ -143,9 +153,19 @@ export function topicMatchesCategory(topic: string, category: string): boolean {
   const c = (category ?? '').trim().toLowerCase()
   if (!t) return true
   if (!c) return false
-  if (c === t || c.includes(t) || t.includes(c)) return true
-  const aliases = CATEGORY_ALIASES[c]
-  return !!aliases && aliases.some((a) => t === a || t.includes(a) || a.includes(t))
+  if (c === t) return true
+  // Whole-word / stem match per topic token, so "credible" never matches "edible" and "amazon"
+  // never matches the "oz" alias (the old two-way substring test did). Plurals and 4+char prefixes
+  // still match ("flowers"→flower, "concentrates"→concentrate, "flow"→flower, "vape"→Vaporizers).
+  const wordMatches = (word: string, key: string): boolean =>
+    word === key ||
+    word === `${key}s` ||
+    key === `${word}s` ||
+    (key.length >= 4 && word.startsWith(key)) ||
+    (word.length >= 4 && key.startsWith(word))
+  const keys = [c, ...(CATEGORY_ALIASES[c] ?? [])]
+  const topicTokens = t.split(/[^a-z0-9]+/).filter(Boolean)
+  return topicTokens.some((w) => keys.some((k) => wordMatches(w, k)))
 }
 
 // Map the operator's geo string to a covered WA Region (by slug / label / member city), a
@@ -169,6 +189,8 @@ export function resolveGeo(geoInput: string, regions: Region[]): GeoResolution {
   if (nonWa) return { kind: 'out-of-wa', token: nonWa }
   // A WA-signalled ask for an area we don't cover as a named region → serve statewide.
   if (tokens.includes('wa') || tokens.includes('washington')) return { kind: 'statewide' }
+  // A recognized WA locality (not a covered region) → serve statewide facts under a WA label.
+  if (tokens.some((t) => WA_LOCALITY_TOKENS.has(t))) return { kind: 'statewide' }
   return { kind: 'uncovered', geo: geoInput }
 }
 
@@ -209,6 +231,7 @@ function bestDisparity(topic: string, disparities: Disparity[]): DisparityFact |
       topicMatchesCategory(topic, d.category) &&
       positivePrice(d.lowPrice) &&
       positivePrice(d.highPrice) &&
+      d.highPrice > d.lowPrice && // real gap only — never render "$X … up to $X … a real price gap"
       Array.isArray(d.storesCarrying) &&
       d.storesCarrying.length >= 2,
   )
@@ -273,6 +296,17 @@ export function selectFact(topic: string, geo: GeoResolution, sources: PackagerS
     return {
       kind: 'none',
       reason: `geo is outside Washington ("${geo.token}") — this tool only packages facts for licensed WA retailers`,
+    }
+  }
+
+  // WA-allowlist refusal (AC-1): a NON-EMPTY geo that resolves to nothing recognized as WA is
+  // refused rather than being quietly served a statewide WA fact under an out-of-state label. An
+  // EMPTY geo (kind 'uncovered', geo '') is the operator's "any WA fact" path and still falls
+  // through to statewide. Append "WA" to force statewide for an unlisted WA town.
+  if (geo.kind === 'uncovered' && (geo.geo ?? '').trim() !== '') {
+    return {
+      kind: 'none',
+      reason: `geo "${geo.geo.trim()}" is not a recognized Washington region or locality — this tool only packages facts for WA (append "WA" to force a statewide fact)`,
     }
   }
 

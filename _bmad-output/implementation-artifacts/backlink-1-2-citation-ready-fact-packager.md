@@ -4,7 +4,7 @@ baseline_commit: aaab002674160b2620357d00e7aa1bafdc60d570
 
 # Story 1.2: Citation-ready fact packager
 
-Status: review
+Status: done  <!-- code-review 2026-08-07 (bmad-code-review, 3 adversarial layers): patches P2 (zero-spread guard), P4 (whole-word topic match), P6 (WA-allowlist refusal, Erik's D1 ruling) applied; D2 high-side kept as-is per ADR-114; F5 deferred → deferred-work.md; full findings in epic-backlink-1-code-review-2026-08-07.md. 965/965 server green, build clean. -->
 
 <!-- DECISIONS pre-set from Story 1.1 / ADR-113 precedent (Erik: "default to private output unless I say otherwise"):
   1. Output location = PRIVATE under ~/GmaS-data/ (env-overridable); NOT committed, NOT served, NOT in $derivedFiles. AR-1/AR-3 do NOT apply (same rationale as ADR-113). See Dev Notes "Output location".

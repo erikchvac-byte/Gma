@@ -4,7 +4,7 @@ baseline_commit: 1e66563288ce54a50570bcd5b8072529acab9b21
 
 # Story 1.3: Opportunity finder
 
-Status: review
+Status: done  <!-- code-review 2026-08-07 (bmad-code-review, 3 adversarial layers): patches P1 (HIGH — NON_WA_TOKENS free-text false-drop), P5 (city word-boundary), P6 (matchFact statewide downgrade) applied; F4/F6 deferred → deferred-work.md; full findings in epic-backlink-1-code-review-2026-08-07.md. 965/965 server green, build clean. -->
 
 <!-- DECISIONS pre-set from Story 1.1/1.2 precedent (ADR-113/ADR-114; Erik: "default to private output unless I say otherwise"):
   1. Output location = PRIVATE under ~/GmaS-data/ (env-overridable OPPORTUNITY_DIR); NOT committed, NOT served, NOT in $derivedFiles. AR-1/AR-3 do NOT apply (same rationale as ADR-113/114). See Dev Notes "Output location".

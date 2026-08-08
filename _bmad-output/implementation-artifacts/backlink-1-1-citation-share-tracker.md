@@ -4,7 +4,7 @@ baseline_commit: 40f9752bf3f5137c5f1ab4579e96e50d3fd9c383
 
 # Story 1.1: Citation-share tracker
 
-Status: review
+Status: done  <!-- code-review 2026-08-07 (bmad-code-review, 3 adversarial layers): patch P3 (empty-date datapoint guard) applied; F1/F2 deferred → deferred-work.md; full findings in epic-backlink-1-code-review-2026-08-07.md. 965/965 server green, build clean. -->
 
 <!-- DECISIONS CONFIRMED BY ERIK 2026-08-06 (pre-dev):
   1. Output location = PRIVATE measurement state under ~/GmaS-data/ (env-overridable); NOT committed, NOT served, NOT in $derivedFiles. (AR-1/AR-3 do not apply — see Dev Notes.)

@@ -41,6 +41,17 @@ describe('dateOf', () => {
   })
 })
 
+describe('buildDatapointsFromLog — corrupt-timestamp guard (review P3)', () => {
+  it('drops a datapoint whose date is empty (unparseable-but-string timestamp)', () => {
+    const points = buildDatapointsFromLog([
+      check({ timestamp: 'garbage', questionId: 'g', cited: true }),
+      check({ timestamp: '2026-08-06T05:00:00.000Z', questionId: 'q', cited: true }),
+    ])
+    expect(points.every((d) => d.date !== '')).toBe(true)
+    expect(points.map((d) => d.date)).toEqual(['2026-08-06'])
+  })
+})
+
 describe('groupChecksIntoRuns', () => {
   it('returns no runs for an empty log', () => {
     expect(groupChecksIntoRuns([])).toEqual([])

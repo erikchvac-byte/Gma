@@ -142,6 +142,14 @@ describe('candidateGeoIsWa (FR-8)', () => {
     expect(candidateGeoIsWa(candidate({ geo: '', title: 'best deals anywhere' }), regions)).toBe(false)
     expect(candidateGeoIsWa(candidate({ geo: '', title: 'deals in Portland' }), regions)).toBe(false)
   })
+  it('keeps a WA candidate whose text merely contains the word "or" (review P1)', () => {
+    expect(
+      candidateGeoIsWa(candidate({ geo: '', title: 'Best deals in Seattle', snippet: 'flower or edibles?' }), regions),
+    ).toBe(true)
+  })
+  it('does not read "kent" inside "Kentucky" as a WA signal (review P5)', () => {
+    expect(candidateGeoIsWa(candidate({ geo: '', title: 'dispensaries in Kentucky' }), regions)).toBe(false)
+  })
 })
 
 describe('matchFact (FR-7, delegates to factPackager)', () => {
@@ -150,6 +158,12 @@ describe('matchFact (FR-7, delegates to factPackager)', () => {
     expect(matchFact(candidate({ topic: 'flower', geo: 'wa' }), src)).not.toBeNull()
     // No gated fact for a category with no data → discard.
     expect(matchFact(candidate({ topic: 'edibles', geo: 'wa' }), src)).toBeNull()
+  })
+  it('downgrades an already-WA-vouched unrecognized locality to a statewide lookup (review P6)', () => {
+    const src = sources({ disparities: [disparity()] })
+    // "Ballard" is a Seattle neighborhood the packager does not recognize; because candidateGeoIsWa
+    // vouches WA upstream, matchFact must still return the statewide fact, not trip the refusal.
+    expect(matchFact(candidate({ topic: 'flower', geo: 'Ballard' }), src)).not.toBeNull()
   })
 })
 

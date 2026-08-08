@@ -167,7 +167,9 @@ export function buildDatapointsFromLog(
 ): CitationShareDatapoint[] {
   return groupChecksIntoRuns(checks, gapMs)
     .map(computeShareDatapoint)
-    .filter((d) => d.questionCount > 0)
+    // Drop a datapoint whose date is '' (from an unparseable-but-string timestamp): an empty date
+    // sorts ahead of every real date and would persist forever via the monotonic merge.
+    .filter((d) => d.questionCount > 0 && d.date !== '')
 }
 
 // Upsert derived datapoints into the existing series by date key (derived wins for its dates),
