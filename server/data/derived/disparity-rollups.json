@@ -3,25 +3,25 @@
     "byCategory": [
       {
         "category": "Flower",
-        "disparityCount": 388,
-        "avgSpreadPct": 0.13,
+        "disparityCount": 383,
+        "avgSpreadPct": 0.14,
         "distinctStoresInvolved": 13
       },
       {
         "category": "Pre-Rolls",
-        "disparityCount": 134,
-        "avgSpreadPct": 0.23,
+        "disparityCount": 136,
+        "avgSpreadPct": 0.24,
         "distinctStoresInvolved": 15
       },
       {
         "category": "Vaporizers",
-        "disparityCount": 633,
-        "avgSpreadPct": 0.19,
+        "disparityCount": 650,
+        "avgSpreadPct": 0.2,
         "distinctStoresInvolved": 15
       },
       {
         "category": "Concentrate",
-        "disparityCount": 157,
+        "disparityCount": 162,
         "avgSpreadPct": 0.12,
         "distinctStoresInvolved": 15
       }
@@ -31,25 +31,33 @@
         "dispensaryId": "2020-solutions-north-bellingham",
         "lat": 48.8035532,
         "lng": -122.3987332,
-        "disparityCount": 623,
-        "timesCheapest": 37,
+        "disparityCount": 622,
+        "timesCheapest": 41,
         "timesPriciest": 35
       },
       {
         "dispensaryId": "2020-solutions-pacific-highway",
         "lat": 48.8145708,
         "lng": -122.5440798,
-        "disparityCount": 616,
-        "timesCheapest": 40,
-        "timesPriciest": 29
+        "disparityCount": 618,
+        "timesCheapest": 41,
+        "timesPriciest": 31
       },
       {
         "dispensaryId": "kush21-everett-evergreen",
         "lat": 47.917238,
         "lng": -122.232282,
-        "disparityCount": 224,
-        "timesCheapest": 158,
+        "disparityCount": 220,
+        "timesCheapest": 151,
         "timesPriciest": 33
+      },
+      {
+        "dispensaryId": "local-roots-everett-128th",
+        "lat": 47.8826827,
+        "lng": -122.240823,
+        "disparityCount": 234,
+        "timesCheapest": 142,
+        "timesPriciest": 49
       },
       {
         "dispensaryId": "evolve-cannabis-bellingham",
@@ -63,73 +71,65 @@
         "dispensaryId": "cannazone-old-hwy-99",
         "lat": 48.384998,
         "lng": -122.3357887,
-        "disparityCount": 160,
-        "timesCheapest": 25,
-        "timesPriciest": 104
+        "disparityCount": 154,
+        "timesCheapest": 23,
+        "timesPriciest": 103
       },
       {
         "dispensaryId": "cannazone-bellingham",
         "lat": 48.846368,
         "lng": -122.486043,
-        "disparityCount": 175,
-        "timesCheapest": 87,
-        "timesPriciest": 59
+        "disparityCount": 169,
+        "timesCheapest": 85,
+        "timesPriciest": 57
       },
       {
         "dispensaryId": "salish-coast-cannabis",
         "lat": 48.4564299,
         "lng": -122.517779,
-        "disparityCount": 67,
-        "timesCheapest": 23,
-        "timesPriciest": 26
+        "disparityCount": 74,
+        "timesCheapest": 24,
+        "timesPriciest": 32
       },
       {
         "dispensaryId": "hangar-420-west",
         "lat": 47.8487065,
         "lng": -122.29382,
-        "disparityCount": 176,
-        "timesCheapest": 18,
-        "timesPriciest": 51
+        "disparityCount": 184,
+        "timesCheapest": 22,
+        "timesPriciest": 50
       },
       {
         "dispensaryId": "hangar-420-everett",
         "lat": 47.8890687,
         "lng": -122.2153644,
-        "disparityCount": 163,
-        "timesCheapest": 17,
-        "timesPriciest": 39
-      },
-      {
-        "dispensaryId": "local-roots-everett-128th",
-        "lat": 47.8826827,
-        "lng": -122.240823,
-        "disparityCount": 217,
-        "timesCheapest": 130,
-        "timesPriciest": 50
+        "disparityCount": 174,
+        "timesCheapest": 18,
+        "timesPriciest": 44
       },
       {
         "dispensaryId": "starbuds-bellingham",
         "lat": 48.736074,
         "lng": -122.4699876,
-        "disparityCount": 14,
+        "disparityCount": 12,
         "timesCheapest": 2,
-        "timesPriciest": 9
-      },
-      {
-        "dispensaryId": "the-joint-everett",
-        "lat": 47.9118264,
-        "lng": -122.2071576,
-        "disparityCount": 106,
-        "timesCheapest": 22,
-        "timesPriciest": 65
+        "timesPriciest": 8
       },
       {
         "dispensaryId": "kushmart-north",
         "lat": 47.9402444,
         "lng": -122.2194805,
-        "disparityCount": 182,
+        "disparityCount": 194,
         "timesCheapest": 49,
-        "timesPriciest": 92
+        "timesPriciest": 97
+      },
+      {
+        "dispensaryId": "the-joint-everett",
+        "lat": 47.9118264,
+        "lng": -122.2071576,
+        "disparityCount": 105,
+        "timesCheapest": 22,
+        "timesPriciest": 66
       },
       {
         "dispensaryId": "happy-time-mt-vernon",
@@ -156,7 +156,7 @@
         "timesPriciest": 3
       }
     ],
-    "totalDisparities": 1312,
+    "totalDisparities": 1331,
     "missingGeoCount": 0
   },
   "excluded": [
@@ -166,9 +166,9 @@
     }
   ],
   "coverage": {
-    "totalDisparities": 1312,
+    "totalDisparities": 1331,
     "categoryCount": 4,
     "storeCount": 16
   },
-  "generatedAt": "2026-08-07T11:00:08.427Z"
+  "generatedAt": "2026-08-08T11:00:12.756Z"
 }
