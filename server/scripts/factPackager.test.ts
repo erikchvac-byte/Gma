@@ -294,3 +294,52 @@ describe('renderResult — refusal (FR-6)', () => {
     expect(out).not.toMatch(/\$\d/) // never a dollar figure
   })
 })
+
+describe('topicMatchesCategory — whole-word (review P4)', () => {
+  it('does not false-match an embedded substring', () => {
+    expect(topicMatchesCategory('credible reviews', 'Edible')).toBe(false)
+    expect(topicMatchesCategory('amazon deals', 'Flower')).toBe(false) // was: matched the "oz" alias
+    expect(topicMatchesCategory('a dozen gummies', 'Flower')).toBe(false)
+  })
+  it('still matches plurals, aliases, and prefixes', () => {
+    expect(topicMatchesCategory('flowers', 'Flower')).toBe(true)
+    expect(topicMatchesCategory('concentrates', 'Concentrate')).toBe(true)
+    expect(topicMatchesCategory('carts', 'Vaporizers')).toBe(true)
+  })
+})
+
+describe('resolveGeo — WA gazetteer (review P6)', () => {
+  const regions = [region()]
+  it('treats a known WA locality as statewide', () => {
+    expect(resolveGeo('Seattle', regions)).toEqual({ kind: 'statewide' })
+    expect(resolveGeo('Tacoma', regions)).toEqual({ kind: 'statewide' })
+  })
+  it('leaves a truly unrecognized non-WA place uncovered', () => {
+    expect(resolveGeo('Denver', regions)).toEqual({ kind: 'uncovered', geo: 'Denver' })
+  })
+})
+
+describe('WA-allowlist refusal (review P6 / AC-1)', () => {
+  it('refuses a non-empty unrecognized geo instead of serving a statewide fact', () => {
+    const result = selectFact('Flower', { kind: 'uncovered', geo: 'Denver' }, sources({ disparities: [disparity()] }))
+    expect(result.kind).toBe('none')
+  })
+  it('still serves a statewide fact for an EMPTY geo (operator "any" path)', () => {
+    const result = selectFact('Flower', { kind: 'uncovered', geo: '' }, sources({ disparities: [disparity()] }))
+    expect(result.kind).toBe('disparity')
+  })
+})
+
+describe('zero-spread disparity guard (review P2)', () => {
+  it('never emits a disparity whose high equals its low', () => {
+    const flat = disparity({
+      lowPrice: 25, highPrice: 25, spread: 0, spreadPct: 0,
+      storesCarrying: [
+        { dispensaryId: 'a', price: 25, quantityAvailable: 2 },
+        { dispensaryId: 'b', price: 25, quantityAvailable: 2 },
+      ],
+    })
+    const result = selectFact('Flower', { kind: 'statewide' }, sources({ disparities: [flat] }))
+    expect(result.kind).toBe('none') // no real gap → not surfaced as "a real cross-store price gap"
+  })
+})

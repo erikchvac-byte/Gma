@@ -4,7 +4,7 @@ baseline_commit: 3cdb4d66ceaf45c196e3c3b0d1ae68964a09d11b
 
 # Story 1.4: Unlinked-mention finder
 
-Status: review
+Status: done  <!-- code-review 2026-08-07 (bmad-code-review, 3 adversarial layers): no patch needed; F3 (mentionKey drops query string) deferred → deferred-work.md; full findings in epic-backlink-1-code-review-2026-08-07.md. 965/965 server green, build clean. -->
 
 <!-- DECISIONS pre-set from Story 1.1/1.2/1.3 precedent (ADR-113/114/115; Erik: "default to private output unless I say otherwise"):
   1. Output location = PRIVATE under ~/GmaS-data/ (env-overridable MENTIONS_DIR); NOT committed, NOT served, NOT in $derivedFiles. AR-1/AR-3 do NOT apply (same override + rationale as ADR-113/114/115). See Dev Notes "Output location".
