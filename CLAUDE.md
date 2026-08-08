@@ -18,3 +18,13 @@ Non-negotiable rules from that protocol:
 - A third-party audit metric is a **hypothesis, not a verdict.** Confirm against the authoritative source (Google Search Console for Google; the Phase-0 citation monitor for AI engines) before acting. Grade every finding `Confirmed` / `Deduced` / `Hypothesized`; act only on `Confirmed`.
 - Resolve the fork **`Discovered – not crawled` (crawl problem — page content is irrelevant, Google never fetched it) vs `Crawled – not indexed` (fetched and rejected — only here is thin/duplicate content actionable)** before choosing any remedy. Conflating these produced a real false flag (2026-07-29 "thin content" mis-read; see `investigations/semrush-site-audit-investigation.md`).
 - GSC is Google-only — never infer AI-engine reach from it.
+
+## Adding a category or a new data type
+
+**Before adding a new product category (a Dutchie `type` string) or a new derived fact / page type, follow [docs/data-propagation-protocol.md](./docs/data-propagation-protocol.md).** New data must reach *every* mechanism that consumes its kind — not just the file you were editing.
+
+Non-negotiable rules from that protocol:
+- **Single-source every list; never re-type a category literal.** Edit the source of truth (`DEFAULT_PRODUCT_CATEGORIES` for categories) and let it fan out; the protocol's maps trace each touchpoint.
+- Prefer an enforced invariant over a checklist: **fan-out-from-one-source > CI guard test > checklist.** Add a guard test for any manual sync step.
+- Honest Math: a new category stays **out** of `WEIGHT_BASED_CATEGORIES` (no `$/gram`) until it has a real product-weight basis.
+- The known gap: a new `server/data/derived/*.json` must be appended to `$derivedFiles` in `scripts/derive-facts-local.ps1` or it silently never republishes.

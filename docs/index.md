@@ -51,6 +51,7 @@
 - [ADR.md](../ADR.md) — Architecture Decision Record (authoritative, large; ADR-001…097+)
 - [seo-ai-crawler-visibility-plan.md](./seo-ai-crawler-visibility-plan.md) — the reach frontier: phased SEO / AI-crawler visibility plan (partially shipped)
 - [seo-indexing-diagnostic-protocol.md](./seo-indexing-diagnostic-protocol.md) — **mandatory** protocol for diagnosing crawl/index/reach issues without acting on third-party-audit false flags (grade Confirmed/Deduced/Hypothesized)
+- [data-propagation-protocol.md](./data-propagation-protocol.md) — **mandatory** before adding a product category or a new derived fact/page type: the touchpoint maps that keep new data reaching every mechanism (single-source > CI guard > checklist)
 - [products-local-sqlite-ingest.md](./products-local-sqlite-ingest.md) — local SQLite product substrate + derivation pipeline (ADR-077)
 - [weedmaps-residential-ingest.md](./weedmaps-residential-ingest.md) — nightly residential-IP Weedmaps price accrual (bypasses datacenter 406-wall; AI-search Phase 3)
 - [store-link-liveness-check.md](./store-link-liveness-check.md) — nightly residential store-card link-liveness check (read-only ADR-068/069 sibling of the Weedmaps runner)
