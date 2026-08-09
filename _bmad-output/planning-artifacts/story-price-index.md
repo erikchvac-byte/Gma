@@ -110,7 +110,7 @@ Ran `/bmad-check-implementation-readiness` on this story (report: `implementatio
 
 ## Status
 
-**review** (Phase 1a implemented 2026-08-08; Phase 1b/2/3 remain backlog per their own tracking keys)
+**done** (Phase 1a implemented 2026-08-08, code-reviewed + fixed 2026-08-09, merged as PR #131 / squash `d7834ce` → Render auto-deploy; Phase 1b/2/3 remain backlog per their own tracking keys)
 
 ## Tasks / Subtasks (Phase 1a)
 
