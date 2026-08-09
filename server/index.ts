@@ -11,6 +11,7 @@ import {
   compareSegmentRoute,
   compareCategoryRegionRoute,
 } from './routes/compareRoute.js'
+import { priceIndexRoute } from './routes/priceIndexRoute.js'
 import { robotsRoute, sitemapRoute, llmsTxtRoute } from './routes/sitemapRoute.js'
 import { makeShellRoute } from './routes/shellRoute.js'
 import { storeRoute } from './routes/storeRoute.js'
@@ -92,6 +93,12 @@ app.get('/compare', compareIndexRoute)
 // segment as either a region (landing page) or a category (existing behavior).
 app.get('/compare/:category/:region', compareCategoryRegionRoute)
 app.get('/compare/:category', compareSegmentRoute)
+
+// WA Cannabis Price Index (price-index-phase-1a) — the flagship citable asset:
+// SSR page leading with the biggest same-product price gaps, plus Dataset +
+// FAQPage JSON-LD answering the monitored questions. Reads the SAME committed
+// derived JSON as /compare at request time. Registered before the SPA fallback.
+app.get('/price-index', priceIndexRoute)
 
 // Per-store SEO / AI-search pages (Phase 1a / CAP-3+CAP-4): one crawlable
 // /store/<id> per licensed WA retailer with LocalBusiness JSON-LD. Same reason

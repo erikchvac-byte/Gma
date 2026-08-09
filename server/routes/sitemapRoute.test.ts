@@ -87,6 +87,15 @@ describe('GET /sitemap.xml', () => {
     expect(res.text).toContain('<loc>https://gmaslist.com/</loc>')
     expect(res.text).toContain('<loc>https://gmaslist.com/about</loc>')
     expect(res.text).toContain('<loc>https://gmaslist.com/compare</loc>')
+    expect(res.text).toContain('<loc>https://gmaslist.com/price-index</loc>')
+  })
+
+  it('stamps /price-index with the artifact generatedAt as lastmod (data-backed)', async () => {
+    const res = await request(app).get('/sitemap.xml')
+    // The flagship price index is data-backed, so it carries a lastmod line (unlike /about).
+    expect(res.text).toMatch(
+      /<loc>https:\/\/gmaslist\.com\/price-index<\/loc>\n\s*<lastmod>/,
+    )
   })
 
   it('lists one /compare/<category> URL per live rollup category', async () => {
@@ -149,6 +158,9 @@ describe('GET /llms.txt', () => {
     expect(res.text).toMatch(/\[Deal feed\]\(https:\/\/gmaslist\.com\/\)/)
     expect(res.text).toMatch(/\[About Gmas List\]\(https:\/\/gmaslist\.com\/about\)/)
     expect(res.text).toMatch(/\[Compare prices\]\(https:\/\/gmaslist\.com\/compare\)/)
+    expect(res.text).toMatch(
+      /\[Washington cannabis price index\]\(https:\/\/gmaslist\.com\/price-index\)/,
+    )
   })
 
   it('links one /compare/<category> URL per live rollup category', async () => {
@@ -234,6 +246,21 @@ describe('buildSitemapXml (pure)', () => {
     expect(xml).toContain(
       `<loc>https://gmaslist.com/compare/flower</loc>\n    <lastmod>${GEN}</lastmod>`,
     )
+    // The flagship price index is data-backed too.
+    expect(xml).toContain(
+      `<loc>https://gmaslist.com/price-index</loc>\n    <lastmod>${GEN}</lastmod>`,
+    )
+  })
+
+  it('never stamps an epoch (never-derived) generatedAt as a real 1970 lastmod', () => {
+    // A never-derived artifact carries the epoch sentinel; emitting it as <lastmod>
+    // would advertise a false 1970 freshness date to crawlers (review #6).
+    const xml = buildSitemapXml(['Flower'], new Date(0).toISOString())
+    expect(xml).not.toContain('<lastmod>')
+    // The URLs themselves are still listed, just without a fabricated date.
+    expect(xml).toContain('<loc>https://gmaslist.com/compare</loc>')
+    expect(xml).toContain('<loc>https://gmaslist.com/price-index</loc>')
+    expect(xml).toContain('<loc>https://gmaslist.com/compare/flower</loc>')
   })
 
   it('does not stamp static entity pages with a fabricated lastmod', () => {

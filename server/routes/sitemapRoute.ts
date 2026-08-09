@@ -2,6 +2,7 @@ import type { Request, Response } from 'express'
 import type { DisparityRollupsReport } from '../utils/disparityRollups.js'
 import { readDerived, EMPTY_DISPARITY_ROLLUPS_ENVELOPE } from './valueRoute.js'
 import { categorySlug, readRegions } from './compareRoute.js'
+import { EPOCH_GENERATED_AT } from '../utils/ssrPage.js'
 import { ENTITY_DESCRIPTION } from './aboutRoute.js'
 import { buildApiData } from '../utils/buildApiData.js'
 import { fileURLToPath } from 'node:url'
@@ -69,7 +70,11 @@ Sitemap: ${BASE_URL}/sitemap.xml
 // Stable, crawlable pages that always exist regardless of derived-data state.
 // Per-store /store/<id> URLs are added dynamically below (Phase 1a). Per-DEAL
 // URLs remain deliberately absent (deals churn hourly, no stable per-deal page).
-const STATIC_PATHS = ['/', '/about', '/compare']
+const STATIC_PATHS = ['/', '/about', '/compare', '/price-index']
+
+// Data-backed static pages stamped with the derived artifact's generatedAt as
+// lastmod (their honest "last changed" signal); the other statics get none.
+const DATA_BACKED_STATIC = new Set(['/compare', '/price-index'])
 
 // sitemaps.org requires XML-escaping of loc values; our paths are ASCII and
 // category slugs are already [a-z0-9-] (categorySlug), but escape defensively so a
@@ -84,7 +89,10 @@ function escapeXml(text: string): string {
 }
 
 function urlEntry(loc: string, lastmod?: string): string {
-  const lastmodLine = lastmod ? `\n    <lastmod>${escapeXml(lastmod)}</lastmod>` : ''
+  // Never stamp the epoch sentinel (a never-derived artifact's generatedAt) as a real
+  // lastmod — that would advertise a false 1970 freshness date to crawlers (review #6).
+  const stamp = lastmod && lastmod !== EPOCH_GENERATED_AT ? lastmod : undefined
+  const lastmodLine = stamp ? `\n    <lastmod>${escapeXml(stamp)}</lastmod>` : ''
   return `  <url>\n    <loc>${escapeXml(loc)}</loc>${lastmodLine}\n  </url>`
 }
 
@@ -100,8 +108,9 @@ export function buildSitemapXml(
   regionPaths: { path: string; lastmod?: string }[] = [],
 ): string {
   const staticEntries = STATIC_PATHS.map((p) => {
-    // /compare is data-backed → stamp it with the artifact's generatedAt too.
-    const lastmod = p === '/compare' ? generatedAt : undefined
+    // Data-backed statics (/compare, /price-index) are stamped with the artifact's
+    // generatedAt too; static entity pages (/, /about) get no fabricated lastmod.
+    const lastmod = DATA_BACKED_STATIC.has(p) ? generatedAt : undefined
     return urlEntry(`${BASE_URL}${p}`, lastmod)
   })
 
@@ -228,6 +237,7 @@ export function buildLlmsTxt(
 - [Deal feed](${BASE_URL}/): Live cannabis deal feed from licensed Washington retailers, compared by savings, distance, and gas cost
 - [About Gmas List](${BASE_URL}/about): What Gmas List is, how it works, and frequently asked questions
 - [Compare prices](${BASE_URL}/compare): Cross-store price-disparity comparisons derived from observed menu prices
+- [Washington cannabis price index](${BASE_URL}/price-index): The biggest same-product cannabis price gaps across licensed Washington retailers, with answers to common price questions
 ${comparisonSection}${storesSection}
 ## Notes
 

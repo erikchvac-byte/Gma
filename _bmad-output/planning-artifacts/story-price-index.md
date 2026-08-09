@@ -1,3 +1,7 @@
+---
+baseline_commit: 4cf84a46723115e0a35e4219f950b0b425e4aed7
+---
+
 # Story: WA Cannabis Price Index — flagship citable asset + distribution
 
 **Source:** `prfaq-Happy.md`, `prfaq-Happy-distillate.md`, `price-index-execution-plan.md` (2026-08-08)
@@ -101,3 +105,50 @@ Ran `/bmad-check-implementation-readiness` on this story (report: `implementatio
 6. **Refactor sequencing (Task 1 is the only regression risk).** Extracting shared primitives touches the LIVE `/compare` route. Do Task 1 first, then run `compareRoute.test.ts` immediately to prove no `/compare` regression, BEFORE writing `priceIndexRoute.ts`.
 7. **Human discoverability (deferred, not Phase 1a).** Nothing in the app links a human to `/price-index` (bots reach it via sitemap + llms.txt, which is sufficient for the citation thesis). If human traffic is ever wanted, add an in-app entry point later.
 8. **Tracking note.** Phases 2–3 are ops/human work, not buildable code stories — track them separately so only Phase 1a reads as "ready for dev."
+
+---
+
+## Status
+
+**review** (Phase 1a implemented 2026-08-08; Phase 1b/2/3 remain backlog per their own tracking keys)
+
+## Tasks / Subtasks (Phase 1a)
+
+- [x] Task 1 — Extract shared SSR primitives to `server/utils/ssrPage.ts`, import + re-export from `compareRoute.ts` (behavior-preserving; `compareRoute.test.ts` + `compareRegionRoute.test.ts` green).
+- [x] Task 2 — `server/routes/priceIndexRoute.ts` `GET /price-index`: hook rows (top-15 by `spread` desc, `$` + `×` per readiness #3, price pulled from the named store), `byCategory.avgSpreadPct` table, "stores most often cheapest," region funnel, `Dataset` JSON-LD, whole-file freshness (readiness #4), fail-soft.
+- [x] Task 3 — `FAQPage` JSON-LD + visible "Common questions" section from one shared array mirroring `citation-questions.json` verbatim (schema-text == on-page-text, no `& < >`).
+- [x] Task 4 — Honesty/legal invariants: `AGE_NOTICE` + positioning disclaimer, WA-only (never "statewide"), no discount %/potency/leaderboard, `Cache-Control: public, max-age=3600`, `res.type('html')`, fail-soft (never a 500).
+- [x] Task 5 — Registered `GET /price-index` in `server/index.ts` before the SPA catch-all.
+- [x] Task 6 — `/price-index` added to sitemap `STATIC_PATHS` (data-backed `lastmod`) + `buildLlmsTxt` Pages.
+- [x] Task 7 — `priceIndexRoute.test.ts` (+18) + `sitemapRoute.test.ts` (+3); full server suite 984/984 green; real `npm run build` clean; live-verified in the running app.
+
+## Dev Agent Record
+
+### Implementation Plan / Decisions
+- **Readiness #6 (refactor first):** Did Task 1 first, ran `compareRoute.test.ts` before writing the route — extraction proven behavior-preserving.
+- **`page()` generalization:** taught `page()` to accept a single JSON-LD object OR an array. A single object still emits exactly one `<script>` block, so `/compare` output is byte-identical; the array form lets `/price-index` carry both `Dataset` and `FAQPage`.
+- **Readiness #3 (sort key):** rows sorted by `spread` desc; each renders both the `$` spread and the `spreadPct` `×`, worded as "N× the lowest price" (`spread = spreadPct × lowPrice`, so this is rigorously exact and avoids "× more" ambiguity). The prose lede leads with the top row's `×`.
+- **Readiness #4 (freshness):** whole-file — `generatedAt` (envelope-level, not `data.generatedAt`, which doesn't exist) + a 14-day age check → "freshness currently unverified"; epoch/never-derived → safe empty page, never a 1970 date. No per-row stale flag on this dataset.
+- **FAQ single-sourcing:** questions are a server-side literal mirroring `citation-questions.json` (no `resolveJsonModule` added); a guard test asserts every monitor question is present so the mirror can't silently drift. Answers are honesty-safe (WA-only, no discount %, no crowned "best store").
+- **Region funnel:** `renderPriceIndexHtml` takes an optional `regionLinks` (default `[]`, keeps it pure/testable); the route passes live `readRegions()` results (itself fail-soft).
+
+### Completion Notes
+- All 7 Phase-1a tasks + all Phase-1a acceptance criteria satisfied.
+- Confirmed: **no change to `scripts/derive-facts-local.ps1` / `$derivedFiles`, no new committed data file.** Reads existing committed derived JSON at request time only.
+- Live end-to-end verification on the built production server (`NODE_ENV=production node server/dist/server/index.js`): `GET /price-index` → 200, `Cache-Control: public, max-age=3600`, Dataset + FAQPage JSON-LD, hook row #1 = Donny Burger (DOH) 7g `$14.40 at 2020 Solutions North Bellingham to $84.00 at 2020 Solutions Pacific Highway — a $69.60 gap, 4.8× the lowest price, across 2 stores`, category table 24%/20%/14%, region funnel Bellingham/Everett/Mount Vernon, 0 "statewide", age notice + disclaimer, "Prices observed as of August 8, 2026".
+
+### File List
+- `server/utils/ssrPage.ts` (new) — extracted shared SSR primitives.
+- `server/routes/priceIndexRoute.ts` (new) — `/price-index` render + handler.
+- `server/routes/priceIndexRoute.test.ts` (new) — 18 tests.
+- `server/routes/compareRoute.ts` (modified) — import + re-export the extracted primitives; remove local copies; keep `categorySlug`.
+- `server/index.ts` (modified) — register `GET /price-index` before the SPA catch-all.
+- `server/routes/sitemapRoute.ts` (modified) — `/price-index` in `STATIC_PATHS` (data-backed `lastmod`) + `buildLlmsTxt` Pages line.
+- `server/routes/sitemapRoute.test.ts` (modified) — +3 assertions for the new URL/line.
+- `ADR.md` (modified) — ADR-117 Proposed → Accepted + build outcome + change-log entry.
+- `_bmad-output/implementation-artifacts/sprint-status.yaml` (modified) — `price-index-phase-1a` → review.
+- `_bmad-output/planning-artifacts/story-price-index.md` (modified) — frontmatter `baseline_commit`, this record.
+
+## Change Log
+- 2026-08-08 — Phase 1a implemented (bmad-dev-story). ADR-117. 984/984 server tests green, real build clean, live-verified. Status → review.
+- 2026-08-09 — Code review (`/code-review`, 8-angle) + fixes: guarded `spreadPct` (real 500 fix), rollups-missing accounting recovery, imported `categorySlug`, percent fallback for tiny multiples, sitemap epoch-lastmod guard, extracted shared `freshnessSentence`/`renderTopCheapest`/`disparityEndpoints` into `ssrPage.ts` (dedup /compare), `page()` JsonLd typing, simplifications; plus lede now leads with the biggest MULTIPLE (the 4.8× hook) not the top-by-$ row. 989/989 green, build clean, live-verified. File List additions: `server/utils/ssrPage.ts` (3 new shared helpers + JsonLd type + spreadPct guard), `server/routes/sitemapRoute.ts` (epoch-lastmod guard), `server/routes/compareRoute.ts` (now consumes the shared helpers). Still `review`, uncommitted.
