@@ -49,6 +49,39 @@ function Write-Log([string]$msg) {
     if (Test-Path $logDir) { Add-Content -Path $logFile -Value $line -Encoding utf8 }
 }
 
+# Fire a Windows toast (Action Center) so the weekly result is seen without opening a file. Uses the
+# native WinRT toast API with the Start-Menu PowerShell AppUserModelID (a registered AUMID, so no
+# custom app registration is needed). NON-FATAL: a toast can never fail the run -- any error is
+# logged and swallowed. Toasts display for the interactive user; if none is logged on at run time
+# they queue in Action Center and appear at next sign-in.
+function Show-Toast([string]$title, [string]$body) {
+    try {
+        [void][Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime]
+        [void][Windows.UI.Notifications.ToastNotification, Windows.UI.Notifications, ContentType = WindowsRuntime]
+        [void][Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom, ContentType = WindowsRuntime]
+        $tpl = [Windows.UI.Notifications.ToastNotificationManager]::GetTemplateContent(
+            [Windows.UI.Notifications.ToastTemplateType]::ToastText02)
+        $texts = $tpl.GetElementsByTagName('text')
+        [void]$texts.Item(0).AppendChild($tpl.CreateTextNode($title))
+        [void]$texts.Item(1).AppendChild($tpl.CreateTextNode($body))
+        $appId = '{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\WindowsPowerShell\v1.0\powershell.exe'
+        $notifier = [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier($appId)
+        $notifier.Show([Windows.UI.Notifications.ToastNotification]::new($tpl))
+    } catch {
+        Write-Log "WARN: toast notification failed -- $($_.Exception.Message)"
+    }
+}
+
+# The rolling one-liner the citation-share tracker upserts (newest data line). '' if not written yet.
+function Get-LatestSummaryLine {
+    $summaryFile = Join-Path $HOME 'GmaS-data\citation-summary.md'
+    if (-not (Test-Path $summaryFile)) { return '' }
+    $dataLines = Get-Content $summaryFile -Encoding utf8 |
+        Where-Object { $_ -match '^\d{4}-\d{2}-\d{2}' }
+    if ($dataLines) { return ($dataLines | Select-Object -Last 1) }
+    return ''
+}
+
 # --- preconditions ---
 if (-not (Test-Path $serverDir)) { Write-Error "server dir not found at '$serverDir'"; exit 1 }
 if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force | Out-Null }
@@ -127,6 +160,14 @@ try {
     }
     foreach ($line in $mentionOut) { Write-Log $line }
     if ($mentionExit -ne 0) { Write-Log "WARN: unlinked-mention finder exited $mentionExit -- see output above" }
+
+    # --- end-of-run toast (Action Center) ---
+    # Body is the tracker's rolling one-liner (date / cited N/8 / delta / top rival). Falls back to a
+    # generic status line if the tracker wrote nothing this run. A monitor non-zero is surfaced too.
+    $summaryLine = Get-LatestSummaryLine
+    if (-not $summaryLine) { $summaryLine = "run complete (monitor exit $runExit)" }
+    $toastTitle = if ($runExit -eq 0) { 'GmaS AI-citation monitor' } else { 'GmaS AI-citation monitor (monitor errored)' }
+    Show-Toast $toastTitle $summaryLine
 
     exit 0
 }

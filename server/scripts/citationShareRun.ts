@@ -23,6 +23,7 @@ import { fileURLToPath } from 'node:url'
 import { TARGET_DOMAIN, type CitationCheck } from './citationMonitor.js'
 import {
   buildDatapointsFromLog,
+  computeTrend,
   mergeDatapoints,
   renderMarkdown,
   type CitationShareDatapoint,
@@ -83,6 +84,45 @@ function atomicWrite(filePath: string, contents: string): void {
   fs.renameSync(tmp, filePath)
 }
 
+// The one glance a human takes: a single line per weekly run in a rolling file you'll actually
+// open. Built from the series' trend (current share, delta, rival leader) — the SAME numbers as
+// the markdown report, just one line. Returns '' when there's no datapoint to summarize.
+export function buildSummaryLine(datapoints: CitationShareDatapoint[]): string {
+  const trend = computeTrend(datapoints)
+  const c = trend.current
+  if (!c) return ''
+  const share = `${c.overall.gmaslistCitedQuestions}/${c.overall.questionCount}`
+  const delta =
+    trend.deltaCitedQuestions === null
+      ? 'Δ— (first run)'
+      : `Δ${trend.deltaCitedQuestions > 0 ? '+' : ''}${trend.deltaCitedQuestions} vs ${(trend.previous as CitationShareDatapoint).date}`
+  const rival = trend.rivalLeader
+    ? `top rival ${trend.rivalLeader.domain} (${trend.rivalLeader.questions}/${c.questionCount})`
+    : 'top rival none'
+  return `${c.date} · cited ${share} · ${delta} · ${rival}`
+}
+
+// Append/upsert today's datapoint's one-liner into a rolling summary file, keyed by the datapoint
+// date so a same-week re-run replaces that week's line instead of duplicating it. Kept date-sorted.
+// Pure-ish IO: never throws (fail-soft, this must not fail the weekly task).
+export function upsertSummaryLine(summaryPath: string, line: string): void {
+  if (!line) return
+  const date = line.slice(0, 10)
+  let existing: string[] = []
+  if (fs.existsSync(summaryPath)) {
+    existing = fs
+      .readFileSync(summaryPath, 'utf8')
+      .split('\n')
+      // Keep only prior data lines: drop blanks, the header/comment lines (re-added below), and
+      // this date's line (upserted). A data line starts with a YYYY-MM-DD date.
+      .filter((l) => /^\d{4}-\d{2}-\d{2}/.test(l.trim()) && l.slice(0, 10) !== date)
+  }
+  existing.push(line)
+  existing.sort()
+  const header = '# AI-citation share — weekly one-liners (private; newest at bottom)'
+  atomicWrite(summaryPath, `${header}\n\n${existing.join('\n')}\n`)
+}
+
 function main(): void {
   const inPath = logPath()
   const dir = outputDir()
@@ -116,6 +156,12 @@ function main(): void {
 
   atomicWrite(seriesPath, JSON.stringify(series, null, 2) + '\n')
   atomicWrite(mdPath, renderMarkdown(series, now))
+
+  // Rolling one-liner — the single line a human scans each week (ADR-113 report wiring).
+  const summaryPath = path.join(dir, 'citation-summary.md')
+  const summaryLine = buildSummaryLine(datapoints)
+  upsertSummaryLine(summaryPath, summaryLine)
+  if (summaryLine) console.log(`  summary: ${summaryLine} → ${summaryPath}`)
 
   console.log(`citation-share tracker: ${datapoints.length} datapoint(s) → ${seriesPath}`)
   if (reason) console.log(`  (no new datapoint this run — ${reason})`)
