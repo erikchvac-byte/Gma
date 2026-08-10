@@ -202,30 +202,6 @@
             "storeCountInCluster": 1
           },
           {
-            "matchKey": "bacon s buds|bootylicious doh|hybrid|flower@1g",
-            "displayName": "Bootylicious (DOH)",
-            "category": "Flower",
-            "weightGrams": 1,
-            "floorPrice": 14.4,
-            "floorDispensaryIds": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storeCountInCluster": 2
-          },
-          {
-            "matchKey": "bacon s buds|burger cherry doh|indica|flower@1g",
-            "displayName": "Cherry Burger (DOH)",
-            "category": "Flower",
-            "weightGrams": 1,
-            "floorPrice": 14.4,
-            "floorDispensaryIds": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storeCountInCluster": 2
-          },
-          {
             "matchKey": "bacon s buds|burger cherry doh|indica|flower@3.5g",
             "displayName": "Cherry Burger (DOH)",
             "category": "Flower",
@@ -270,18 +246,6 @@
               "cannazone-bellingham"
             ],
             "storeCountInCluster": 1
-          },
-          {
-            "matchKey": "bacon s buds|clementine doh live resin|sativa|vaporizers@1g",
-            "displayName": "Clementine Live Resin Cartridge | 1g (DOH)",
-            "category": "Vaporizers",
-            "weightGrams": 1,
-            "floorPrice": 56,
-            "floorDispensaryIds": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storeCountInCluster": 2
           },
           {
             "matchKey": "bacon s buds|clementine doh|sativa|flower@1g",
@@ -1815,17 +1779,6 @@
             "storeCountInCluster": 1
           },
           {
-            "matchKey": "delectable dabs|bho indica wax|indica|concentrate|wax@3g",
-            "displayName": "Delectable Dabs: Indica 3pk/ - BHO Wax",
-            "category": "Concentrate",
-            "weightGrams": 3,
-            "floorPrice": 30,
-            "floorDispensaryIds": [
-              "cannazone-bellingham"
-            ],
-            "storeCountInCluster": 1
-          },
-          {
             "matchKey": "delectable dabs|crack green wax|sativa|concentrate|wax@1g",
             "displayName": "Delectable Dabs: Green Crack - Wax",
             "category": "Concentrate",
@@ -1945,18 +1898,6 @@
           {
             "matchKey": "double delicious|hybrid rso|hybrid|concentrate|rso@1g",
             "displayName": "Double Delicious: Hybrid - RSO",
-            "category": "Concentrate",
-            "weightGrams": 1,
-            "floorPrice": 14.4,
-            "floorDispensaryIds": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storeCountInCluster": 2
-          },
-          {
-            "matchKey": "double delicious|indica rso|indica|concentrate|rso@1g",
-            "displayName": "Indica RSO | 1g",
             "category": "Concentrate",
             "weightGrams": 1,
             "floorPrice": 14.4,
@@ -2305,18 +2246,6 @@
             "storeCountInCluster": 1
           },
           {
-            "matchKey": "ez vape|doh dutch treat|hybrid|vaporizers@1g",
-            "displayName": "Dutch Treat Cartridge | 1g (DOH)",
-            "category": "Vaporizers",
-            "weightGrams": 1,
-            "floorPrice": 20,
-            "floorDispensaryIds": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storeCountInCluster": 2
-          },
-          {
             "matchKey": "ez vape|doh trainwreck|sativa|vaporizers@1g",
             "displayName": "Trainwreck Cartridge | 1g (DOH)",
             "category": "Vaporizers",
@@ -2600,6 +2529,17 @@
             "floorDispensaryIds": [
               "2020-solutions-north-bellingham",
               "2020-solutions-pacific-highway"
+            ],
+            "storeCountInCluster": 2
+          },
+          {
+            "matchKey": "fire bros|ape crepe|indica|flower@3.5g",
+            "displayName": "3.5g Crepe Ape - Fire Bros",
+            "category": "Flower",
+            "weightGrams": 3.5,
+            "floorPrice": 32.4,
+            "floorDispensaryIds": [
+              "evolve-cannabis-bellingham"
             ],
             "storeCountInCluster": 2
           },
@@ -3130,6 +3070,28 @@
             "storeCountInCluster": 2
           },
           {
+            "matchKey": "flip side|flipside gold slapple|indica|vaporizers@1g",
+            "displayName": "1g Slapple Cartridge - Flipside Gold",
+            "category": "Vaporizers",
+            "weightGrams": 1,
+            "floorPrice": 28.8,
+            "floorDispensaryIds": [
+              "evolve-cannabis-bellingham"
+            ],
+            "storeCountInCluster": 1
+          },
+          {
+            "matchKey": "foemina|dutch hawaiian|sativa|flower@3.5g",
+            "displayName": "Foemina: Dutch Hawaiian",
+            "category": "Flower",
+            "weightGrams": 3.5,
+            "floorPrice": 31.2,
+            "floorDispensaryIds": [
+              "evolve-cannabis-bellingham"
+            ],
+            "storeCountInCluster": 1
+          },
+          {
             "matchKey": "forbidden farms|blend house hybrid kief|hybrid|concentrate|kief@1g",
             "displayName": "Forbidden Farms: House Blend Hybrid - Kief",
             "category": "Concentrate",
@@ -3159,6 +3121,17 @@
             "floorPrice": 12,
             "floorDispensaryIds": [
               "2020-solutions-pacific-highway"
+            ],
+            "storeCountInCluster": 1
+          },
+          {
+            "matchKey": "forbidden farms|governmint oasis premium|hybrid|pre rolls@1g",
+            "displayName": "GovernMint Oasis 1pk/1g - Premium",
+            "category": "Pre-Rolls",
+            "weightGrams": 1,
+            "floorPrice": 2.7,
+            "floorDispensaryIds": [
+              "evolve-cannabis-bellingham"
             ],
             "storeCountInCluster": 1
           },
@@ -3645,7 +3618,7 @@
           },
           {
             "matchKey": "ganja cat|watermelon|n a|vaporizers@1g",
-            "displayName": "GANJA CAT - Watermelon Cart 1G",
+            "displayName": "GANJA CAT - Watermelon Disposable Cart 1G",
             "category": "Vaporizers",
             "weightGrams": 1,
             "floorPrice": 30.4,
@@ -3672,18 +3645,6 @@
             "category": "Flower",
             "weightGrams": 7,
             "floorPrice": 22.4,
-            "floorDispensaryIds": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storeCountInCluster": 2
-          },
-          {
-            "matchKey": "good vibe tribe|ak47|sativa|flower@3.5g",
-            "displayName": "AK47 | 3.5g",
-            "category": "Flower",
-            "weightGrams": 3.5,
-            "floorPrice": 12.8,
             "floorDispensaryIds": [
               "2020-solutions-north-bellingham",
               "2020-solutions-pacific-highway"
@@ -4419,25 +4380,12 @@
             "storeCountInCluster": 2
           },
           {
-            "matchKey": "herb s|gdp rso tanker|indica|concentrate|rso@1g",
-            "displayName": "GDP RSO Tanker | 1g",
-            "category": "Concentrate",
-            "weightGrams": 1,
-            "floorPrice": 9.6,
-            "floorDispensaryIds": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storeCountInCluster": 2
-          },
-          {
             "matchKey": "herb s|gdp|indica|vaporizers@1g",
             "displayName": "GDP Cartridge | 1g",
             "category": "Vaporizers",
             "weightGrams": 1,
             "floorPrice": 12.8,
             "floorDispensaryIds": [
-              "2020-solutions-north-bellingham",
               "2020-solutions-pacific-highway"
             ],
             "storeCountInCluster": 2
@@ -4730,29 +4678,6 @@
           {
             "matchKey": "honey tree|bliss cannabis extract flavored high potency pure sativa strawberry|sativa|vaporizers@1g",
             "displayName": "Honey Tree | Strawberry Bliss | Cartridge | Flavored High Potency Pure Cannabis Extract | 1g | Sativa",
-            "category": "Vaporizers",
-            "weightGrams": 1,
-            "floorPrice": 24,
-            "floorDispensaryIds": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storeCountInCluster": 2
-          },
-          {
-            "matchKey": "honey tree|bliss flavored s strawberry|sativa|vaporizers@1g",
-            "displayName": "Honey Tree: Strawberry Bliss (S) - Flavored Cartridge",
-            "category": "Vaporizers",
-            "weightGrams": 1,
-            "floorPrice": 30,
-            "floorDispensaryIds": [
-              "cannazone-bellingham"
-            ],
-            "storeCountInCluster": 1
-          },
-          {
-            "matchKey": "honey tree|cns ht trainwreck|sativa|vaporizers@1g",
-            "displayName": "CNS Cartridge Trainwreck HT 1g",
             "category": "Vaporizers",
             "weightGrams": 1,
             "floorPrice": 24,
@@ -5139,17 +5064,6 @@
           {
             "matchKey": "hustler s ambition|bon bon distillate strawberry|n a|vaporizers@1g",
             "displayName": "Hustler's Ambition: Strawberry Bon-Bon (S) - Distillate Cartridge",
-            "category": "Vaporizers",
-            "weightGrams": 1,
-            "floorPrice": 17,
-            "floorDispensaryIds": [
-              "cannazone-bellingham"
-            ],
-            "storeCountInCluster": 1
-          },
-          {
-            "matchKey": "hustler s ambition|cookies distillate tropicana|n a|vaporizers@1g",
-            "displayName": "Hustler's Ambition: Tropicana Cookies - Distillate Cartridge",
             "category": "Vaporizers",
             "weightGrams": 1,
             "floorPrice": 17,
@@ -5688,17 +5602,6 @@
             "storeCountInCluster": 1
           },
           {
-            "matchKey": "micro bar|h mochi strawberry|n a|vaporizers@1g",
-            "displayName": "Micro Bar: Strawberry Mochi (H) - Disposable",
-            "category": "Vaporizers",
-            "weightGrams": 1,
-            "floorPrice": 50,
-            "floorDispensaryIds": [
-              "cannazone-bellingham"
-            ],
-            "storeCountInCluster": 1
-          },
-          {
             "matchKey": "micro bar|headz lemon|sativa|vaporizers@1g",
             "displayName": "Lemon Headz Disposable | 1g",
             "category": "Vaporizers",
@@ -5711,7 +5614,7 @@
           },
           {
             "matchKey": "micro bar|lychee pink|hybrid|vaporizers@1g",
-            "displayName": "Pink Lychee 1g Disposable (Micro Bar)",
+            "displayName": "Pink Lychee Disposable | 1g",
             "category": "Vaporizers",
             "weightGrams": 1,
             "floorPrice": 50,
@@ -6101,17 +6004,6 @@
             "storeCountInCluster": 2
           },
           {
-            "matchKey": "new standard|1 3 cbd live pennywise resin|n a|vaporizers@1g",
-            "displayName": "New Standard: 3:1 Pennywise (CBD) - Live Resin Disposable",
-            "category": "Vaporizers",
-            "weightGrams": 1,
-            "floorPrice": 42,
-            "floorDispensaryIds": [
-              "cannazone-bellingham"
-            ],
-            "storeCountInCluster": 1
-          },
-          {
             "matchKey": "new standard|1 5 candy cbc live purple resin|hybrid|vaporizers@1g",
             "displayName": "Purple Candy 5:1 CBC Live Resin Cartridge | 1g",
             "category": "Vaporizers",
@@ -6314,13 +6206,13 @@
             "storeCountInCluster": 1
           },
           {
-            "matchKey": "ooowee|i jokerz|n a|pre rolls@5g",
-            "displayName": "Ooowee: Jokerz (I) 5pk/ - Preroll",
-            "category": "Pre-Rolls",
-            "weightGrams": 5,
-            "floorPrice": 30,
+            "matchKey": "ooowee|runtz trophy|indica|flower@3.5g",
+            "displayName": "Ooowee: Trophy Runtz",
+            "category": "Flower",
+            "weightGrams": 3.5,
+            "floorPrice": 22.8,
             "floorDispensaryIds": [
-              "cannazone-bellingham"
+              "evolve-cannabis-bellingham"
             ],
             "storeCountInCluster": 1
           },
@@ -6375,18 +6267,6 @@
             "category": "Vaporizers",
             "weightGrams": 1,
             "floorPrice": 30.4,
-            "floorDispensaryIds": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storeCountInCluster": 2
-          },
-          {
-            "matchKey": "phat panda|apple pen washington|indica|vaporizers@1g",
-            "displayName": "Washington Apple Panda Pen | 1g",
-            "category": "Vaporizers",
-            "weightGrams": 1,
-            "floorPrice": 24,
             "floorDispensaryIds": [
               "2020-solutions-north-bellingham",
               "2020-solutions-pacific-highway"
@@ -6734,17 +6614,6 @@
             "storeCountInCluster": 1
           },
           {
-            "matchKey": "phat panda|firecracker gsc|n a|pre rolls@1g",
-            "displayName": "Firecracker | Infused Preroll | GSC",
-            "category": "Pre-Rolls",
-            "weightGrams": 1,
-            "floorPrice": 11,
-            "floorDispensaryIds": [
-              "starbuds-bellingham"
-            ],
-            "storeCountInCluster": 1
-          },
-          {
             "matchKey": "phat panda|firecracker gusherz|n a|pre rolls@1g",
             "displayName": "Firecracker | Infused Preroll | Gusherz",
             "category": "Pre-Rolls",
@@ -6846,17 +6715,6 @@
             "storeCountInCluster": 2
           },
           {
-            "matchKey": "phat panda|gsc h pen|n a|vaporizers@1g",
-            "displayName": "Panda Pen: GSC (H) - Cartridge",
-            "category": "Vaporizers",
-            "weightGrams": 1,
-            "floorPrice": 38,
-            "floorDispensaryIds": [
-              "cannazone-bellingham"
-            ],
-            "storeCountInCluster": 1
-          },
-          {
             "matchKey": "phat panda|h i platinum raspberry truffle|n a|pre rolls@1g",
             "displayName": "Phat Panda Platinum: Raspberry Truffle (I/H) 1pk/ - Preroll",
             "category": "Pre-Rolls",
@@ -6924,17 +6782,6 @@
             "storeCountInCluster": 1
           },
           {
-            "matchKey": "phat panda|line platinum trophy wife|indica|pre rolls@1g",
-            "displayName": "Trophy Wife Platinum Line Pre-Roll | 1g",
-            "category": "Pre-Rolls",
-            "weightGrams": 1,
-            "floorPrice": 6,
-            "floorDispensaryIds": [
-              "cannazone-bellingham"
-            ],
-            "storeCountInCluster": 1
-          },
-          {
             "matchKey": "phat panda|oreoz|n a|flower@3.5g",
             "displayName": "Oreoz 3.5g Flower (Phat Panda)",
             "category": "Flower",
@@ -6970,7 +6817,7 @@
           },
           {
             "matchKey": "plume|apricot hash orange rosin|hybrid|vaporizers@1g",
-            "displayName": "Orange Apricot Hash Rosin Cartridge (Plume)",
+            "displayName": "Orange Apricot - Hash Rosin - Cartridge - 1g",
             "category": "Vaporizers",
             "weightGrams": 1,
             "floorPrice": 40,
@@ -7222,17 +7069,6 @@
             "storeCountInCluster": 1
           },
           {
-            "matchKey": "seattle marijuana co|blueberry blunt j s shatter|n a|pre rolls@1g",
-            "displayName": "Shatter J's: Blueberry 1pk/ - Infused Blunt",
-            "category": "Pre-Rolls",
-            "weightGrams": 1,
-            "floorPrice": 18,
-            "floorDispensaryIds": [
-              "cannazone-bellingham"
-            ],
-            "storeCountInCluster": 1
-          },
-          {
             "matchKey": "seattle marijuana co|blunt colada j pina s shatter|n a|pre rolls@1g",
             "displayName": "Shatter J's: Pina Colada 1pk/ - Infused Blunt",
             "category": "Pre-Rolls",
@@ -7329,11 +7165,11 @@
             "displayName": "Pina Colada Shatter J's Pre-Roll | 1g",
             "category": "Pre-Rolls",
             "weightGrams": 1,
-            "floorPrice": 14,
+            "floorPrice": 9.6,
             "floorDispensaryIds": [
-              "cannazone-bellingham"
+              "evolve-cannabis-bellingham"
             ],
-            "storeCountInCluster": 1
+            "storeCountInCluster": 2
           },
           {
             "matchKey": "seattle marijuana company|grape j s shatter|hybrid|pre rolls@1g",
@@ -8810,42 +8646,6 @@
             "storeCountInCluster": 2
           },
           {
-            "matchKey": "svin garden terp dough|3 bully doh kush|hybrid|concentrate|@1g",
-            "displayName": "Bully Kush #3 Terp Dough | 1g (DOH)",
-            "category": "Concentrate",
-            "weightGrams": 1,
-            "floorPrice": 24,
-            "floorDispensaryIds": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storeCountInCluster": 2
-          },
-          {
-            "matchKey": "svin garden terp dough|borealis svg tangerine td wax|hybrid|concentrate|wax@1g",
-            "displayName": "SVG Wax Tangerine Borealis TD 1g",
-            "category": "Concentrate",
-            "weightGrams": 1,
-            "floorPrice": 24,
-            "floorDispensaryIds": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storeCountInCluster": 2
-          },
-          {
-            "matchKey": "svin garden|doh one piece|hybrid|pre rolls@1g",
-            "displayName": "One Piece Pre-Roll | 1g (DOH)",
-            "category": "Pre-Rolls",
-            "weightGrams": 1,
-            "floorPrice": 9.6,
-            "floorDispensaryIds": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storeCountInCluster": 2
-          },
-          {
             "matchKey": "sweetwater farms|doh fuel jet tropicana|n a|flower@1g",
             "displayName": "Tropicana Jet Fuel (DOH)",
             "category": "Flower",
@@ -8971,18 +8771,6 @@
             "category": "Flower",
             "weightGrams": 3.5,
             "floorPrice": 38.4,
-            "floorDispensaryIds": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storeCountInCluster": 2
-          },
-          {
-            "matchKey": "sweetwater farms|doh permanent vacation|indica|flower@7g",
-            "displayName": "Permanent Vacation (DOH)",
-            "category": "Flower",
-            "weightGrams": 7,
-            "floorPrice": 76,
             "floorDispensaryIds": [
               "2020-solutions-north-bellingham",
               "2020-solutions-pacific-highway"
@@ -9228,18 +9016,6 @@
             "storeCountInCluster": 2
           },
           {
-            "matchKey": "torus hash infused|doh fritter milkshake mint strawberry x|hybrid|pre rolls@1g",
-            "displayName": "Strawberry Fritter x Mint Milkshake Hash Infused Pre-Roll | 1g (DOH)",
-            "category": "Pre-Rolls",
-            "weightGrams": 1,
-            "floorPrice": 20,
-            "floorDispensaryIds": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storeCountInCluster": 2
-          },
-          {
             "matchKey": "torus hash rosin cold cure|1 doh k2 solventless|n a|concentrate|rosin@1g",
             "displayName": "K2 #1 - Solventless Rosin Cold Cure - 1g (DOH)",
             "category": "Concentrate",
@@ -9288,6 +9064,17 @@
             "storeCountInCluster": 2
           },
           {
+            "matchKey": "torus|cookies key lime|hybrid|flower@3.5g",
+            "displayName": "3.5g Key Lime Cookies - Torus",
+            "category": "Flower",
+            "weightGrams": 3.5,
+            "floorPrice": 39.6,
+            "floorDispensaryIds": [
+              "evolve-cannabis-bellingham"
+            ],
+            "storeCountInCluster": 2
+          },
+          {
             "matchKey": "torus|face gas|indica|flower@3.5g",
             "displayName": "Gas Face | 3.5g",
             "category": "Flower",
@@ -9309,6 +9096,28 @@
               "cannazone-bellingham"
             ],
             "storeCountInCluster": 1
+          },
+          {
+            "matchKey": "torus|gloss grape|indica|flower@3.5g",
+            "displayName": "3.5g Grape Gloss - Torus",
+            "category": "Flower",
+            "weightGrams": 3.5,
+            "floorPrice": 39.6,
+            "floorDispensaryIds": [
+              "evolve-cannabis-bellingham"
+            ],
+            "storeCountInCluster": 1
+          },
+          {
+            "matchKey": "torus|pop push strawberry|hybrid|flower@3.5g",
+            "displayName": "3.5g Strawberry Push Pop - Torus",
+            "category": "Flower",
+            "weightGrams": 3.5,
+            "floorPrice": 39.6,
+            "floorDispensaryIds": [
+              "evolve-cannabis-bellingham"
+            ],
+            "storeCountInCluster": 2
           },
           {
             "matchKey": "trail blazin|chem doh fire|hybrid|flower@3.5g",
@@ -9666,7 +9475,7 @@
           "Vaporizers"
         ],
         "availabilityGaps": [],
-        "gapsSuppressed": true
+        "gapsSuppressed": false
       },
       {
         "clusterId": "210-cannabis-arlington",
@@ -9805,18 +9614,6 @@
           {
             "matchKey": "2727|gassed og|n a|pre rolls@5g",
             "displayName": "2727 Gassed OG Pre-Rolls 5pk 5g",
-            "category": "Pre-Rolls",
-            "weightGrams": 5,
-            "floorPrice": 24,
-            "floorDispensaryIds": [
-              "hangar-420-everett",
-              "hangar-420-west"
-            ],
-            "storeCountInCluster": 2
-          },
-          {
-            "matchKey": "2727|kush royal|n a|pre rolls@5g",
-            "displayName": "2727 Royal Kush Pre-Rolls 5pk 5g",
             "category": "Pre-Rolls",
             "weightGrams": 5,
             "floorPrice": 24,
@@ -11185,6 +10982,17 @@
             "storeCountInCluster": 2
           },
           {
+            "matchKey": "foemina|dutch hawaiian|sativa|flower@3.5g",
+            "displayName": "Foemina: Dutch Hawaiian",
+            "category": "Flower",
+            "weightGrams": 3.5,
+            "floorPrice": 20,
+            "floorDispensaryIds": [
+              "kush21-everett-evergreen"
+            ],
+            "storeCountInCluster": 1
+          },
+          {
             "matchKey": "forbidden farms|blend house hybrid kief|hybrid|concentrate|kief@1g",
             "displayName": "Forbidden Farms: House Blend Hybrid - Kief",
             "category": "Concentrate",
@@ -11218,15 +11026,26 @@
             "storeCountInCluster": 1
           },
           {
+            "matchKey": "forbidden farms|governmint oasis premium|hybrid|pre rolls@1g",
+            "displayName": "GovernMint Oasis 1pk/1g - Premium",
+            "category": "Pre-Rolls",
+            "weightGrams": 1,
+            "floorPrice": 3,
+            "floorDispensaryIds": [
+              "the-joint-everett"
+            ],
+            "storeCountInCluster": 1
+          },
+          {
             "matchKey": "forbidden farms|hash indica|indica|concentrate|hash@1g",
-            "displayName": "Indica Hash (Forbidden Farms)",
+            "displayName": "Forbidden Farms: Indica - Hash",
             "category": "Concentrate",
             "weightGrams": 1,
-            "floorPrice": 8.4,
+            "floorPrice": 10,
             "floorDispensaryIds": [
-              "kushmart-north"
+              "kush21-everett-evergreen"
             ],
-            "storeCountInCluster": 3
+            "storeCountInCluster": 2
           },
           {
             "matchKey": "forbidden farms|hash sativa|sativa|concentrate|hash@1g",
@@ -11241,14 +11060,14 @@
           },
           {
             "matchKey": "fuck cancer|hybrid rso|hybrid|concentrate|rso@1g",
-            "displayName": "Fuck Cancer: Hybrid - RSO",
+            "displayName": "Hybrid 1g RSO (Fuck Cancer)",
             "category": "Concentrate",
             "weightGrams": 1,
-            "floorPrice": 7.5,
+            "floorPrice": 9,
             "floorDispensaryIds": [
-              "kush21-everett-evergreen"
+              "local-roots-everett-128th"
             ],
-            "storeCountInCluster": 3
+            "storeCountInCluster": 2
           },
           {
             "matchKey": "fuck cancer|indica rso|indica|concentrate|rso@1g",
@@ -11361,18 +11180,6 @@
             "storeCountInCluster": 1
           },
           {
-            "matchKey": "full spec|bag doggy fs live resin|n a|vaporizers@1g",
-            "displayName": "FS Doggy Bag Live Resin Cartridge 1g",
-            "category": "Vaporizers",
-            "weightGrams": 1,
-            "floorPrice": 35,
-            "floorDispensaryIds": [
-              "hangar-420-everett",
-              "hangar-420-west"
-            ],
-            "storeCountInCluster": 2
-          },
-          {
             "matchKey": "full spec|bliss elite green liquid live resin|sativa hybrid|vaporizers@1g",
             "displayName": "Green Bliss - Elite Liquid Live Resin Cartridge - 1g",
             "category": "Vaporizers",
@@ -11382,17 +11189,6 @@
               "hangar-420-west"
             ],
             "storeCountInCluster": 1
-          },
-          {
-            "matchKey": "full spec|c cadet emergen liquid live resin|hybrid|vaporizers@1g",
-            "displayName": "Emergen C - Cadet Liquid Live Resin- Cartridge - 1g",
-            "category": "Vaporizers",
-            "weightGrams": 1,
-            "floorPrice": 20,
-            "floorDispensaryIds": [
-              "kush21-everett-evergreen"
-            ],
-            "storeCountInCluster": 2
           },
           {
             "matchKey": "full spec|cadet cadet guava liquid live resin|sativa hybrid|vaporizers@1g",
@@ -11439,17 +11235,6 @@
             "storeCountInCluster": 2
           },
           {
-            "matchKey": "full spec|cadet liquid live punch purple resin|indica|vaporizers@1g",
-            "displayName": "Purple Punch - Cadet Liquid Live Resin- Cartridge - 1g",
-            "category": "Vaporizers",
-            "weightGrams": 1,
-            "floorPrice": 20,
-            "floorDispensaryIds": [
-              "kush21-everett-evergreen"
-            ],
-            "storeCountInCluster": 2
-          },
-          {
             "matchKey": "full spec|cadet liquid live resin silverface|sativa|vaporizers@1g",
             "displayName": "Silverface - Cadet Liquid Live Resin- Cartridge - 1g",
             "category": "Vaporizers",
@@ -11479,18 +11264,6 @@
             "floorPrice": 22.5,
             "floorDispensaryIds": [
               "kush21-everett-evergreen"
-            ],
-            "storeCountInCluster": 2
-          },
-          {
-            "matchKey": "full spec|elite fs le pepe pew|n a|vaporizers@1g",
-            "displayName": "FS Elite Pepe Le Pew Cartridge 1g",
-            "category": "Vaporizers",
-            "weightGrams": 1,
-            "floorPrice": 44,
-            "floorDispensaryIds": [
-              "hangar-420-everett",
-              "hangar-420-west"
             ],
             "storeCountInCluster": 2
           },
@@ -11537,7 +11310,7 @@
             "floorDispensaryIds": [
               "local-roots-everett-128th"
             ],
-            "storeCountInCluster": 2
+            "storeCountInCluster": 1
           },
           {
             "matchKey": "ganja cat|guava|n a|vaporizers@1g",
@@ -11686,7 +11459,7 @@
             "floorDispensaryIds": [
               "local-roots-everett-128th"
             ],
-            "storeCountInCluster": 2
+            "storeCountInCluster": 1
           },
           {
             "matchKey": "hightide|breathalyzer high tide|hybrid|pre rolls@1g",
@@ -11695,18 +11468,6 @@
             "weightGrams": 1,
             "floorPrice": 10.8,
             "floorDispensaryIds": [
-              "local-roots-everett-128th"
-            ],
-            "storeCountInCluster": 2
-          },
-          {
-            "matchKey": "hightide|factory high tide unicorn|hybrid|flower@1g",
-            "displayName": "High Tide: Unicorn Factory",
-            "category": "Flower",
-            "weightGrams": 1,
-            "floorPrice": 9,
-            "floorDispensaryIds": [
-              "kush21-everett-evergreen",
               "local-roots-everett-128th"
             ],
             "storeCountInCluster": 2
@@ -11912,17 +11673,6 @@
             "storeCountInCluster": 2
           },
           {
-            "matchKey": "hustler s ambition|cookies distillate tropicana|n a|vaporizers@1g",
-            "displayName": "Hustler's Ambition: Tropicana Cookies - Distillate Cartridge",
-            "category": "Vaporizers",
-            "weightGrams": 1,
-            "floorPrice": 9,
-            "floorDispensaryIds": [
-              "kush21-everett-evergreen"
-            ],
-            "storeCountInCluster": 1
-          },
-          {
             "matchKey": "hustler s ambition|cookies ha tropicana|n a|vaporizers@1g",
             "displayName": "HA Tropicana Cookies Cartridge 1g",
             "category": "Vaporizers",
@@ -11942,17 +11692,6 @@
             "floorDispensaryIds": [
               "kush21-everett-evergreen",
               "local-roots-everett-128th"
-            ],
-            "storeCountInCluster": 2
-          },
-          {
-            "matchKey": "hustler s ambition|cough strawberry wax|sativa|concentrate|wax@1g",
-            "displayName": "Hustler's Ambition: Strawberry Cough - Wax",
-            "category": "Concentrate",
-            "weightGrams": 1,
-            "floorPrice": 5,
-            "floorDispensaryIds": [
-              "kush21-everett-evergreen"
             ],
             "storeCountInCluster": 2
           },
@@ -12014,17 +11753,6 @@
             "storeCountInCluster": 2
           },
           {
-            "matchKey": "hustler s ambition|jealousy lemon wax|hybrid|concentrate|wax@1g",
-            "displayName": "Hustler's Ambition: Lemon Jealousy - Wax",
-            "category": "Concentrate",
-            "weightGrams": 1,
-            "floorPrice": 5,
-            "floorDispensaryIds": [
-              "kush21-everett-evergreen"
-            ],
-            "storeCountInCluster": 2
-          },
-          {
             "matchKey": "hustler s ambition|tropic truffle|sativa|pre rolls@1g",
             "displayName": "Hustler's Ambition: Tropic Truffle (S) 1pk/",
             "category": "Pre-Rolls",
@@ -12082,18 +11810,6 @@
             "storeCountInCluster": 2
           },
           {
-            "matchKey": "incredibulk|trophy wife|indica|vaporizers@1g",
-            "displayName": "Trophy Wife Cartridge (Incredibulk)",
-            "category": "Vaporizers",
-            "weightGrams": 1,
-            "floorPrice": 7.2,
-            "floorDispensaryIds": [
-              "kushmart-north",
-              "local-roots-everett-128th"
-            ],
-            "storeCountInCluster": 2
-          },
-          {
             "matchKey": "juicy joints|georgia peach supers|hybrid|pre rolls@1g",
             "displayName": "Georgia Peach 1g Infused Preroll (Juicy Joint Supers)",
             "category": "Pre-Rolls",
@@ -12134,29 +11850,6 @@
             "floorPrice": 30,
             "floorDispensaryIds": [
               "kush21-everett-evergreen"
-            ],
-            "storeCountInCluster": 2
-          },
-          {
-            "matchKey": "k savage|lantz|indica|flower@3.5g",
-            "displayName": "K-Savage: Lantz",
-            "category": "Flower",
-            "weightGrams": 3.5,
-            "floorPrice": 30,
-            "floorDispensaryIds": [
-              "kush21-everett-evergreen"
-            ],
-            "storeCountInCluster": 2
-          },
-          {
-            "matchKey": "kelso kandy|berry gelato|hybrid|vaporizers@1g",
-            "displayName": "Kelso Kandy | Berry Gelato | Vape Cart",
-            "category": "Vaporizers",
-            "weightGrams": 1,
-            "floorPrice": 12,
-            "floorDispensaryIds": [
-              "jet-cannabis-everett",
-              "kushmart-north"
             ],
             "storeCountInCluster": 2
           },
@@ -12299,17 +11992,6 @@
             "floorDispensaryIds": [
               "hangar-420-everett",
               "hangar-420-west"
-            ],
-            "storeCountInCluster": 2
-          },
-          {
-            "matchKey": "lavish|bus magic school|indica|flower@28g",
-            "displayName": "Lavish: Magic School Bus",
-            "category": "Flower",
-            "weightGrams": 28,
-            "floorPrice": 120,
-            "floorDispensaryIds": [
-              "kush21-everett-evergreen"
             ],
             "storeCountInCluster": 2
           },
@@ -13066,17 +12748,6 @@
             "storeCountInCluster": 1
           },
           {
-            "matchKey": "micro bar|lychee pink|hybrid|vaporizers@1g",
-            "displayName": "Pink Lychee 1g Disposable (Micro Bar)",
-            "category": "Vaporizers",
-            "weightGrams": 1,
-            "floorPrice": 27,
-            "floorDispensaryIds": [
-              "local-roots-everett-128th"
-            ],
-            "storeCountInCluster": 1
-          },
-          {
             "matchKey": "micro bar|pumpkin spice|n a|vaporizers@1g",
             "displayName": "Micro Bar Pumpkin Spice Disposable 1g",
             "category": "Vaporizers",
@@ -13452,17 +13123,6 @@
             "storeCountInCluster": 2
           },
           {
-            "matchKey": "oleum extracts|live resin slurricane|indica|vaporizers@1g",
-            "displayName": "Oleum: Slurricane - Live Resin Cartridge",
-            "category": "Vaporizers",
-            "weightGrams": 1,
-            "floorPrice": 23,
-            "floorDispensaryIds": [
-              "kush21-everett-evergreen"
-            ],
-            "storeCountInCluster": 2
-          },
-          {
             "matchKey": "omg sykes|don mega|n a|flower@3.5g",
             "displayName": "OMG Don Mega",
             "category": "Flower",
@@ -13548,18 +13208,6 @@
             "category": "Concentrate",
             "weightGrams": 1,
             "floorPrice": 16,
-            "floorDispensaryIds": [
-              "hangar-420-everett",
-              "hangar-420-west"
-            ],
-            "storeCountInCluster": 2
-          },
-          {
-            "matchKey": "ooowee|cereal milk owe|n a|vaporizers@1g",
-            "displayName": "OWE Cereal Milk Cartridge 1g",
-            "category": "Vaporizers",
-            "weightGrams": 1,
-            "floorPrice": 27,
             "floorDispensaryIds": [
               "hangar-420-everett",
               "hangar-420-west"
@@ -13661,18 +13309,6 @@
             "storeCountInCluster": 2
           },
           {
-            "matchKey": "ooowee|lauruntz owe saint|n a|pre rolls@5g",
-            "displayName": "OWE Saint Lauruntz Preroll 5pk 5g",
-            "category": "Pre-Rolls",
-            "weightGrams": 5,
-            "floorPrice": 27,
-            "floorDispensaryIds": [
-              "hangar-420-everett",
-              "hangar-420-west"
-            ],
-            "storeCountInCluster": 2
-          },
-          {
             "matchKey": "ooowee|lauruntz pr saint|hybrid|pre rolls@1g",
             "displayName": "Ooowee: Saint Lauruntz - PR",
             "category": "Pre-Rolls",
@@ -13704,6 +13340,17 @@
               "local-roots-everett-128th"
             ],
             "storeCountInCluster": 2
+          },
+          {
+            "matchKey": "ooowee|runtz trophy|indica|flower@3.5g",
+            "displayName": "Ooowee: Trophy Runtz",
+            "category": "Flower",
+            "weightGrams": 3.5,
+            "floorPrice": 19,
+            "floorDispensaryIds": [
+              "kush21-everett-evergreen"
+            ],
+            "storeCountInCluster": 1
           },
           {
             "matchKey": "optimum mood|gelonade sauce terp|sativa|vaporizers@1g",
@@ -13858,17 +13505,6 @@
               "hangar-420-west"
             ],
             "storeCountInCluster": 2
-          },
-          {
-            "matchKey": "passion flower|cbn sundae supper|indica|vaporizers@1g",
-            "displayName": "PASSION FLOWER - Sundae Supper CBN Cart 1G",
-            "category": "Vaporizers",
-            "weightGrams": 1,
-            "floorPrice": 40,
-            "floorDispensaryIds": [
-              "kushmart-north"
-            ],
-            "storeCountInCluster": 1
           },
           {
             "matchKey": "pastime|blockberry live resin tanker|hybrid|vaporizers@1g",
@@ -14214,17 +13850,6 @@
             "storeCountInCluster": 1
           },
           {
-            "matchKey": "phat panda|firecracker gsc|n a|pre rolls@1g",
-            "displayName": "Firecracker | Infused Preroll | GSC",
-            "category": "Pre-Rolls",
-            "weightGrams": 1,
-            "floorPrice": 10,
-            "floorDispensaryIds": [
-              "the-joint-everett"
-            ],
-            "storeCountInCluster": 1
-          },
-          {
             "matchKey": "phat panda|firecracker gusherz|n a|pre rolls@1g",
             "displayName": "Firecracker | Infused Preroll | Gusherz",
             "category": "Pre-Rolls",
@@ -14369,17 +13994,6 @@
             "storeCountInCluster": 1
           },
           {
-            "matchKey": "phat panda|line platinum trophy wife|indica|pre rolls@1g",
-            "displayName": "Trophy Wife Platinum Line Pre-Roll | 1g",
-            "category": "Pre-Rolls",
-            "weightGrams": 1,
-            "floorPrice": 7,
-            "floorDispensaryIds": [
-              "the-joint-everett"
-            ],
-            "storeCountInCluster": 1
-          },
-          {
             "matchKey": "phat panda|oreoz|n a|flower@3.5g",
             "displayName": "Oreoz 3.5g Flower (Phat Panda)",
             "category": "Flower",
@@ -14469,17 +14083,6 @@
             "storeCountInCluster": 2
           },
           {
-            "matchKey": "plume|apricot hash orange rosin|hybrid|vaporizers@1g",
-            "displayName": "Orange Apricot Hash Rosin Cartridge (Plume)",
-            "category": "Vaporizers",
-            "weightGrams": 1,
-            "floorPrice": 24,
-            "floorDispensaryIds": [
-              "kushmart-north"
-            ],
-            "storeCountInCluster": 1
-          },
-          {
             "matchKey": "plume|cambodian hash haze rosin|sativa|vaporizers@1g",
             "displayName": "Plume: Cambodian Haze - Hash Rosin Disposable",
             "category": "Vaporizers",
@@ -14497,10 +14100,9 @@
             "weightGrams": 1,
             "floorPrice": 27,
             "floorDispensaryIds": [
-              "kushmart-north",
               "local-roots-everett-128th"
             ],
-            "storeCountInCluster": 2
+            "storeCountInCluster": 1
           },
           {
             "matchKey": "plume|hash rainbow rosin zkittlez|sativa|vaporizers@1g",
@@ -14783,18 +14385,6 @@
             "storeCountInCluster": 1
           },
           {
-            "matchKey": "slab mechanix|donutz jelly sugar wax|sativa|concentrate|sugar@1g",
-            "displayName": "Jelly Donutz Sugar Wax (Slab Mechanix)",
-            "category": "Concentrate",
-            "weightGrams": 1,
-            "floorPrice": 9.6,
-            "floorDispensaryIds": [
-              "kushmart-north",
-              "local-roots-everett-128th"
-            ],
-            "storeCountInCluster": 2
-          },
-          {
             "matchKey": "slush|chew flavored high honeydew|n a|vaporizers@1g",
             "displayName": "Honeydew High-Chew 1g Flavored Cartridge (Slush)",
             "category": "Vaporizers",
@@ -14808,17 +14398,6 @@
           {
             "matchKey": "slush|flavored grape soda|indica|vaporizers@1g",
             "displayName": "Slush: Grape Soda - Flavored Cartridge",
-            "category": "Vaporizers",
-            "weightGrams": 1,
-            "floorPrice": 21,
-            "floorDispensaryIds": [
-              "kush21-everett-evergreen"
-            ],
-            "storeCountInCluster": 2
-          },
-          {
-            "matchKey": "slush|flavored mango punch|sativa|vaporizers@1g",
-            "displayName": "Slush: Mango Punch - Flavored Cartridge",
             "category": "Vaporizers",
             "weightGrams": 1,
             "floorPrice": 21,
@@ -14981,18 +14560,18 @@
             "floorDispensaryIds": [
               "kush21-everett-evergreen"
             ],
-            "storeCountInCluster": 3
+            "storeCountInCluster": 2
           },
           {
             "matchKey": "super fog|applez diamonds jef liquid plus sour twisted|hybrid|vaporizers@1g",
             "displayName": "TWISTED Liquid Diamonds 1g Jefé Plus - Sour Applez",
             "category": "Vaporizers",
             "weightGrams": 1,
-            "floorPrice": 27,
+            "floorPrice": 45,
             "floorDispensaryIds": [
-              "local-roots-everett-128th"
+              "the-joint-everett"
             ],
-            "storeCountInCluster": 2
+            "storeCountInCluster": 1
           },
           {
             "matchKey": "super fog|atf diamonds fire jef liquid plus|sativa|vaporizers@1g",
@@ -15131,11 +14710,12 @@
             "displayName": "FIRE Liquid Diamonds 1g Jefé Plus - Rainier Cherries",
             "category": "Vaporizers",
             "weightGrams": 1,
-            "floorPrice": 33,
+            "floorPrice": 50,
             "floorDispensaryIds": [
-              "kush21-everett-evergreen"
+              "hangar-420-everett",
+              "the-joint-everett"
             ],
-            "storeCountInCluster": 3
+            "storeCountInCluster": 2
           },
           {
             "matchKey": "super fog|cloud ion rainbow tank twisted|hybrid|vaporizers@1g",
@@ -15403,7 +14983,7 @@
             "floorDispensaryIds": [
               "local-roots-everett-128th"
             ],
-            "storeCountInCluster": 2
+            "storeCountInCluster": 1
           },
           {
             "matchKey": "super fog|ion kush loud strawberry tank|sativa|vaporizers@1g",
@@ -15438,17 +15018,6 @@
               "local-roots-everett-128th"
             ],
             "storeCountInCluster": 1
-          },
-          {
-            "matchKey": "supernova|alien candy rock wax|indica|concentrate|wax@1g",
-            "displayName": "Supernova: Alien Rock Candy - Wax",
-            "category": "Concentrate",
-            "weightGrams": 1,
-            "floorPrice": 6,
-            "floorDispensaryIds": [
-              "kush21-everett-evergreen"
-            ],
-            "storeCountInCluster": 2
           },
           {
             "matchKey": "supernova|gsc live resin|indica|vaporizers@1g",
@@ -15636,17 +15205,6 @@
             "storeCountInCluster": 2
           },
           {
-            "matchKey": "the collective|kush lemon|hybrid|flower@14g",
-            "displayName": "The Collective: Lemon Kush",
-            "category": "Flower",
-            "weightGrams": 14,
-            "floorPrice": 50,
-            "floorDispensaryIds": [
-              "kush21-everett-evergreen"
-            ],
-            "storeCountInCluster": 2
-          },
-          {
             "matchKey": "the collective|russian white|n a|flower@3.5g",
             "displayName": "White Russian 3.5g Flower (The Collective)",
             "category": "Flower",
@@ -15722,17 +15280,6 @@
             "floorPrice": 18,
             "floorDispensaryIds": [
               "local-roots-everett-128th"
-            ],
-            "storeCountInCluster": 2
-          },
-          {
-            "matchKey": "the farmers market|blueberry ipr muffin og|hybrid|pre rolls@1g",
-            "displayName": "The Farmers Market: Blueberry Muffin OG - IPR",
-            "category": "Pre-Rolls",
-            "weightGrams": 1,
-            "floorPrice": 5,
-            "floorDispensaryIds": [
-              "kush21-everett-evergreen"
             ],
             "storeCountInCluster": 2
           },
@@ -15990,6 +15537,17 @@
             "storeCountInCluster": 1
           },
           {
+            "matchKey": "torus|gloss grape|indica|flower@3.5g",
+            "displayName": "3.5g Grape Gloss - Torus",
+            "category": "Flower",
+            "weightGrams": 3.5,
+            "floorPrice": 60,
+            "floorDispensaryIds": [
+              "kushmart-north"
+            ],
+            "storeCountInCluster": 1
+          },
+          {
             "matchKey": "torus|lobster white|n a|flower@3.5g",
             "displayName": "Torus: White Lobster",
             "category": "Flower",
@@ -16211,7 +15769,7 @@
             "floorDispensaryIds": [
               "local-roots-everett-128th"
             ],
-            "storeCountInCluster": 2
+            "storeCountInCluster": 1
           },
           {
             "matchKey": "viking cannabis|face gas|indica|flower@3.5g",
@@ -16672,7 +16230,7 @@
             "displayName": "Crystal Clear: Durban Runtz (I) - Live Resin Cartridge",
             "category": "Vaporizers",
             "weightGrams": 1,
-            "floorPrice": 50,
+            "floorPrice": 60,
             "floorDispensaryIds": [
               "cannazone-old-hwy-99"
             ],
@@ -16703,17 +16261,6 @@
           {
             "matchKey": "delectable dabs|bho hybrid wax|hybrid|concentrate|wax@3g",
             "displayName": "Delectable Dabs: Hybrid 3pk/ - BHO Wax",
-            "category": "Concentrate",
-            "weightGrams": 3,
-            "floorPrice": 34,
-            "floorDispensaryIds": [
-              "cannazone-old-hwy-99"
-            ],
-            "storeCountInCluster": 1
-          },
-          {
-            "matchKey": "delectable dabs|bho indica wax|indica|concentrate|wax@3g",
-            "displayName": "Delectable Dabs: Indica 3pk/ - BHO Wax",
             "category": "Concentrate",
             "weightGrams": 3,
             "floorPrice": 34,
@@ -17009,6 +16556,17 @@
             "storeCountInCluster": 1
           },
           {
+            "matchKey": "flip side|flipside gold slapple|indica|vaporizers@1g",
+            "displayName": "1g Slapple Cartridge - Flipside Gold",
+            "category": "Vaporizers",
+            "weightGrams": 1,
+            "floorPrice": 45,
+            "floorDispensaryIds": [
+              "salish-coast-cannabis"
+            ],
+            "storeCountInCluster": 1
+          },
+          {
             "matchKey": "full spec|47 ak badder concentrate quantum|sativa|concentrate|live resin@1g",
             "displayName": "AK-47 - Quantum Badder - Concentrate - 1g",
             "category": "Concentrate",
@@ -17230,10 +16788,10 @@
           },
           {
             "matchKey": "ganja cat|watermelon|n a|vaporizers@1g",
-            "displayName": "GANJA CAT - Watermelon Cart 1G",
+            "displayName": "GANJA CAT - Watermelon Disposable Cart 1G",
             "category": "Vaporizers",
             "weightGrams": 1,
-            "floorPrice": 25,
+            "floorPrice": 30,
             "floorDispensaryIds": [
               "salish-coast-cannabis"
             ],
@@ -17300,17 +16858,6 @@
             "category": "Concentrate",
             "weightGrams": 1,
             "floorPrice": 22,
-            "floorDispensaryIds": [
-              "cannazone-old-hwy-99"
-            ],
-            "storeCountInCluster": 1
-          },
-          {
-            "matchKey": "honey tree|bliss flavored s strawberry|sativa|vaporizers@1g",
-            "displayName": "Honey Tree: Strawberry Bliss (S) - Flavored Cartridge",
-            "category": "Vaporizers",
-            "weightGrams": 1,
-            "floorPrice": 36,
             "floorDispensaryIds": [
               "cannazone-old-hwy-99"
             ],
@@ -17702,17 +17249,6 @@
             "storeCountInCluster": 1
           },
           {
-            "matchKey": "micro bar|h mochi strawberry|n a|vaporizers@1g",
-            "displayName": "Micro Bar: Strawberry Mochi (H) - Disposable",
-            "category": "Vaporizers",
-            "weightGrams": 1,
-            "floorPrice": 58,
-            "floorDispensaryIds": [
-              "cannazone-old-hwy-99"
-            ],
-            "storeCountInCluster": 1
-          },
-          {
             "matchKey": "micro bar|headz lemon|sativa|vaporizers@1g",
             "displayName": "Lemon Headz Disposable | 1g",
             "category": "Vaporizers",
@@ -17725,7 +17261,7 @@
           },
           {
             "matchKey": "micro bar|lychee pink|hybrid|vaporizers@1g",
-            "displayName": "Pink Lychee 1g Disposable (Micro Bar)",
+            "displayName": "Pink Lychee Disposable | 1g",
             "category": "Vaporizers",
             "weightGrams": 1,
             "floorPrice": 58,
@@ -17812,17 +17348,6 @@
             "storeCountInCluster": 1
           },
           {
-            "matchKey": "new standard|1 3 cbd live pennywise resin|n a|vaporizers@1g",
-            "displayName": "New Standard: 3:1 Pennywise (CBD) - Live Resin Disposable",
-            "category": "Vaporizers",
-            "weightGrams": 1,
-            "floorPrice": 45,
-            "floorDispensaryIds": [
-              "cannazone-old-hwy-99"
-            ],
-            "storeCountInCluster": 1
-          },
-          {
             "matchKey": "ooowee|a gusherlicious i live mini resin|n a|vaporizers@1g",
             "displayName": "Ooowee Mini A: Gusherlicious (I) Live Resin Disposable",
             "category": "Vaporizers",
@@ -17863,17 +17388,6 @@
             "floorPrice": 8,
             "floorDispensaryIds": [
               "salish-coast-cannabis"
-            ],
-            "storeCountInCluster": 1
-          },
-          {
-            "matchKey": "ooowee|i jokerz|n a|pre rolls@5g",
-            "displayName": "Ooowee: Jokerz (I) 5pk/ - Preroll",
-            "category": "Pre-Rolls",
-            "weightGrams": 5,
-            "floorPrice": 56,
-            "floorDispensaryIds": [
-              "cannazone-old-hwy-99"
             ],
             "storeCountInCluster": 1
           },
@@ -17940,17 +17454,6 @@
             "floorPrice": 50,
             "floorDispensaryIds": [
               "cannazone-old-hwy-99"
-            ],
-            "storeCountInCluster": 1
-          },
-          {
-            "matchKey": "passion flower|cbn sundae supper|indica|vaporizers@1g",
-            "displayName": "PASSION FLOWER - Sundae Supper CBN Cart 1G",
-            "category": "Vaporizers",
-            "weightGrams": 1,
-            "floorPrice": 30,
-            "floorDispensaryIds": [
-              "salish-coast-cannabis"
             ],
             "storeCountInCluster": 1
           },
@@ -18164,17 +17667,6 @@
             "storeCountInCluster": 1
           },
           {
-            "matchKey": "phat panda|gsc h pen|n a|vaporizers@1g",
-            "displayName": "Panda Pen: GSC (H) - Cartridge",
-            "category": "Vaporizers",
-            "weightGrams": 1,
-            "floorPrice": 30,
-            "floorDispensaryIds": [
-              "cannazone-old-hwy-99"
-            ],
-            "storeCountInCluster": 1
-          },
-          {
             "matchKey": "phat panda|h i platinum raspberry truffle|n a|pre rolls@1g",
             "displayName": "Phat Panda Platinum: Raspberry Truffle (I/H) 1pk/ - Preroll",
             "category": "Pre-Rolls",
@@ -18191,17 +17683,6 @@
             "category": "Flower",
             "weightGrams": 3.5,
             "floorPrice": 36,
-            "floorDispensaryIds": [
-              "cannazone-old-hwy-99"
-            ],
-            "storeCountInCluster": 1
-          },
-          {
-            "matchKey": "phat panda|line platinum trophy wife|hybrid|flower@7g",
-            "displayName": "Trophy Wife Platinum Line",
-            "category": "Flower",
-            "weightGrams": 7,
-            "floorPrice": 60,
             "floorDispensaryIds": [
               "cannazone-old-hwy-99"
             ],
@@ -18325,17 +17806,6 @@
             "floorPrice": 25,
             "floorDispensaryIds": [
               "salish-coast-cannabis"
-            ],
-            "storeCountInCluster": 1
-          },
-          {
-            "matchKey": "seattle marijuana co|blueberry blunt j s shatter|n a|pre rolls@1g",
-            "displayName": "Shatter J's: Blueberry 1pk/ - Infused Blunt",
-            "category": "Pre-Rolls",
-            "weightGrams": 1,
-            "floorPrice": 24,
-            "floorDispensaryIds": [
-              "cannazone-old-hwy-99"
             ],
             "storeCountInCluster": 1
           },
@@ -19160,9 +18630,9 @@
     "totalClusters": 4,
     "clusteredStoreCount": 24,
     "unclusteredStoreCount": 0,
-    "totalFloors": 1667,
-    "singleStoreFloorCount": 633,
-    "suppressedGapClusterCount": 4
+    "totalFloors": 1621,
+    "singleStoreFloorCount": 623,
+    "suppressedGapClusterCount": 3
   },
   "excluded": [
     {
@@ -19171,15 +18641,15 @@
     },
     {
       "reason": "suppressedGapCluster",
-      "count": 4
+      "count": 3
     }
   ],
   "coverage": {
     "totalClusters": 4,
     "clusteredStoreCount": 24,
-    "totalFloors": 1667,
-    "singleStoreFloorCount": 633,
+    "totalFloors": 1621,
+    "singleStoreFloorCount": 623,
     "categoryUniverseSize": 5
   },
-  "generatedAt": "2026-08-09T11:00:23.876Z"
+  "generatedAt": "2026-08-10T11:00:24.560Z"
 }
