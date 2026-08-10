@@ -1,0 +1,15 @@
+{
+  "_comment": "North-Sound-first subreddit list for the Phase-2 Reddit mention-monitor (v1). Edit freely; takes effect on the next local run, no redeploy. tier A = answer with data (local), B = monitor/act-rarely (metro Seattle brand/price only), C = broad/noise (mostly out-of-geography). The precision gate (hard local geo token + inventory signal) is what actually keeps noise out, so Tier B/C are safe to poll but rarely alert. 'limit' caps posts pulled from each sub's /new.json per run.",
+  "limit": 40,
+  "subreddits": [
+    { "name": "everett", "tier": "A" },
+    { "name": "WAents", "tier": "A" },
+    { "name": "Bellingham", "tier": "A" },
+    { "name": "skagit", "tier": "A" },
+    { "name": "Marysville", "tier": "A" },
+    { "name": "MountVernonWA", "tier": "A" },
+    { "name": "Snohomish", "tier": "A" },
+    { "name": "seaents", "tier": "B" },
+    { "name": "SeattleWA", "tier": "B" }
+  ]
+}
