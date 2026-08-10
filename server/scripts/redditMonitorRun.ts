@@ -13,8 +13,10 @@
 //   DERIVED_DIR        - dir to read the committed derived facts from (default: server/data/derived)
 //   REDDIT_DATA_DIR    - dir for the private state (default: ~/GmaS-data)
 //   REDDIT_LOG_PATH    - explicit mentions-log path; REQUIRED semantics under --dry (isolation)
-//   REDDIT_FIXTURE     - optional path to a saved subreddit .json listing, used INSTEAD of the
-//                        network (lets --dry exercise the full pipeline offline)
+//   REDDIT_FIXTURE     - optional path to a saved subreddit .json listing, honored ONLY under
+//                        --dry (survivors get a stub classification so the full pipeline —
+//                        gate → selectFact → alerts → isolated log — runs offline; a live run
+//                        ignores the fixture and warns)
 //
 // See project_reach-launch-plan (Phase 2), the build-ready brainstorm, and ADR-106.
 
@@ -24,8 +26,9 @@ import os from 'node:os'
 import { fileURLToPath } from 'node:url'
 import { sleep, REQUEST_GAP_MS, CITATION_MODEL } from './searchEngines.js'
 import { loadPackagerSources, derivedDir } from './factPackagerRun.js'
-import { resolveGeo, selectFact, type GeoResolution, type CitableFact } from './factPackager.js'
+import { resolveGeo, selectFact, type GeoResolution, type CitableFact, type PackagerSources } from './factPackager.js'
 import { buildApiData } from '../utils/buildApiData.js'
+import { atomicWriteJson } from '../utils/atomicWrite.js'
 import {
   parseListing,
   preFilter,
@@ -36,7 +39,11 @@ import {
   precisionLine,
   renderAlertsMarkdown,
   tokenizeInventory,
+  factConcernsBrand,
+  factFreshnessFrom,
+  BRAND_SPECIFIC_INTENTS,
   CATEGORY_TERMS,
+  INTENT_ROUTES,
   type RedditPost,
   type ClassifiedCandidate,
   type Classification,
@@ -56,14 +63,22 @@ export function parseArgs(argv: string[]): Args {
   const args: Args = { dry: false }
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === '--dry') args.dry = true
-    else if (argv[i] === '--limit') args.limit = Math.max(1, Number.parseInt(argv[++i] ?? '', 10) || 40)
+    else if (argv[i] === '--limit') {
+      // Only consume a REAL value — `--limit --dry` must not swallow the flag (a swallowed --dry
+      // is an accidental live run). A bad/missing value leaves limit unset → the config default.
+      const next = argv[i + 1]
+      if (next !== undefined && !next.startsWith('--')) {
+        i++
+        const n = Number.parseInt(next, 10)
+        if (Number.isFinite(n) && n > 0) args.limit = n
+      }
+    }
   }
   return args
 }
 
 interface SubredditConfig {
   name: string
-  tier?: string
 }
 function loadSubreddits(): { subreddits: SubredditConfig[]; limit: number } {
   const p = path.join(__dirname, 'reddit-subreddits.json')
@@ -85,13 +100,6 @@ function mentionsPath(dry: boolean): string {
 function seenPath(dry: boolean): string {
   if (dry) return path.join(path.dirname(mentionsPath(true)), 'reddit-seen.dry.json')
   return path.join(dataDir(), 'reddit-seen.json')
-}
-
-function atomicWrite(filePath: string, contents: string): void {
-  fs.mkdirSync(path.dirname(filePath), { recursive: true })
-  const tmp = `${filePath}.tmp`
-  fs.writeFileSync(tmp, contents)
-  fs.renameSync(tmp, filePath)
 }
 
 function readSeen(p: string): SeenMap {
@@ -155,11 +163,6 @@ async function classify(post: RedditPost, prompt: string): Promise<Classificatio
   return parseClassification(text)
 }
 
-// Map a matched-fact kind → the derived envelope's generatedAt (guardrail 2: factAsOf).
-function factAsOf(fact: CitableFact, asOf: Record<string, string>): string {
-  return asOf[fact.kind] ?? ''
-}
-
 async function main(): Promise<void> {
   const { dry, limit: limitArg } = parseArgs(process.argv.slice(2))
   const { subreddits, limit: cfgLimit } = loadSubreddits()
@@ -171,13 +174,23 @@ async function main(): Promise<void> {
   const asOf = loadDerivedGeneratedAt(dir)
 
   // Inventory vocabulary: store names + brand/product display names from the committed facts.
-  const inventoryTokens = buildInventoryTokens(dir)
+  const inventoryTokens = buildInventoryTokens(sources)
   const ctx = { regions: sources.regions, inventoryTokens, categoryKeys: CATEGORY_TERMS }
+  // With no regions (or an empty inventory vocabulary) the gate's drops are a symptom of degraded
+  // inputs, not the posts — loadPackagerSources fail-softs to empty on a bad file. The seen set
+  // must NOT advance on such a run or still-live threads are buried forever.
+  const sourcesHealthy = sources.regions.length > 0 && inventoryTokens.size > 0
+  if (!sourcesHealthy) console.warn('  ! derived sources look empty/degraded — gate results are unreliable this run')
 
-  // 1) Fetch (or read a fixture / skip on dry-without-fixture).
+  // 1) Fetch (or read a fixture under --dry / skip on dry-without-fixture). A fixture is ONLY
+  // honored on a dry run: a lingering REDDIT_FIXTURE env var must never silently replace the real
+  // poll on a live run (stale alerts into real state, real API spend on dead threads).
   const posts: RedditPost[] = []
   const fixture = process.env.REDDIT_FIXTURE
-  if (fixture) {
+  if (fixture && !dry) {
+    console.warn('  ! REDDIT_FIXTURE is set but this is a LIVE run — ignoring the fixture and polling Reddit')
+  }
+  if (fixture && dry) {
     try {
       posts.push(...parseListing(fs.readFileSync(fixture, 'utf8')))
     } catch (err) {
@@ -201,14 +214,18 @@ async function main(): Promise<void> {
   // 2) Pre-filter → survivors (precision gate, BEFORE any Haiku call).
   const survivors = posts.map((post) => ({ post, pre: preFilter(post, ctx) })).filter((s) => s.pre.passed)
   const survivorIds = new Set(survivors.map((s) => s.post.postId))
-  const classifiedIds = new Set<string>() // survivors we actually got a classification for
+  const irrelevantIds = new Set<string>() // classified intent 0 (definitively not a shopping post)
 
   // 3) Classify + fact-gate each survivor.
   const candidates: ClassifiedCandidate[] = []
   let first = true
   for (const s of survivors) {
     let classification: Classification | null = null
-    if (!dry) {
+    if (dry) {
+      // A dry run must exercise the FULL pipeline offline (fixture → gate → selectFact → alert →
+      // isolated log), so survivors get a deterministic stub instead of a Haiku call.
+      classification = { intent: 1, geoConfidence: 1, matchedStore: '', matchedBrand: '', routedTool: INTENT_ROUTES[1].routedTool }
+    } else {
       if (!first) await sleep(REQUEST_GAP_MS)
       first = false
       try {
@@ -217,8 +234,11 @@ async function main(): Promise<void> {
         console.warn(`  ! classify skipped for ${s.post.postId} — ${err instanceof Error ? err.message : err}`)
       }
     }
-    if (!classification) continue // dry / no-key / transient error → retried next run (not marked seen)
-    classifiedIds.add(s.post.postId)
+    if (!classification) continue // no-key / transient error → retried next run (not marked seen)
+    if (classification.intent === 0) {
+      irrelevantIds.add(s.post.postId) // done with it: never alertable, safe to mark seen
+      continue
+    }
 
     // Only a product-category term maps to selectFact's category vocabulary. A store/brand token
     // won't match a category, so passing it would suppress the region-floor fact for a store/brand-
@@ -226,14 +246,25 @@ async function main(): Promise<void> {
     const topic = s.pre.matchedCategory ?? ''
     const geo: GeoResolution = resolveGeo(s.pre.geoTokens[0] ?? '', sources.regions)
     const result = selectFact(topic, geo, sources)
-    const fact = result.kind === 'none' ? null : result
+    let fact: CitableFact | null = result.kind === 'none' ? null : result
+
+    // Brand-specific intents ("anyone tried X?", "which store carries X cheapest") must not be
+    // "answered" by a fact about an unrelated product — suppress honestly instead.
+    const brand = classification.matchedBrand || s.pre.matchedBrand || ''
+    if (fact && BRAND_SPECIFIC_INTENTS.has(classification.intent) && brand && !factConcernsBrand(fact, brand)) {
+      fact = null
+    }
+
+    const factTs = fact ? (asOf[fact.kind] ?? '') : ''
     candidates.push({
       post: s.post,
       pre: s.pre,
       classification,
       fact,
-      factAsOf: fact ? factAsOf(fact, asOf) : '',
-      factFreshness: fact ? 'fresh' : '', // selectFact already excludes stale floors upstream
+      factAsOf: factTs,
+      // Envelope-age freshness: selectFact's stale gate only covers regional floors, so a
+      // disparity/own-median fact from a stalled derive must be stamped 'stale', never asserted fresh.
+      factFreshness: fact ? factFreshnessFrom(factTs) : '',
     })
   }
 
@@ -250,15 +281,25 @@ async function main(): Promise<void> {
     fs.mkdirSync(path.dirname(mPath), { recursive: true })
     fs.appendFileSync(mPath, alerts.map((a) => JSON.stringify(a)).join('\n') + '\n')
   }
-  // Advance the seen set for a post we are done with: a deterministic non-survivor (re-running the
-  // gate gives the same drop) OR a survivor we actually classified. A survivor left unclassified
-  // (dry / no key / a transient classify error) is deliberately NOT marked seen, so it is retried
-  // next run instead of being permanently lost while its thread is still live.
+  // Advance the seen set ONLY for posts we are truly done with: deterministic non-survivors
+  // (re-running the gate gives the same drop), alerted posts, and classified-irrelevant (intent 0)
+  // posts. A survivor whose alert was suppressed by a TIME-VARYING gate (no gated fact yet,
+  // confidence jitter, transient classify error) is NOT marked seen — it is retried while the
+  // thread stays in /new instead of being permanently lost the first bad day. And none of this
+  // runs on degraded sources, where "non-survivor" is meaningless.
   const now = new Date().toISOString()
-  for (const p of posts) {
-    if (!survivorIds.has(p.postId) || classifiedIds.has(p.postId)) seenMap[p.postId] = now
+  if (sourcesHealthy) {
+    const alertedIds = new Set(alerts.map((a) => a.postId))
+    for (const p of posts) {
+      if (!survivorIds.has(p.postId) || alertedIds.has(p.postId) || irrelevantIds.has(p.postId)) {
+        seenMap[p.postId] = now
+      }
+    }
+    fs.mkdirSync(path.dirname(sPath), { recursive: true })
+    atomicWriteJson(sPath, seenMap)
+  } else {
+    console.warn('  ! seen set NOT advanced (degraded sources) — every post is retried next run')
   }
-  atomicWrite(sPath, JSON.stringify(seenMap, null, 0))
 
   const line = precisionLine(alerts.length, tally.fired + alerts.length, tally.acted)
   const md = renderAlertsMarkdown(alerts, now)
@@ -296,31 +337,19 @@ function loadDerivedGeneratedAt(dir: string): Record<string, string> {
 }
 
 // Build the inventory token set: dispensary names (from the SAME data.json the site serves) plus
-// brand/product display names from the committed disparities + regional-floor facts.
-function buildInventoryTokens(dir: string): Set<string> {
+// brand/product display names from the already-loaded packager sources — no second parse of the
+// derived files, no untyped envelope navigation to drift from the real shape.
+function buildInventoryTokens(sources: PackagerSources): Set<string> {
   const names: string[] = []
   try {
     for (const d of buildApiData().dispensaries) if (d.name) names.push(d.name)
   } catch {
     /* no data.json → geo/category signals still work */
   }
-  const pushDisplayNames = (file: string, pick: (o: unknown) => string[]): void => {
-    try {
-      const parsed = JSON.parse(fs.readFileSync(path.join(dir, file), 'utf8'))
-      names.push(...pick(parsed))
-    } catch {
-      /* fail-soft */
-    }
+  for (const d of sources.disparities) if (d?.displayName) names.push(d.displayName)
+  for (const r of sources.regions) {
+    for (const f of Array.isArray(r.floors) ? r.floors : []) if (f?.displayName) names.push(f.displayName)
   }
-  pushDisplayNames('disparities.json', (o) => {
-    const arr = (o as { data?: { disparities?: Array<{ displayName?: string }> } })?.data?.disparities
-    return Array.isArray(arr) ? arr.map((d) => d?.displayName ?? '').filter(Boolean) : []
-  })
-  pushDisplayNames('regional-price-floor.json', (o) => {
-    const clusters = (o as { data?: { clusters?: Array<{ floors?: Array<{ displayName?: string }> }> } })?.data?.clusters
-    if (!Array.isArray(clusters)) return []
-    return clusters.flatMap((c) => (Array.isArray(c?.floors) ? c.floors.map((f) => f?.displayName ?? '') : [])).filter(Boolean)
-  })
   return tokenizeInventory(names)
 }
 
@@ -329,8 +358,10 @@ function buildInventoryTokens(dir: string): Set<string> {
 const invokedDirectly = Boolean(process.argv[1]) && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
 if (invokedDirectly) {
   main().catch((err) => {
-    // Last-resort fail-soft: never crash on an unexpected error.
+    // A FATAL error must be visible to the wrapper (heartbeat gate, '(errored)' toast, Task
+    // Scheduler retry). Per-item failures are already fail-soft above; exiting 0 here would let
+    // a permanently broken monitor advance the dead-man heartbeat forever.
     console.error('reddit mention-monitor: unexpected error —', err instanceof Error ? err.message : err)
-    process.exitCode = 0
+    process.exitCode = 1
   })
 }

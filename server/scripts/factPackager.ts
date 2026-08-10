@@ -145,6 +145,14 @@ const CATEGORY_ALIASES: Record<string, string[]> = {
   prerolls: ['preroll', 'prerolls', 'pre-roll', 'joint', 'joints'],
 }
 
+// Every category term the packager understands (keys + aliases), flattened. The single source for
+// consumers that need the vocabulary as a list (data-propagation protocol: single-source every
+// list) — the reddit monitor's pre-filter imports this so its gate can never drift from what
+// selectFact actually answers.
+export const CATEGORY_TERM_LIST: string[] = [
+  ...new Set([...Object.keys(CATEGORY_ALIASES), ...Object.values(CATEGORY_ALIASES).flat()]),
+]
+
 // Does the operator's free-text topic match a derived category? Case-insensitive; empty topic
 // matches anything. Substring both ways ("cheapest flower" → "Flower") plus a small alias map
 // ("vape"/"carts" → "Vaporizers").

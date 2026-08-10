@@ -9,6 +9,8 @@ import {
   precisionLine,
   renderAlertsMarkdown,
   factHeadline,
+  factConcernsBrand,
+  factFreshnessFrom,
   CATEGORY_TERMS,
   DEFAULT_CONFIDENCE_THRESHOLD,
   type PreFilterContext,
@@ -94,9 +96,13 @@ describe('parseArgs', () => {
   it('parses --dry and a valid --limit', () => {
     expect(parseArgs(['--dry', '--limit', '25'])).toEqual({ dry: true, limit: 25 })
   })
-  it('falls back to 40 when --limit is non-numeric, and floors at 1', () => {
-    expect(parseArgs(['--limit', 'abc']).limit).toBe(40)
-    expect(parseArgs(['--limit', '0']).limit).toBe(40)
+  it('leaves limit unset (config default) when --limit is non-numeric or non-positive', () => {
+    expect(parseArgs(['--limit', 'abc']).limit).toBeUndefined()
+    expect(parseArgs(['--limit', '0']).limit).toBeUndefined()
+  })
+  it('never swallows a following flag: `--limit --dry` still runs dry', () => {
+    expect(parseArgs(['--limit', '--dry'])).toEqual({ dry: true })
+    expect(parseArgs(['--limit'])).toEqual({ dry: false })
   })
 })
 
@@ -180,6 +186,10 @@ describe('parseClassification', () => {
     expect(parseClassification('{"intent": 9, "geoConfidence": 0.9}')).toBeNull()
     expect(parseClassification('no json here')).toBeNull()
   })
+  it('accepts intent 0 (not a shopping post) with no routed tool', () => {
+    const c = parseClassification('{"intent": 0, "geoConfidence": 0.95}')
+    expect(c).toMatchObject({ intent: 0, routedTool: '' })
+  })
   it('defaults missing confidence to 0 (below threshold)', () => {
     expect(parseClassification('{"intent": 1}')?.geoConfidence).toBe(0)
   })
@@ -207,6 +217,48 @@ describe('buildAlerts', () => {
   })
   it('skips an already-seen postId', () => {
     expect(buildAlerts([candidate()], new Set(['t3_x']))).toHaveLength(0)
+  })
+  it('never alerts an intent-0 (not-a-shopping-post) candidate, even with a fact', () => {
+    const c = candidate({ classification: classification({ intent: 0, geoConfidence: 1, routedTool: '' }) })
+    expect(buildAlerts([c], new Set())).toHaveLength(0)
+  })
+})
+
+// ---- factFreshnessFrom (envelope-age freshness — 'fresh' is computed, never asserted) ----
+
+describe('factFreshnessFrom', () => {
+  const now = new Date('2026-08-10T06:00:00Z')
+  it('stamps fresh within the age window and stale beyond it', () => {
+    expect(factFreshnessFrom('2026-08-10T04:00:00Z', now)).toBe('fresh')
+    expect(factFreshnessFrom('2026-08-01T04:00:00Z', now)).toBe('stale')
+  })
+  it("returns '' (unknown) for a missing/unparseable timestamp instead of asserting fresh", () => {
+    expect(factFreshnessFrom('', now)).toBe('')
+    expect(factFreshnessFrom('not-a-date', now)).toBe('')
+  })
+})
+
+// ---- factConcernsBrand (brand-specific intents must not get an unrelated fact) ----
+
+describe('factConcernsBrand', () => {
+  it('matches the named brand whole-word in the fact display name', () => {
+    expect(factConcernsBrand(disparityFact, 'Donny Burger')).toBe(true)
+    expect(factConcernsBrand(disparityFact, 'donny')).toBe(true)
+  })
+  it('rejects an unrelated brand and an empty brand', () => {
+    expect(factConcernsBrand(disparityFact, 'Fifty Fold')).toBe(false)
+    expect(factConcernsBrand(disparityFact, '')).toBe(false)
+  })
+})
+
+// ---- CATEGORY_TERMS single-sourcing (data-propagation protocol guard) ----
+
+describe('CATEGORY_TERMS', () => {
+  it('carries the full factPackager alias vocabulary (no re-typed drift)', () => {
+    // Terms the old hand-typed list had silently dropped — must stay present now.
+    for (const term of ['oz', 'buds', 'resin', 'cartridges', 'pre-roll', 'flower', 'vape']) {
+      expect(CATEGORY_TERMS).toContain(term)
+    }
   })
 })
 

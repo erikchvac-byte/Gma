@@ -96,12 +96,19 @@ try {
     Write-Log "=== Reddit mention-monitor start (server: $serverDir; dry=$Dry) ==="
     Push-Location $serverDir
     try {
-        if ($Dry) {
-            $output = & npx tsx scripts/redditMonitorRun.ts --dry 2>&1 | ForEach-Object { $_.ToString() }
-        } else {
-            $output = & npx tsx scripts/redditMonitorRun.ts 2>&1 | ForEach-Object { $_.ToString() }
+        # PS 5.1 + $ErrorActionPreference='Stop' turns redirected native STDERR into a TERMINATING
+        # error (verified) -- and the monitor legitimately warns on stderr (per-sub fetch skips).
+        # Relax EAP around the native call only; the stderr lines still land in $output via 2>&1.
+        $tsxArgs = @('tsx', 'scripts/redditMonitorRun.ts')
+        if ($Dry) { $tsxArgs += '--dry' }
+        $prevEap = $ErrorActionPreference
+        $ErrorActionPreference = 'Continue'
+        try {
+            $output = & npx @tsxArgs 2>&1 | ForEach-Object { $_.ToString() }
+            $runExit = $LASTEXITCODE
+        } finally {
+            $ErrorActionPreference = $prevEap
         }
-        $runExit = $LASTEXITCODE
     } finally {
         Pop-Location
     }
@@ -123,6 +130,9 @@ try {
     $toastTitle = if ($runExit -eq 0) { 'GmaS Reddit monitor' } else { 'GmaS Reddit monitor (errored)' }
     Show-Toast $toastTitle $summaryLine
 
+    # Propagate failure so Task Scheduler's RestartCount retry (setup script) can actually fire --
+    # an unconditional exit 0 here would defeat the retry hardening and mark broken runs green.
+    if ($runExit -ne 0) { exit 1 }
     exit 0
 }
 finally {
