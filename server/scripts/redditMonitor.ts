@@ -17,7 +17,7 @@
 // private seen/mentions state, the toast) lives in redditMonitorRun.ts.
 
 import { looseJsonArray } from './opportunityFinder.js'
-import type { CitableFact } from './factPackager.js'
+import { CATEGORY_TERM_LIST, type CitableFact } from './factPackager.js'
 import type { Region } from '../utils/regionModel.js'
 
 // ---- the 6 actionable intents → routed tool/fact (brainstorm Technique 1) ----
@@ -33,20 +33,21 @@ export const INTENT_ROUTES: Record<number, IntentRoute> = {
   5: { label: 'is this deal still live?', routedTool: 'freshness-gated status' },
   6: { label: 'which store carries [brand] cheapest', routedTool: 'brand→store matrix' },
 }
+// Intents that ask about a NAMED brand/product — a fact about some other product is a non-answer
+// for these, so the alert is honestly suppressed unless the fact concerns that brand.
+export const BRAND_SPECIFIC_INTENTS: ReadonlySet<number> = new Set([2, 6])
 export const DEFAULT_CONFIDENCE_THRESHOLD = 0.7
 export const SEEN_EXPIRY_DAYS = 360
+// A fact's derived envelope older than this is stamped 'stale' (the local derive runs daily; two
+// days tolerates one missed run without crying wolf).
+export const FRESHNESS_MAX_AGE_DAYS = 2
 
-// Product-category terms the pre-filter accepts as an inventory signal (guardrail 3a). Mirrors the
-// spirit of factPackager's CATEGORY_ALIASES but is owned here so factPackager stays a read-only
-// import. Keeps intent #3 ("prices are insane") reachable when a gripe names a category but no
-// specific store/brand.
-export const CATEGORY_TERMS: string[] = [
-  'flower', 'bud', 'eighth', 'eighths', 'ounce',
-  'vape', 'vapes', 'vaporizer', 'cart', 'carts', 'cartridge', 'disposable',
-  'concentrate', 'concentrates', 'dab', 'dabs', 'rosin', 'wax', 'hash', 'shatter',
-  'edible', 'edibles', 'gummy', 'gummies', 'chocolate',
-  'preroll', 'prerolls', 'joint', 'joints',
-]
+// Product-category terms the pre-filter accepts as an inventory signal (guardrail 3a). Single-
+// sourced from factPackager's alias vocabulary (data-propagation protocol: never re-type a
+// category literal) so the gate can never drift from what selectFact actually answers. Keeps
+// intent #3 ("prices are insane") reachable when a gripe names a category but no specific
+// store/brand.
+export const CATEGORY_TERMS: string[] = CATEGORY_TERM_LIST
 
 // ---- shapes ----
 
@@ -250,9 +251,11 @@ export function buildClassifyPrompt(post: RedditPost, pre: PreFilterResult): str
     `Body: ${post.selftext.slice(0, 800)}`,
     ``,
     `Pick the SINGLE best-matching shopper intent:`,
+    `  0 = none of these — NOT a cannabis-shopping question (e.g. florist "flowers", gardening,`,
+    `      moving/housing, or any post where no cannabis price/store/brand answer makes sense)`,
     intents,
     ``,
-    `Return ONLY a JSON object (no prose): {"intent": <1-6>, "geoConfidence": <0.0-1.0>,`,
+    `Return ONLY a JSON object (no prose): {"intent": <0-6>, "geoConfidence": <0.0-1.0>,`,
     `"matchedStore": "<store named or empty>", "matchedBrand": "<brand/product named or empty>"}`,
     `geoConfidence = how sure you are the poster is asking about the North-Sound WA area specifically`,
     `(Everett/Snohomish/Whatcom/Skagit/Bellingham/Marysville/Mount Vernon/Ferndale), not broad WA.`,
@@ -260,8 +263,9 @@ export function buildClassifyPrompt(post: RedditPost, pre: PreFilterResult): str
 }
 
 // Parse Haiku's JSON answer into a Classification, or null if unusable. Tolerant of fences/prose
-// (reuses opportunityFinder.looseJsonArray). Clamps confidence to [0,1] and intent to 1..6; the
-// routedTool is derived from the intent (never trusted from the model).
+// (reuses opportunityFinder.looseJsonArray). Clamps confidence to [0,1] and intent to 0..6 (0 = a
+// definitive "not a cannabis-shopping post" — kept so the runner can mark it done, never alerted);
+// the routedTool is derived from the intent (never trusted from the model).
 export function parseClassification(answerText: string): Classification | null {
   const first = looseJsonArray(answerText)[0]
   if (!first || typeof first !== 'object') return null
@@ -270,7 +274,7 @@ export function parseClassification(answerText: string): Classification | null {
   const intentRaw = typeof o.intent === 'number' ? o.intent : Number.parseInt(String(o.intent ?? ''), 10)
   if (!Number.isFinite(intentRaw)) return null
   const intent = Math.trunc(intentRaw)
-  if (!INTENT_ROUTES[intent]) return null
+  if (intent !== 0 && !INTENT_ROUTES[intent]) return null
 
   const confRaw = typeof o.geoConfidence === 'number' ? o.geoConfidence : Number.parseFloat(String(o.geoConfidence ?? ''))
   const geoConfidence = Number.isFinite(confRaw) ? Math.min(1, Math.max(0, confRaw)) : 0
@@ -280,8 +284,32 @@ export function parseClassification(answerText: string): Classification | null {
     geoConfidence,
     matchedStore: typeof o.matchedStore === 'string' ? o.matchedStore.trim() : '',
     matchedBrand: typeof o.matchedBrand === 'string' ? o.matchedBrand.trim() : '',
-    routedTool: INTENT_ROUTES[intent].routedTool,
+    routedTool: INTENT_ROUTES[intent]?.routedTool ?? '',
   }
+}
+
+// Whether a gated fact is actually ABOUT the brand/product a thread named: the normalized brand
+// must appear whole-word in the fact's display name. Guards BRAND_SPECIFIC_INTENTS from being
+// "answered" by an unrelated product's fact.
+export function factConcernsBrand(fact: CitableFact, brand: string): boolean {
+  const b = (brand ?? '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
+  if (!b) return false
+  const name = fact.kind === 'own-median' ? fact.name : fact.displayName
+  const norm = ` ${name.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()} `
+  return norm.includes(` ${b} `)
+}
+
+// '' when the envelope timestamp is missing/unparseable (unknown, not asserted); 'fresh' within
+// maxDays of now; else 'stale'. Replaces the old hardcoded 'fresh' — selectFact's stale gate only
+// covers regional floors, so disparity/own-median facts need this envelope-age check.
+export function factFreshnessFrom(
+  asOf: string,
+  now: Date = new Date(),
+  maxDays: number = FRESHNESS_MAX_AGE_DAYS,
+): '' | 'fresh' | 'stale' {
+  const t = Date.parse(asOf)
+  if (!Number.isFinite(t)) return ''
+  return now.getTime() - t <= maxDays * 86_400_000 ? 'fresh' : 'stale'
 }
 
 // ---- compact truthful fact one-liner (mirrors factPackager copy, low-side only) ----
@@ -320,10 +348,11 @@ export function buildAlerts(
   const emitted = new Set<string>() // within-run dedup (a crosspost/dup id must not fire twice)
   for (const c of cands) {
     if (seen.has(c.post.postId) || emitted.has(c.post.postId)) continue // dedup (cross-run + in-run)
+    const route = INTENT_ROUTES[c.classification.intent]
+    if (!route) continue // intent 0 (not a shopping post) is never alertable
     if (!c.fact) continue // Model-2 fact-gate
     if (c.classification.geoConfidence < threshold) continue // 0.7 gate
     emitted.add(c.post.postId)
-    const route = INTENT_ROUTES[c.classification.intent]
     out.push({
       ts: now.toISOString(),
       subreddit: c.post.subreddit,
@@ -331,7 +360,7 @@ export function buildAlerts(
       url: c.post.url,
       title: c.post.title,
       intent: c.classification.intent,
-      intentLabel: route?.label ?? '',
+      intentLabel: route.label,
       confidence: c.classification.geoConfidence,
       geoTokens: c.pre.geoTokens,
       matchedStore: c.classification.matchedStore || '',
