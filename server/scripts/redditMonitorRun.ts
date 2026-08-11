@@ -9,6 +9,8 @@
 //
 // Env:
 //   ANTHROPIC_API_KEY  - enables the Haiku classifier (else survivors are counted but not classified)
+//   REDDIT_CLIENT_ID   - Reddit "script" app id → OAuth app-only polling (reliable, ~100 req/min).
+//   REDDIT_CLIENT_SECRET   Without BOTH, the monitor falls back to the throttled public .rss feed.
 //   CITATION_MODEL     - Claude model id (default claude-haiku-4-5, shared with the citation monitor)
 //   DERIVED_DIR        - dir to read the committed derived facts from (default: server/data/derived)
 //   REDDIT_DATA_DIR    - dir for the private state (default: ~/GmaS-data)
@@ -140,14 +142,51 @@ function readMentionsTally(p: string): { fired: number; acted: number } {
   return { fired, acted }
 }
 
-// ---- fetch a subreddit's /new.rss (public Atom feed, no auth). Fail-soft per sub. ----
-// Reddit 403s the unauthenticated /new.json path from many IPs (verified 2026-08-10); the .rss
-// Atom feed stays public, so it is the ingestion source. See ADR-118 / parseRssListing.
-async function fetchListing(name: string, limit: number): Promise<RedditPost[]> {
+// ---- Reddit OAuth (app-only, client_credentials) ----
+// Reddit tightly rate-limits the UNAUTHENTICATED endpoints per-IP (verified 2026-08-11: ~2 fetches
+// then 429, gap-independent), and 403s the unauth /new.json entirely. An OAuth app-only token lifts
+// the limit to ~100 req/min and lets us poll oauth.reddit.com, which returns the STANDARD JSON
+// listing (reused via parseListing). Creds are read-only app credentials in the ROOT .env:
+//   REDDIT_CLIENT_ID / REDDIT_CLIENT_SECRET  (a Reddit "script" app; client_credentials grant)
+// When absent, the monitor falls back to the public .rss feed (parseRssListing), which still works
+// but is throttled to ~2 subs/run. See ADR-118.
+async function getRedditToken(): Promise<string | null> {
+  const id = process.env.REDDIT_CLIENT_ID
+  const secret = process.env.REDDIT_CLIENT_SECRET
+  if (!id || !secret) return null
+  const basic = Buffer.from(`${id}:${secret}`).toString('base64')
+  const res = await fetch('https://www.reddit.com/api/v1/access_token', {
+    method: 'POST',
+    headers: {
+      authorization: `Basic ${basic}`,
+      'user-agent': USER_AGENT,
+      'content-type': 'application/x-www-form-urlencoded',
+    },
+    body: 'grant_type=client_credentials',
+    signal: AbortSignal.timeout(15_000),
+  })
+  if (!res.ok) throw new Error(`token HTTP ${res.status}: ${(await res.text()).slice(0, 200)}`)
+  const data = (await res.json()) as { access_token?: string }
+  return typeof data.access_token === 'string' && data.access_token ? data.access_token : null
+}
+
+// ---- fetch a subreddit's newest posts. Fail-soft per sub. ----
+// With an OAuth token: oauth.reddit.com/r/<sub>/new (JSON listing, ~100 req/min). Without one: the
+// public /new.rss Atom feed (Reddit 403s the unauth .json; .rss is public but throttled).
+async function fetchListing(name: string, limit: number, token: string | null): Promise<RedditPost[]> {
+  if (token) {
+    const url = `https://oauth.reddit.com/r/${encodeURIComponent(name)}/new?limit=${limit}&raw_json=1`
+    const res = await fetch(url, {
+      headers: { authorization: `Bearer ${token}`, 'user-agent': USER_AGENT, accept: 'application/json' },
+      signal: AbortSignal.timeout(15_000), // never let a hung connection stall the daily run
+    })
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    return parseListing(await res.text())
+  }
   const url = `https://www.reddit.com/r/${encodeURIComponent(name)}/new.rss?limit=${limit}`
   const res = await fetch(url, {
     headers: { 'user-agent': USER_AGENT, accept: 'application/atom+xml, application/xml;q=0.9, text/xml;q=0.8' },
-    signal: AbortSignal.timeout(15_000), // never let a hung connection stall the daily run
+    signal: AbortSignal.timeout(15_000),
   })
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
   return parseRssListing(await res.text(), name)
@@ -212,12 +251,26 @@ async function main(): Promise<void> {
   } else if (dry) {
     console.log('  (dry run: no network fetch; set REDDIT_FIXTURE to exercise the pipeline offline)')
   } else {
+    let token: string | null = null
+    try {
+      token = await getRedditToken()
+    } catch (err) {
+      console.warn(`  ! Reddit OAuth token fetch failed — falling back to .rss — ${err instanceof Error ? err.message : err}`)
+    }
+    console.log(
+      token
+        ? '  (auth: OAuth app-only token — polling oauth.reddit.com, ~100 req/min)'
+        : '  (auth: none — falling back to throttled public .rss; set REDDIT_CLIENT_ID/SECRET in .env for reliable polling)',
+    )
+    // OAuth lifts the rate limit, so a 1s courtesy gap suffices; the unauth .rss fallback needs the
+    // wider REDDIT_FETCH_GAP_MS to avoid the per-IP 429.
+    const gap = token ? 1000 : REDDIT_FETCH_GAP_MS
     let first = true
     for (const sub of subreddits) {
-      if (!first) await sleep(REDDIT_FETCH_GAP_MS)
+      if (!first) await sleep(gap)
       first = false
       try {
-        posts.push(...(await fetchListing(sub.name, limit)))
+        posts.push(...(await fetchListing(sub.name, limit, token)))
       } catch (err) {
         console.warn(`  ! [r/${sub.name}] fetch skipped — ${err instanceof Error ? err.message : err}`)
       }
