@@ -82,7 +82,7 @@
       {
         "brandKey": "1988",
         "displayBrand": "1988",
-        "productCount": 72,
+        "productCount": 80,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -1618,7 +1618,7 @@
       {
         "brandKey": "bangers",
         "displayBrand": "BANGERS",
-        "productCount": 21,
+        "productCount": 22,
         "storesCarrying": [
           "cannazone-bellingham",
           "cannazone-old-hwy-99",
@@ -2290,7 +2290,7 @@
       {
         "brandKey": "blush velvet",
         "displayBrand": "Blush Velvet",
-        "productCount": 30,
+        "productCount": 33,
         "storesCarrying": [
           "2020-solutions-pacific-highway",
           "cannazone-bellingham",
@@ -2391,7 +2391,7 @@
       {
         "brandKey": "bodhi brands",
         "displayBrand": "Bodhi Brands",
-        "productCount": 160,
+        "productCount": 164,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -4080,14 +4080,17 @@
       {
         "brandKey": "cannasol farms",
         "displayBrand": "CannaSol Farms",
-        "productCount": 29,
+        "productCount": 38,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
-          "hangar-420-everett"
+          "hangar-420-everett",
+          "kush21-everett-evergreen"
         ],
         "tiers": [
-          1
+          0.75,
+          1,
+          4
         ],
         "cheapestCells": []
       },
@@ -4342,7 +4345,7 @@
       {
         "brandKey": "casual cones",
         "displayBrand": "Casual Cones",
-        "productCount": 24,
+        "productCount": 25,
         "storesCarrying": [
           "cannazone-bellingham",
           "cannazone-old-hwy-99",
@@ -5141,7 +5144,7 @@
       {
         "brandKey": "constellation cannabis",
         "displayBrand": "Constellation Cannabis",
-        "productCount": 244,
+        "productCount": 257,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -5718,7 +5721,7 @@
       {
         "brandKey": "crystal clear",
         "displayBrand": "Crystal Clear",
-        "productCount": 378,
+        "productCount": 391,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -6039,6 +6042,16 @@
             "cheapestStores": [
               "2020-solutions-north-bellingham",
               "2020-solutions-pacific-highway"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "crystal clear|distillate express pineapple s syringe|sativa|concentrate|applicators",
+            "displayName": "Crystal Clear: Pineapple Express (S) - Distillate Syringe",
+            "weightGrams": 1,
+            "lowPrice": 35,
+            "cheapestStores": [
+              "cannazone-bellingham"
             ],
             "storesCarrying": 2
           },
@@ -6386,7 +6399,7 @@
       {
         "brandKey": "dabstract",
         "displayBrand": "Dabstract",
-        "productCount": 345,
+        "productCount": 349,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -6509,6 +6522,16 @@
             "cheapestStores": [
               "kush21-everett-evergreen",
               "kushmart-north"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "dabstract|business i live monkey resin|n a|vaporizers",
+            "displayName": "Dabstract: Monkey Business (I) - Live Resin Cartridge",
+            "weightGrams": 1,
+            "lowPrice": 45,
+            "cheapestStores": [
+              "cannazone-bellingham"
             ],
             "storesCarrying": 2
           },
@@ -8039,7 +8062,7 @@
       {
         "brandKey": "double delicious",
         "displayBrand": "Double Delicious",
-        "productCount": 127,
+        "productCount": 128,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -9024,7 +9047,7 @@
       {
         "brandKey": "ez flower",
         "displayBrand": "EZ Flower",
-        "productCount": 73,
+        "productCount": 78,
         "storesCarrying": [
           "cannazone-bellingham",
           "cannazone-old-hwy-99",
@@ -9037,6 +9060,16 @@
           28
         ],
         "cheapestCells": [
+          {
+            "matchKey": "ez flower|cough raspberry s|sativa|flower",
+            "displayName": "EZ Flower: Raspberry Cough (S)",
+            "weightGrams": 3.5,
+            "lowPrice": 20,
+            "cheapestStores": [
+              "cannazone-bellingham"
+            ],
+            "storesCarrying": 2
+          },
           {
             "matchKey": "ez flower|h sherbet sunset|hybrid|flower",
             "displayName": "EZ Flower: Sunset Sherbet (H)",
@@ -9072,7 +9105,7 @@
       {
         "brandKey": "ez joint",
         "displayBrand": "EZ Joint",
-        "productCount": 63,
+        "productCount": 64,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -9159,7 +9192,7 @@
       {
         "brandKey": "ez vape",
         "displayBrand": "EZ-Vape",
-        "productCount": 167,
+        "productCount": 168,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -9472,7 +9505,7 @@
       {
         "brandKey": "falcanna",
         "displayBrand": "Falcanna",
-        "productCount": 334,
+        "productCount": 348,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -9493,17 +9526,6 @@
           28
         ],
         "cheapestCells": [
-          {
-            "matchKey": "falcanna|cbg doh pacific sunshine|hybrid|flower",
-            "displayName": "Pacific Sunshine CBG (DOH)",
-            "weightGrams": 1,
-            "lowPrice": 12,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          },
           {
             "matchKey": "falcanna|charlotte doh s web|high cbd|flower",
             "displayName": "Charlotte’s Web (DOH)",
@@ -10075,7 +10097,7 @@
       {
         "brandKey": "fire bros",
         "displayBrand": "Fire Bros.",
-        "productCount": 548,
+        "productCount": 561,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -10173,6 +10195,16 @@
             "cheapestStores": [
               "2020-solutions-north-bellingham",
               "2020-solutions-pacific-highway"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "fire bros|cheese doh live resin steak|hybrid|vaporizers",
+            "displayName": "Fire Bros | Cheese Steak | Live Resin Disposable DOH",
+            "weightGrams": 1,
+            "lowPrice": 39,
+            "cheapestStores": [
+              "jet-cannabis-everett"
             ],
             "storesCarrying": 2
           },
@@ -10805,7 +10837,7 @@
       {
         "brandKey": "flip side",
         "displayBrand": "Flip Side",
-        "productCount": 291,
+        "productCount": 294,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -11876,7 +11908,7 @@
       {
         "brandKey": "from the soil",
         "displayBrand": "From The Soil",
-        "productCount": 102,
+        "productCount": 103,
         "storesCarrying": [
           "cannazone-old-hwy-99",
           "hangar-420-everett",
@@ -13271,7 +13303,7 @@
           },
           {
             "matchKey": "good vibe tribe|bob ross|sativa|flower",
-            "displayName": "Bob Ross",
+            "displayName": "Bob Ross | 3.5g",
             "weightGrams": 3.5,
             "lowPrice": 12.8,
             "cheapestStores": [
@@ -13382,17 +13414,6 @@
           {
             "matchKey": "good vibe tribe|blue nerds|indica|flower",
             "displayName": "Blue Nerds",
-            "weightGrams": 7,
-            "lowPrice": 22.4,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          },
-          {
-            "matchKey": "good vibe tribe|bob ross|sativa|flower",
-            "displayName": "Bob Ross",
             "weightGrams": 7,
             "lowPrice": 22.4,
             "cheapestStores": [
@@ -14578,7 +14599,7 @@
       {
         "brandKey": "hashbreak",
         "displayBrand": "Hashbreak",
-        "productCount": 86,
+        "productCount": 90,
         "storesCarrying": [
           "cannazone-bellingham",
           "cannazone-old-hwy-99",
@@ -15576,8 +15597,9 @@
       {
         "brandKey": "hi guys",
         "displayBrand": "Hi Guys",
-        "productCount": 20,
+        "productCount": 27,
         "storesCarrying": [
+          "local-roots-everett-128th",
           "salish-coast-cannabis"
         ],
         "tiers": [
@@ -15808,17 +15830,6 @@
             "storesCarrying": 2
           },
           {
-            "matchKey": "hightide|factory high tide unicorn|hybrid|flower",
-            "displayName": "High Tide: Unicorn Factory",
-            "weightGrams": 3.5,
-            "lowPrice": 30,
-            "cheapestStores": [
-              "kush21-everett-evergreen",
-              "local-roots-everett-128th"
-            ],
-            "storesCarrying": 2
-          },
-          {
             "matchKey": "hightide|high pink runtz tide|indica|flower",
             "displayName": "High Tide: Pink Runtz",
             "weightGrams": 3.5,
@@ -15981,7 +15992,7 @@
       {
         "brandKey": "honey stixx",
         "displayBrand": "Honey Stixx",
-        "productCount": 123,
+        "productCount": 128,
         "storesCarrying": [
           "cannazone-bellingham",
           "cannazone-old-hwy-99",
@@ -16002,7 +16013,7 @@
       {
         "brandKey": "honey tree",
         "displayBrand": "Honey Tree",
-        "productCount": 188,
+        "productCount": 190,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -17476,7 +17487,7 @@
       {
         "brandKey": "journeyman",
         "displayBrand": "Journeyman",
-        "productCount": 303,
+        "productCount": 308,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -17678,7 +17689,7 @@
       {
         "brandKey": "k savage",
         "displayBrand": "K Savage",
-        "productCount": 113,
+        "productCount": 115,
         "storesCarrying": [
           "cannazone-bellingham",
           "cannazone-old-hwy-99",
@@ -18487,7 +18498,7 @@
       {
         "brandKey": "legends",
         "displayBrand": "Legends",
-        "productCount": 106,
+        "productCount": 110,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -18627,16 +18638,6 @@
             "cheapestStores": [
               "2020-solutions-north-bellingham",
               "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          },
-          {
-            "matchKey": "legends|blue runtz|indica|flower",
-            "displayName": "Legends: Blue Runtz",
-            "weightGrams": 14,
-            "lowPrice": 45,
-            "cheapestStores": [
-              "kush21-everett-evergreen"
             ],
             "storesCarrying": 2
           },
@@ -18825,7 +18826,7 @@
       {
         "brandKey": "leisure land",
         "displayBrand": "Leisure Land",
-        "productCount": 5,
+        "productCount": 8,
         "storesCarrying": [
           "cannazone-bellingham",
           "hangar-420-west"
@@ -18928,7 +18929,7 @@
       {
         "brandKey": "lifestyle cannabis company",
         "displayBrand": "Lifestyle Cannabis Company",
-        "productCount": 14,
+        "productCount": 15,
         "storesCarrying": [
           "the-joint-everett"
         ],
@@ -19235,7 +19236,7 @@
       {
         "brandKey": "lolli",
         "displayBrand": "Lolli",
-        "productCount": 22,
+        "productCount": 26,
         "storesCarrying": [
           "kushmart-north",
           "local-roots-everett-128th"
@@ -19255,6 +19256,17 @@
             "storesCarrying": 2
           },
           {
+            "matchKey": "lolli|cured maui resin wowie|sativa|vaporizers",
+            "displayName": "Maui Wowie Cured Resin Cartridge (Lolli)",
+            "weightGrams": 1,
+            "lowPrice": 12,
+            "cheapestStores": [
+              "kushmart-north",
+              "local-roots-everett-128th"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "lolli|cured rainbow resin runtz|hybrid|vaporizers",
             "displayName": "Rainbow Runtz 1g Cured Resin Cartridge (Lolli)",
             "weightGrams": 1,
@@ -19266,10 +19278,11 @@
           },
           {
             "matchKey": "lolli|cured resin skywalker|indica|vaporizers",
-            "displayName": "Skywalker 1g Cured Resin Cartridge (Lolli)",
+            "displayName": "Skywalker Cured Resin Cartridge (Lolli)",
             "weightGrams": 1,
             "lowPrice": 12,
             "cheapestStores": [
+              "kushmart-north",
               "local-roots-everett-128th"
             ],
             "storesCarrying": 2
@@ -19606,7 +19619,7 @@
       {
         "brandKey": "mama j s",
         "displayBrand": "mama J's",
-        "productCount": 306,
+        "productCount": 309,
         "storesCarrying": [
           "cannazone-bellingham",
           "cannazone-old-hwy-99",
@@ -19861,7 +19874,7 @@
       {
         "brandKey": "mayfield",
         "displayBrand": "Mayfield",
-        "productCount": 9,
+        "productCount": 17,
         "storesCarrying": [
           "cannazone-bellingham",
           "the-joint-everett"
@@ -20056,7 +20069,7 @@
       {
         "brandKey": "mfused",
         "displayBrand": "Mfused",
-        "productCount": 216,
+        "productCount": 218,
         "storesCarrying": [
           "cannazone-bellingham",
           "cannazone-old-hwy-99",
@@ -20482,7 +20495,7 @@
       {
         "brandKey": "micro bar",
         "displayBrand": "Micro Bar",
-        "productCount": 234,
+        "productCount": 246,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -21007,7 +21020,7 @@
       {
         "brandKey": "mini budz",
         "displayBrand": "Mini Budz",
-        "productCount": 105,
+        "productCount": 113,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -21064,6 +21077,46 @@
             "cheapestStores": [
               "2020-solutions-north-bellingham",
               "2020-solutions-pacific-highway"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "mini budz|blue cruz dream s santa|sativa|flower",
+            "displayName": "Mini Budz: Blue Dream-Santa Cruz (S)",
+            "weightGrams": 14,
+            "lowPrice": 52,
+            "cheapestStores": [
+              "cannazone-bellingham"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "mini budz|i octane purple|n a|flower",
+            "displayName": "Mini Budz: Purple Octane (I)",
+            "weightGrams": 14,
+            "lowPrice": 52,
+            "cheapestStores": [
+              "cannazone-bellingham"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "mini budz|berry dream i|n a|flower",
+            "displayName": "Mini Budz: Dream Berry (I)",
+            "weightGrams": 28,
+            "lowPrice": 110,
+            "cheapestStores": [
+              "cannazone-bellingham"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "mini budz|blue cruz dream s santa|sativa|flower",
+            "displayName": "Mini Budz: Blue Dream-Santa Cruz (S)",
+            "weightGrams": 28,
+            "lowPrice": 110,
+            "cheapestStores": [
+              "cannazone-bellingham"
             ],
             "storesCarrying": 2
           }
@@ -21209,7 +21262,7 @@
       {
         "brandKey": "moonshot",
         "displayBrand": "Moonshot",
-        "productCount": 4,
+        "productCount": 5,
         "storesCarrying": [
           "cannazone-bellingham",
           "kush21-everett-evergreen",
@@ -21286,7 +21339,7 @@
       {
         "brandKey": "moxey mints",
         "displayBrand": "Moxey Mints",
-        "productCount": 11,
+        "productCount": 12,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -22447,17 +22500,6 @@
               "hangar-420-west"
             ],
             "storesCarrying": 2
-          },
-          {
-            "matchKey": "old mcdonald s farm|omf tangie|n a|flower",
-            "displayName": "OMF Tangie",
-            "weightGrams": 28,
-            "lowPrice": 60,
-            "cheapestStores": [
-              "hangar-420-everett",
-              "hangar-420-west"
-            ],
-            "storesCarrying": 2
           }
         ]
       },
@@ -23097,7 +23139,7 @@
       {
         "brandKey": "ooowee",
         "displayBrand": "Ooowee",
-        "productCount": 894,
+        "productCount": 898,
         "storesCarrying": [
           "cannazone-bellingham",
           "cannazone-old-hwy-99",
@@ -23376,6 +23418,16 @@
             "storesCarrying": 2
           },
           {
+            "matchKey": "ooowee|huh uh|n a|pre rolls",
+            "displayName": "Uh Huh 1g Preroll (Ooowee)",
+            "weightGrams": 1,
+            "lowPrice": 4.8,
+            "cheapestStores": [
+              "local-roots-everett-128th"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "ooowee|hydrocarbon jokerz owe wax|n a|concentrate|wax",
             "displayName": "OWE Jokerz Hydrocarbon wax 1g",
             "weightGrams": 1,
@@ -23629,7 +23681,7 @@
       {
         "brandKey": "optimum extracts",
         "displayBrand": "Optimum Extracts",
-        "productCount": 41,
+        "productCount": 42,
         "storesCarrying": [
           "hangar-420-west",
           "kush21-everett-evergreen",
@@ -24311,7 +24363,7 @@
       {
         "brandKey": "phat panda",
         "displayBrand": "Phat Panda",
-        "productCount": 1219,
+        "productCount": 1225,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -24341,6 +24393,16 @@
         ],
         "cheapestCells": [
           {
+            "matchKey": "phat panda|all apple distillate in one washington|hybrid|vaporizers",
+            "displayName": "Washington Apple | All In One | Distillate | 1g",
+            "weightGrams": 1,
+            "lowPrice": 38,
+            "cheapestStores": [
+              "cannazone-bellingham"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "phat panda|all distillate doh in one peach ringz|hybrid|vaporizers",
             "displayName": "Peach Ringz | All In One | Distillate | 1g (DOH)",
             "weightGrams": 1,
@@ -24359,6 +24421,16 @@
             "cheapestStores": [
               "2020-solutions-north-bellingham",
               "2020-solutions-pacific-highway"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "phat panda|all distillate in mojito one watermelon|sativa|vaporizers",
+            "displayName": "Watermelon Mojito | All In One | Distillate | 1g",
+            "weightGrams": 1,
+            "lowPrice": 21,
+            "cheapestStores": [
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 2
           },
@@ -24715,6 +24787,17 @@
             "lowPrice": 16,
             "cheapestStores": [
               "kush21-everett-evergreen"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "phat panda|distillate kush og|hybrid|vaporizers",
+            "displayName": "OG Kush | Cartridge | Distillate",
+            "weightGrams": 1,
+            "lowPrice": 30,
+            "cheapestStores": [
+              "cannazone-bellingham",
+              "cannazone-old-hwy-99"
             ],
             "storesCarrying": 2
           },
@@ -25925,7 +26008,7 @@
       {
         "brandKey": "plaid jacket",
         "displayBrand": "Plaid Jacket",
-        "productCount": 369,
+        "productCount": 374,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -26367,7 +26450,7 @@
       {
         "brandKey": "plume",
         "displayBrand": "Plume",
-        "productCount": 195,
+        "productCount": 198,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -26573,7 +26656,7 @@
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
-            "storesCarrying": 3
+            "storesCarrying": 4
           },
           {
             "matchKey": "plume|hash rosin sour tangie|sativa|vaporizers",
@@ -27039,7 +27122,7 @@
       {
         "brandKey": "ray s lemonade",
         "displayBrand": "Ray's Lemonade",
-        "productCount": 278,
+        "productCount": 279,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -27702,9 +27785,10 @@
       {
         "brandKey": "rosinade",
         "displayBrand": "Rosinade",
-        "productCount": 2,
+        "productCount": 6,
         "storesCarrying": [
-          "2020-solutions-north-bellingham"
+          "2020-solutions-north-bellingham",
+          "kush21-everett-evergreen"
         ],
         "tiers": [],
         "cheapestCells": []
@@ -29159,7 +29243,7 @@
       {
         "brandKey": "skord",
         "displayBrand": "Skord",
-        "productCount": 160,
+        "productCount": 170,
         "storesCarrying": [
           "cannazone-bellingham",
           "cannazone-old-hwy-99",
@@ -29261,7 +29345,7 @@
             "cheapestStores": [
               "hangar-420-everett"
             ],
-            "storesCarrying": 2
+            "storesCarrying": 3
           },
           {
             "matchKey": "skord|ceramic payton pie s|n a|vaporizers",
@@ -29315,6 +29399,17 @@
             "storesCarrying": 2
           },
           {
+            "matchKey": "skord|breath divine kush|n a|flower",
+            "displayName": "SKORD Divine Kush Breath 3.5g",
+            "weightGrams": 3.5,
+            "lowPrice": 60,
+            "cheapestStores": [
+              "hangar-420-everett",
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "skord|dark rainbow|n a|flower",
             "displayName": "SKORD Dark Rainbow 3.5g",
             "weightGrams": 3.5,
@@ -29328,6 +29423,17 @@
           {
             "matchKey": "skord|lemon shortbread|n a|flower",
             "displayName": "SKORD Lemon Shortbread 3.5g",
+            "weightGrams": 3.5,
+            "lowPrice": 60,
+            "cheapestStores": [
+              "hangar-420-everett",
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "skord|mintwoods|n a|flower",
+            "displayName": "SKORD Mintwoods 3.5g",
             "weightGrams": 3.5,
             "lowPrice": 60,
             "cheapestStores": [
@@ -29388,11 +29494,32 @@
             "storesCarrying": 2
           },
           {
+            "matchKey": "skord|breath buds divine kush small|n a|flower",
+            "displayName": "Divine Kush Breath Small Buds Flower (Skord)",
+            "weightGrams": 7,
+            "lowPrice": 90,
+            "cheapestStores": [
+              "kushmart-north"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "skord|buds dark rainbow small|n a|flower",
             "displayName": "SKORD Dark Rainbow Small Buds 7g",
             "weightGrams": 7,
             "lowPrice": 55,
             "cheapestStores": [
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "skord|buds mintwoods small|n a|flower",
+            "displayName": "SKORD Mintwoods Small Buds 7g",
+            "weightGrams": 7,
+            "lowPrice": 100,
+            "cheapestStores": [
+              "hangar-420-everett",
               "hangar-420-west"
             ],
             "storesCarrying": 2
@@ -30182,7 +30309,7 @@
       {
         "brandKey": "snickle fritz",
         "displayBrand": "Snickle Fritz",
-        "productCount": 217,
+        "productCount": 220,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -30894,7 +31021,7 @@
       {
         "brandKey": "subx",
         "displayBrand": "SUBX",
-        "productCount": 325,
+        "productCount": 372,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -30914,6 +31041,16 @@
           7
         ],
         "cheapestCells": [
+          {
+            "matchKey": "subx|95 cookies i i|n a|flower",
+            "displayName": "SubX: I-95 Cookies (I)",
+            "weightGrams": 1,
+            "lowPrice": 15,
+            "cheapestStores": [
+              "cannazone-bellingham"
+            ],
+            "storesCarrying": 2
+          },
           {
             "matchKey": "subx|boof doh super|hybrid|flower",
             "displayName": "Super Boof | 1g (DOH)",
@@ -32752,11 +32889,12 @@
       {
         "brandKey": "svin",
         "displayBrand": "Svin",
-        "productCount": 1,
+        "productCount": 4,
         "storesCarrying": [
           "the-joint-everett"
         ],
         "tiers": [
+          1,
           3.5
         ],
         "cheapestCells": []
@@ -32764,7 +32902,7 @@
       {
         "brandKey": "svin garden",
         "displayBrand": "Svin Garden",
-        "productCount": 137,
+        "productCount": 151,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -32818,7 +32956,7 @@
       {
         "brandKey": "svin garden liquid diamond vape",
         "displayBrand": "Svin Garden - Liquid Diamond Vape",
-        "productCount": 16,
+        "productCount": 17,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway"
@@ -32910,7 +33048,7 @@
       {
         "brandKey": "svin garden live resin vape",
         "displayBrand": "Svin Garden - Live Resin Vape",
-        "productCount": 12,
+        "productCount": 19,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway"
@@ -32962,6 +33100,39 @@
               "2020-solutions-pacific-highway"
             ],
             "storesCarrying": 2
+          },
+          {
+            "matchKey": "svin garden live resin vape|apples bananas doh|hybrid|vaporizers",
+            "displayName": "Apples & Bananas Live Resin Disposable | 1g (DOH)",
+            "weightGrams": 1,
+            "lowPrice": 52,
+            "cheapestStores": [
+              "2020-solutions-north-bellingham",
+              "2020-solutions-pacific-highway"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "svin garden live resin vape|biscotti blueberry doh|indica hybrid|vaporizers",
+            "displayName": "Blueberry Biscotti Live Resin Disposable | 1g (DOH)",
+            "weightGrams": 1,
+            "lowPrice": 52,
+            "cheapestStores": [
+              "2020-solutions-north-bellingham",
+              "2020-solutions-pacific-highway"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "svin garden live resin vape|cherry doh dosidos|n a|vaporizers",
+            "displayName": "Cherry Dosidos Live Resin Disposable | 1g (DOH)",
+            "weightGrams": 1,
+            "lowPrice": 52,
+            "cheapestStores": [
+              "2020-solutions-north-bellingham",
+              "2020-solutions-pacific-highway"
+            ],
+            "storesCarrying": 2
           }
         ]
       },
@@ -32980,7 +33151,7 @@
       {
         "brandKey": "svin garden select series",
         "displayBrand": "Svin Garden - Select Series",
-        "productCount": 8,
+        "productCount": 14,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway"
@@ -33003,10 +33174,43 @@
             "storesCarrying": 2
           },
           {
+            "matchKey": "svin garden select series|amaretto doh sour|n a|flower",
+            "displayName": "Amaretto Sour | 3.5g (DOH)",
+            "weightGrams": 3.5,
+            "lowPrice": 44,
+            "cheapestStores": [
+              "2020-solutions-north-bellingham",
+              "2020-solutions-pacific-highway"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "svin garden select series|banger doh sherb|indica hybrid|flower",
             "displayName": "Sherb Banger | 3.5g (DOH)",
             "weightGrams": 3.5,
             "lowPrice": 44,
+            "cheapestStores": [
+              "2020-solutions-north-bellingham",
+              "2020-solutions-pacific-highway"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "svin garden select series|berries crunch doh|indica|flower",
+            "displayName": "Crunch Berries Select Series (DOH)",
+            "weightGrams": 3.5,
+            "lowPrice": 44,
+            "cheapestStores": [
+              "2020-solutions-north-bellingham",
+              "2020-solutions-pacific-highway"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "svin garden select series|amaretto doh sour|n a|flower",
+            "displayName": "Amaretto Sour Select Series | 7g (DOH)",
+            "weightGrams": 7,
+            "lowPrice": 88,
             "cheapestStores": [
               "2020-solutions-north-bellingham",
               "2020-solutions-pacific-highway"
@@ -33023,13 +33227,24 @@
               "2020-solutions-pacific-highway"
             ],
             "storesCarrying": 2
+          },
+          {
+            "matchKey": "svin garden select series|berries crunch doh|indica|flower",
+            "displayName": "Crunch Berries Select Series (DOH)",
+            "weightGrams": 7,
+            "lowPrice": 84,
+            "cheapestStores": [
+              "2020-solutions-north-bellingham",
+              "2020-solutions-pacific-highway"
+            ],
+            "storesCarrying": 2
           }
         ]
       },
       {
         "brandKey": "svin garden signature series",
         "displayBrand": "Svin Garden - Signature Series",
-        "productCount": 19,
+        "productCount": 21,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway"
@@ -33043,6 +33258,17 @@
           {
             "matchKey": "svin garden signature series|1 borealis doh tangerine|hybrid|flower",
             "displayName": "Tangerine Borealis #1 (DOH)",
+            "weightGrams": 3.5,
+            "lowPrice": 36,
+            "cheapestStores": [
+              "2020-solutions-north-bellingham",
+              "2020-solutions-pacific-highway"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "svin garden signature series|1 cherry garlic lemon|n a|flower",
+            "displayName": "Lemon Cherry Garlic #1",
             "weightGrams": 3.5,
             "lowPrice": 36,
             "cheapestStores": [
@@ -33074,6 +33300,17 @@
             "storesCarrying": 2
           },
           {
+            "matchKey": "svin garden signature series|1 cherry garlic lemon|n a|flower",
+            "displayName": "Lemon Cherry Garlic #1",
+            "weightGrams": 7,
+            "lowPrice": 72,
+            "cheapestStores": [
+              "2020-solutions-north-bellingham",
+              "2020-solutions-pacific-highway"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "svin garden signature series|7 cat doh nip|hybrid|flower",
             "displayName": "Cat Nip #7 (DOH)",
             "weightGrams": 7,
@@ -33089,6 +33326,17 @@
             "displayName": "Cosmic Gelato (DOH)",
             "weightGrams": 7,
             "lowPrice": 72,
+            "cheapestStores": [
+              "2020-solutions-north-bellingham",
+              "2020-solutions-pacific-highway"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "svin garden signature series|1 cherry garlic lemon|n a|flower",
+            "displayName": "Lemon Cherry Garlic #1",
+            "weightGrams": 14,
+            "lowPrice": 144,
             "cheapestStores": [
               "2020-solutions-north-bellingham",
               "2020-solutions-pacific-highway"
@@ -33722,7 +33970,7 @@
       {
         "brandKey": "the capsule collection",
         "displayBrand": "The Capsule Collection",
-        "productCount": 30,
+        "productCount": 31,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -33730,6 +33978,7 @@
           "hangar-420-everett",
           "hangar-420-west",
           "kush21-everett-evergreen",
+          "kushmart-north",
           "local-roots-everett-128th"
         ],
         "tiers": [
@@ -33885,6 +34134,18 @@
             "storesCarrying": 2
           }
         ]
+      },
+      {
+        "brandKey": "the craft co op",
+        "displayBrand": "The Craft Co-Op",
+        "productCount": 3,
+        "storesCarrying": [
+          "the-joint-everett"
+        ],
+        "tiers": [
+          1
+        ],
+        "cheapestCells": []
       },
       {
         "brandKey": "the dab roast",
@@ -34638,7 +34899,7 @@
       {
         "brandKey": "torus",
         "displayBrand": "Torus",
-        "productCount": 365,
+        "productCount": 375,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -34887,6 +35148,16 @@
           {
             "matchKey": "torus|mclaren|n a|flower",
             "displayName": "Torus: McLaren",
+            "weightGrams": 3.5,
+            "lowPrice": 33,
+            "cheapestStores": [
+              "kush21-everett-evergreen"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "torus|perzimmon|n a|flower",
+            "displayName": "Torus: Perzimmon",
             "weightGrams": 3.5,
             "lowPrice": 33,
             "cheapestStores": [
@@ -35160,7 +35431,7 @@
       {
         "brandKey": "treehaus",
         "displayBrand": "Treehaus",
-        "productCount": 71,
+        "productCount": 77,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -35180,6 +35451,16 @@
             "cheapestStores": [
               "2020-solutions-north-bellingham",
               "2020-solutions-pacific-highway"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "treehaus|cake zkittlez|indica|vaporizers",
+            "displayName": "Zkittlez Cake Cartridge (Treehaus)",
+            "weightGrams": 1,
+            "lowPrice": 22.5,
+            "cheapestStores": [
+              "kushmart-north"
             ],
             "storesCarrying": 2
           },
@@ -35619,7 +35900,7 @@
       {
         "brandKey": "twofers",
         "displayBrand": "Twofers",
-        "productCount": 16,
+        "productCount": 17,
         "storesCarrying": [
           "cannazone-old-hwy-99",
           "kush21-everett-evergreen",
@@ -35867,7 +36148,7 @@
       {
         "brandKey": "viking cannabis",
         "displayBrand": "Viking Cannabis",
-        "productCount": 273,
+        "productCount": 279,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -36155,7 +36436,7 @@
       {
         "brandKey": "walden",
         "displayBrand": "Walden",
-        "productCount": 227,
+        "productCount": 229,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -36705,7 +36986,7 @@
       {
         "brandKey": "yolo",
         "displayBrand": "Yolo",
-        "productCount": 31,
+        "productCount": 34,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -36718,6 +36999,16 @@
         ],
         "cheapestCells": [
           {
+            "matchKey": "yolo|cake wedding|indica|vaporizers",
+            "displayName": "Wedding Cake Cartridge (Yolo)",
+            "weightGrams": 1,
+            "lowPrice": 17.5,
+            "cheapestStores": [
+              "kushmart-north"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "yolo|doh fruz pineapple|sativa|vaporizers",
             "displayName": "Pineapple Fruz Cartridge | 1g (DOH)",
             "weightGrams": 1,
@@ -36725,6 +37016,16 @@
             "cheapestStores": [
               "2020-solutions-north-bellingham",
               "2020-solutions-pacific-highway"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "yolo|fruz pineapple|sativa|vaporizers",
+            "displayName": "Pineapple Fruz Cartridge (Yolo)",
+            "weightGrams": 1,
+            "lowPrice": 17.5,
+            "cheapestStores": [
+              "kushmart-north"
             ],
             "storesCarrying": 2
           },
@@ -36804,7 +37105,7 @@
       {
         "brandKey": "zoz",
         "displayBrand": "Zoz",
-        "productCount": 28,
+        "productCount": 31,
         "storesCarrying": [
           "evolve-cannabis-bellingham",
           "the-joint-everett"
@@ -36816,16 +37117,16 @@
         "cheapestCells": []
       }
     ],
-    "totalBrands": 1074,
-    "multiStoreBrandCount": 569,
-    "cheapestCellCount": 2059,
-    "nullBrandProductCount": 1694,
+    "totalBrands": 1075,
+    "multiStoreBrandCount": 571,
+    "cheapestCellCount": 2086,
+    "nullBrandProductCount": 1699,
     "unmatchedProductCount": 0
   },
   "excluded": [
     {
       "reason": "nullBrand",
-      "count": 1694
+      "count": 1699
     },
     {
       "reason": "unmatchedProduct",
@@ -36833,9 +37134,9 @@
     }
   ],
   "coverage": {
-    "totalBrands": 1074,
-    "multiStoreBrandCount": 569,
-    "cheapestCellCount": 2059
+    "totalBrands": 1075,
+    "multiStoreBrandCount": 571,
+    "cheapestCellCount": 2086
   },
-  "generatedAt": "2026-08-10T11:00:15.480Z"
+  "generatedAt": "2026-08-11T11:00:11.980Z"
 }
