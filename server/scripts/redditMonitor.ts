@@ -150,6 +150,62 @@ export function parseListing(body: unknown): RedditPost[] {
   return out
 }
 
+// ---- Atom (.rss) listing parse ----
+// Reddit 403s the unauthenticated `/new.json` endpoint from many IPs (verified 2026-08-10), but the
+// public `/new.rss` Atom feed still returns 200. This parses that feed with the SAME tolerant
+// contract as parseListing: never throws, junk → [], only t3 posts kept. See ADR-118.
+
+const XML_NAMED_ENTITIES: Record<string, string> = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ' }
+
+// Decode named + numeric (decimal / hex) XML entities, one pass.
+function decodeEntitiesOnce(s: string): string {
+  return s.replace(/&(#x?[0-9a-fA-F]+|[a-zA-Z]+);/g, (m, body: string) => {
+    if (body[0] === '#') {
+      const code = body[1] === 'x' || body[1] === 'X' ? Number.parseInt(body.slice(2), 16) : Number.parseInt(body.slice(1), 10)
+      return Number.isFinite(code) && code > 0 ? String.fromCodePoint(code) : m
+    }
+    return XML_NAMED_ENTITIES[body.toLowerCase()] ?? m
+  })
+}
+
+// Reddit DOUBLE-encodes <content> (e.g. "&amp;#32;", "&lt;a&gt;"), so decode → strip tags → decode
+// again → collapse whitespace to recover plain text for the gate.
+function htmlToText(html: string): string {
+  const noTags = decodeEntitiesOnce(html).replace(/<[^>]*>/g, ' ')
+  return decodeEntitiesOnce(noTags).replace(/\s+/g, ' ').trim()
+}
+
+function firstCapture(block: string, re: RegExp): string {
+  const m = re.exec(block)
+  return m ? m[1] : ''
+}
+
+// Parse a subreddit's Atom (.rss) feed into RedditPosts. Only <entry> blocks with a t3_ id are kept
+// (the feed header carries its own <id>/<title>, ignored). `fallbackSubreddit` (the polled sub) is
+// used when an entry omits its category term. Tolerant of a raw string or junk (→ []).
+export function parseRssListing(body: unknown, fallbackSubreddit = ''): RedditPost[] {
+  if (typeof body !== 'string' || !body.includes('<entry')) return []
+  const out: RedditPost[] = []
+  const entryRe = /<entry\b[^>]*>([\s\S]*?)<\/entry>/g
+  let em: RegExpExecArray | null
+  while ((em = entryRe.exec(body)) !== null) {
+    const block = em[1]
+    const id = firstCapture(block, /<id>\s*([^<\s]+)\s*<\/id>/)
+    if (!id.startsWith('t3_')) continue // skip anything that isn't a post fullname
+    const ts = firstCapture(block, /<published>\s*([^<\s]+)/) || firstCapture(block, /<updated>\s*([^<\s]+)/)
+    const parsedMs = Date.parse(ts)
+    out.push({
+      postId: id,
+      subreddit: firstCapture(block, /<category\b[^>]*\bterm="([^"]*)"/) || fallbackSubreddit,
+      title: htmlToText(firstCapture(block, /<title\b[^>]*>([\s\S]*?)<\/title>/)),
+      selftext: htmlToText(firstCapture(block, /<content\b[^>]*>([\s\S]*?)<\/content>/)),
+      url: firstCapture(block, /<link\b[^>]*\bhref="([^"]*)"/),
+      createdUtc: Number.isFinite(parsedMs) ? Math.floor(parsedMs / 1000) : 0,
+    })
+  }
+  return out
+}
+
 // ---- inventory tokenization (pure; IO feeds it dispensary + brand names) ----
 
 const STOP_WORDS = new Set([

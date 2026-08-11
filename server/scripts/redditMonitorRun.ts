@@ -31,6 +31,7 @@ import { buildApiData } from '../utils/buildApiData.js'
 import { atomicWriteJson } from '../utils/atomicWrite.js'
 import {
   parseListing,
+  parseRssListing,
   preFilter,
   buildClassifyPrompt,
   parseClassification,
@@ -132,15 +133,17 @@ function readMentionsTally(p: string): { fired: number; acted: number } {
   return { fired, acted }
 }
 
-// ---- fetch a subreddit's /new.json (public, no auth). Fail-soft per sub. ----
+// ---- fetch a subreddit's /new.rss (public Atom feed, no auth). Fail-soft per sub. ----
+// Reddit 403s the unauthenticated /new.json path from many IPs (verified 2026-08-10); the .rss
+// Atom feed stays public, so it is the ingestion source. See ADR-118 / parseRssListing.
 async function fetchListing(name: string, limit: number): Promise<RedditPost[]> {
-  const url = `https://www.reddit.com/r/${encodeURIComponent(name)}/new.json?limit=${limit}`
+  const url = `https://www.reddit.com/r/${encodeURIComponent(name)}/new.rss?limit=${limit}`
   const res = await fetch(url, {
-    headers: { 'user-agent': USER_AGENT, accept: 'application/json' },
+    headers: { 'user-agent': USER_AGENT, accept: 'application/atom+xml, application/xml;q=0.9, text/xml;q=0.8' },
     signal: AbortSignal.timeout(15_000), // never let a hung connection stall the daily run
   })
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
-  return parseListing(await res.text())
+  return parseRssListing(await res.text(), name)
 }
 
 // ---- Haiku classify (native fetch, NO web_search tool — pure text classification). ----
@@ -192,7 +195,10 @@ async function main(): Promise<void> {
   }
   if (fixture && dry) {
     try {
-      posts.push(...parseListing(fs.readFileSync(fixture, 'utf8')))
+      const rawFixture = fs.readFileSync(fixture, 'utf8')
+      // Accept either a saved .rss Atom feed (the live source) or a legacy .json listing fixture.
+      const parsed = rawFixture.trimStart().startsWith('<') ? parseRssListing(rawFixture) : parseListing(rawFixture)
+      posts.push(...parsed)
     } catch (err) {
       console.warn(`  ! fixture read failed — ${err instanceof Error ? err.message : err}`)
     }

@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
   parseListing,
+  parseRssListing,
   tokenizeInventory,
   preFilter,
   parseClassification,
@@ -126,6 +127,44 @@ describe('parseListing', () => {
     expect(parseListing('not json')).toEqual([])
     expect(parseListing({})).toEqual([])
     expect(parseListing({ data: { children: [{ data: {} }] } })).toEqual([]) // no id
+  })
+})
+
+// ---- parseRssListing (Reddit Atom feed — the live source; .json is 403-blocked) ----
+
+// A realistic Reddit /new.rss body: a feed header (its own <id>/<title> must be ignored), one
+// self-post with a double-encoded HTML body, and one entry with no t3 id (must be skipped).
+const RSS_SAMPLE = `<?xml version="1.0" encoding="UTF-8"?><feed xmlns="http://www.w3.org/2005/Atom"><category term="everett" label="r/everett"/><id>/r/everett/new.rss</id><title>newest submissions : everett</title><entry><author><name>/u/shopper</name></author><category term="everett" label="r/everett"/><content type="html">&lt;!-- SC_OFF --&gt;&lt;div class=&quot;md&quot;&gt;&lt;p&gt;where is the cheapest flower in Everett these days?&lt;/p&gt;&lt;/div&gt; &amp;#32; submitted by &lt;a href=&quot;https://reddit.com/u/shopper&quot;&gt;/u/shopper&lt;/a&gt;</content><id>t3_abc123</id><link href="https://www.reddit.com/r/everett/comments/abc123/cheap_flower/" /><updated>2026-08-10T00:41:21+00:00</updated><published>2026-08-10T00:41:21+00:00</published><title>Cheapest flower near Everett?</title></entry><entry><id>t1_notapost</id><title>a comment, not a submission</title></entry></feed>`
+
+describe('parseRssListing', () => {
+  it('extracts a t3 entry with decoded title, body, url, subreddit, and epoch-seconds time', () => {
+    const posts = parseRssListing(RSS_SAMPLE, 'everett')
+    expect(posts).toHaveLength(1) // the t1_ comment entry and the feed header are skipped
+    const p = posts[0]
+    expect(p.postId).toBe('t3_abc123')
+    expect(p.subreddit).toBe('everett')
+    expect(p.title).toBe('Cheapest flower near Everett?')
+    expect(p.url).toBe('https://www.reddit.com/r/everett/comments/abc123/cheap_flower/')
+    // double-encoded HTML body decoded + stripped to plain text (the gate reads title+selftext)
+    expect(p.selftext).toContain('where is the cheapest flower in Everett these days?')
+    expect(p.selftext).not.toContain('<') // no residual markup
+    expect(p.createdUtc).toBe(Math.floor(Date.parse('2026-08-10T00:41:21+00:00') / 1000))
+  })
+  it('falls back to the polled subreddit when an entry omits its category', () => {
+    const body = `<feed><entry><id>t3_x</id><link href="https://reddit.com/x"/><title>hi</title></entry></feed>`
+    expect(parseRssListing(body, 'Bellingham')[0].subreddit).toBe('Bellingham')
+  })
+  it('returns [] for junk, non-string, or a feed with no entries', () => {
+    expect(parseRssListing('not xml')).toEqual([])
+    expect(parseRssListing(null)).toEqual([])
+    expect(parseRssListing('<feed><title>empty</title></feed>')).toEqual([])
+  })
+  it('produces a post that flows through the precision gate', () => {
+    const [p] = parseRssListing(RSS_SAMPLE, 'everett')
+    const r = preFilter(p, ctx())
+    expect(r.passed).toBe(true)
+    expect(r.geoTokens).toContain('everett')
+    expect(r.matchedCategory).toBe('flower')
   })
 })
 
