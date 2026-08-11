@@ -12,6 +12,7 @@
 //   CITATION_MODEL     - Claude model id (default claude-haiku-4-5, shared with the citation monitor)
 //   DERIVED_DIR        - dir to read the committed derived facts from (default: server/data/derived)
 //   REDDIT_DATA_DIR    - dir for the private state (default: ~/GmaS-data)
+//   REDDIT_FETCH_GAP_MS - ms between subreddit .rss fetches (default 4000; raise if Reddit 429s)
 //   REDDIT_LOG_PATH    - explicit mentions-log path; REQUIRED semantics under --dry (isolation)
 //   REDDIT_FIXTURE     - optional path to a saved subreddit .json listing, honored ONLY under
 //                        --dry (survivors get a stub classification so the full pipeline —
@@ -55,6 +56,12 @@ import {
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages'
 const USER_AGENT = 'windows:gmaslist-reddit-monitor:v1.0 (local reach tool; contact erikchvac@gmail.com)'
+
+// Gap between successive subreddit .rss fetches. Reddit rate-limits the unauthenticated Atom feed
+// (429s under a burst), so pace fetches wider than the shared Anthropic REQUEST_GAP_MS. Tunable via
+// REDDIT_FETCH_GAP_MS if a daily run ever shows persistent all-sub 429s (else the fallback is the
+// OAuth API — see ADR-118). Only ~9 subs/day, so a few seconds each is negligible wall-time.
+const REDDIT_FETCH_GAP_MS = Math.max(0, Number.parseInt(process.env.REDDIT_FETCH_GAP_MS ?? '', 10) || 4000)
 
 interface Args {
   dry: boolean
@@ -207,7 +214,7 @@ async function main(): Promise<void> {
   } else {
     let first = true
     for (const sub of subreddits) {
-      if (!first) await sleep(REQUEST_GAP_MS)
+      if (!first) await sleep(REDDIT_FETCH_GAP_MS)
       first = false
       try {
         posts.push(...(await fetchListing(sub.name, limit)))
