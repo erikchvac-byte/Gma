@@ -18658,8 +18658,10 @@
           "Pre-Rolls",
           "Vaporizers"
         ],
-        "availabilityGaps": [],
-        "gapsSuppressed": true
+        "availabilityGaps": [
+          "Edible"
+        ],
+        "gapsSuppressed": false
       }
     ],
     "categoryUniverse": [
@@ -18674,7 +18676,7 @@
     "unclusteredStoreCount": 0,
     "totalFloors": 1625,
     "singleStoreFloorCount": 631,
-    "suppressedGapClusterCount": 4
+    "suppressedGapClusterCount": 3
   },
   "excluded": [
     {
@@ -18683,7 +18685,7 @@
     },
     {
       "reason": "suppressedGapCluster",
-      "count": 4
+      "count": 3
     }
   ],
   "coverage": {
@@ -18693,5 +18695,5 @@
     "singleStoreFloorCount": 631,
     "categoryUniverseSize": 5
   },
-  "generatedAt": "2026-08-11T11:00:20.748Z"
+  "generatedAt": "2026-08-13T20:25:02.814Z"
 }
