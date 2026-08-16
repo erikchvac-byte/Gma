@@ -43,7 +43,7 @@
       {
         "brandKey": "1555 industrial",
         "displayBrand": "1555 Industrial",
-        "productCount": 39,
+        "productCount": 37,
         "storesCarrying": [
           "evolve-cannabis-bellingham",
           "kushmart-north"
@@ -437,7 +437,7 @@
       {
         "brandKey": "4 20 bar",
         "displayBrand": "4.20 Bar",
-        "productCount": 27,
+        "productCount": 28,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -4074,7 +4074,7 @@
       {
         "brandKey": "canna organix",
         "displayBrand": "Canna Organix",
-        "productCount": 180,
+        "productCount": 181,
         "storesCarrying": [
           "happy-time-mt-vernon",
           "kush21-everett-evergreen",
@@ -4088,6 +4088,17 @@
           3.5
         ],
         "cheapestCells": [
+          {
+            "matchKey": "canna organix|21 hte offendo|indica|vaporizers",
+            "displayName": "Offendo #21 HTE Cart (Canna Organix)",
+            "weightGrams": 1,
+            "lowPrice": 20,
+            "cheapestStores": [
+              "kushmart-north",
+              "local-roots-everett-128th"
+            ],
+            "storesCarrying": 2
+          },
           {
             "matchKey": "canna organix|41 gelato hce|n a|vaporizers",
             "displayName": "Gelato #41 1g HCE Cartridge (Canna Organix)",
@@ -5892,7 +5903,7 @@
       {
         "brandKey": "craft elixirs",
         "displayBrand": "Craft Elixirs",
-        "productCount": 6,
+        "productCount": 7,
         "storesCarrying": [
           "cannazone-bellingham",
           "evolve-cannabis-bellingham",
@@ -6609,7 +6620,7 @@
       {
         "brandKey": "dabstract",
         "displayBrand": "Dabstract",
-        "productCount": 369,
+        "productCount": 370,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -10371,7 +10382,7 @@
       {
         "brandKey": "fifty fold",
         "displayBrand": "Fifty Fold",
-        "productCount": 136,
+        "productCount": 137,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -13776,18 +13787,7 @@
           1,
           3
         ],
-        "cheapestCells": [
-          {
-            "matchKey": "giving tree organics|blunt burst pineapple|sativa|pre rolls",
-            "displayName": "Giving Tree Organics: Pineapple Burst - Infused Blunt",
-            "weightGrams": 1,
-            "lowPrice": 6,
-            "cheapestStores": [
-              "kush21-everett-evergreen"
-            ],
-            "storesCarrying": 2
-          }
-        ]
+        "cheapestCells": []
       },
       {
         "brandKey": "gold leaf gardens",
@@ -17320,17 +17320,6 @@
             "storesCarrying": 2
           },
           {
-            "matchKey": "honeydew|cheese doh scream|hybrid|flower",
-            "displayName": "Scream Cheese (DOH)",
-            "weightGrams": 7,
-            "lowPrice": 64,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          },
-          {
             "matchKey": "honeydew|doh eddy heady|hybrid|flower",
             "displayName": "Heady Eddy (DOH)",
             "weightGrams": 7,
@@ -17494,7 +17483,7 @@
       {
         "brandKey": "hustler s ambition",
         "displayBrand": "Hustler's Ambition",
-        "productCount": 392,
+        "productCount": 394,
         "storesCarrying": [
           "cannazone-bellingham",
           "cannazone-old-hwy-99",
@@ -17818,9 +17807,10 @@
             "lowPrice": 12.5,
             "cheapestStores": [
               "kush21-everett-evergreen",
+              "kushmart-north",
               "local-roots-everett-128th"
             ],
-            "storesCarrying": 2
+            "storesCarrying": 3
           },
           {
             "matchKey": "hustler s ambition|distillate h orange zee|n a|vaporizers",
@@ -18473,7 +18463,7 @@
       {
         "brandKey": "k savage",
         "displayBrand": "K Savage",
-        "productCount": 119,
+        "productCount": 120,
         "storesCarrying": [
           "cannazone-bellingham",
           "cannazone-old-hwy-99",
@@ -19610,16 +19600,6 @@
             "cheapestStores": [
               "2020-solutions-north-bellingham",
               "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          },
-          {
-            "matchKey": "legends|apple washington|indica|flower",
-            "displayName": "Legends: Washington Apple",
-            "weightGrams": 14,
-            "lowPrice": 45,
-            "cheapestStores": [
-              "kush21-everett-evergreen"
             ],
             "storesCarrying": 2
           },
@@ -20813,16 +20793,6 @@
           {
             "matchKey": "mama j s|de dulce uva|hybrid|flower",
             "displayName": "Dulce de UVA Flower (Mama J's)",
-            "weightGrams": 3.5,
-            "lowPrice": 17.5,
-            "cheapestStores": [
-              "kushmart-north"
-            ],
-            "storesCarrying": 2
-          },
-          {
-            "matchKey": "mama j s|gas monkey|n a|flower",
-            "displayName": "Gas Monkey Flower (Mama J's)",
             "weightGrams": 3.5,
             "lowPrice": 17.5,
             "cheapestStores": [
@@ -22158,6 +22128,28 @@
             "weightGrams": 1,
             "lowPrice": 38.4,
             "cheapestStores": [
+              "2020-solutions-pacific-highway"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "mindmelt|doh hole k|indica|vaporizers",
+            "displayName": "K-hole | 1g | DOH",
+            "weightGrams": 1,
+            "lowPrice": 38.4,
+            "cheapestStores": [
+              "2020-solutions-north-bellingham",
+              "2020-solutions-pacific-highway"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "mindmelt|doh mindfunk|indica|vaporizers",
+            "displayName": "MindFunk | 1g | DOH",
+            "weightGrams": 1,
+            "lowPrice": 38.4,
+            "cheapestStores": [
+              "2020-solutions-north-bellingham",
               "2020-solutions-pacific-highway"
             ],
             "storesCarrying": 2
@@ -25453,7 +25445,7 @@
       {
         "brandKey": "pagoda",
         "displayBrand": "Pagoda",
-        "productCount": 84,
+        "productCount": 86,
         "storesCarrying": [
           "kush21-everett-evergreen",
           "kushmart-north",
@@ -25806,7 +25798,7 @@
       {
         "brandKey": "phat panda",
         "displayBrand": "Phat Panda",
-        "productCount": 1322,
+        "productCount": 1323,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -31251,7 +31243,7 @@
       {
         "brandKey": "sky high gardens",
         "displayBrand": "Sky High Gardens",
-        "productCount": 186,
+        "productCount": 187,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -31857,7 +31849,7 @@
       {
         "brandKey": "smokey point productions",
         "displayBrand": "Smokey Point Productions",
-        "productCount": 197,
+        "productCount": 198,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -32913,16 +32905,6 @@
             "cheapestStores": [
               "2020-solutions-north-bellingham",
               "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          },
-          {
-            "matchKey": "subx|power|n a|flower",
-            "displayName": "SubX: Power",
-            "weightGrams": 1,
-            "lowPrice": 8,
-            "cheapestStores": [
-              "kush21-everett-evergreen"
             ],
             "storesCarrying": 2
           },
@@ -39189,7 +39171,7 @@
     ],
     "totalBrands": 1107,
     "multiStoreBrandCount": 578,
-    "cheapestCellCount": 2240,
+    "cheapestCellCount": 2238,
     "nullBrandProductCount": 1871,
     "unmatchedProductCount": 0
   },
@@ -39206,7 +39188,7 @@
   "coverage": {
     "totalBrands": 1107,
     "multiStoreBrandCount": 578,
-    "cheapestCellCount": 2240
+    "cheapestCellCount": 2238
   },
-  "generatedAt": "2026-08-15T11:00:11.722Z"
+  "generatedAt": "2026-08-16T11:00:12.460Z"
 }
