@@ -223,7 +223,7 @@
       {
         "brandKey": "2727",
         "displayBrand": "2727",
-        "productCount": 247,
+        "productCount": 248,
         "storesCarrying": [
           "2020-solutions-pacific-highway",
           "hangar-420-everett",
@@ -649,7 +649,6 @@
         "tiers": [
           1,
           3.5,
-          7,
           28
         ],
         "cheapestCells": [
@@ -1017,7 +1016,7 @@
       {
         "brandKey": "artizen",
         "displayBrand": "Artizen",
-        "productCount": 45,
+        "productCount": 46,
         "storesCarrying": [
           "hangar-420-west",
           "kushmart-north",
@@ -1032,6 +1031,16 @@
           28
         ],
         "cheapestCells": [
+          {
+            "matchKey": "artizen|berries mother of|hybrid|flower",
+            "displayName": "ARTIZEN - Mother of Berries",
+            "weightGrams": 3.5,
+            "lowPrice": 30,
+            "cheapestStores": [
+              "salish-coast-cannabis"
+            ],
+            "storesCarrying": 2
+          },
           {
             "matchKey": "artizen|dutchberry|sativa|flower",
             "displayName": "ARTIZEN - Dutchberry",
@@ -2125,7 +2134,7 @@
       {
         "brandKey": "blazed",
         "displayBrand": "Blazed",
-        "productCount": 46,
+        "productCount": 47,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "kush21-everett-evergreen",
@@ -2148,16 +2157,6 @@
               "kush21-everett-evergreen"
             ],
             "storesCarrying": 3
-          },
-          {
-            "matchKey": "blazed|blue dream|sativa|flower",
-            "displayName": "Blazed: Blue Dream",
-            "weightGrams": 3.5,
-            "lowPrice": 5,
-            "cheapestStores": [
-              "kush21-everett-evergreen"
-            ],
-            "storesCarrying": 2
           },
           {
             "matchKey": "blazed|acapulco gold|sativa|flower",
@@ -3693,7 +3692,7 @@
       {
         "brandKey": "buddy boy farms",
         "displayBrand": "Buddy Boy Farms",
-        "productCount": 12,
+        "productCount": 13,
         "storesCarrying": [
           "kush21-everett-evergreen",
           "kushmart-north",
@@ -10074,17 +10073,6 @@
             "storesCarrying": 2
           },
           {
-            "matchKey": "falcanna|charlotte doh s web|high cbd|flower",
-            "displayName": "Charlotte’s Web (DOH)",
-            "weightGrams": 7,
-            "lowPrice": 79.2,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          },
-          {
             "matchKey": "falcanna|deep olh sea|indica|flower",
             "displayName": "OLH Deep Sea 7g",
             "weightGrams": 7,
@@ -10382,7 +10370,7 @@
       {
         "brandKey": "fifty fold",
         "displayBrand": "Fifty Fold",
-        "productCount": 137,
+        "productCount": 138,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -14536,7 +14524,7 @@
       {
         "brandKey": "green haven",
         "displayBrand": "Green Haven",
-        "productCount": 175,
+        "productCount": 176,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -19487,17 +19475,6 @@
             "storesCarrying": 2
           },
           {
-            "matchKey": "legends|boof doh super|hybrid|flower",
-            "displayName": "Super Boof (DOH)",
-            "weightGrams": 3.5,
-            "lowPrice": 20,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          },
-          {
             "matchKey": "legends|doh seattle soda|sativa|flower",
             "displayName": "Seattle Soda (DOH)",
             "weightGrams": 3.5,
@@ -19967,7 +19944,7 @@
       {
         "brandKey": "lifted",
         "displayBrand": "Lifted",
-        "productCount": 305,
+        "productCount": 306,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -21115,7 +21092,7 @@
       {
         "brandKey": "method",
         "displayBrand": "Method",
-        "productCount": 115,
+        "productCount": 116,
         "storesCarrying": [
           "hangar-420-everett",
           "hangar-420-west",
@@ -23728,7 +23705,7 @@
       {
         "brandKey": "old mcdonalds farm",
         "displayBrand": "Old McDonalds Farm",
-        "productCount": 18,
+        "productCount": 19,
         "storesCarrying": [
           "hangar-420-everett",
           "hangar-420-west"
@@ -23788,6 +23765,17 @@
             "displayName": "OMF Blue Dream",
             "weightGrams": 7,
             "lowPrice": 20,
+            "cheapestStores": [
+              "hangar-420-everett",
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "old mcdonalds farm|omf tangie|n a|flower",
+            "displayName": "OMF Tangie",
+            "weightGrams": 28,
+            "lowPrice": 60,
             "cheapestStores": [
               "hangar-420-everett",
               "hangar-420-west"
@@ -30132,7 +30120,7 @@
       {
         "brandKey": "seattle s private reserve",
         "displayBrand": "Seattle's Private Reserve",
-        "productCount": 192,
+        "productCount": 193,
         "storesCarrying": [
           "kush21-everett-evergreen",
           "kushmart-north",
@@ -30910,8 +30898,7 @@
         "tiers": [
           1,
           3.5,
-          7,
-          15
+          7
         ],
         "cheapestCells": [
           {
@@ -30985,6 +30972,17 @@
             "lowPrice": 50,
             "cheapestStores": [
               "cannazone-bellingham"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "skord|ceramic lime tk|n a|vaporizers",
+            "displayName": "SKORD TK Lime Ceramic Cartridge 1g",
+            "weightGrams": 1,
+            "lowPrice": 60,
+            "cheapestStores": [
+              "hangar-420-everett",
+              "hangar-420-west"
             ],
             "storesCarrying": 2
           },
@@ -32793,7 +32791,7 @@
       {
         "brandKey": "subx",
         "displayBrand": "SUBX",
-        "productCount": 406,
+        "productCount": 407,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -39190,5 +39188,5 @@
     "multiStoreBrandCount": 578,
     "cheapestCellCount": 2238
   },
-  "generatedAt": "2026-08-16T11:00:12.460Z"
+  "generatedAt": "2026-08-17T11:00:12.965Z"
 }
