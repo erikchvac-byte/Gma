@@ -11530,7 +11530,7 @@
       {
         "brandKey": "fifty fold",
         "displayBrand": "Fifty Fold",
-        "productCount": 166,
+        "productCount": 167,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -15459,7 +15459,7 @@
           },
           {
             "matchKey": "good vibe tribe|cookiez|hybrid|flower",
-            "displayName": "CookieZ",
+            "displayName": "CookieZ | 3.5g",
             "weightGrams": 3.5,
             "lowPrice": 12.8,
             "cheapestStores": [
@@ -15581,17 +15581,6 @@
           {
             "matchKey": "good vibe tribe|bomb glitter|indica|flower",
             "displayName": "Glitter Bomb",
-            "weightGrams": 14,
-            "lowPrice": 41.6,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          },
-          {
-            "matchKey": "good vibe tribe|cookiez|hybrid|flower",
-            "displayName": "CookieZ",
             "weightGrams": 14,
             "lowPrice": 41.6,
             "cheapestStores": [
@@ -16700,7 +16689,7 @@
       {
         "brandKey": "hashbreak",
         "displayBrand": "Hashbreak",
-        "productCount": 127,
+        "productCount": 128,
         "storesCarrying": [
           "cannazone-bellingham",
           "cannazone-old-hwy-99",
@@ -19166,17 +19155,6 @@
             "storesCarrying": 2
           },
           {
-            "matchKey": "honeydew|doh lime vanilla|sativa|flower",
-            "displayName": "Vanilla Lime (DOH)",
-            "weightGrams": 7,
-            "lowPrice": 64,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          },
-          {
             "matchKey": "honeydew|doh yummy yummy|hybrid|flower",
             "displayName": "Yummy Yummy (DOH)",
             "weightGrams": 7,
@@ -21272,7 +21250,7 @@
       {
         "brandKey": "lavish",
         "displayBrand": "Lavish",
-        "productCount": 199,
+        "productCount": 200,
         "storesCarrying": [
           "kush21-everett-evergreen",
           "kushmart-north",
@@ -26199,17 +26177,6 @@
             "lowPrice": 20,
             "cheapestStores": [
               "hangar-420-everett"
-            ],
-            "storesCarrying": 2
-          },
-          {
-            "matchKey": "old mcdonalds farm|balls fire grape of omf|n a|flower",
-            "displayName": "OMF Grape Balls of Fire",
-            "weightGrams": 28,
-            "lowPrice": 60,
-            "cheapestStores": [
-              "hangar-420-everett",
-              "hangar-420-west"
             ],
             "storesCarrying": 2
           },
@@ -32227,6 +32194,18 @@
         "cheapestCells": []
       },
       {
+        "brandKey": "purp dragon",
+        "displayBrand": "Purp Dragon",
+        "productCount": 1,
+        "storesCarrying": [
+          "starbuds-bellingham"
+        ],
+        "tiers": [
+          3.5
+        ],
+        "cheapestCells": []
+      },
+      {
         "brandKey": "qualitrees",
         "displayBrand": "Qualitrees",
         "productCount": 6,
@@ -35168,13 +35147,14 @@
       {
         "brandKey": "sky high gardens",
         "displayBrand": "Sky High Gardens",
-        "productCount": 197,
+        "productCount": 200,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
           "hangar-420-west",
           "local-roots-everett-128th",
           "salish-coast-cannabis",
+          "starbuds-bellingham",
           "the-joint-everett"
         ],
         "tiers": [
@@ -37042,7 +37022,7 @@
       {
         "brandKey": "subx",
         "displayBrand": "SUBX",
-        "productCount": 422,
+        "productCount": 423,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -43304,7 +43284,7 @@
             "matchKey": "viking cannabis|candy mac|sativa|flower",
             "displayName": "Candy MAC - 28g",
             "weightGrams": 28,
-            "lowPrice": 165,
+            "lowPrice": 150,
             "cheapestStores": [
               "starbuds-bellingham"
             ],
@@ -44114,16 +44094,16 @@
         "cheapestCells": []
       }
     ],
-    "totalBrands": 1131,
+    "totalBrands": 1132,
     "multiStoreBrandCount": 589,
-    "cheapestCellCount": 2673,
-    "nullBrandProductCount": 2049,
+    "cheapestCellCount": 2670,
+    "nullBrandProductCount": 2087,
     "unmatchedProductCount": 0
   },
   "excluded": [
     {
       "reason": "nullBrand",
-      "count": 2049
+      "count": 2087
     },
     {
       "reason": "unmatchedProduct",
@@ -44131,9 +44111,9 @@
     }
   ],
   "coverage": {
-    "totalBrands": 1131,
+    "totalBrands": 1132,
     "multiStoreBrandCount": 589,
-    "cheapestCellCount": 2673
+    "cheapestCellCount": 2670
   },
-  "generatedAt": "2026-08-30T11:00:16.432Z"
+  "generatedAt": "2026-08-31T11:00:23.818Z"
 }
