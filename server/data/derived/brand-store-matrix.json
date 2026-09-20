@@ -700,6 +700,16 @@
           {
             "matchKey": "7 wonders|gelato km x|hybrid|flower",
             "displayName": "7 Wonders: KM X Gelato",
+            "weightGrams": 7,
+            "lowPrice": 25,
+            "cheapestStores": [
+              "kush21-everett-evergreen"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "7 wonders|gelato km x|hybrid|flower",
+            "displayName": "7 Wonders: KM X Gelato",
             "weightGrams": 14,
             "lowPrice": 50,
             "cheapestStores": [
@@ -2973,7 +2983,7 @@
       {
         "brandKey": "bodhi brands",
         "displayBrand": "Bodhi Brands",
-        "productCount": 217,
+        "productCount": 216,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -5267,7 +5277,7 @@
       {
         "brandKey": "casual cones",
         "displayBrand": "Casual Cones",
-        "productCount": 25,
+        "productCount": 27,
         "storesCarrying": [
           "cannazone-bellingham",
           "cannazone-old-hwy-99",
@@ -8575,7 +8585,7 @@
       {
         "brandKey": "dawg star",
         "displayBrand": "Dawg Star",
-        "productCount": 124,
+        "productCount": 125,
         "storesCarrying": [
           "kush21-everett-evergreen",
           "kushmart-north",
@@ -8937,17 +8947,6 @@
             "displayName": "Tahoe OG Rosin | 1g",
             "weightGrams": 1,
             "lowPrice": 38.4,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          },
-          {
-            "matchKey": "dewey cannabis co|dead doh grapeful|indica|flower",
-            "displayName": "Grapeful Dead (DOH)",
-            "weightGrams": 3.5,
-            "lowPrice": 25.6,
             "cheapestStores": [
               "2020-solutions-north-bellingham",
               "2020-solutions-pacific-highway"
@@ -9660,7 +9659,7 @@
       {
         "brandKey": "dose extracts",
         "displayBrand": "Dose Extracts",
-        "productCount": 264,
+        "productCount": 268,
         "storesCarrying": [
           "cannazone-old-hwy-99",
           "hangar-420-everett",
@@ -14102,7 +14101,7 @@
       {
         "brandKey": "forbidden farms",
         "displayBrand": "Forbidden Farms",
-        "productCount": 179,
+        "productCount": 199,
         "storesCarrying": [
           "2020-solutions-pacific-highway",
           "cannazone-bellingham",
@@ -14127,6 +14126,17 @@
         ],
         "cheapestCells": [
           {
+            "matchKey": "forbidden farms|blend h house kief|n a|concentrate|kief",
+            "displayName": "Forbidden Farms: House Blend Kief (H)",
+            "weightGrams": 1,
+            "lowPrice": 16,
+            "cheapestStores": [
+              "cannazone-bellingham",
+              "the-joint-everett"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "forbidden farms|blend house hybrid kief|hybrid|concentrate|kief",
             "displayName": "Forbidden Farms: House Blend Hybrid - Kief",
             "weightGrams": 1,
@@ -14144,7 +14154,7 @@
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
-            "storesCarrying": 3
+            "storesCarrying": 4
           },
           {
             "matchKey": "forbidden farms|blend house kief sativa|sativa|concentrate|kief",
@@ -14174,7 +14184,7 @@
             "cheapestStores": [
               "kushmart-north"
             ],
-            "storesCarrying": 2
+            "storesCarrying": 3
           },
           {
             "matchKey": "forbidden farms|hash indica|indica|concentrate|hash",
@@ -16566,7 +16576,7 @@
       {
         "brandKey": "good vibe tribe",
         "displayBrand": "Good Vibe Tribe",
-        "productCount": 80,
+        "productCount": 81,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway"
@@ -16625,17 +16635,6 @@
           {
             "matchKey": "good vibe tribe|bomb glitter|indica|flower",
             "displayName": "Glitter Bomb",
-            "weightGrams": 3.5,
-            "lowPrice": 12.8,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          },
-          {
-            "matchKey": "good vibe tribe|cake double kush|indica|flower",
-            "displayName": "Double Kush Cake",
             "weightGrams": 3.5,
             "lowPrice": 12.8,
             "cheapestStores": [
@@ -18914,7 +18913,7 @@
       {
         "brandKey": "herb s oil",
         "displayBrand": "Herb's Oil",
-        "productCount": 93,
+        "productCount": 94,
         "storesCarrying": [
           "kush21-everett-evergreen",
           "kushmart-north",
@@ -19880,7 +19879,7 @@
       {
         "brandKey": "honey tree",
         "displayBrand": "Honey Tree",
-        "productCount": 222,
+        "productCount": 223,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -20175,6 +20174,16 @@
             "storesCarrying": 2
           },
           {
+            "matchKey": "honey tree|live papaya resin|n a|vaporizers",
+            "displayName": "Honey Tree: Papaya - Live Resin Cartridge",
+            "weightGrams": 1,
+            "lowPrice": 21,
+            "cheapestStores": [
+              "kush21-everett-evergreen"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "honey tree|live resin trainwreck|sativa|vaporizers",
             "displayName": "Trainwreck 1g Live Resin Cartridge (Honey Tree)",
             "weightGrams": 1,
@@ -20291,7 +20300,7 @@
       {
         "brandKey": "honeydew",
         "displayBrand": "Honeydew",
-        "productCount": 187,
+        "productCount": 188,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -20306,17 +20315,6 @@
           7
         ],
         "cheapestCells": [
-          {
-            "matchKey": "honeydew|blue buddha doh|n a|flower",
-            "displayName": "Blue Buddha (DOH)",
-            "weightGrams": 1,
-            "lowPrice": 10.4,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          },
           {
             "matchKey": "honeydew|cheese doh scream|hybrid|flower",
             "displayName": "Scream Cheese (DOH)",
@@ -22752,7 +22750,7 @@
       {
         "brandKey": "lavish",
         "displayBrand": "Lavish",
-        "productCount": 210,
+        "productCount": 211,
         "storesCarrying": [
           "kush21-everett-evergreen",
           "kushmart-north",
@@ -23974,7 +23972,7 @@
       {
         "brandKey": "loli",
         "displayBrand": "Loli",
-        "productCount": 17,
+        "productCount": 20,
         "storesCarrying": [
           "kush21-everett-evergreen"
         ],
@@ -36739,7 +36737,7 @@
       {
         "brandKey": "seattle s private reserve",
         "displayBrand": "Seattle's Private Reserve",
-        "productCount": 278,
+        "productCount": 295,
         "storesCarrying": [
           "kush21-everett-evergreen",
           "kushmart-north",
@@ -36828,10 +36826,31 @@
             "storesCarrying": 2
           },
           {
+            "matchKey": "seattle s private reserve|dutch treat|hybrid|flower",
+            "displayName": "Dutch Treat (Seattle's Private Reserve)",
+            "weightGrams": 3.5,
+            "lowPrice": 27,
+            "cheapestStores": [
+              "kush21-everett-evergreen",
+              "local-roots-everett-128th"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "seattle s private reserve|fuel lemonder|n a|flower",
             "displayName": "Seattle's Private Reserve: Lemonder Fuel",
             "weightGrams": 3.5,
             "lowPrice": 22.5,
+            "cheapestStores": [
+              "kush21-everett-evergreen"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "seattle s private reserve|charmz|hybrid|flower",
+            "displayName": "Seattle's Private Reserve: Charmz",
+            "weightGrams": 7,
+            "lowPrice": 51,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -38879,7 +38898,7 @@
       {
         "brandKey": "smokey point productions",
         "displayBrand": "Smokey Point Productions",
-        "productCount": 283,
+        "productCount": 284,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -43943,17 +43962,6 @@
             "storesCarrying": 2
           },
           {
-            "matchKey": "the collective|afgooey|indica|flower",
-            "displayName": "The Collective: AFGooey",
-            "weightGrams": 28,
-            "lowPrice": 92.5,
-            "cheapestStores": [
-              "kush21-everett-evergreen",
-              "kushmart-north"
-            ],
-            "storesCarrying": 2
-          },
-          {
             "matchKey": "the collective|blue electric|sativa|flower",
             "displayName": "Electric Blue 28g Flower (The Collective)",
             "weightGrams": 28,
@@ -46569,7 +46577,7 @@
       {
         "brandKey": "viking cannabis",
         "displayBrand": "Viking Cannabis",
-        "productCount": 377,
+        "productCount": 378,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -46764,10 +46772,9 @@
             "weightGrams": 3.5,
             "lowPrice": 28,
             "cheapestStores": [
-              "2020-solutions-north-bellingham",
               "2020-solutions-pacific-highway"
             ],
-            "storesCarrying": 3
+            "storesCarrying": 2
           },
           {
             "matchKey": "viking cannabis|berry block|hybrid|flower",
@@ -47862,14 +47869,14 @@
     ],
     "totalBrands": 1160,
     "multiStoreBrandCount": 604,
-    "cheapestCellCount": 2993,
-    "nullBrandProductCount": 2048,
+    "cheapestCellCount": 2994,
+    "nullBrandProductCount": 2055,
     "unmatchedProductCount": 0
   },
   "excluded": [
     {
       "reason": "nullBrand",
-      "count": 2048
+      "count": 2055
     },
     {
       "reason": "unmatchedProduct",
@@ -47879,7 +47886,7 @@
   "coverage": {
     "totalBrands": 1160,
     "multiStoreBrandCount": 604,
-    "cheapestCellCount": 2993
+    "cheapestCellCount": 2994
   },
-  "generatedAt": "2026-09-19T11:00:22.230Z"
+  "generatedAt": "2026-09-20T11:00:22.128Z"
 }
