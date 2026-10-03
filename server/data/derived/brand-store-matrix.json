@@ -728,6 +728,16 @@
             "storesCarrying": 2
           },
           {
+            "matchKey": "7 wonders|gelato x|n a|flower",
+            "displayName": "7 Wonders: Gelato X",
+            "weightGrams": 7,
+            "lowPrice": 25,
+            "cheapestStores": [
+              "kush21-everett-evergreen"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "7 wonders|gelato km x|hybrid|flower",
             "displayName": "7 Wonders: KM X Gelato",
             "weightGrams": 14,
@@ -836,7 +846,7 @@
       {
         "brandKey": "agro couture",
         "displayBrand": "Agro Couture",
-        "productCount": 146,
+        "productCount": 151,
         "storesCarrying": [
           "hangar-420-everett",
           "kush21-everett-evergreen",
@@ -848,6 +858,7 @@
         "tiers": [
           1,
           3.5,
+          7,
           28
         ],
         "cheapestCells": [
@@ -1188,7 +1199,7 @@
             "matchKey": "amber drops|cake chocolate wax wedding|hybrid|concentrate|wax",
             "displayName": "Amber Drops: Chocolate Wedding Cake - Wax",
             "weightGrams": 1,
-            "lowPrice": 3.5,
+            "lowPrice": 4.2,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -1912,7 +1923,7 @@
             "storesCarrying": 2
           },
           {
-            "matchKey": "balance by mfused|effects energy jef|n a|vaporizers",
+            "matchKey": "balance by mfused|effects energy jef|sativa|vaporizers",
             "displayName": "BALANCE EFFECTS Jefé - ENERGY",
             "weightGrams": 1,
             "lowPrice": 36,
@@ -2210,9 +2221,10 @@
             "matchKey": "bff|doh flavored gum live melon omg orange resin|sativa|vaporizers",
             "displayName": "OMG - Orange Melon Gum | Flavored Live Resin | 1g | DOH",
             "weightGrams": 1,
-            "lowPrice": 27,
+            "lowPrice": 32.4,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kush21-everett-evergreen",
+              "kushmart-north"
             ],
             "storesCarrying": 4
           },
@@ -2596,7 +2608,7 @@
             "matchKey": "blazed|alaskan fuck thunder|sativa|flower",
             "displayName": "Blazed: Alaskan Thunder Fuck",
             "weightGrams": 3.5,
-            "lowPrice": 5,
+            "lowPrice": 6,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -2606,7 +2618,7 @@
             "matchKey": "blazed|blue dream|sativa|flower",
             "displayName": "Blazed: Blue Dream",
             "weightGrams": 3.5,
-            "lowPrice": 5,
+            "lowPrice": 6,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -2616,9 +2628,10 @@
             "matchKey": "blazed|acapulco gold|sativa|flower",
             "displayName": "Blazed: Acapulco Gold",
             "weightGrams": 28,
-            "lowPrice": 33,
+            "lowPrice": 39.6,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kush21-everett-evergreen",
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 2
           },
@@ -3009,7 +3022,7 @@
       {
         "brandKey": "bodhi brands",
         "displayBrand": "Bodhi Brands",
-        "productCount": 228,
+        "productCount": 246,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -3134,9 +3147,10 @@
             "weightGrams": 1,
             "lowPrice": 28,
             "cheapestStores": [
+              "2020-solutions-north-bellingham",
               "2020-solutions-pacific-highway"
             ],
-            "storesCarrying": 2
+            "storesCarrying": 3
           },
           {
             "matchKey": "bodhi brands|cough live original resin strawberry|sativa|vaporizers",
@@ -3215,7 +3229,7 @@
       {
         "brandKey": "bodhi high original",
         "displayBrand": "Bodhi High - Original",
-        "productCount": 32,
+        "productCount": 23,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway"
@@ -3224,39 +3238,6 @@
           1
         ],
         "cheapestCells": [
-          {
-            "matchKey": "bodhi high original|aio blueberry doh haze live resin|sativa|vaporizers",
-            "displayName": "Blueberry Haze Live Resin AIO Disposable | 1g (DOH)",
-            "weightGrams": 1,
-            "lowPrice": 33.6,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          },
-          {
-            "matchKey": "bodhi high original|all cough doh in live one resin sativa strawberry|sativa|vaporizers",
-            "displayName": "Bodhi | Strawberry Cough | Original All-In-One | Disposable | Live Resin | 1g | Sativa (DOH)",
-            "weightGrams": 1,
-            "lowPrice": 33.6,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          },
-          {
-            "matchKey": "bodhi high original|apple doh fritter live resin|hybrid|vaporizers",
-            "displayName": "Apple Fritter Live Resin Cartridge | 1g (DOH)",
-            "weightGrams": 1,
-            "lowPrice": 28,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          },
           {
             "matchKey": "bodhi high original|brands crystal doh hybrid live mandarin resin sunset terp|hybrid|concentrate|live resin",
             "displayName": "Bodhi Brands | Mandarin Sunset | Original - Live Resin - Terp Crystal | 1g | Hybrid (DOH)",
@@ -3278,57 +3259,13 @@
               "2020-solutions-pacific-highway"
             ],
             "storesCarrying": 2
-          },
-          {
-            "matchKey": "bodhi high original|brands doh indica kush l liquid live potency presidential resin|indica|vaporizers",
-            "displayName": "Bodhi Brands l Presidential Kush | Cartridge | Original - Liquid Live Resin - High Potency | 1g | Indica (DOH)",
-            "weightGrams": 1,
-            "lowPrice": 28,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          },
-          {
-            "matchKey": "bodhi high original|brands doh indica kush liquid live potency presidential resin|indica|vaporizers",
-            "displayName": "Bodhi Brands | Presidential Kush | Disposable | Original - Liquid Live Resin - High Potency | 1g | Indica (DOH)",
-            "weightGrams": 1,
-            "lowPrice": 33.6,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          },
-          {
-            "matchKey": "bodhi high original|cake doh gmo live resin|indica|vaporizers",
-            "displayName": "GMO Cake Live Resin Disposable | 1g (DOH)",
-            "weightGrams": 1,
-            "lowPrice": 33.6,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          },
-          {
-            "matchKey": "bodhi high original|doh juice live papaya resin|n a|vaporizers",
-            "displayName": "Papaya Juice Live Resin Cartridge | 1g (DOH)",
-            "weightGrams": 1,
-            "lowPrice": 28,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
           }
         ]
       },
       {
         "brandKey": "bodhi high pure",
         "displayBrand": "​Bodhi High - Pure",
-        "productCount": 19,
+        "productCount": 13,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway"
@@ -3336,79 +3273,12 @@
         "tiers": [
           1
         ],
-        "cheapestCells": [
-          {
-            "matchKey": "bodhi high pure|aio doh hawaiian live rain resin|indica hybrid|vaporizers",
-            "displayName": "Hawaiian Rain Live Resin AIO Disposable | 1g (DOH)",
-            "weightGrams": 1,
-            "lowPrice": 40,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          },
-          {
-            "matchKey": "bodhi high pure|all blueberry cookies doh hybrid in live one resin|hybrid|vaporizers",
-            "displayName": "Bodhi | Blueberry Cookies | Pure All-In-One | Disposable | Live Resin | 1g | Hybrid (DOH)",
-            "weightGrams": 1,
-            "lowPrice": 40,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          },
-          {
-            "matchKey": "bodhi high pure|all carbon doh fiber hybrid in live one resin|hybrid|vaporizers",
-            "displayName": "Bodhi | Carbon Fiber | Pure All-In-One | Disposable | Live Resin | 1g | Hybrid (DOH)",
-            "weightGrams": 1,
-            "lowPrice": 40,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          },
-          {
-            "matchKey": "bodhi high pure|cns pu tropic truffle|n a|vaporizers",
-            "displayName": "CNS Cartridge Tropic Truffle PU 1g",
-            "weightGrams": 1,
-            "lowPrice": 33.6,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          },
-          {
-            "matchKey": "bodhi high pure|doh forbidden fruit live resin|indica|vaporizers",
-            "displayName": "Forbidden Fruit Live Resin Disposable | 1g (DOH)",
-            "weightGrams": 1,
-            "lowPrice": 40,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          },
-          {
-            "matchKey": "bodhi high pure|doh hawaiian live rain resin|indica hybrid|vaporizers",
-            "displayName": "Hawaiian Rain Pure Live Resin Cartridge | 1g (DOH)",
-            "weightGrams": 1,
-            "lowPrice": 33.6,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          }
-        ]
+        "cheapestCells": []
       },
       {
         "brandKey": "bodhi high ultra pure",
         "displayBrand": "Bodhi High - Ultra Pure",
-        "productCount": 9,
+        "productCount": 6,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway"
@@ -3416,30 +3286,7 @@
         "tiers": [
           1
         ],
-        "cheapestCells": [
-          {
-            "matchKey": "bodhi high ultra pure|burger doh donny live resin|indica|vaporizers",
-            "displayName": "Donny Burger Ultra Pure Live Resin Cartridge | 1g (DOH)",
-            "weightGrams": 1,
-            "lowPrice": 40,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          },
-          {
-            "matchKey": "bodhi high ultra pure|chem cookies doh live resin|n a|vaporizers",
-            "displayName": "Chem Cookies Live Resin Ultra Pure Cartridge | 1g (DOH)",
-            "weightGrams": 1,
-            "lowPrice": 40,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          }
-        ]
+        "cheapestCells": []
       },
       {
         "brandKey": "bohemi",
@@ -3650,7 +3497,7 @@
             "matchKey": "brix|durban poison|n a|flower",
             "displayName": "BRIX: Durban Poison",
             "weightGrams": 28,
-            "lowPrice": 16.5,
+            "lowPrice": 19.8,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -4226,7 +4073,7 @@
             "matchKey": "buddies|gushers live resin|indica|vaporizers",
             "displayName": "Buddies: Gushers - Live Resin Cartridge",
             "weightGrams": 1,
-            "lowPrice": 24,
+            "lowPrice": 28.8,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -4868,7 +4715,7 @@
             "matchKey": "canna organix|21 live offendo resin|indica|vaporizers",
             "displayName": "Canna Organix: Offendo #21 - Live Resin Cartridge",
             "weightGrams": 1,
-            "lowPrice": 25,
+            "lowPrice": 30,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -4950,7 +4797,6 @@
             "weightGrams": 1,
             "lowPrice": 20,
             "cheapestStores": [
-              "kush21-everett-evergreen",
               "kushmart-north"
             ],
             "storesCarrying": 2
@@ -5009,7 +4855,7 @@
             "matchKey": "canna organix|jr ken piffy|hybrid|flower",
             "displayName": "Canna Organix: Ken Piffy Jr.",
             "weightGrams": 3.5,
-            "lowPrice": 22.5,
+            "lowPrice": 27,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -5319,8 +5165,8 @@
         ],
         "cheapestCells": [
           {
-            "matchKey": "cascade crest|distillate fruit haze loops|hybrid|vaporizers",
-            "displayName": "Fruit Loops Haze Distillate Disposable | 1g",
+            "matchKey": "cascade crest|aio distillate doh grape krush|indica|vaporizers",
+            "displayName": "Grape Krush - Distillate AIO | 1g (DOH)",
             "weightGrams": 1,
             "lowPrice": 28,
             "cheapestStores": [
@@ -5328,16 +5174,6 @@
               "2020-solutions-pacific-highway"
             ],
             "storesCarrying": 2
-          },
-          {
-            "matchKey": "cascade crest|distillate grape krush|indica|vaporizers",
-            "displayName": "Grape Krush Distillate Disposable (Cascade Crest)",
-            "weightGrams": 1,
-            "lowPrice": 20,
-            "cheapestStores": [
-              "kush21-everett-evergreen"
-            ],
-            "storesCarrying": 3
           },
           {
             "matchKey": "cascade crest|banana h runtz|hybrid|flower",
@@ -5651,7 +5487,7 @@
       {
         "brandKey": "chill billy boys",
         "displayBrand": "Chill Billy Boys",
-        "productCount": 116,
+        "productCount": 121,
         "storesCarrying": [
           "hangar-420-everett",
           "hangar-420-west",
@@ -5811,6 +5647,16 @@
             "storesCarrying": 2
           },
           {
+            "matchKey": "chill billy boys|alien cookies|hybrid|flower",
+            "displayName": "Alien Cookies Flower (Chill Billy Boys)",
+            "weightGrams": 28,
+            "lowPrice": 12.5,
+            "cheapestStores": [
+              "kushmart-north"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "chill billy boys|blue dream|n a|flower",
             "displayName": "Blue Dream 28g Flower (Chill Billy Boys)",
             "weightGrams": 28,
@@ -5825,10 +5671,9 @@
             "matchKey": "chill billy boys|cheesecake mandarin|n a|flower",
             "displayName": "Mandarin Cheesecake Flower (Chill Billy Boys)",
             "weightGrams": 28,
-            "lowPrice": 15,
+            "lowPrice": 12.5,
             "cheapestStores": [
-              "kushmart-north",
-              "local-roots-everett-128th"
+              "kushmart-north"
             ],
             "storesCarrying": 2
           },
@@ -6668,7 +6513,7 @@
             "matchKey": "cookies|apples bananas natural terps|hybrid|vaporizers",
             "displayName": "Apples & Bananas Natural Terps Cartridge | 1g",
             "weightGrams": 1,
-            "lowPrice": 23,
+            "lowPrice": 27.6,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -6750,7 +6595,7 @@
             "matchKey": "cookies concentrates|all apples bananas bar in one|hybrid|vaporizers",
             "displayName": "Apples & Bananas - Cookies - Bar - All-In-One - 1g",
             "weightGrams": 1,
-            "lowPrice": 25,
+            "lowPrice": 30,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -6770,7 +6615,7 @@
             "matchKey": "cookies concentrates|all bananas bar fried in one|sativa|vaporizers",
             "displayName": "Fried Bananas - Cookies - Bar - All-In-One - 1g",
             "weightGrams": 1,
-            "lowPrice": 25,
+            "lowPrice": 30,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -6860,7 +6705,7 @@
             "matchKey": "cookies concentrates|cannabis gas grape terps|indica|vaporizers",
             "displayName": "Grape Gas - Cannabis Terps - Cartridge - 1g",
             "weightGrams": 1,
-            "lowPrice": 23,
+            "lowPrice": 27.6,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -6880,7 +6725,7 @@
             "matchKey": "cookies concentrates|cannabis hollywood terps|sativa|vaporizers",
             "displayName": "Hollywood - Cannabis Terps - Cartridge - 1g",
             "weightGrams": 1,
-            "lowPrice": 23,
+            "lowPrice": 27.6,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -6920,9 +6765,9 @@
             "matchKey": "cookies concentrates|all bar blackberry caviar gelato huckleberry in one x|indica hybrid|vaporizers",
             "displayName": "Huckleberry Gelato x Blackberry Caviar - Cookies - Bar - All-In-One 2 Pack - 2g",
             "weightGrams": 2,
-            "lowPrice": 50,
+            "lowPrice": 54,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 4
           }
@@ -7099,16 +6944,6 @@
           1
         ],
         "cheapestCells": [
-          {
-            "matchKey": "crystal clear|1 1 1 ac cbd cbg dc distillate|hybrid|vaporizers",
-            "displayName": "Crystal Clear: 1:1:1 CBG/CBD AC/DC - Distillate Cartridge",
-            "weightGrams": 1,
-            "lowPrice": 20,
-            "cheapestStores": [
-              "kush21-everett-evergreen"
-            ],
-            "storesCarrying": 2
-          },
           {
             "matchKey": "crystal clear|1 1 1 ac cbd cbg dc thc|thc|vaporizers",
             "displayName": "CBG:THC:CBD 1:1:1 AC/DC 1g Cartridge (Crystal Clear)",
@@ -7316,7 +7151,7 @@
             "matchKey": "crystal clear|blue distillate dream|sativa|vaporizers",
             "displayName": "Crystal Clear: Blue Dream - Distillate Cartridge",
             "weightGrams": 1,
-            "lowPrice": 20,
+            "lowPrice": 24,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -7561,9 +7396,10 @@
             "matchKey": "crystal clear|distillate lights northern syringe|indica|concentrate|applicators",
             "displayName": "Crystal Clear: Northern Lights - Distillate Syringe",
             "weightGrams": 1,
-            "lowPrice": 19,
+            "lowPrice": 22.8,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kush21-everett-evergreen",
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 2
           },
@@ -7601,7 +7437,7 @@
             "matchKey": "crystal clear|distillate maui wowie|sativa|vaporizers",
             "displayName": "Crystal Clear: Maui Wowie - Distillate Cartridge",
             "weightGrams": 1,
-            "lowPrice": 20,
+            "lowPrice": 24,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -7611,7 +7447,7 @@
             "matchKey": "crystal clear|distillate og yoda|indica|vaporizers",
             "displayName": "Crystal Clear: Yoda OG - Distillate Cartridge",
             "weightGrams": 1,
-            "lowPrice": 20,
+            "lowPrice": 24,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -7691,7 +7527,7 @@
             "matchKey": "crystal clear|hte marker permanent|indica|vaporizers",
             "displayName": "Crystal Clear: Permanent Marker - HTE Cartridge",
             "weightGrams": 1,
-            "lowPrice": 24,
+            "lowPrice": 28.8,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -7701,9 +7537,9 @@
             "matchKey": "crystal clear|jungle lemons live resin|sativa|vaporizers",
             "displayName": "Crystal Clear: Jungle Lemons - Live Resin Disposable",
             "weightGrams": 1,
-            "lowPrice": 29,
+            "lowPrice": 31.5,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kushmart-north"
             ],
             "storesCarrying": 2
           },
@@ -7721,7 +7557,7 @@
             "matchKey": "crystal clear|live nerdz resin|hybrid|vaporizers",
             "displayName": "Crystal Clear: Nerdz - Live Resin Cartridge",
             "weightGrams": 1,
-            "lowPrice": 24,
+            "lowPrice": 28.8,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -7729,11 +7565,11 @@
           },
           {
             "matchKey": "crystal clear|live papaya resin|sativa|vaporizers",
-            "displayName": "Crystal Clear: Papaya - Live Resin Disposable",
+            "displayName": "Papaya Live Resin Disposable (Crystal Clear)",
             "weightGrams": 1,
-            "lowPrice": 29,
+            "lowPrice": 31.5,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kushmart-north"
             ],
             "storesCarrying": 2
           }
@@ -7947,7 +7783,7 @@
       {
         "brandKey": "dabstract",
         "displayBrand": "Dabstract",
-        "productCount": 605,
+        "productCount": 614,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -8114,6 +7950,16 @@
             "storesCarrying": 2
           },
           {
+            "matchKey": "dabstract|business live monkey resin|indica|vaporizers",
+            "displayName": "Dabstract: Monkey Business - Live Resin Cartridge",
+            "weightGrams": 1,
+            "lowPrice": 21,
+            "cheapestStores": [
+              "kush21-everett-evergreen"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "dabstract|cake h icing live resin super yuzu|n a|concentrate|live resin",
             "displayName": "Dabstract: Super Yuzu (H) - Live Resin Cake Icing",
             "weightGrams": 1,
@@ -8145,11 +7991,10 @@
           },
           {
             "matchKey": "dabstract|chem live og resin|sativa|vaporizers",
-            "displayName": "Dabstract: OG Chem - Live Resin Cartridge",
+            "displayName": "OG Chem 1g Live Resin Cartridge (Dabstract)",
             "weightGrams": 1,
             "lowPrice": 17.5,
             "cheapestStores": [
-              "kush21-everett-evergreen",
               "local-roots-everett-128th"
             ],
             "storesCarrying": 3
@@ -8213,17 +8058,17 @@
             "weightGrams": 1,
             "lowPrice": 22.5,
             "cheapestStores": [
-              "kushmart-north"
+              "kushmart-north",
+              "local-roots-everett-128th"
             ],
-            "storesCarrying": 2
+            "storesCarrying": 3
           },
           {
             "matchKey": "dabstract|dragonberry kush live resin|indica|vaporizers",
-            "displayName": "Dabstract: Dragonberry Kush - Live Resin Cartridge",
+            "displayName": "Dragonberry Kush 1g Live Resin Cartridge (Dabstract)",
             "weightGrams": 1,
             "lowPrice": 17.5,
             "cheapestStores": [
-              "kush21-everett-evergreen",
               "local-roots-everett-128th"
             ],
             "storesCarrying": 2
@@ -8243,7 +8088,7 @@
             "matchKey": "dabstract|fresh lemon live resin|sativa|vaporizers",
             "displayName": "Dabstract: Lemon Fresh - Live Resin Cartridge",
             "weightGrams": 1,
-            "lowPrice": 17.5,
+            "lowPrice": 21,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -8341,11 +8186,10 @@
           },
           {
             "matchKey": "dabstract|kauai live resin|sativa|vaporizers",
-            "displayName": "Dabstract: Kauai - Live Resin Cartridge",
+            "displayName": "Kauai 1g Live Resin Cartridge (Dabstract)",
             "weightGrams": 1,
             "lowPrice": 17.5,
             "cheapestStores": [
-              "kush21-everett-evergreen",
               "local-roots-everett-128th"
             ],
             "storesCarrying": 2
@@ -8384,11 +8228,10 @@
           },
           {
             "matchKey": "dabstract|live resin scotch soda|hybrid|vaporizers",
-            "displayName": "Dabstract: Scotch & Soda - Live Resin Cartridge",
+            "displayName": "Scotch & Soda Live Resin Cartridge (Dabstract)",
             "weightGrams": 1,
             "lowPrice": 17.5,
             "cheapestStores": [
-              "kush21-everett-evergreen",
               "kushmart-north",
               "local-roots-everett-128th"
             ],
@@ -8449,8 +8292,9 @@
       {
         "brandKey": "damn tasty",
         "displayBrand": "Damn Tasty",
-        "productCount": 8,
+        "productCount": 13,
         "storesCarrying": [
+          "hangar-420-west",
           "local-roots-everett-128th"
         ],
         "tiers": [],
@@ -8469,7 +8313,7 @@
       {
         "brandKey": "dank czar",
         "displayBrand": "Dank Czar",
-        "productCount": 261,
+        "productCount": 262,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -8834,9 +8678,10 @@
             "matchKey": "delectable dabs|biscotti frosted wax|hybrid|concentrate|wax",
             "displayName": "Delectable Dabs: Frosted Biscotti - Wax",
             "weightGrams": 1,
-            "lowPrice": 5,
+            "lowPrice": 6,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kush21-everett-evergreen",
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 3
           },
@@ -8855,9 +8700,11 @@
             "matchKey": "delectable dabs|cookies gelato wax|hybrid|concentrate|wax",
             "displayName": "Delectable Dabs: Gelato Cookies - Wax",
             "weightGrams": 1,
-            "lowPrice": 5,
+            "lowPrice": 6,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kush21-everett-evergreen",
+              "kushmart-north",
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 3
           },
@@ -8865,9 +8712,10 @@
             "matchKey": "delectable dabs|crack green wax|sativa|concentrate|wax",
             "displayName": "Delectable Dabs: Green Crack - Wax",
             "weightGrams": 1,
-            "lowPrice": 5,
+            "lowPrice": 6,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kush21-everett-evergreen",
+              "kushmart-north"
             ],
             "storesCarrying": 4
           },
@@ -8917,9 +8765,11 @@
             "matchKey": "delectable dabs|lights northern wax|indica|concentrate|wax",
             "displayName": "Delectable Dabs: Northern Lights - Wax",
             "weightGrams": 1,
-            "lowPrice": 5,
+            "lowPrice": 6,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kush21-everett-evergreen",
+              "kushmart-north",
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 3
           },
@@ -8958,9 +8808,10 @@
             "matchKey": "delectable dabs|trainwreck tropical wax|sativa|concentrate|wax",
             "displayName": "Delectable Dabs: Tropical Trainwreck - Wax",
             "weightGrams": 1,
-            "lowPrice": 5,
+            "lowPrice": 6,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kush21-everett-evergreen",
+              "kushmart-north"
             ],
             "storesCarrying": 2
           },
@@ -10031,7 +9882,7 @@
             "storesCarrying": 2
           },
           {
-            "matchKey": "dose extracts|blueberry donut|n a|pre rolls",
+            "matchKey": "dose extracts|blueberry donut|indica|pre rolls",
             "displayName": "DOSE Blueberry Donut Infused Pre-roll 1g",
             "weightGrams": 1,
             "lowPrice": 15,
@@ -10600,7 +10451,7 @@
             "matchKey": "double delicious|rso sativa|sativa|concentrate|rso",
             "displayName": "Double Delicious: Sativa - RSO",
             "weightGrams": 1,
-            "lowPrice": 10,
+            "lowPrice": 12,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -10839,7 +10690,7 @@
             "matchKey": "down low|acapulco distillate gold|sativa|vaporizers",
             "displayName": "Down Low: Acapulco Gold - Distillate Cartridge",
             "weightGrams": 1,
-            "lowPrice": 8,
+            "lowPrice": 9.6,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -10849,7 +10700,7 @@
             "matchKey": "down low|blue distillate dream|sativa|vaporizers",
             "displayName": "Down Low: Blue Dream - Distillate Cartridge",
             "weightGrams": 1,
-            "lowPrice": 8,
+            "lowPrice": 9.6,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -10859,7 +10710,7 @@
             "matchKey": "down low|candy cotton distillate|hybrid|vaporizers",
             "displayName": "Down Low: Cotton Candy - Distillate Cartridge",
             "weightGrams": 1,
-            "lowPrice": 8,
+            "lowPrice": 9.6,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -12842,7 +12693,7 @@
       {
         "brandKey": "fetti",
         "displayBrand": "Fetti",
-        "productCount": 108,
+        "productCount": 112,
         "storesCarrying": [
           "cannazone-bellingham",
           "cannazone-old-hwy-99",
@@ -13083,7 +12934,7 @@
       {
         "brandKey": "fire bros",
         "displayBrand": "Fire Bros.",
-        "productCount": 923,
+        "productCount": 936,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -13178,7 +13029,7 @@
             "matchKey": "fire bros|black magic silver tier wax woman|sativa|concentrate|wax",
             "displayName": "Fire Bros: Black Magic Woman - Silver Tier Wax",
             "weightGrams": 1,
-            "lowPrice": 20,
+            "lowPrice": 24,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -13220,7 +13071,7 @@
             "matchKey": "fire bros|bumper crop doh live resin|hybrid|vaporizers",
             "displayName": "Bumper Crop Live Resin Cartridge | 1g (DOH)",
             "weightGrams": 1,
-            "lowPrice": 41.6,
+            "lowPrice": 46.4,
             "cheapestStores": [
               "2020-solutions-north-bellingham",
               "2020-solutions-pacific-highway"
@@ -13606,7 +13457,7 @@
             "matchKey": "fire bros|live resin shakeweight|hybrid|vaporizers",
             "displayName": "Fire Bros: Shakeweight - Live Resin Disposable",
             "weightGrams": 1,
-            "lowPrice": 37.5,
+            "lowPrice": 45,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -13647,7 +13498,7 @@
             "matchKey": "fire bros|blaow bling|indica|flower",
             "displayName": "Fire Bros: Bling Blaow",
             "weightGrams": 3.5,
-            "lowPrice": 25,
+            "lowPrice": 30,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -13762,9 +13613,10 @@
             "matchKey": "fire bros|pinyatti|n a|flower",
             "displayName": "Fire Bros: Pinyatti",
             "weightGrams": 3.5,
-            "lowPrice": 25,
+            "lowPrice": 30,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kush21-everett-evergreen",
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 2
           },
@@ -14957,7 +14809,7 @@
       {
         "brandKey": "freddy s fuego",
         "displayBrand": "Freddy's Fuego",
-        "productCount": 172,
+        "productCount": 173,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -14999,7 +14851,7 @@
             "matchKey": "freddy s fuego|lemon live resin shortbread|sativa|vaporizers",
             "displayName": "Freddy's Fuego: Lemon Shortbread - Live Resin Disposable",
             "weightGrams": 1,
-            "lowPrice": 30,
+            "lowPrice": 36,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -15249,7 +15101,7 @@
       {
         "brandKey": "freddy s fuego legacy",
         "displayBrand": "Freddy's Fuego - Legacy",
-        "productCount": 11,
+        "productCount": 10,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway"
@@ -15498,7 +15350,7 @@
       {
         "brandKey": "from the soil",
         "displayBrand": "From The Soil",
-        "productCount": 133,
+        "productCount": 147,
         "storesCarrying": [
           "cannazone-old-hwy-99",
           "hangar-420-everett",
@@ -15570,9 +15422,10 @@
             "matchKey": "fuck cancer|hybrid rso|hybrid|concentrate|rso",
             "displayName": "Fuck Cancer: Hybrid - RSO",
             "weightGrams": 1,
-            "lowPrice": 7.5,
+            "lowPrice": 9,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kush21-everett-evergreen",
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 3
           },
@@ -15580,9 +15433,10 @@
             "matchKey": "fuck cancer|indica rso|indica|concentrate|rso",
             "displayName": "Fuck Cancer: Indica - RSO",
             "weightGrams": 1,
-            "lowPrice": 7.5,
+            "lowPrice": 9,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kush21-everett-evergreen",
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 3
           },
@@ -15590,9 +15444,10 @@
             "matchKey": "fuck cancer|rso sativa|sativa|concentrate|rso",
             "displayName": "Fuck Cancer: Sativa - RSO",
             "weightGrams": 1,
-            "lowPrice": 7.5,
+            "lowPrice": 9,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kush21-everett-evergreen",
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 3
           }
@@ -15652,7 +15507,7 @@
       {
         "brandKey": "full spec",
         "displayBrand": "Full Spec",
-        "productCount": 572,
+        "productCount": 583,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -16033,7 +15888,7 @@
             "cheapestStores": [
               "local-roots-everett-128th"
             ],
-            "storesCarrying": 4
+            "storesCarrying": 5
           },
           {
             "matchKey": "full spec|bliss elite green liquid live resin|sativa|vaporizers",
@@ -16164,7 +16019,7 @@
             "matchKey": "full spec|cadet crave flave liquid live resin the|sativa|vaporizers",
             "displayName": "The Flave Crave - Cadet Liquid Live Resin- Cartridge - 1g",
             "weightGrams": 1,
-            "lowPrice": 28,
+            "lowPrice": 33.6,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -16184,11 +16039,11 @@
             "matchKey": "full spec|cadet first hans liquid live resin|indica hybrid|vaporizers",
             "displayName": "Hans First - Cadet Liquid Live Resin- Cartridge - 1g",
             "weightGrams": 1,
-            "lowPrice": 26,
+            "lowPrice": 20.8,
             "cheapestStores": [
-              "salish-coast-cannabis"
+              "2020-solutions-north-bellingham"
             ],
-            "storesCarrying": 3
+            "storesCarrying": 4
           },
           {
             "matchKey": "full spec|cadet kiwi liquid live resin sorbet|sativa hybrid|vaporizers",
@@ -16334,11 +16189,10 @@
           },
           {
             "matchKey": "full spec|casey elite jones live resin tanker|sativa|vaporizers",
-            "displayName": "Full Spec Elite: Casey Jones - Live Resin Tanker 1g",
+            "displayName": "Casey Jones Elite Live Resin Tanker Cartridge (Full Spec)",
             "weightGrams": 1,
             "lowPrice": 28,
             "cheapestStores": [
-              "kush21-everett-evergreen",
               "kushmart-north"
             ],
             "storesCarrying": 2
@@ -16378,11 +16232,10 @@
           },
           {
             "matchKey": "full spec|cock elite hammer live resin tanker the|hybrid|vaporizers",
-            "displayName": "Full Spec Elite: Cock the Hammer - Live Resin Tanker 1g",
+            "displayName": "Cock the Hammer Elite Live Resin Tanker Cartridge (Full Spec)",
             "weightGrams": 1,
             "lowPrice": 28,
             "cheapestStores": [
-              "kush21-everett-evergreen",
               "kushmart-north"
             ],
             "storesCarrying": 2
@@ -16443,7 +16296,7 @@
             "matchKey": "full spec|dirty elite girl liquid live resin|sativa|vaporizers",
             "displayName": "Dirty Girl - Elite Liquid Live Resin Cartridge - 1g",
             "weightGrams": 1,
-            "lowPrice": 28,
+            "lowPrice": 33.6,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -16616,7 +16469,7 @@
             "cheapestStores": [
               "local-roots-everett-128th"
             ],
-            "storesCarrying": 6
+            "storesCarrying": 7
           },
           {
             "matchKey": "full spec|elite liquid live love pink potion resin|indica hybrid|vaporizers",
@@ -16646,7 +16499,7 @@
             "cheapestStores": [
               "kushmart-north"
             ],
-            "storesCarrying": 2
+            "storesCarrying": 3
           },
           {
             "matchKey": "full spec|elite liquid live night nurse resin|indica|vaporizers",
@@ -16696,6 +16549,16 @@
             "lowPrice": 130,
             "cheapestStores": [
               "cannazone-bellingham"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "full spec|ak cadet i liquid live mr multiverse nice resin s|hybrid|vaporizers",
+            "displayName": "(S) AK-47 X (I) Mr. Nice - Cadet Multiverse Liquid Live Resin 5 Pack - 5g",
+            "weightGrams": 5,
+            "lowPrice": 96,
+            "cheapestStores": [
+              "2020-solutions-north-bellingham"
             ],
             "storesCarrying": 2
           },
@@ -16805,7 +16668,7 @@
       {
         "brandKey": "full spec cadet",
         "displayBrand": "Full Spec - Cadet",
-        "productCount": 18,
+        "productCount": 16,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway"
@@ -16841,7 +16704,7 @@
       {
         "brandKey": "full spec elite",
         "displayBrand": "Full Spec - Elite",
-        "productCount": 15,
+        "productCount": 10,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway"
@@ -16849,57 +16712,12 @@
         "tiers": [
           1
         ],
-        "cheapestCells": [
-          {
-            "matchKey": "full spec elite|blues doh live mon rasta resin|indica|vaporizers",
-            "displayName": "Rasta Mon Blues Live Resin Elite Cartridge | 1g (DOH)",
-            "weightGrams": 1,
-            "lowPrice": 30.4,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          },
-          {
-            "matchKey": "full spec elite|love pink potion|hybrid|vaporizers",
-            "displayName": "Pink Love Potion Elite Cartridge | 1g",
-            "weightGrams": 1,
-            "lowPrice": 30.4,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          },
-          {
-            "matchKey": "full spec elite|motavated|sativa|vaporizers",
-            "displayName": "MOTAvated Full Spec Elite Cartridge | 1g",
-            "weightGrams": 1,
-            "lowPrice": 30.4,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          },
-          {
-            "matchKey": "full spec elite|thc vitamin|sativa hybrid|vaporizers",
-            "displayName": "Vitamin THC Cartridge Full Spec Elite | 1g",
-            "weightGrams": 1,
-            "lowPrice": 30.4,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          }
-        ]
+        "cheapestCells": []
       },
       {
         "brandKey": "full spec elite duality",
         "displayBrand": "Full Spec - Elite Duality",
-        "productCount": 15,
+        "productCount": 14,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway"
@@ -16908,26 +16726,13 @@
           1,
           2
         ],
-        "cheapestCells": [
-          {
-            "matchKey": "full spec elite duality|tonic|indica|vaporizers",
-            "displayName": "Tonic G Full Spec Elite Disposable | 1g",
-            "weightGrams": 1,
-            "lowPrice": 33.6,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          }
-        ]
+        "cheapestCells": []
       },
       {
         "brandKey": "full spec multiverse cadet",
         "displayBrand": "Full Spec - Multiverse Cadet",
-        "productCount": 3,
+        "productCount": 1,
         "storesCarrying": [
-          "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway"
         ],
         "tiers": [
@@ -17094,17 +16899,6 @@
             "displayName": "DAC E-Pen Peach Rings GC 1g",
             "weightGrams": 1,
             "lowPrice": 30.4,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          },
-          {
-            "matchKey": "ganja cat|doh peach rings|n a|vaporizers",
-            "displayName": "Peach Rings Cartridge | 1g (DOH)",
-            "weightGrams": 1,
-            "lowPrice": 24,
             "cheapestStores": [
               "2020-solutions-north-bellingham",
               "2020-solutions-pacific-highway"
@@ -18085,7 +17879,7 @@
       {
         "brandKey": "green haven",
         "displayBrand": "Green Haven",
-        "productCount": 206,
+        "productCount": 207,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -18100,6 +17894,17 @@
           28
         ],
         "cheapestCells": [
+          {
+            "matchKey": "green haven|33 gelato|hybrid|vaporizers",
+            "displayName": "Gelato #33 Cartridge | 1g",
+            "weightGrams": 1,
+            "lowPrice": 17.6,
+            "cheapestStores": [
+              "2020-solutions-north-bellingham",
+              "2020-solutions-pacific-highway"
+            ],
+            "storesCarrying": 2
+          },
           {
             "matchKey": "green haven|acapulco gold live resin|sativa|vaporizers",
             "displayName": "Acapulco Gold Live Resin Cartridge | 1g",
@@ -18167,6 +17972,17 @@
             "storesCarrying": 2
           },
           {
+            "matchKey": "green haven|cookies tropicana|sativa|vaporizers",
+            "displayName": "Tropicana Cookies Cartridge | 1g",
+            "weightGrams": 1,
+            "lowPrice": 17.6,
+            "cheapestStores": [
+              "2020-solutions-north-bellingham",
+              "2020-solutions-pacific-highway"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "green haven|diesel sour super|sativa|vaporizers",
             "displayName": "Super Sour Diesel Cartridge | 1g",
             "weightGrams": 1,
@@ -18179,12 +17995,11 @@
           },
           {
             "matchKey": "green haven|durban live poison resin|sativa|vaporizers",
-            "displayName": "Durban Poison Live Resin Disposable | 1g",
+            "displayName": "Durban Poison Live Resin Cartridge | 1g",
             "weightGrams": 1,
-            "lowPrice": 25.6,
+            "lowPrice": 20.8,
             "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
+              "2020-solutions-north-bellingham"
             ],
             "storesCarrying": 2
           },
@@ -18357,27 +18172,14 @@
       {
         "brandKey": "green haven live resin",
         "displayBrand": "Green Haven - Live Resin",
-        "productCount": 5,
+        "productCount": 4,
         "storesCarrying": [
-          "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway"
         ],
         "tiers": [
           1
         ],
-        "cheapestCells": [
-          {
-            "matchKey": "green haven live resin|durban ghl lr poison|sativa|vaporizers",
-            "displayName": "GHL Cartridge Durban Poison LR 1g",
-            "weightGrams": 1,
-            "lowPrice": 20.8,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          }
-        ]
+        "cheapestCells": []
       },
       {
         "brandKey": "green haven llc",
@@ -18442,7 +18244,7 @@
       {
         "brandKey": "green revolution",
         "displayBrand": "Green Revolution",
-        "productCount": 204,
+        "productCount": 207,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -18462,7 +18264,7 @@
       {
         "brandKey": "green revolution doozies",
         "displayBrand": "Green Revolution - Doozies",
-        "productCount": 9,
+        "productCount": 6,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway"
@@ -18870,7 +18672,7 @@
             "matchKey": "hashbreak|rosin sauce secret torus|n a|vaporizers",
             "displayName": "Torus Hashbreak: Secret Sauce - Rosin Disposable",
             "weightGrams": 1,
-            "lowPrice": 50,
+            "lowPrice": 60,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -19197,7 +18999,7 @@
       {
         "brandKey": "hellavated",
         "displayBrand": "Hellavated",
-        "productCount": 191,
+        "productCount": 192,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -19287,7 +19089,7 @@
       {
         "brandKey": "hellavated profilez",
         "displayBrand": "Hellavated - Profilez",
-        "productCount": 8,
+        "productCount": 7,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway"
@@ -20188,11 +19990,11 @@
         "cheapestCells": [
           {
             "matchKey": "hightide|bermuda high tide trianglez|hybrid|flower",
-            "displayName": "High Tide: Bermuda Trianglez",
+            "displayName": "Bermuda Trianglez Flower (High Tide)",
             "weightGrams": 1,
-            "lowPrice": 9,
+            "lowPrice": 10.5,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kushmart-north"
             ],
             "storesCarrying": 2
           },
@@ -20218,11 +20020,10 @@
           },
           {
             "matchKey": "hightide|factory high tide unicorn|hybrid|flower",
-            "displayName": "High Tide: Unicorn Factory",
+            "displayName": "Unicorn Factory 1g Flower (High Tide)",
             "weightGrams": 1,
             "lowPrice": 9,
             "cheapestStores": [
-              "kush21-everett-evergreen",
               "local-roots-everett-128th"
             ],
             "storesCarrying": 2
@@ -20279,33 +20080,22 @@
             "storesCarrying": 2
           },
           {
-            "matchKey": "hightide|bermuda high tide trianglez|hybrid|flower",
-            "displayName": "High Tide: Bermuda Trianglez",
-            "weightGrams": 3.5,
-            "lowPrice": 30,
-            "cheapestStores": [
-              "kush21-everett-evergreen"
-            ],
-            "storesCarrying": 2
-          },
-          {
             "matchKey": "hightide|factory high tide unicorn|hybrid|flower",
-            "displayName": "High Tide: Unicorn Factory",
+            "displayName": "Unicorn Factory 3.5g Flower (High Tide)",
             "weightGrams": 3.5,
             "lowPrice": 30,
             "cheapestStores": [
-              "kush21-everett-evergreen",
               "local-roots-everett-128th"
             ],
             "storesCarrying": 2
           },
           {
             "matchKey": "hightide|high pink runtz tide|indica|flower",
-            "displayName": "High Tide: Pink Runtz",
+            "displayName": "Pink Runtz Flower (High Tide)",
             "weightGrams": 3.5,
-            "lowPrice": 30,
+            "lowPrice": 35,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kushmart-north"
             ],
             "storesCarrying": 2
           },
@@ -21025,11 +20815,11 @@
           },
           {
             "matchKey": "honey tree|live resin trainwreck|sativa|vaporizers",
-            "displayName": "Honey Tree: Trainwreck - Live Resin Cartridge",
+            "displayName": "Trainwreck 1g Live Resin Cartridge (Honey Tree)",
             "weightGrams": 1,
-            "lowPrice": 17.5,
+            "lowPrice": 18,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 3
           }
@@ -21469,7 +21259,7 @@
       {
         "brandKey": "hot sugar",
         "displayBrand": "Hot Sugar",
-        "productCount": 306,
+        "productCount": 309,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -21503,7 +21293,7 @@
       {
         "brandKey": "hot sugar fruit drops",
         "displayBrand": "Hot Sugar - Fruit Drops",
-        "productCount": 6,
+        "productCount": 4,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway"
@@ -21525,7 +21315,7 @@
       {
         "brandKey": "hot sugar panda candies",
         "displayBrand": "Hot Sugar - Panda Candies",
-        "productCount": 8,
+        "productCount": 7,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway"
@@ -22666,7 +22456,7 @@
       {
         "brandKey": "jelly gems",
         "displayBrand": "Jelly Gems",
-        "productCount": 39,
+        "productCount": 41,
         "storesCarrying": [
           "happy-time-mt-vernon",
           "kush21-everett-evergreen",
@@ -22956,11 +22746,11 @@
         "cheapestCells": [
           {
             "matchKey": "k savage|angela|sativa|flower",
-            "displayName": "K Savage: Angela",
+            "displayName": "Angela Flower (K-Savage)",
             "weightGrams": 1,
-            "lowPrice": 9,
+            "lowPrice": 10.5,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kushmart-north"
             ],
             "storesCarrying": 2
           },
@@ -22976,11 +22766,11 @@
           },
           {
             "matchKey": "k savage|cured gmo resin|indica|vaporizers",
-            "displayName": "K Savage: GMO - Cured Resin Disposable",
+            "displayName": "GMO Cured Resin Disposable (K-Savage)",
             "weightGrams": 1,
-            "lowPrice": 33,
+            "lowPrice": 38.5,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kushmart-north"
             ],
             "storesCarrying": 2
           },
@@ -23016,11 +22806,11 @@
           },
           {
             "matchKey": "k savage|blue lobster|indica|flower",
-            "displayName": "K-Savage: Blue Lobster",
+            "displayName": "Blue Lobster Flower (K-Savage)",
             "weightGrams": 3.5,
-            "lowPrice": 30,
+            "lowPrice": 35,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kushmart-north"
             ],
             "storesCarrying": 2
           },
@@ -23057,11 +22847,11 @@
           },
           {
             "matchKey": "k savage|gmo|n a|flower",
-            "displayName": "K-Savage: GMO",
+            "displayName": "GMO Flower (K-Savage)",
             "weightGrams": 7,
-            "lowPrice": 60,
+            "lowPrice": 70,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kushmart-north"
             ],
             "storesCarrying": 2
           },
@@ -23162,7 +22952,7 @@
       {
         "brandKey": "kelso kandy",
         "displayBrand": "Kelso Kandy",
-        "productCount": 117,
+        "productCount": 118,
         "storesCarrying": [
           "cannazone-old-hwy-99",
           "happy-time-mt-vernon",
@@ -23203,6 +22993,17 @@
           {
             "matchKey": "kelso kandy|boi og rude|n a|flower",
             "displayName": "Kelso Kandy: Rude Boi OG",
+            "weightGrams": 3.5,
+            "lowPrice": 6,
+            "cheapestStores": [
+              "kush21-everett-evergreen",
+              "local-roots-everett-128th"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "kelso kandy|butter truffle|n a|flower",
+            "displayName": "Kelso Kandy: Truffle Butter",
             "weightGrams": 3.5,
             "lowPrice": 6,
             "cheapestStores": [
@@ -23572,8 +23373,8 @@
       },
       {
         "brandKey": "kool faid",
-        "displayBrand": "KOOL FAID",
-        "productCount": 41,
+        "displayBrand": "Kool-Faid",
+        "productCount": 43,
         "storesCarrying": [
           "cannazone-bellingham",
           "cannazone-old-hwy-99",
@@ -24115,7 +23916,7 @@
             "matchKey": "legends|apple washington|indica|flower",
             "displayName": "Legends: Washington Apple",
             "weightGrams": 3.5,
-            "lowPrice": 15,
+            "lowPrice": 18,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -24125,9 +23926,10 @@
             "matchKey": "legends|blue cruz dream santa|sativa|flower",
             "displayName": "Legends: Blue Dream Santa Cruz",
             "weightGrams": 3.5,
-            "lowPrice": 15,
+            "lowPrice": 18,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kush21-everett-evergreen",
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 4
           },
@@ -24135,9 +23937,10 @@
             "matchKey": "legends|blue runtz|indica|flower",
             "displayName": "Legends: Blue Runtz",
             "weightGrams": 3.5,
-            "lowPrice": 15,
+            "lowPrice": 18,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kush21-everett-evergreen",
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 2
           },
@@ -24156,7 +23959,7 @@
             "matchKey": "legends|cat hell|indica|flower",
             "displayName": "Legends: Hell Cat",
             "weightGrams": 3.5,
-            "lowPrice": 15,
+            "lowPrice": 18,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -24177,7 +23980,7 @@
             "matchKey": "legends|grape wave|hybrid|flower",
             "displayName": "Legends: Grape Wave",
             "weightGrams": 3.5,
-            "lowPrice": 15,
+            "lowPrice": 18,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -24206,21 +24009,21 @@
           },
           {
             "matchKey": "legends|blue runtz|indica|flower",
-            "displayName": "Legends: Blue Runtz",
+            "displayName": "Blue Runtz Flower (Legends)",
             "weightGrams": 7,
-            "lowPrice": 30,
+            "lowPrice": 31.5,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kushmart-north"
             ],
             "storesCarrying": 2
           },
           {
             "matchKey": "legends|boof super|sativa|flower",
-            "displayName": "Legends: Super Boof",
+            "displayName": "Super Boof Flower (Legends)",
             "weightGrams": 7,
-            "lowPrice": 30,
+            "lowPrice": 31.5,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kushmart-north"
             ],
             "storesCarrying": 2
           },
@@ -24249,7 +24052,7 @@
             "matchKey": "legends|factory sugar|hybrid|flower",
             "displayName": "Legends: Sugar Factory",
             "weightGrams": 7,
-            "lowPrice": 30,
+            "lowPrice": 36,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -24279,11 +24082,11 @@
           },
           {
             "matchKey": "legends|blue runtz|indica|flower",
-            "displayName": "Legends: Blue Runtz",
+            "displayName": "Blue Runtz Flower (Legends)",
             "weightGrams": 14,
-            "lowPrice": 46,
+            "lowPrice": 52.5,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kushmart-north"
             ],
             "storesCarrying": 2
           },
@@ -24291,9 +24094,10 @@
             "matchKey": "legends|butter peanut pie|hybrid|flower",
             "displayName": "Legends: Peanut Butter Pie",
             "weightGrams": 14,
-            "lowPrice": 46,
+            "lowPrice": 55.2,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kush21-everett-evergreen",
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 2
           },
@@ -24323,9 +24127,10 @@
             "matchKey": "legends|papaya|sativa|flower",
             "displayName": "Legends: Papaya",
             "weightGrams": 14,
-            "lowPrice": 46,
+            "lowPrice": 55.2,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kush21-everett-evergreen",
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 2
           },
@@ -24344,7 +24149,7 @@
             "matchKey": "legends|apple washington|indica|flower",
             "displayName": "Legends: Washington Apple",
             "weightGrams": 28,
-            "lowPrice": 90,
+            "lowPrice": 108,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -24373,11 +24178,11 @@
           },
           {
             "matchKey": "legends|boof super|sativa|flower",
-            "displayName": "Legends: Super Boof",
+            "displayName": "Super Boof Flower (Legends Ounce)",
             "weightGrams": 28,
-            "lowPrice": 90,
+            "lowPrice": 105,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kushmart-north"
             ],
             "storesCarrying": 2
           },
@@ -24419,7 +24224,7 @@
       {
         "brandKey": "legit",
         "displayBrand": "Legit",
-        "productCount": 139,
+        "productCount": 145,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -24731,7 +24536,7 @@
             "matchKey": "lifted|cake crystals sugar wedding|indica|concentrate|sugar",
             "displayName": "Lifted: Wedding Cake - Sugar Crystals",
             "weightGrams": 1,
-            "lowPrice": 15,
+            "lowPrice": 18,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -24739,11 +24544,11 @@
           },
           {
             "matchKey": "lifted|cake cured resin wedding|indica|vaporizers",
-            "displayName": "Lifted: Wedding Cake - Cured Resin Disposable",
+            "displayName": "Wedding Cake 1g Cured Resin Disposable (Lifted)",
             "weightGrams": 1,
-            "lowPrice": 32.5,
+            "lowPrice": 36,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 3
           },
@@ -27802,7 +27607,7 @@
             "matchKey": "mindmelt|cbd cbg doh harlequin legacy thc|thc|vaporizers",
             "displayName": "Legacy - Harlequin (THC + CBD + CBG) | 1g | DOH",
             "weightGrams": 1,
-            "lowPrice": 27,
+            "lowPrice": 32.4,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -27812,9 +27617,9 @@
             "matchKey": "mindmelt|diesel doh legacy sour|sativa|vaporizers",
             "displayName": "Legacy - Sour Diesel | 1g | DOH",
             "weightGrams": 1,
-            "lowPrice": 24,
+            "lowPrice": 25.6,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "2020-solutions-north-bellingham"
             ],
             "storesCarrying": 3
           },
@@ -27842,7 +27647,7 @@
             "matchKey": "mindmelt|doh gak sour|sativa|vaporizers",
             "displayName": "Sour GAK | 1g | DOH",
             "weightGrams": 1,
-            "lowPrice": 33,
+            "lowPrice": 39.6,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -27862,9 +27667,10 @@
             "matchKey": "mindmelt|doh hole k|indica|vaporizers",
             "displayName": "K-hole | 1g | DOH",
             "weightGrams": 1,
-            "lowPrice": 33,
+            "lowPrice": 38.4,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "2020-solutions-north-bellingham",
+              "2020-solutions-pacific-highway"
             ],
             "storesCarrying": 4
           },
@@ -28771,7 +28577,7 @@
             "matchKey": "mwah|glow grape up|indica|vaporizers",
             "displayName": "MWAH: Glow Up Grape - Disposable",
             "weightGrams": 1,
-            "lowPrice": 30,
+            "lowPrice": 36,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -28925,7 +28731,7 @@
       {
         "brandKey": "new standard",
         "displayBrand": "New Standard",
-        "productCount": 171,
+        "productCount": 172,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -29108,19 +28914,10 @@
             "weightGrams": 1,
             "lowPrice": 33.6,
             "cheapestStores": [
+              "2020-solutions-north-bellingham",
               "2020-solutions-pacific-highway"
             ],
-            "storesCarrying": 2
-          },
-          {
-            "matchKey": "new standard|cbn kush live resin triangle|n a|vaporizers",
-            "displayName": "Triangle Kush CBN Live Resin Disposable | 1g",
-            "weightGrams": 1,
-            "lowPrice": 33.6,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham"
-            ],
-            "storesCarrying": 2
+            "storesCarrying": 3
           },
           {
             "matchKey": "new standard|headband live resin|hybrid|vaporizers",
@@ -29149,7 +28946,7 @@
       {
         "brandKey": "new standard rosin",
         "displayBrand": "New Standard Rosin",
-        "productCount": 21,
+        "productCount": 20,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway"
@@ -29161,17 +28958,6 @@
           {
             "matchKey": "new standard rosin|cake hash papaya solventless|indica hybrid|vaporizers",
             "displayName": "Papaya Cake Solventless Hash Rosin Disposable | 1g",
-            "weightGrams": 1,
-            "lowPrice": 41.6,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          },
-          {
-            "matchKey": "new standard rosin|cookies tropicana|n a|vaporizers",
-            "displayName": "Tropicana Cookies Rosin Disposable | 1g",
             "weightGrams": 1,
             "lowPrice": 41.6,
             "cheapestStores": [
@@ -29383,7 +29169,7 @@
       {
         "brandKey": "o geez",
         "displayBrand": "O'Geez",
-        "productCount": 208,
+        "productCount": 211,
         "storesCarrying": [
           "cannazone-bellingham",
           "happy-time-mt-vernon",
@@ -29553,13 +29339,13 @@
           },
           {
             "matchKey": "o geez|express pineapple|sativa|flower",
-            "displayName": "Pineapple Express Flower (O'Geez Ounce)",
+            "displayName": "Pineapple Express 28g Flower (O'Geez Ounce)",
             "weightGrams": 28,
-            "lowPrice": 31.5,
+            "lowPrice": 27,
             "cheapestStores": [
-              "kushmart-north"
+              "local-roots-everett-128th"
             ],
-            "storesCarrying": 2
+            "storesCarrying": 3
           },
           {
             "matchKey": "o geez|granddaddy purple|indica|flower",
@@ -30686,7 +30472,7 @@
       {
         "brandKey": "ooowe",
         "displayBrand": "Ooowe",
-        "productCount": 17,
+        "productCount": 26,
         "storesCarrying": [
           "hangar-420-everett",
           "hangar-420-west"
@@ -30696,6 +30482,17 @@
           5
         ],
         "cheapestCells": [
+          {
+            "matchKey": "ooowe|huh owe uh|n a|pre rolls",
+            "displayName": "OWE Uh-Huh Preroll 1g",
+            "weightGrams": 1,
+            "lowPrice": 7,
+            "cheapestStores": [
+              "hangar-420-everett",
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
           {
             "matchKey": "ooowe|hydrocarbon lemonade owe sunset wax|n a|concentrate|wax",
             "displayName": "OWE Sunset Lemonade Hydrocarbon Wax 1g",
@@ -30713,7 +30510,6 @@
             "weightGrams": 5,
             "lowPrice": 27,
             "cheapestStores": [
-              "hangar-420-everett",
               "hangar-420-west"
             ],
             "storesCarrying": 2
@@ -30724,7 +30520,16 @@
             "weightGrams": 5,
             "lowPrice": 27,
             "cheapestStores": [
-              "hangar-420-everett",
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "ooowe|gelato owe x|n a|pre rolls",
+            "displayName": "OWE Gelato X Preroll 5pk 5g",
+            "weightGrams": 5,
+            "lowPrice": 27,
+            "cheapestStores": [
               "hangar-420-west"
             ],
             "storesCarrying": 2
@@ -30739,13 +30544,33 @@
               "hangar-420-west"
             ],
             "storesCarrying": 2
+          },
+          {
+            "matchKey": "ooowe|lemonade owe sunset|n a|pre rolls",
+            "displayName": "OWE Sunset Lemonade Preroll 5pk 5g",
+            "weightGrams": 5,
+            "lowPrice": 27,
+            "cheapestStores": [
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "ooowe|owe pink zaza|n a|pre rolls",
+            "displayName": "OWE Pink Zaza Preroll 5pk 5g",
+            "weightGrams": 5,
+            "lowPrice": 27,
+            "cheapestStores": [
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
           }
         ]
       },
       {
         "brandKey": "ooowee",
         "displayBrand": "Ooowee",
-        "productCount": 1270,
+        "productCount": 1376,
         "storesCarrying": [
           "cannazone-bellingham",
           "cannazone-old-hwy-99",
@@ -30853,6 +30678,16 @@
             "storesCarrying": 2
           },
           {
+            "matchKey": "ooowee|apple big diesel owe|n a|vaporizers",
+            "displayName": "OWE Big Apple Diesel Cartridge 1g",
+            "weightGrams": 1,
+            "lowPrice": 27,
+            "cheapestStores": [
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "ooowee|apple big diesel|hybrid|vaporizers",
             "displayName": "Ooowee Cartridge Big Apple Diesel",
             "weightGrams": 1,
@@ -30865,6 +30700,17 @@
           {
             "matchKey": "ooowee|bad extract hydrocarbon mr owe|n a|concentrate|",
             "displayName": "OWE Mr. Bad Hydrocarbon Extract 1g",
+            "weightGrams": 1,
+            "lowPrice": 16,
+            "cheapestStores": [
+              "hangar-420-everett",
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "ooowee|berries concentrate crunch hydrocarbon owe|n a|concentrate|",
+            "displayName": "OWE Crunch Berries Hydrocarbon Concentrate 1g",
             "weightGrams": 1,
             "lowPrice": 16,
             "cheapestStores": [
@@ -30914,6 +30760,49 @@
             "storesCarrying": 2
           },
           {
+            "matchKey": "ooowee|bloomer late owe|n a|pre rolls",
+            "displayName": "OWE Late Bloomer Pre Roll 1g",
+            "weightGrams": 1,
+            "lowPrice": 7,
+            "cheapestStores": [
+              "hangar-420-everett",
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "ooowee|blue dream owe|n a|vaporizers",
+            "displayName": "OWE Blue Dream Cartridge 1g",
+            "weightGrams": 1,
+            "lowPrice": 27,
+            "cheapestStores": [
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "ooowee|blueberry dream owe sugar wax|n a|concentrate|sugar",
+            "displayName": "OWE Blueberry Dream Sugar Wax 1g",
+            "weightGrams": 1,
+            "lowPrice": 16,
+            "cheapestStores": [
+              "hangar-420-everett",
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "ooowee|blueberry dream owe|n a|pre rolls",
+            "displayName": "OWE Blueberry Dream Pre-Roll 1g",
+            "weightGrams": 1,
+            "lowPrice": 7,
+            "cheapestStores": [
+              "hangar-420-everett",
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "ooowee|blueberry dream pr|n a|pre rolls",
             "displayName": "Ooowee: Blueberry Dream - PR",
             "weightGrams": 1,
@@ -30930,6 +30819,37 @@
             "lowPrice": 6,
             "cheapestStores": [
               "cannazone-bellingham"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "ooowee|boof extract hydrocarbon owe super|n a|concentrate|",
+            "displayName": "OWE Super Boof Hydrocarbon Extract 1g",
+            "weightGrams": 1,
+            "lowPrice": 16,
+            "cheapestStores": [
+              "hangar-420-everett",
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "ooowee|boof owe raspberry super|n a|vaporizers",
+            "displayName": "OWE Super Raspberry Boof Cartridge 1g",
+            "weightGrams": 1,
+            "lowPrice": 27,
+            "cheapestStores": [
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "ooowee|boof owe super|n a|pre rolls",
+            "displayName": "OWE Super Boof Pre Roll 1g",
+            "weightGrams": 1,
+            "lowPrice": 7,
+            "cheapestStores": [
+              "hangar-420-everett"
             ],
             "storesCarrying": 2
           },
@@ -30965,6 +30885,16 @@
             "storesCarrying": 2
           },
           {
+            "matchKey": "ooowee|bump key owe|n a|pre rolls",
+            "displayName": "OWE Key Bump Preroll 1g",
+            "weightGrams": 1,
+            "lowPrice": 7,
+            "cheapestStores": [
+              "hangar-420-everett"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "ooowee|bump key|n a|pre rolls",
             "displayName": "Key Bump 1g Preroll (Ooowee)",
             "weightGrams": 1,
@@ -30986,6 +30916,16 @@
             "storesCarrying": 2
           },
           {
+            "matchKey": "ooowee|cake concentrate hydrocarbon owe wedding|n a|concentrate|",
+            "displayName": "OWE Wedding Cake Hydrocarbon Concentrate 1g",
+            "weightGrams": 1,
+            "lowPrice": 8.8,
+            "cheapestStores": [
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "ooowee|cake cream i ice|indica|pre rolls",
             "displayName": "Ooowee: Ice Cream Cake (I) 1pk/ - Infused Preroll",
             "weightGrams": 1,
@@ -30996,10 +30936,32 @@
             "storesCarrying": 2
           },
           {
+            "matchKey": "ooowee|cake mac owe|n a|pre rolls",
+            "displayName": "OWE Mac Cake Pre Roll 1g",
+            "weightGrams": 1,
+            "lowPrice": 7,
+            "cheapestStores": [
+              "hangar-420-everett",
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "ooowee|card concentrate hydrocarbon owe wild|n a|concentrate|",
             "displayName": "OWE Wild Card Hydrocarbon Concentrate 1g",
             "weightGrams": 1,
             "lowPrice": 16,
+            "cheapestStores": [
+              "hangar-420-everett",
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "ooowee|card owe wild|n a|pre rolls",
+            "displayName": "OWE Wild Card Pre-Roll 1g",
+            "weightGrams": 1,
+            "lowPrice": 7,
             "cheapestStores": [
               "hangar-420-everett",
               "hangar-420-west"
@@ -31018,12 +30980,34 @@
             "storesCarrying": 2
           },
           {
+            "matchKey": "ooowee|cheat code concentrate hydrocarbon owe|n a|concentrate|",
+            "displayName": "OWE Cheat Code Hydrocarbon Concentrate 1g",
+            "weightGrams": 1,
+            "lowPrice": 16,
+            "cheapestStores": [
+              "hangar-420-everett",
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "ooowee|cheat code|n a|pre rolls",
             "displayName": "Cheat Code 1g Preroll (Ooowee)",
             "weightGrams": 1,
             "lowPrice": 4.8,
             "cheapestStores": [
               "local-roots-everett-128th"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "ooowee|cherry concentrate gelato hydrocarbon lemon owe super|n a|concentrate|",
+            "displayName": "OWE Super Lemon Cherry Gelato Hydrocarbon Concentrate 1g",
+            "weightGrams": 1,
+            "lowPrice": 16,
+            "cheapestStores": [
+              "hangar-420-everett",
+              "hangar-420-west"
             ],
             "storesCarrying": 2
           },
@@ -31059,6 +31043,17 @@
             "storesCarrying": 2
           },
           {
+            "matchKey": "ooowee|cherry gelato lemon owe super|n a|pre rolls",
+            "displayName": "OWE Super Lemon Cherry Gelato Pre roll 1g",
+            "weightGrams": 1,
+            "lowPrice": 7,
+            "cheapestStores": [
+              "hangar-420-everett",
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "ooowee|cherry gelato lemon super|hybrid|pre rolls",
             "displayName": "Super Lemon Cherry Gelato Preroll (Ooowee)",
             "weightGrams": 1,
@@ -31075,6 +31070,28 @@
             "lowPrice": 6,
             "cheapestStores": [
               "starbuds-bellingham"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "ooowee|concentrate cough hydro owe seattle strawberry|n a|concentrate|",
+            "displayName": "OWE Seattle Strawberry Cough Hydro Concentrate 1g",
+            "weightGrams": 1,
+            "lowPrice": 16,
+            "cheapestStores": [
+              "hangar-420-everett",
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "ooowee|concentrate haze hydrocarbon lemon owe super|n a|concentrate|",
+            "displayName": "OWE Super Lemon Haze Hydrocarbon Concentrate 1g",
+            "weightGrams": 1,
+            "lowPrice": 16,
+            "cheapestStores": [
+              "hangar-420-everett",
+              "hangar-420-west"
             ],
             "storesCarrying": 2
           },
@@ -31141,6 +31158,39 @@
             "storesCarrying": 2
           },
           {
+            "matchKey": "ooowee|extract gelato hydrocarbon owe x|n a|concentrate|",
+            "displayName": "OWE Gelato X Hydrocarbon Extract 1g",
+            "weightGrams": 1,
+            "lowPrice": 16,
+            "cheapestStores": [
+              "hangar-420-everett",
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "ooowee|facelock hydrocarbon owe wax|n a|concentrate|wax",
+            "displayName": "OWE FaceLock Hydrocarbon wax 1g",
+            "weightGrams": 1,
+            "lowPrice": 16,
+            "cheapestStores": [
+              "hangar-420-everett",
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "ooowee|facelock owe|n a|pre rolls",
+            "displayName": "OWE FaceLock Pre-Roll 1g",
+            "weightGrams": 1,
+            "lowPrice": 7,
+            "cheapestStores": [
+              "hangar-420-everett",
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "ooowee|facelock|n a|pre rolls",
             "displayName": "Facelock 1g Preroll (Ooowee)",
             "weightGrams": 1,
@@ -31149,6 +31199,16 @@
               "local-roots-everett-128th"
             ],
             "storesCarrying": 3
+          },
+          {
+            "matchKey": "ooowee|gelato owe strawberry|n a|vaporizers",
+            "displayName": "OWE Strawberry Gelato Cartridge 1g",
+            "weightGrams": 1,
+            "lowPrice": 27,
+            "cheapestStores": [
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
           },
           {
             "matchKey": "ooowee|gelato strawberry|n a|vaporizers",
@@ -31161,10 +31221,31 @@
             "storesCarrying": 2
           },
           {
+            "matchKey": "ooowee|golden lychee owe|n a|vaporizers",
+            "displayName": "OWE Golden Lychee Cartridge 1g",
+            "weightGrams": 1,
+            "lowPrice": 27,
+            "cheapestStores": [
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "ooowee|gum hydrocarbon owe sour wax|n a|concentrate|wax",
             "displayName": "OWE Sour Gum Hydrocarbon Wax 1g",
             "weightGrams": 1,
             "lowPrice": 16,
+            "cheapestStores": [
+              "hangar-420-everett",
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "ooowee|gum owe sour|n a|pre rolls",
+            "displayName": "OWE Sour Gum PreRoll 1g",
+            "weightGrams": 1,
+            "lowPrice": 7,
             "cheapestStores": [
               "hangar-420-everett",
               "hangar-420-west"
@@ -31186,6 +31267,17 @@
             "displayName": "OWE Gusherlicious Hydrocarbon Wax 1g",
             "weightGrams": 1,
             "lowPrice": 16,
+            "cheapestStores": [
+              "hangar-420-everett",
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "ooowee|gusherlicious owe|n a|pre rolls",
+            "displayName": "OWE Gusherlicious Pre-roll 1g",
+            "weightGrams": 1,
+            "lowPrice": 7,
             "cheapestStores": [
               "hangar-420-everett",
               "hangar-420-west"
@@ -31223,6 +31315,17 @@
             "storesCarrying": 2
           },
           {
+            "matchKey": "ooowee|haze lemon owe super|n a|pre rolls",
+            "displayName": "OWE Super Lemon Haze Pre Roll 1g",
+            "weightGrams": 1,
+            "lowPrice": 7,
+            "cheapestStores": [
+              "hangar-420-everett",
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "ooowee|haze lemon super|n a|pre rolls",
             "displayName": "Ooowee Pre-Roll Super Lemon Haze",
             "weightGrams": 1,
@@ -31233,12 +31336,33 @@
             "storesCarrying": 2
           },
           {
+            "matchKey": "ooowee|haze mango owe|n a|pre rolls",
+            "displayName": "OWE Mango Haze Pre Roll 1g",
+            "weightGrams": 1,
+            "lowPrice": 7,
+            "cheapestStores": [
+              "hangar-420-everett",
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "ooowee|haze mango|n a|pre rolls",
             "displayName": "Ooowee - Pre-Roll - Mango Haze - 1g",
             "weightGrams": 1,
             "lowPrice": 6,
             "cheapestStores": [
               "starbuds-bellingham"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "ooowee|honeydew owe|n a|vaporizers",
+            "displayName": "OWE Honeydew Cartridge 1g",
+            "weightGrams": 1,
+            "lowPrice": 27,
+            "cheapestStores": [
+              "hangar-420-west"
             ],
             "storesCarrying": 2
           },
@@ -31317,6 +31441,17 @@
             "storesCarrying": 2
           },
           {
+            "matchKey": "ooowee|lauruntz owe saint|n a|pre rolls",
+            "displayName": "OWE Saint Lauruntz Preroll 1g",
+            "weightGrams": 1,
+            "lowPrice": 7,
+            "cheapestStores": [
+              "hangar-420-everett",
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "ooowee|lauruntz pr saint|hybrid|pre rolls",
             "displayName": "Ooowee: Saint Lauruntz - PR",
             "weightGrams": 1,
@@ -31348,6 +31483,17 @@
             "storesCarrying": 2
           },
           {
+            "matchKey": "ooowee|lemonade owe sunset|n a|pre rolls",
+            "displayName": "OWE Sunset Lemonade Pre Roll 1g",
+            "weightGrams": 1,
+            "lowPrice": 7,
+            "cheapestStores": [
+              "hangar-420-everett",
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "ooowee|lemonade sunset|n a|pre rolls",
             "displayName": "Ooowee Pre-Roll Sunset Lemonade",
             "weightGrams": 1,
@@ -31355,6 +31501,17 @@
             "cheapestStores": [
               "starbuds-bellingham",
               "the-joint-everett"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "ooowee|marker owe|n a|pre rolls",
+            "displayName": "OWE Ooowee Marker Preroll 1g",
+            "weightGrams": 1,
+            "lowPrice": 7,
+            "cheapestStores": [
+              "hangar-420-everett",
+              "hangar-420-west"
             ],
             "storesCarrying": 2
           },
@@ -31375,6 +31532,16 @@
             "lowPrice": 6,
             "cheapestStores": [
               "starbuds-bellingham"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "ooowee|maui owe tropical|n a|vaporizers",
+            "displayName": "OWE Tropical Maui Cartridge 1g",
+            "weightGrams": 1,
+            "lowPrice": 27,
+            "cheapestStores": [
+              "hangar-420-west"
             ],
             "storesCarrying": 2
           },
@@ -31416,6 +31583,68 @@
             "lowPrice": 27,
             "cheapestStores": [
               "hangar-420-everett",
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "ooowee|owe pineapple platinum|n a|vaporizers",
+            "displayName": "OWE Platinum Pineapple Cartridge 1g",
+            "weightGrams": 1,
+            "lowPrice": 27,
+            "cheapestStores": [
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "ooowee|owe pink zaza|n a|pre rolls",
+            "displayName": "OWE Pink Zaza Pre-roll 1g",
+            "weightGrams": 1,
+            "lowPrice": 7,
+            "cheapestStores": [
+              "hangar-420-everett",
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "ooowee|owe purple rain|n a|vaporizers",
+            "displayName": "OWE Purple Rain Cartridge 1g",
+            "weightGrams": 1,
+            "lowPrice": 27,
+            "cheapestStores": [
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "ooowee|owe runtz trophy|indica|pre rolls",
+            "displayName": "OWE Trophy Runtz Preroll 1g",
+            "weightGrams": 1,
+            "lowPrice": 7,
+            "cheapestStores": [
+              "hangar-420-everett",
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "ooowee|owe runtz trophy|n a|pre rolls",
+            "displayName": "OWE Trophy Runtz Infused 1g preroll",
+            "weightGrams": 1,
+            "lowPrice": 10,
+            "cheapestStores": [
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "ooowee|owe trainwreck watermelon|n a|vaporizers",
+            "displayName": "OWE Watermelon Trainwreck Cartridge 1g",
+            "weightGrams": 1,
+            "lowPrice": 27,
+            "cheapestStores": [
               "hangar-420-west"
             ],
             "storesCarrying": 2
@@ -31511,6 +31740,16 @@
             "storesCarrying": 2
           },
           {
+            "matchKey": "ooowee|bad mr owe|n a|pre rolls",
+            "displayName": "OWE Mr. Bad Preroll 5pk 5g",
+            "weightGrams": 5,
+            "lowPrice": 27,
+            "cheapestStores": [
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "ooowee|berries crunch h|n a|pre rolls",
             "displayName": "Ooowee: Crunch Berries (H) - 5pk/",
             "weightGrams": 5,
@@ -31521,12 +31760,21 @@
             "storesCarrying": 2
           },
           {
+            "matchKey": "ooowee|blueberry dream owe x|n a|pre rolls",
+            "displayName": "OWE Blueberry Dream 5pk x 5g Pre Roll 1g",
+            "weightGrams": 5,
+            "lowPrice": 27,
+            "cheapestStores": [
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "ooowee|boof owe super x|n a|pre rolls",
             "displayName": "OWE Super Boof 5pk x 1g Pre Roll 5g",
             "weightGrams": 5,
             "lowPrice": 27,
             "cheapestStores": [
-              "hangar-420-everett",
               "hangar-420-west"
             ],
             "storesCarrying": 2
@@ -31538,6 +31786,16 @@
             "lowPrice": 23,
             "cheapestStores": [
               "starbuds-bellingham"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "ooowee|bump key owe x|n a|pre rolls",
+            "displayName": "OWE Key Bump 1g x 5pk Preroll",
+            "weightGrams": 5,
+            "lowPrice": 27,
+            "cheapestStores": [
+              "hangar-420-west"
             ],
             "storesCarrying": 2
           },
@@ -31562,6 +31820,16 @@
             "storesCarrying": 2
           },
           {
+            "matchKey": "ooowee|butter owe truffle x|n a|pre rolls",
+            "displayName": "OWE Truffle Butter 5pk x 5g Pre Roll 1g",
+            "weightGrams": 5,
+            "lowPrice": 27,
+            "cheapestStores": [
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "ooowee|cake mac owe|n a|pre rolls",
             "displayName": "OWE Mac Cake Preroll 5pk 5g",
             "weightGrams": 5,
@@ -31573,12 +31841,31 @@
             "storesCarrying": 2
           },
           {
+            "matchKey": "ooowee|cake owe wedding|n a|pre rolls",
+            "displayName": "OWE Wedding Cake Pre Rolls 5pk 5g",
+            "weightGrams": 5,
+            "lowPrice": 27,
+            "cheapestStores": [
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "ooowee|cheat code owe|n a|pre rolls",
             "displayName": "OWE Cheat Code Preroll 5pk 5g",
             "weightGrams": 5,
             "lowPrice": 27,
             "cheapestStores": [
-              "hangar-420-everett",
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "ooowee|cherry gelato lemon owe super|n a|pre rolls",
+            "displayName": "OWE Super Lemon Cherry Gelato Preroll 5pk 5g",
+            "weightGrams": 5,
+            "lowPrice": 27,
+            "cheapestStores": [
               "hangar-420-west"
             ],
             "storesCarrying": 2
@@ -31589,7 +31876,6 @@
             "weightGrams": 5,
             "lowPrice": 27,
             "cheapestStores": [
-              "hangar-420-everett",
               "hangar-420-west"
             ],
             "storesCarrying": 2
@@ -31641,7 +31927,6 @@
             "weightGrams": 5,
             "lowPrice": 27,
             "cheapestStores": [
-              "hangar-420-everett",
               "hangar-420-west"
             ],
             "storesCarrying": 2
@@ -31653,6 +31938,16 @@
             "lowPrice": 27,
             "cheapestStores": [
               "hangar-420-everett",
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "ooowee|haze lemon owe super|n a|pre rolls",
+            "displayName": "OWE Super Lemon Haze Preroll 5pk 5g",
+            "weightGrams": 5,
+            "lowPrice": 27,
+            "cheapestStores": [
               "hangar-420-west"
             ],
             "storesCarrying": 2
@@ -31673,18 +31968,17 @@
             "weightGrams": 5,
             "lowPrice": 27,
             "cheapestStores": [
-              "hangar-420-everett",
               "hangar-420-west"
             ],
             "storesCarrying": 2
           },
           {
             "matchKey": "ooowee|huh uh|indica|pre rolls",
-            "displayName": "Uh-Huh Infused 5pk/5g - Ooowee",
+            "displayName": "Uh-Huh 5pk Preroll Pack (Ooowee)",
             "weightGrams": 5,
-            "lowPrice": 24,
+            "lowPrice": 18,
             "cheapestStores": [
-              "evolve-cannabis-bellingham"
+              "kushmart-north"
             ],
             "storesCarrying": 2
           },
@@ -31710,12 +32004,31 @@
             "storesCarrying": 2
           },
           {
+            "matchKey": "ooowee|jokerz owe|n a|pre rolls",
+            "displayName": "OWE Jokerz Preroll 5pk 5g",
+            "weightGrams": 5,
+            "lowPrice": 27,
+            "cheapestStores": [
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "ooowee|lauruntz owe saint|n a|pre rolls",
             "displayName": "OWE Saint Lauruntz Preroll 5pk 5g",
             "weightGrams": 5,
             "lowPrice": 27,
             "cheapestStores": [
-              "hangar-420-everett",
+              "hangar-420-west"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "ooowee|marker owe|n a|pre rolls",
+            "displayName": "OWE Ooowee Marker Pre-Roll 5pk 5g",
+            "weightGrams": 5,
+            "lowPrice": 27,
+            "cheapestStores": [
               "hangar-420-west"
             ],
             "storesCarrying": 2
@@ -32013,7 +32326,7 @@
       {
         "brandKey": "optimum mood",
         "displayBrand": "Optimum Mood",
-        "productCount": 63,
+        "productCount": 64,
         "storesCarrying": [
           "kush21-everett-evergreen",
           "kushmart-north",
@@ -32035,21 +32348,21 @@
           },
           {
             "matchKey": "optimum mood|granddaddy purple sauce terp|n a|vaporizers",
-            "displayName": "Optimum Mood: Granddaddy Purple - Terp Sauce Disposable",
+            "displayName": "Granddaddy Purple 1g Terp Sauce Cart (Optimum Mood)",
             "weightGrams": 1,
-            "lowPrice": 22.5,
+            "lowPrice": 24,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 2
           },
           {
             "matchKey": "optimum mood|sauce terp tropic truffle|n a|vaporizers",
-            "displayName": "Optimum Mood: Tropic Truffle - Terp Sauce Disposable",
+            "displayName": "Tropic Truffle 1g Terp Sauce Cartridge (Optimum Mood)",
             "weightGrams": 1,
-            "lowPrice": 22.5,
+            "lowPrice": 24,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 2
           }
@@ -32377,7 +32690,6 @@
           3.5,
           5,
           7,
-          14,
           28
         ],
         "cheapestCells": [
@@ -32515,7 +32827,7 @@
       {
         "brandKey": "panda candies",
         "displayBrand": "Panda Candies",
-        "productCount": 9,
+        "productCount": 8,
         "storesCarrying": [
           "hangar-420-everett",
           "kushmart-north"
@@ -32618,7 +32930,7 @@
       {
         "brandKey": "pastime",
         "displayBrand": "Pastime",
-        "productCount": 190,
+        "productCount": 200,
         "storesCarrying": [
           "hangar-420-west",
           "kush21-everett-evergreen",
@@ -32631,6 +32943,16 @@
           3.5
         ],
         "cheapestCells": [
+          {
+            "matchKey": "pastime|13 live resin xj|sativa|vaporizers",
+            "displayName": "Pastime: XJ-13 - Live Resin Disposable",
+            "weightGrams": 1,
+            "lowPrice": 35,
+            "cheapestStores": [
+              "kush21-everett-evergreen"
+            ],
+            "storesCarrying": 2
+          },
           {
             "matchKey": "pastime|beanz jelly|sativa|vaporizers",
             "displayName": "Jelly Beanz Cartridge (Pastime)",
@@ -32659,6 +32981,16 @@
             "cheapestStores": [
               "kush21-everett-evergreen",
               "kushmart-north"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "pastime|bullz live red resin|sativa|vaporizers",
+            "displayName": "Pastime: Red Bullz - Live Resin Disposable",
+            "weightGrams": 1,
+            "lowPrice": 35,
+            "cheapestStores": [
+              "kush21-everett-evergreen"
             ],
             "storesCarrying": 2
           },
@@ -32696,6 +33028,16 @@
             "storesCarrying": 2
           },
           {
+            "matchKey": "pastime|cookies dawg live resin|indica|vaporizers",
+            "displayName": "Pastime: Dawg Cookies - Live Resin Disposable",
+            "weightGrams": 1,
+            "lowPrice": 35,
+            "cheapestStores": [
+              "kush21-everett-evergreen"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "pastime|delight lemon live resin|sativa|vaporizers",
             "displayName": "Pastime: Lemon Delight - Live Resin Disposable",
             "weightGrams": 1,
@@ -32703,7 +33045,7 @@
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
-            "storesCarrying": 2
+            "storesCarrying": 3
           },
           {
             "matchKey": "pastime|face fire live on resin tanker|indica|vaporizers",
@@ -32713,6 +33055,16 @@
             "cheapestStores": [
               "kush21-everett-evergreen",
               "kushmart-north"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "pastime|grape live resin sunshine|hybrid|vaporizers",
+            "displayName": "Pastime: Grape Sunshine - Live Resin Disposable",
+            "weightGrams": 1,
+            "lowPrice": 35,
+            "cheapestStores": [
+              "kush21-everett-evergreen"
             ],
             "storesCarrying": 2
           },
@@ -32750,6 +33102,36 @@
             "storesCarrying": 2
           },
           {
+            "matchKey": "pastime|jet live resin set|indica|vaporizers",
+            "displayName": "Pastime: Jet Set - Live Resin Disposable",
+            "weightGrams": 1,
+            "lowPrice": 35,
+            "cheapestStores": [
+              "kush21-everett-evergreen"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "pastime|live pink resin zkittlez|hybrid|vaporizers",
+            "displayName": "Pastime: Pink Zkittlez - Live Resin Disposable",
+            "weightGrams": 1,
+            "lowPrice": 35,
+            "cheapestStores": [
+              "kush21-everett-evergreen"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "pastime|live resin spritzer|hybrid|vaporizers",
+            "displayName": "Pastime: Spritzer - Live Resin Disposable",
+            "weightGrams": 1,
+            "lowPrice": 35,
+            "cheapestStores": [
+              "kush21-everett-evergreen"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "pastime|runtz super|hybrid|vaporizers",
             "displayName": "Super Runtz Cartridge (Pastime)",
             "weightGrams": 1,
@@ -32764,7 +33146,7 @@
       {
         "brandKey": "pastime brands",
         "displayBrand": "PASTIME BRANDS",
-        "productCount": 17,
+        "productCount": 23,
         "storesCarrying": [
           "salish-coast-cannabis"
         ],
@@ -32848,7 +33230,7 @@
       {
         "brandKey": "phat panda",
         "displayBrand": "Phat Panda",
-        "productCount": 1865,
+        "productCount": 1897,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -34127,6 +34509,16 @@
             "storesCarrying": 2
           },
           {
+            "matchKey": "phat panda|herer jack live resin sugar|sativa|concentrate|live resin",
+            "displayName": "Jack Herer 1g Live Resin Panda Sugar (Phat Panda)",
+            "weightGrams": 1,
+            "lowPrice": 9,
+            "cheapestStores": [
+              "local-roots-everett-128th"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "phat panda|huckleberry pen|indica|vaporizers",
             "displayName": "1g Huckleberry Cartridge - Panda Pen",
             "weightGrams": 1,
@@ -34391,6 +34783,16 @@
             "lowPrice": 42,
             "cheapestStores": [
               "hangar-420-everett"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "phat panda|burger smash|indica|flower",
+            "displayName": "Phat Panda: Smash Burger",
+            "weightGrams": 3.5,
+            "lowPrice": 12.5,
+            "cheapestStores": [
+              "kush21-everett-evergreen"
             ],
             "storesCarrying": 2
           },
@@ -34862,7 +35264,7 @@
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
-            "storesCarrying": 6
+            "storesCarrying": 5
           },
           {
             "matchKey": "phat panda|line platinum trophy wife|indica|flower",
@@ -34960,16 +35362,6 @@
             "storesCarrying": 2
           },
           {
-            "matchKey": "phat panda|golden pineapple|hybrid|flower",
-            "displayName": "Phat Panda: Golden Pineapple",
-            "weightGrams": 28,
-            "lowPrice": 90,
-            "cheapestStores": [
-              "kush21-everett-evergreen"
-            ],
-            "storesCarrying": 2
-          },
-          {
             "matchKey": "phat panda|golden pineapple|sativa|flower",
             "displayName": "Golden Pineapple",
             "weightGrams": 28,
@@ -34985,7 +35377,7 @@
       {
         "brandKey": "phat panda bangers",
         "displayBrand": "Phat Panda - Bangers",
-        "productCount": 26,
+        "productCount": 24,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway"
@@ -34997,17 +35389,6 @@
           {
             "matchKey": "phat panda bangers|balls doh moon|n a|pre rolls",
             "displayName": "Moon Balls Pre-Roll Pack 5pk | 5g (DOH)",
-            "weightGrams": 5,
-            "lowPrice": 28,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          },
-          {
-            "matchKey": "phat panda bangers|bone collector doh|n a|pre rolls",
-            "displayName": "Bone Collector Pre-Roll Pack Bangers 5pk | 5g (DOH)",
             "weightGrams": 5,
             "lowPrice": 28,
             "cheapestStores": [
@@ -35069,7 +35450,7 @@
       {
         "brandKey": "phat panda firecracker",
         "displayBrand": "Phat Panda - Firecracker",
-        "productCount": 20,
+        "productCount": 19,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway"
@@ -35106,27 +35487,14 @@
       {
         "brandKey": "phat panda platinum bong buddies",
         "displayBrand": "Phat Panda - Platinum Bong Buddies",
-        "productCount": 7,
+        "productCount": 4,
         "storesCarrying": [
-          "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway"
         ],
         "tiers": [
           2
         ],
-        "cheapestCells": [
-          {
-            "matchKey": "phat panda platinum bong buddies|doh lemons line strange|indica|flower",
-            "displayName": "Strange Lemons - Platinum Line Bong Buddies (DOH)",
-            "weightGrams": 2,
-            "lowPrice": 12,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          }
-        ]
+        "cheapestCells": []
       },
       {
         "brandKey": "phat panda solventless juice box strain specific",
@@ -35256,7 +35624,7 @@
       {
         "brandKey": "picc platform",
         "displayBrand": "PICC Platform",
-        "productCount": 138,
+        "productCount": 143,
         "storesCarrying": [
           "cannazone-bellingham",
           "cannazone-old-hwy-99",
@@ -35509,9 +35877,9 @@
           },
           {
             "matchKey": "plaid jacket|alien cookies cured miracle resin|indica|vaporizers",
-            "displayName": "Miracle Alien Cookies 1g Cured Resin Disposable (Plaid Jacket)",
+            "displayName": "Miracle Alien Cookies 1g Cured Resin Cartridge (Plaid Jacket)",
             "weightGrams": 1,
-            "lowPrice": 42,
+            "lowPrice": 39,
             "cheapestStores": [
               "local-roots-everett-128th"
             ],
@@ -35644,11 +36012,10 @@
           },
           {
             "matchKey": "plaid jacket|bho blunt marker scented thca|indica|pre rolls",
-            "displayName": "Plaid Jacket: Scented Marker - BHO THCA Infused Blunt",
+            "displayName": "Scented Marker 1g BHO THCA Infused Blunt (Plaid Jacket)",
             "weightGrams": 1,
             "lowPrice": 15,
             "cheapestStores": [
-              "kush21-everett-evergreen",
               "local-roots-everett-128th"
             ],
             "storesCarrying": 2
@@ -35815,7 +36182,7 @@
             "matchKey": "plaid jacket|boof cured resin super|n a|vaporizers",
             "displayName": "Plaid Jacket: Super Boof - Cured Resin Cartridge",
             "weightGrams": 1,
-            "lowPrice": 38,
+            "lowPrice": 45.6,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -35934,11 +36301,11 @@
           },
           {
             "matchKey": "plaid jacket|cured gak mack resin s|indica|vaporizers",
-            "displayName": "Plaid Jacket: Mack's GAK - Cured Resin Cartridge",
+            "displayName": "Mack's GAK 1g Cured Resin Disposable (Plaid Jacket)",
             "weightGrams": 1,
-            "lowPrice": 38,
+            "lowPrice": 42,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 2
           },
@@ -35964,13 +36331,13 @@
           },
           {
             "matchKey": "plaid jacket|cured gravity resin zero|indica|vaporizers",
-            "displayName": "Zero Gravity 1g Cured Resin Cartridge (Plaid Jacket)",
+            "displayName": "Plaid Jacket: Zero Gravity - Cured Resin Disposable",
             "weightGrams": 1,
-            "lowPrice": 36,
+            "lowPrice": 44,
             "cheapestStores": [
-              "local-roots-everett-128th"
+              "kush21-everett-evergreen"
             ],
-            "storesCarrying": 4
+            "storesCarrying": 3
           },
           {
             "matchKey": "plaid jacket|cured mango mintality resin|sativa|vaporizers",
@@ -36149,11 +36516,11 @@
           },
           {
             "matchKey": "plaid jacket|magic marker|indica|flower",
-            "displayName": "Plaid Jacket: Magic Marker",
+            "displayName": "Magic Marker 3.5g Flower (Plaid Jacket)",
             "weightGrams": 3.5,
-            "lowPrice": 36,
+            "lowPrice": 37.2,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 2
           },
@@ -36462,7 +36829,7 @@
       {
         "brandKey": "plume",
         "displayBrand": "Plume",
-        "productCount": 249,
+        "productCount": 255,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -36512,13 +36879,24 @@
           },
           {
             "matchKey": "plume|apricot hash orange rosin|hybrid|vaporizers",
-            "displayName": "Plume: Orange Apricot - Hash Rosin Disposable",
+            "displayName": "Orange Apricot 1g Hash Rosin Cartridge (Plume)",
             "weightGrams": 1,
-            "lowPrice": 22.5,
+            "lowPrice": 24,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 5
+          },
+          {
+            "matchKey": "plume|blueberry cured resin|indica|vaporizers",
+            "displayName": "Plume: Blueberry - Cured Resin Cartridge",
+            "weightGrams": 1,
+            "lowPrice": 15,
+            "cheapestStores": [
+              "kush21-everett-evergreen",
+              "local-roots-everett-128th"
+            ],
+            "storesCarrying": 2
           },
           {
             "matchKey": "plume|boof live resin s super|n a|vaporizers",
@@ -36554,9 +36932,10 @@
             "matchKey": "plume|cake cured resin wedding|hybrid|vaporizers",
             "displayName": "Plume: Wedding Cake - Cured Resin Cartridge",
             "weightGrams": 1,
-            "lowPrice": 12.5,
+            "lowPrice": 15,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kush21-everett-evergreen",
+              "kushmart-north"
             ],
             "storesCarrying": 2
           },
@@ -36601,6 +36980,17 @@
             "storesCarrying": 2
           },
           {
+            "matchKey": "plume|cured kush orange resin|indica|vaporizers",
+            "displayName": "Orange Kush Cured Resin Cartridge (Plume)",
+            "weightGrams": 1,
+            "lowPrice": 15,
+            "cheapestStores": [
+              "kushmart-north",
+              "local-roots-everett-128th"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "plume|cured lights northern resin|indica|vaporizers",
             "displayName": "Plume: Northern Lights - Cured Resin Cartridge",
             "weightGrams": 1,
@@ -36625,9 +37015,10 @@
             "matchKey": "plume|daddy grand hash rosin sherbet|indica|vaporizers",
             "displayName": "Plume: Grand Daddy Sherbet - Hash Rosin Disposable",
             "weightGrams": 1,
-            "lowPrice": 22.5,
+            "lowPrice": 27,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kush21-everett-evergreen",
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 4
           },
@@ -36635,7 +37026,7 @@
             "matchKey": "plume|gelato jack live resin|n a|vaporizers",
             "displayName": "Gelato Jack 1g Live Resin Cartridge (Plume)",
             "weightGrams": 1,
-            "lowPrice": 15,
+            "lowPrice": 18,
             "cheapestStores": [
               "local-roots-everett-128th"
             ],
@@ -36665,7 +37056,7 @@
             "matchKey": "plume|gorilla live resin sundae|indica|vaporizers",
             "displayName": "Plume: Gorilla Sundae - Live Resin Cartridge",
             "weightGrams": 1,
-            "lowPrice": 15,
+            "lowPrice": 18,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -36733,22 +37124,32 @@
           },
           {
             "matchKey": "plume|hash rosin smacks|hybrid|vaporizers",
-            "displayName": "Smacks Hash Rosin Disposable (Plume)",
+            "displayName": "Smacks 1g Hash Rosin Cartridge (Plume)",
             "weightGrams": 1,
-            "lowPrice": 27,
+            "lowPrice": 24,
             "cheapestStores": [
-              "kushmart-north",
+              "local-roots-everett-128th"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "plume|hash rosin sour tangie|n a|vaporizers",
+            "displayName": "Plume: Sour Tangie - Hash Rosin Cartridge",
+            "weightGrams": 1,
+            "lowPrice": 24,
+            "cheapestStores": [
+              "kush21-everett-evergreen",
               "local-roots-everett-128th"
             ],
             "storesCarrying": 2
           },
           {
             "matchKey": "plume|hash rosin sour tangie|sativa|vaporizers",
-            "displayName": "Plume: Sour Tangie - Hash Rosin Disposable",
+            "displayName": "Sour Tangie Hash Rosin Cartridge (Plume)",
             "weightGrams": 1,
-            "lowPrice": 22.5,
+            "lowPrice": 24,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kushmart-north"
             ],
             "storesCarrying": 3
           },
@@ -36786,9 +37187,10 @@
             "matchKey": "plume|live marker permanent resin|indica|vaporizers",
             "displayName": "Plume: Permanent Marker - Live Resin Disposable",
             "weightGrams": 1,
-            "lowPrice": 20,
+            "lowPrice": 24,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kush21-everett-evergreen",
+              "kushmart-north"
             ],
             "storesCarrying": 2
           },
@@ -36958,11 +37360,10 @@
           },
           {
             "matchKey": "presidential|13 blunt moon rock xj|sativa|pre rolls",
-            "displayName": "Presidential: XJ-13 - Moon Rock Infused Blunt",
+            "displayName": "XJ-13 Moon Rock Blunt (Presidential)",
             "weightGrams": 1,
             "lowPrice": 15,
             "cheapestStores": [
-              "kush21-everett-evergreen",
               "kushmart-north",
               "local-roots-everett-128th"
             ],
@@ -37044,11 +37445,10 @@
           },
           {
             "matchKey": "presidential|blunt goo gorilla moon rock|hybrid|pre rolls",
-            "displayName": "Presidential: Gorilla Goo - Moon Rock Infused Blunt",
+            "displayName": "Gorilla Goo Moon Rock Blunt (Presidential)",
             "weightGrams": 1,
             "lowPrice": 15,
             "cheapestStores": [
-              "kush21-everett-evergreen",
               "kushmart-north"
             ],
             "storesCarrying": 2
@@ -37098,11 +37498,10 @@
           },
           {
             "matchKey": "presidential|blunt moon rock xxx|indica|pre rolls",
-            "displayName": "Presidential: XXX - Moon Rock Infused Blunt",
+            "displayName": "XXX Moon Rock Blunt (Presidential)",
             "weightGrams": 1,
             "lowPrice": 15,
             "cheapestStores": [
-              "kush21-everett-evergreen",
               "kushmart-north",
               "local-roots-everett-128th"
             ],
@@ -37205,6 +37604,18 @@
         "productCount": 7,
         "storesCarrying": [
           "kush21-everett-evergreen"
+        ],
+        "tiers": [
+          28
+        ],
+        "cheapestCells": []
+      },
+      {
+        "brandKey": "private reserve ounce",
+        "displayBrand": "Private Reserve Ounce",
+        "productCount": 1,
+        "storesCarrying": [
+          "local-roots-everett-128th"
         ],
         "tiers": [
           28
@@ -37921,7 +38332,7 @@
       {
         "brandKey": "regulator",
         "displayBrand": "Regulator",
-        "productCount": 293,
+        "productCount": 296,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -38140,6 +38551,7 @@
             "weightGrams": 1,
             "lowPrice": 14,
             "cheapestStores": [
+              "hangar-420-everett",
               "hangar-420-west"
             ],
             "storesCarrying": 2
@@ -38221,20 +38633,22 @@
           },
           {
             "matchKey": "regulator 2 0|i octane purple spp sugar wax|n a|concentrate|sugar",
-            "displayName": "SPP Regulator 2.0 Purple Octane Sugar wax 1g (I)",
+            "displayName": "SPP Regulator Purple Octane (I) Sugar Wax 1g",
             "weightGrams": 1,
             "lowPrice": 14,
             "cheapestStores": [
+              "hangar-420-everett",
               "hangar-420-west"
             ],
             "storesCarrying": 2
           },
           {
             "matchKey": "regulator 2 0|i rhino spp sugar wax white|n a|concentrate|sugar",
-            "displayName": "SPP Regulator 2.0 White Rhino Sugar Wax 1g (I)",
+            "displayName": "SPP Regulator White Rhino (I) Sugar Wax 1g",
             "weightGrams": 1,
             "lowPrice": 14,
             "cheapestStores": [
+              "hangar-420-everett",
               "hangar-420-west"
             ],
             "storesCarrying": 2
@@ -38620,7 +39034,7 @@
             "matchKey": "rove|cough diamond live melted reload resin strawberry vaporizer|sativa|vaporizers",
             "displayName": "Strawberry Cough | Melted Diamond Live Resin Vaporizer | 1g (Reload)",
             "weightGrams": 1,
-            "lowPrice": 32.5,
+            "lowPrice": 39,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -38692,7 +39106,7 @@
             "matchKey": "rove|diamond lights live melted northern reload resin vaporizer|indica|vaporizers",
             "displayName": "Northern Lights | Melted Diamond Live Resin Vaporizer | 1.0g (Reload)",
             "weightGrams": 1,
-            "lowPrice": 32.5,
+            "lowPrice": 39,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -38702,7 +39116,7 @@
             "matchKey": "rove|diamond live magic melon melted reload resin vaporizer|hybrid|vaporizers",
             "displayName": "Magic Melon | Melted Diamond Live Resin Vaporizer | 1.0g (Reload)",
             "weightGrams": 1,
-            "lowPrice": 32.5,
+            "lowPrice": 39,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -38732,7 +39146,7 @@
             "matchKey": "rove|diamond live melted og reload resin skywalker vaporizer|indica|vaporizers",
             "displayName": "Skywalker OG | Melted Diamond Live Resin Vaporizer | 1.0g (Reload)",
             "weightGrams": 1,
-            "lowPrice": 32.5,
+            "lowPrice": 39,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -39414,11 +39828,11 @@
           },
           {
             "matchKey": "seattle s private reserve|live resin runtz sour|n a|vaporizers",
-            "displayName": "Seattle's Private Reserve: Sour Runtz - Live Resin Cartridge",
+            "displayName": "Sour Runtz 1g Live Resin Cartridge (Seattle Private Reserve)",
             "weightGrams": 1,
-            "lowPrice": 30,
+            "lowPrice": 34.2,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 2
           },
@@ -39467,9 +39881,10 @@
             "matchKey": "seattle s private reserve|dutch treat|hybrid|flower",
             "displayName": "Dutch Treat (Seattle's Private Reserve)",
             "weightGrams": 3.5,
-            "lowPrice": 22.5,
+            "lowPrice": 27,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kush21-everett-evergreen",
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 2
           },
@@ -39604,7 +40019,7 @@
             "matchKey": "shatter j s|blunt guava melon|n a|pre rolls",
             "displayName": "Shatter J's: Melon Guava - Infused Blunt",
             "weightGrams": 1,
-            "lowPrice": 11,
+            "lowPrice": 13.2,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -40469,7 +40884,7 @@
             "matchKey": "skord|ceramic souped up|n a|vaporizers",
             "displayName": "Skord: Souped Up - Ceramic Cartridge",
             "weightGrams": 1,
-            "lowPrice": 35,
+            "lowPrice": 42,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -40955,7 +41370,7 @@
             "storesCarrying": 2
           },
           {
-            "matchKey": "sky high gardens|silver stardawg super|hybrid|flower",
+            "matchKey": "sky high gardens|silver stardawg super|sativa|flower",
             "displayName": "Super Silver Stardawg",
             "weightGrams": 1,
             "lowPrice": 12,
@@ -41084,7 +41499,7 @@
             "storesCarrying": 2
           },
           {
-            "matchKey": "sky high gardens|silver stardawg super|hybrid|flower",
+            "matchKey": "sky high gardens|silver stardawg super|sativa|flower",
             "displayName": "Super Silver Stardawg",
             "weightGrams": 3.5,
             "lowPrice": 40,
@@ -41160,7 +41575,7 @@
             "storesCarrying": 2
           },
           {
-            "matchKey": "sky high gardens|silver stardawg super|hybrid|flower",
+            "matchKey": "sky high gardens|silver stardawg super|sativa|flower",
             "displayName": "Super Silver Stardawg",
             "weightGrams": 7,
             "lowPrice": 78.4,
@@ -41200,7 +41615,7 @@
       {
         "brandKey": "slab mechanix",
         "displayBrand": "Slab Mechanix",
-        "productCount": 96,
+        "productCount": 97,
         "storesCarrying": [
           "hangar-420-everett",
           "hangar-420-west",
@@ -41467,7 +41882,7 @@
             "matchKey": "slush|chew flavored high honeydew|hybrid|vaporizers",
             "displayName": "Slush: HoneyDew High-Chew - Flavored Cartridge",
             "weightGrams": 1,
-            "lowPrice": 21,
+            "lowPrice": 25.2,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -41475,41 +41890,41 @@
           },
           {
             "matchKey": "slush|flavored grape soda|indica|vaporizers",
-            "displayName": "Slush: Grape Soda - Flavored Cartridge",
+            "displayName": "Grape Soda 1g Flavored Cartridge (Slush)",
             "weightGrams": 1,
-            "lowPrice": 21,
+            "lowPrice": 24,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 2
           },
           {
             "matchKey": "slush|flavored mango punch|sativa|vaporizers",
-            "displayName": "Slush: Mango Punch - Flavored Cartridge",
+            "displayName": "Mango Punch 1g Flavored Cartridge (Slush)",
             "weightGrams": 1,
-            "lowPrice": 21,
+            "lowPrice": 24,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 2
           },
           {
             "matchKey": "slush|flavored peach ringz|n a|vaporizers",
-            "displayName": "Slush: Peach Ringz - Flavored Cartridge",
+            "displayName": "Peach Ringz 1g Flavored Cartridge (Slush)",
             "weightGrams": 1,
-            "lowPrice": 21,
+            "lowPrice": 24,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 2
           },
           {
             "matchKey": "slush|flavored watermelon wave|hybrid|vaporizers",
-            "displayName": "Slush: Watermelon Wave - Flavored Cartridge",
+            "displayName": "Watermelon Wave 1g Flavored Cartridge (Slush)",
             "weightGrams": 1,
-            "lowPrice": 21,
+            "lowPrice": 24,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 2
           }
@@ -41594,7 +42009,7 @@
       {
         "brandKey": "smokey point productions",
         "displayBrand": "Smokey Point Productions",
-        "productCount": 301,
+        "productCount": 312,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -41618,6 +42033,16 @@
         ],
         "cheapestCells": [
           {
+            "matchKey": "smokey point productions|ape grape live resin|indica|vaporizers",
+            "displayName": "Grape Ape 1g Live Resin Cartridge (Smokey Point Productions)",
+            "weightGrams": 1,
+            "lowPrice": 27,
+            "cheapestStores": [
+              "local-roots-everett-128th"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "smokey point productions|banana cupcake doh lemon live resin|sativa|vaporizers",
             "displayName": "Banana Lemon Cupcake Live Resin Cartridge | 1g (DOH)",
             "weightGrams": 1,
@@ -41636,17 +42061,6 @@
             "cheapestStores": [
               "hangar-420-everett",
               "hangar-420-west"
-            ],
-            "storesCarrying": 2
-          },
-          {
-            "matchKey": "smokey point productions|cookies doh live resin tropicana|n a|vaporizers",
-            "displayName": "Tropicana Cookies Live Resin Cartridge | 1g (DOH)",
-            "weightGrams": 1,
-            "lowPrice": 40,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
             ],
             "storesCarrying": 2
           },
@@ -42399,7 +42813,7 @@
       {
         "brandKey": "soulshine cannabis",
         "displayBrand": "Soulshine Cannabis",
-        "productCount": 90,
+        "productCount": 101,
         "storesCarrying": [
           "2020-solutions-pacific-highway",
           "hangar-420-west",
@@ -42837,7 +43251,7 @@
       {
         "brandKey": "subx",
         "displayBrand": "SUBX",
-        "productCount": 625,
+        "productCount": 626,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -42914,7 +43328,7 @@
             "matchKey": "subx|classic cured orange poison select|sativa|vaporizers",
             "displayName": "SubX Select: Orange Poison - Cured Classic Disposable",
             "weightGrams": 1,
-            "lowPrice": 25,
+            "lowPrice": 30,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -42924,7 +43338,7 @@
             "matchKey": "subx|cured diamond signature subzero|n a|vaporizers",
             "displayName": "SubX Signature: SubZero - Cured Diamond Cartridge",
             "weightGrams": 1,
-            "lowPrice": 27.5,
+            "lowPrice": 33,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -43113,11 +43527,11 @@
           },
           {
             "matchKey": "subx|gmo|indica|flower",
-            "displayName": "SubX: GMO",
+            "displayName": "GMO 3.5g Flower (Subx)",
             "weightGrams": 3.5,
-            "lowPrice": 28,
+            "lowPrice": 30,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 2
           },
@@ -43163,11 +43577,11 @@
           },
           {
             "matchKey": "subx|purple rain|n a|flower",
-            "displayName": "SubX: Purple Rain",
+            "displayName": "Purple Rain 3.5g Flower (SUBX)",
             "weightGrams": 3.5,
-            "lowPrice": 28,
+            "lowPrice": 30,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 3
           },
@@ -43853,7 +44267,6 @@
             "weightGrams": 1,
             "lowPrice": 27,
             "cheapestStores": [
-              "kush21-everett-evergreen",
               "local-roots-everett-128th"
             ],
             "storesCarrying": 2
@@ -44005,7 +44418,6 @@
             "weightGrams": 1,
             "lowPrice": 27,
             "cheapestStores": [
-              "kush21-everett-evergreen",
               "local-roots-everett-128th"
             ],
             "storesCarrying": 2
@@ -44024,7 +44436,7 @@
             "matchKey": "super fog|cannabinoids jef plus targeted turn up vibes|n a|vaporizers",
             "displayName": "VIBES Targeted Cannabinoids 1g Jefé Plus - Turn Up",
             "weightGrams": 1,
-            "lowPrice": 27,
+            "lowPrice": 32.4,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -44105,7 +44517,7 @@
             "matchKey": "super fog|cloud ion rainbow tank twisted|sativa|vaporizers",
             "displayName": "TWISTED 1g Ion Tank - Rainbow Cloud",
             "weightGrams": 1,
-            "lowPrice": 25,
+            "lowPrice": 30,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -44165,7 +44577,7 @@
             "matchKey": "super fog|diamonds fr jef liquid plus punch t twisted|indica|vaporizers",
             "displayName": "TWISTED Liquid Diamonds 1g Jefé Plus - Früt Punch",
             "weightGrams": 1,
-            "lowPrice": 25,
+            "lowPrice": 30,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -44175,7 +44587,7 @@
             "matchKey": "super fog|diamonds halos jef liquid peach plus twisted|indica|vaporizers",
             "displayName": "TWISTED Liquid Diamonds 1g Jefé Plus - Peach Halos",
             "weightGrams": 1,
-            "lowPrice": 25,
+            "lowPrice": 30,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -44215,9 +44627,9 @@
             "matchKey": "super fog|diamonds jef liquid plus swirly temple twisted|hybrid|vaporizers",
             "displayName": "TWISTED Liquid Diamonds 1g Jefé Plus - Swirly Temple",
             "weightGrams": 1,
-            "lowPrice": 25,
+            "lowPrice": 27,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 2
           },
@@ -44296,9 +44708,9 @@
             "matchKey": "super fog|extract gas high jef loud plus stoopid terpene|hybrid|vaporizers",
             "displayName": "LOUD High Terpene Extract 1g Jefé Plus - Stoopid Gas",
             "weightGrams": 1,
-            "lowPrice": 27.5,
+            "lowPrice": 30,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 3
           },
@@ -44326,9 +44738,9 @@
             "matchKey": "super fog|extract high jef loud notorious plus terpene thc|indica|vaporizers",
             "displayName": "LOUD High Terpene Extract 1g Jefé Plus - Notorious THC",
             "weightGrams": 1,
-            "lowPrice": 27.5,
+            "lowPrice": 30,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 2
           },
@@ -44407,9 +44819,9 @@
             "matchKey": "super fog|fire ion marker permanent tank|indica|vaporizers",
             "displayName": "FIRE 1g Ion Tank - Permanent Marker",
             "weightGrams": 1,
-            "lowPrice": 22.5,
+            "lowPrice": 24,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 6
           },
@@ -44457,9 +44869,9 @@
             "matchKey": "super fog|ion kush loud strawberry tank|sativa|vaporizers",
             "displayName": "LOUD 1g Ion Tank - Strawberry Kush",
             "weightGrams": 1,
-            "lowPrice": 25,
+            "lowPrice": 27,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 4
           },
@@ -44978,17 +45390,6 @@
           {
             "matchKey": "super fog vibes by mfused|1 1 1 cbdlcbg chill doh out|hybrid|vaporizers",
             "displayName": "Chill Out Disposable 1:1:1 CBDlCBG | 1g (DOH)",
-            "weightGrams": 1,
-            "lowPrice": 36,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          },
-          {
-            "matchKey": "super fog vibes by mfused|1 1 4 cbd cbn doh down e pen turn|indica hybrid|vaporizers",
-            "displayName": "Turn Down E-Pen 4:1:1 CBN+CBD | 1g (DOH)",
             "weightGrams": 1,
             "lowPrice": 36,
             "cheapestStores": [
@@ -46215,7 +46616,7 @@
       {
         "brandKey": "swifts",
         "displayBrand": "Swifts",
-        "productCount": 183,
+        "productCount": 184,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -46317,7 +46718,7 @@
       {
         "brandKey": "tasty terps",
         "displayBrand": "Tasty Terps",
-        "productCount": 142,
+        "productCount": 143,
         "storesCarrying": [
           "cannazone-bellingham",
           "cannazone-old-hwy-99",
@@ -46610,11 +47011,10 @@
         "cheapestCells": [
           {
             "matchKey": "the capsule collection|code red|n a|vaporizers",
-            "displayName": "The Capsule Collection: Code Red - Disposable",
+            "displayName": "Code Red 1g Disposable (The Capsule Collection)",
             "weightGrams": 1,
             "lowPrice": 30,
             "cheapestStores": [
-              "kush21-everett-evergreen",
               "local-roots-everett-128th"
             ],
             "storesCarrying": 2
@@ -47091,7 +47491,7 @@
             "matchKey": "the farmers market|berry blast flavored|n a|vaporizers",
             "displayName": "The Farmers Market: Berry Blast - Flavored Cartridge",
             "weightGrams": 1,
-            "lowPrice": 15,
+            "lowPrice": 18,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -47101,7 +47501,7 @@
             "matchKey": "the farmers market|blueberry ipr muffin og|hybrid|pre rolls",
             "displayName": "The Farmers Market: Blueberry Muffin OG - IPR",
             "weightGrams": 1,
-            "lowPrice": 5,
+            "lowPrice": 6,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -47142,9 +47542,10 @@
             "matchKey": "the farmers market|flavored headz melon sour|sativa|vaporizers",
             "displayName": "The Farmers Market: Sour Melon Headz - Flavored Cartridge",
             "weightGrams": 1,
-            "lowPrice": 20,
+            "lowPrice": 24,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kush21-everett-evergreen",
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 2
           },
@@ -47265,7 +47666,7 @@
             "matchKey": "thrills|all burger donny erasr flavorstrains in one|indica|vaporizers",
             "displayName": "Donny Burger - FlavorStrains Erasr - All-In-One - 1g",
             "weightGrams": 1,
-            "lowPrice": 20,
+            "lowPrice": 24,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -47285,9 +47686,10 @@
             "matchKey": "thrills|all cookies erasr flavorstrains in one tropicana|sativa|vaporizers",
             "displayName": "Tropicana Cookies - FlavorStrains Erasr - All-In-One - 1g",
             "weightGrams": 1,
-            "lowPrice": 20,
+            "lowPrice": 22.4,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "2020-solutions-north-bellingham",
+              "2020-solutions-pacific-highway"
             ],
             "storesCarrying": 6
           },
@@ -47315,7 +47717,7 @@
             "matchKey": "thrills|all erasr flavorstrains in island one skunk sweet|sativa|vaporizers",
             "displayName": "Sweet Island Skunk - FlavorStrains Erasr - All-In-One - 1g",
             "weightGrams": 1,
-            "lowPrice": 20,
+            "lowPrice": 24,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -47325,7 +47727,7 @@
             "matchKey": "thrills|all erasr flavorstrains in jelly one strawberry|hybrid|vaporizers",
             "displayName": "Strawberry Jelly - FlavorStrains Erasr - All-In-One - 1g",
             "weightGrams": 1,
-            "lowPrice": 20,
+            "lowPrice": 24,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -47379,8 +47781,7 @@
             "lowPrice": 15,
             "cheapestStores": [
               "hangar-420-everett",
-              "hangar-420-west",
-              "kush21-everett-evergreen"
+              "hangar-420-west"
             ],
             "storesCarrying": 7
           },
@@ -47467,8 +47868,7 @@
             "lowPrice": 15,
             "cheapestStores": [
               "hangar-420-everett",
-              "hangar-420-west",
-              "kush21-everett-evergreen"
+              "hangar-420-west"
             ],
             "storesCarrying": 7
           },
@@ -47487,7 +47887,7 @@
             "matchKey": "thrills|flavorstrains thrizzlers|hybrid|vaporizers",
             "displayName": "Thrizzlers - FlavorStrains - Cartridge - 1g",
             "weightGrams": 1,
-            "lowPrice": 9,
+            "lowPrice": 10.8,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -47569,7 +47969,7 @@
             "matchKey": "thrills|banana berry diesel gelato h i nyc p7 runtz s threesome x x|thc|vaporizers",
             "displayName": "P7 - (S) NYC Diesel x (H) Banana Runtz x (I) Berry Gelato - Thrills - Threesome 3 Pack - 3g",
             "weightGrams": 3,
-            "lowPrice": 35,
+            "lowPrice": 42,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -47589,7 +47989,7 @@
             "matchKey": "thrills|cookies express h i lime p8 pineapple s sorbet sugar threesome x x|thc|vaporizers",
             "displayName": "P8 - (S) Pineapple Express x (H) Sugar Cookies x (I) Lime Sorbet - Thrills - Threesome 3 Pack - 3g",
             "weightGrams": 3,
-            "lowPrice": 35,
+            "lowPrice": 42,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -47866,7 +48266,7 @@
             "matchKey": "toasted|boi og rude wax|indica|concentrate|wax",
             "displayName": "Toasted: Rude Boi OG - Wax",
             "weightGrams": 1,
-            "lowPrice": 3.75,
+            "lowPrice": 4.5,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -47912,7 +48312,7 @@
       {
         "brandKey": "top shelf",
         "displayBrand": "Top Shelf",
-        "productCount": 77,
+        "productCount": 86,
         "storesCarrying": [
           "hangar-420-everett",
           "salish-coast-cannabis",
@@ -48321,11 +48721,11 @@
           },
           {
             "matchKey": "torus|jasmine mochi|n a|flower",
-            "displayName": "Torus: Jasmine Mochi",
+            "displayName": "Jasmine Mochi 3.5g Flower (Torus)",
             "weightGrams": 3.5,
-            "lowPrice": 33,
+            "lowPrice": 36,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 4
           },
@@ -48426,11 +48826,11 @@
           },
           {
             "matchKey": "torus|pop push strawberry|hybrid|flower",
-            "displayName": "Torus: Strawberry Push Pop",
+            "displayName": "Strawberry Push Pop 3.5g Flower (Torus)",
             "weightGrams": 3.5,
-            "lowPrice": 33,
+            "lowPrice": 36,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "local-roots-everett-128th"
             ],
             "storesCarrying": 4
           }
@@ -48645,11 +49045,11 @@
           },
           {
             "matchKey": "treats|crunch fruit wax|hybrid|concentrate|wax",
-            "displayName": "Fruit Crunch 1g Wax (Treats)",
+            "displayName": "Treats: Fruit Crunch - Wax",
             "weightGrams": 1,
-            "lowPrice": 7.5,
+            "lowPrice": 8,
             "cheapestStores": [
-              "local-roots-everett-128th"
+              "kush21-everett-evergreen"
             ],
             "storesCarrying": 2
           }
@@ -49514,14 +49914,60 @@
       {
         "brandKey": "value ounce",
         "displayBrand": "Value Ounce",
-        "productCount": 6,
+        "productCount": 12,
         "storesCarrying": [
-          "kush21-everett-evergreen"
+          "kush21-everett-evergreen",
+          "local-roots-everett-128th"
         ],
         "tiers": [
           28
         ],
-        "cheapestCells": []
+        "cheapestCells": [
+          {
+            "matchKey": "value ounce|animal face|hybrid|flower",
+            "displayName": "Value Ounce: Animal Face",
+            "weightGrams": 28,
+            "lowPrice": 12,
+            "cheapestStores": [
+              "kush21-everett-evergreen",
+              "local-roots-everett-128th"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "value ounce|cake wedding|indica|flower",
+            "displayName": "Value Ounce: Wedding Cake",
+            "weightGrams": 28,
+            "lowPrice": 12,
+            "cheapestStores": [
+              "kush21-everett-evergreen",
+              "local-roots-everett-128th"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "value ounce|crack green|sativa|flower",
+            "displayName": "Value Ounce: Green Crack",
+            "weightGrams": 28,
+            "lowPrice": 12,
+            "cheapestStores": [
+              "kush21-everett-evergreen",
+              "local-roots-everett-128th"
+            ],
+            "storesCarrying": 2
+          },
+          {
+            "matchKey": "value ounce|diesel sour|sativa|flower",
+            "displayName": "Value Ounce: Sour Diesel",
+            "weightGrams": 28,
+            "lowPrice": 12,
+            "cheapestStores": [
+              "kush21-everett-evergreen",
+              "local-roots-everett-128th"
+            ],
+            "storesCarrying": 2
+          }
+        ]
       },
       {
         "brandKey": "vapor",
@@ -49972,7 +50418,7 @@
               "2020-solutions-north-bellingham",
               "2020-solutions-pacific-highway"
             ],
-            "storesCarrying": 7
+            "storesCarrying": 6
           },
           {
             "matchKey": "viking cannabis|cherries white|hybrid|flower",
@@ -50216,7 +50662,7 @@
       {
         "brandKey": "walden",
         "displayBrand": "Walden",
-        "productCount": 291,
+        "productCount": 292,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -50342,7 +50788,7 @@
             "matchKey": "walden|honey runtz wax|hybrid|concentrate|wax",
             "displayName": "Walden: Honey Runtz - Wax",
             "weightGrams": 1,
-            "lowPrice": 8,
+            "lowPrice": 9.6,
             "cheapestStores": [
               "kush21-everett-evergreen"
             ],
@@ -51115,9 +51561,9 @@
         "cheapestCells": []
       }
     ],
-    "totalBrands": 1183,
-    "multiStoreBrandCount": 621,
-    "cheapestCellCount": 3274,
+    "totalBrands": 1184,
+    "multiStoreBrandCount": 620,
+    "cheapestCellCount": 3317,
     "nullBrandProductCount": 1859,
     "unmatchedProductCount": 0
   },
@@ -51132,9 +51578,9 @@
     }
   ],
   "coverage": {
-    "totalBrands": 1183,
-    "multiStoreBrandCount": 621,
-    "cheapestCellCount": 3274
+    "totalBrands": 1184,
+    "multiStoreBrandCount": 620,
+    "cheapestCellCount": 3317
   },
-  "generatedAt": "2026-10-02T11:00:35.506Z"
+  "generatedAt": "2026-10-03T11:00:25.539Z"
 }
