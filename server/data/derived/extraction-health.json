@@ -4,15 +4,15 @@
       {
         "dispensaryId": "happy-time-mt-vernon",
         "status": "ok",
-        "todayCount": 601,
+        "todayCount": 592,
         "trailingMedian": 602.5,
         "observedDaysInWindow": 14
       },
       {
         "dispensaryId": "cannazone-old-hwy-99",
         "status": "ok",
-        "todayCount": 1367,
-        "trailingMedian": 1488,
+        "todayCount": 1331,
+        "trailingMedian": 1480.5,
         "observedDaysInWindow": 14
       },
       {
@@ -32,78 +32,78 @@
       {
         "dispensaryId": "kushmart-north",
         "status": "ok",
-        "todayCount": 1437,
-        "trailingMedian": 1573,
+        "todayCount": 1396,
+        "trailingMedian": 1519.5,
         "observedDaysInWindow": 14
       },
       {
         "dispensaryId": "local-roots-everett-128th",
         "status": "ok",
-        "todayCount": 2121,
+        "todayCount": 2078,
         "trailingMedian": 1891.5,
         "observedDaysInWindow": 14
       },
       {
         "dispensaryId": "hangar-420-everett",
         "status": "ok",
-        "todayCount": 1357,
-        "trailingMedian": 947,
+        "todayCount": 1339,
+        "trailingMedian": 957.5,
         "observedDaysInWindow": 14
       },
       {
         "dispensaryId": "hangar-420-west",
         "status": "ok",
-        "todayCount": 1618,
+        "todayCount": 1601,
         "trailingMedian": 1498,
         "observedDaysInWindow": 14
       },
       {
         "dispensaryId": "evolve-cannabis-bellingham",
         "status": "ok",
-        "todayCount": 127,
+        "todayCount": 124,
         "trailingMedian": 123,
         "observedDaysInWindow": 14
       },
       {
         "dispensaryId": "cannazone-bellingham",
         "status": "ok",
-        "todayCount": 2299,
+        "todayCount": 2278,
         "trailingMedian": 2272,
         "observedDaysInWindow": 14
       },
       {
         "dispensaryId": "2020-solutions-north-bellingham",
         "status": "ok",
-        "todayCount": 2245,
-        "trailingMedian": 2231,
+        "todayCount": 2220,
+        "trailingMedian": 2239.5,
         "observedDaysInWindow": 14
       },
       {
         "dispensaryId": "2020-solutions-pacific-highway",
         "status": "ok",
-        "todayCount": 2594,
-        "trailingMedian": 2572,
+        "todayCount": 2577,
+        "trailingMedian": 2586.5,
         "observedDaysInWindow": 14
       },
       {
         "dispensaryId": "starbuds-bellingham",
         "status": "ok",
         "todayCount": 1016,
-        "trailingMedian": 1091.5,
+        "trailingMedian": 1074.5,
         "observedDaysInWindow": 14
       },
       {
         "dispensaryId": "salish-coast-cannabis",
         "status": "ok",
-        "todayCount": 1553,
+        "todayCount": 1518,
         "trailingMedian": 1493,
         "observedDaysInWindow": 14
       },
       {
         "dispensaryId": "the-joint-everett",
-        "status": "ok",
-        "todayCount": 2015,
-        "trailingMedian": 2060.5,
+        "status": "suspected-extraction-failure",
+        "todayCount": 107,
+        "trailingMedian": 2053,
         "observedDaysInWindow": 14
       },
       {
@@ -116,8 +116,8 @@
       {
         "dispensaryId": "kush21-everett-evergreen",
         "status": "ok",
-        "todayCount": 2376,
-        "trailingMedian": 2301.5,
+        "todayCount": 2354,
+        "trailingMedian": 2328,
         "observedDaysInWindow": 14
       },
       {
@@ -185,8 +185,8 @@
       }
     ],
     "totalStores": 26,
-    "okCount": 16,
-    "suspectedCount": 0,
+    "okCount": 15,
+    "suspectedCount": 1,
     "insufficientHistoryCount": 10
   },
   "excluded": [
@@ -197,9 +197,9 @@
   ],
   "coverage": {
     "totalStores": 26,
-    "okCount": 16,
-    "suspectedCount": 0,
+    "okCount": 15,
+    "suspectedCount": 1,
     "insufficientHistoryCount": 10
   },
-  "generatedAt": "2026-10-04T11:00:12.733Z"
+  "generatedAt": "2026-10-05T11:00:23.933Z"
 }
