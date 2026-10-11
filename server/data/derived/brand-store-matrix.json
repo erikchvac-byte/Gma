@@ -1284,7 +1284,7 @@
       {
         "brandKey": "alpenglow",
         "displayBrand": "Alpenglow",
-        "productCount": 14,
+        "productCount": 30,
         "storesCarrying": [
           "salish-coast-cannabis"
         ],
@@ -11973,7 +11973,7 @@
       {
         "brandKey": "equinox gardens",
         "displayBrand": "Equinox Gardens",
-        "productCount": 163,
+        "productCount": 164,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -14551,7 +14551,7 @@
       {
         "brandKey": "flip side",
         "displayBrand": "Flip Side",
-        "productCount": 464,
+        "productCount": 468,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -18112,17 +18112,6 @@
             "storesCarrying": 2
           },
           {
-            "matchKey": "good vibe tribe|cake double kush|indica|flower",
-            "displayName": "Double Kush Cake",
-            "weightGrams": 14,
-            "lowPrice": 41.6,
-            "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
-            ],
-            "storesCarrying": 2
-          },
-          {
             "matchKey": "good vibe tribe|diesel sour|sativa|flower",
             "displayName": "Sour Diesel",
             "weightGrams": 14,
@@ -18514,7 +18503,7 @@
       {
         "brandKey": "green haven",
         "displayBrand": "Green Haven",
-        "productCount": 217,
+        "productCount": 218,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -18836,6 +18825,16 @@
             "storesCarrying": 2
           },
           {
+            "matchKey": "green haven|orange pop push|n a|flower",
+            "displayName": "Green Haven: Orange Push Pop",
+            "weightGrams": 14,
+            "lowPrice": 62.5,
+            "cheapestStores": [
+              "kush21-everett-evergreen"
+            ],
+            "storesCarrying": 2
+          },
+          {
             "matchKey": "green haven|bike my s where|sativa|flower",
             "displayName": "Where's My Bike?",
             "weightGrams": 28,
@@ -18848,14 +18847,13 @@
           },
           {
             "matchKey": "green haven|orange pop push|n a|flower",
-            "displayName": "Orange Push Pop",
+            "displayName": "Green Haven: Orange Push Pop",
             "weightGrams": 28,
-            "lowPrice": 160,
+            "lowPrice": 125,
             "cheapestStores": [
-              "2020-solutions-north-bellingham",
-              "2020-solutions-pacific-highway"
+              "kush21-everett-evergreen"
             ],
-            "storesCarrying": 2
+            "storesCarrying": 3
           },
           {
             "matchKey": "green haven|pancakes|indica|flower",
@@ -20701,11 +20699,14 @@
       {
         "brandKey": "high five farms",
         "displayBrand": "High Five Farms",
-        "productCount": 3,
+        "productCount": 27,
         "storesCarrying": [
-          "kushmart-north"
+          "kushmart-north",
+          "salish-coast-cannabis"
         ],
         "tiers": [
+          1,
+          3.5,
           7,
           28
         ],
@@ -21780,7 +21781,7 @@
       {
         "brandKey": "honeydew",
         "displayBrand": "Honeydew",
-        "productCount": 218,
+        "productCount": 220,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -22198,7 +22199,7 @@
       {
         "brandKey": "hustler s ambition",
         "displayBrand": "Hustler's Ambition",
-        "productCount": 630,
+        "productCount": 631,
         "storesCarrying": [
           "cannazone-bellingham",
           "cannazone-old-hwy-99",
@@ -24808,7 +24809,7 @@
         "cheapestCells": [
           {
             "matchKey": "legends|animal doh mints|hybrid|flower",
-            "displayName": "Animal Mints (DOH)",
+            "displayName": "Animal Mints | 3.5g (DOH)",
             "weightGrams": 3.5,
             "lowPrice": 20,
             "cheapestStores": [
@@ -24955,7 +24956,7 @@
           },
           {
             "matchKey": "legends|animal doh mints|hybrid|flower",
-            "displayName": "Animal Mints (DOH)",
+            "displayName": "Animal Mints | 14g (DOH)",
             "weightGrams": 14,
             "lowPrice": 64,
             "cheapestStores": [
@@ -27363,7 +27364,7 @@
       {
         "brandKey": "method",
         "displayBrand": "Method",
-        "productCount": 197,
+        "productCount": 198,
         "storesCarrying": [
           "hangar-420-everett",
           "hangar-420-west",
@@ -27461,10 +27462,9 @@
             "matchKey": "method|bl magnolia methd midnight|n a|flower",
             "displayName": "METHD BL Midnight Magnolia 3.5g",
             "weightGrams": 3.5,
-            "lowPrice": 55,
+            "lowPrice": 54,
             "cheapestStores": [
-              "hangar-420-everett",
-              "hangar-420-west"
+              "hangar-420-everett"
             ],
             "storesCarrying": 2
           },
@@ -28903,7 +28903,7 @@
       {
         "brandKey": "mini budz",
         "displayBrand": "Mini Budz",
-        "productCount": 156,
+        "productCount": 157,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -29042,7 +29042,7 @@
       {
         "brandKey": "momma chan",
         "displayBrand": "Momma Chan",
-        "productCount": 113,
+        "productCount": 114,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -30226,6 +30226,18 @@
             "storesCarrying": 2
           }
         ]
+      },
+      {
+        "brandKey": "nicklesack",
+        "displayBrand": "NICKLESACK",
+        "productCount": 2,
+        "storesCarrying": [
+          "salish-coast-cannabis"
+        ],
+        "tiers": [
+          28
+        ],
+        "cheapestCells": []
       },
       {
         "brandKey": "nitro whips",
@@ -31560,7 +31572,7 @@
       {
         "brandKey": "omg sykes",
         "displayBrand": "OMG Sykes",
-        "productCount": 195,
+        "productCount": 196,
         "storesCarrying": [
           "hangar-420-everett",
           "hangar-420-west",
@@ -31760,17 +31772,6 @@
           {
             "matchKey": "omg sykes|guava s strawberry|n a|flower",
             "displayName": "OMG Strawberry Guava (S)",
-            "weightGrams": 28,
-            "lowPrice": 140,
-            "cheapestStores": [
-              "hangar-420-everett",
-              "hangar-420-west"
-            ],
-            "storesCarrying": 2
-          },
-          {
-            "matchKey": "omg sykes|i motorbow|n a|flower",
-            "displayName": "OMG Motorbow (I)",
             "weightGrams": 28,
             "lowPrice": 140,
             "cheapestStores": [
@@ -34331,7 +34332,7 @@
       {
         "brandKey": "pastime",
         "displayBrand": "Pastime",
-        "productCount": 200,
+        "productCount": 209,
         "storesCarrying": [
           "hangar-420-west",
           "kush21-everett-evergreen",
@@ -34350,9 +34351,10 @@
             "weightGrams": 1,
             "lowPrice": 35,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kush21-everett-evergreen",
+              "kushmart-north"
             ],
-            "storesCarrying": 2
+            "storesCarrying": 3
           },
           {
             "matchKey": "pastime|beanz jelly|sativa|vaporizers",
@@ -34391,9 +34393,10 @@
             "weightGrams": 1,
             "lowPrice": 35,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kush21-everett-evergreen",
+              "kushmart-north"
             ],
-            "storesCarrying": 2
+            "storesCarrying": 3
           },
           {
             "matchKey": "pastime|burnt live resin rubber tanker|indica|vaporizers",
@@ -34434,9 +34437,10 @@
             "weightGrams": 1,
             "lowPrice": 35,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kush21-everett-evergreen",
+              "kushmart-north"
             ],
-            "storesCarrying": 2
+            "storesCarrying": 3
           },
           {
             "matchKey": "pastime|delight lemon live resin|sativa|vaporizers",
@@ -34444,9 +34448,21 @@
             "weightGrams": 1,
             "lowPrice": 35,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kush21-everett-evergreen",
+              "kushmart-north"
             ],
-            "storesCarrying": 3
+            "storesCarrying": 4
+          },
+          {
+            "matchKey": "pastime|edog live resin|sativa|vaporizers",
+            "displayName": "Pastime: EDOG - Live Resin Disposable",
+            "weightGrams": 1,
+            "lowPrice": 35,
+            "cheapestStores": [
+              "kush21-everett-evergreen",
+              "kushmart-north"
+            ],
+            "storesCarrying": 2
           },
           {
             "matchKey": "pastime|face fire live on resin tanker|indica|vaporizers",
@@ -34465,9 +34481,10 @@
             "weightGrams": 1,
             "lowPrice": 35,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kush21-everett-evergreen",
+              "kushmart-north"
             ],
-            "storesCarrying": 2
+            "storesCarrying": 3
           },
           {
             "matchKey": "pastime|gumball lemon live resin tanker|sativa|vaporizers",
@@ -34508,9 +34525,10 @@
             "weightGrams": 1,
             "lowPrice": 35,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kush21-everett-evergreen",
+              "kushmart-north"
             ],
-            "storesCarrying": 2
+            "storesCarrying": 3
           },
           {
             "matchKey": "pastime|live pink resin zkittlez|hybrid|vaporizers",
@@ -34518,9 +34536,10 @@
             "weightGrams": 1,
             "lowPrice": 35,
             "cheapestStores": [
-              "kush21-everett-evergreen"
+              "kush21-everett-evergreen",
+              "kushmart-north"
             ],
-            "storesCarrying": 2
+            "storesCarrying": 3
           },
           {
             "matchKey": "pastime|live resin spritzer|hybrid|vaporizers",
@@ -37257,7 +37276,7 @@
       {
         "brandKey": "plaid jacket",
         "displayBrand": "Plaid Jacket",
-        "productCount": 650,
+        "productCount": 661,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -41462,7 +41481,7 @@
           },
           {
             "matchKey": "seattle s private reserve|dutch spr treat|n a|flower",
-            "displayName": "SPR - Dutch Treat",
+            "displayName": "SPR - Dutch Treat 3.5G",
             "weightGrams": 3.5,
             "lowPrice": 45,
             "cheapestStores": [
@@ -44496,6 +44515,18 @@
         "cheapestCells": []
       },
       {
+        "brandKey": "sparkle",
+        "displayBrand": "Sparkle",
+        "productCount": 1,
+        "storesCarrying": [
+          "salish-coast-cannabis"
+        ],
+        "tiers": [
+          1
+        ],
+        "cheapestCells": []
+      },
+      {
         "brandKey": "sparklers",
         "displayBrand": "Sparklers",
         "productCount": 32,
@@ -47356,7 +47387,7 @@
       {
         "brandKey": "svin garden",
         "displayBrand": "Svin Garden",
-        "productCount": 289,
+        "productCount": 293,
         "storesCarrying": [
           "2020-solutions-north-bellingham",
           "2020-solutions-pacific-highway",
@@ -52709,7 +52740,7 @@
       {
         "brandKey": "western cultured",
         "displayBrand": "Western Cultured",
-        "productCount": 137,
+        "productCount": 138,
         "storesCarrying": [
           "kush21-everett-evergreen",
           "kushmart-north",
@@ -53324,8 +53355,8 @@
         "cheapestCells": []
       }
     ],
-    "totalBrands": 1196,
-    "multiStoreBrandCount": 630,
+    "totalBrands": 1198,
+    "multiStoreBrandCount": 631,
     "cheapestCellCount": 3467,
     "nullBrandProductCount": 1863,
     "unmatchedProductCount": 0
@@ -53341,9 +53372,9 @@
     }
   ],
   "coverage": {
-    "totalBrands": 1196,
-    "multiStoreBrandCount": 630,
+    "totalBrands": 1198,
+    "multiStoreBrandCount": 631,
     "cheapestCellCount": 3467
   },
-  "generatedAt": "2026-10-10T11:00:28.663Z"
+  "generatedAt": "2026-10-11T11:00:42.309Z"
 }
