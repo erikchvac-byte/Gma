@@ -18402,7 +18402,7 @@
           "Vaporizers"
         ],
         "availabilityGaps": [],
-        "gapsSuppressed": false
+        "gapsSuppressed": true
       },
       {
         "clusterId": "kaleafa-oak-harbor",
@@ -18437,7 +18437,7 @@
     "unclusteredStoreCount": 0,
     "totalFloors": 1595,
     "singleStoreFloorCount": 479,
-    "suppressedGapClusterCount": 2
+    "suppressedGapClusterCount": 3
   },
   "excluded": [
     {
@@ -18446,7 +18446,7 @@
     },
     {
       "reason": "suppressedGapCluster",
-      "count": 2
+      "count": 3
     }
   ],
   "coverage": {
@@ -18456,5 +18456,5 @@
     "singleStoreFloorCount": 479,
     "categoryUniverseSize": 5
   },
-  "generatedAt": "2026-10-13T11:00:59.347Z"
+  "generatedAt": "2026-10-14T11:01:03.874Z"
 }
