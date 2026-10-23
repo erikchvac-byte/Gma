@@ -5,22 +5,22 @@
         "dispensaryId": "happy-time-mt-vernon",
         "status": "suspected-extraction-failure",
         "todayCount": null,
-        "trailingMedian": 691.5,
-        "observedDaysInWindow": 6
+        "trailingMedian": 697,
+        "observedDaysInWindow": 5
       },
       {
         "dispensaryId": "cannazone-old-hwy-99",
         "status": "suspected-extraction-failure",
         "todayCount": null,
-        "trailingMedian": 1426.5,
-        "observedDaysInWindow": 6
+        "trailingMedian": 1435,
+        "observedDaysInWindow": 5
       },
       {
         "dispensaryId": "sweet-relief-mt-vernon",
         "status": "suspected-extraction-failure",
         "todayCount": null,
-        "trailingMedian": 158.5,
-        "observedDaysInWindow": 6
+        "trailingMedian": 159,
+        "observedDaysInWindow": 5
       },
       {
         "dispensaryId": "the-vault-silvana",
@@ -33,92 +33,92 @@
         "dispensaryId": "kushmart-north",
         "status": "suspected-extraction-failure",
         "todayCount": null,
-        "trailingMedian": 1516,
-        "observedDaysInWindow": 6
+        "trailingMedian": 1536,
+        "observedDaysInWindow": 5
       },
       {
         "dispensaryId": "local-roots-everett-128th",
         "status": "suspected-extraction-failure",
         "todayCount": null,
-        "trailingMedian": 2028,
-        "observedDaysInWindow": 6
+        "trailingMedian": 1998,
+        "observedDaysInWindow": 5
       },
       {
         "dispensaryId": "hangar-420-everett",
         "status": "suspected-extraction-failure",
         "todayCount": null,
-        "trailingMedian": 1466,
-        "observedDaysInWindow": 6
+        "trailingMedian": 1475,
+        "observedDaysInWindow": 5
       },
       {
         "dispensaryId": "hangar-420-west",
         "status": "suspected-extraction-failure",
         "todayCount": null,
-        "trailingMedian": 1707,
-        "observedDaysInWindow": 6
+        "trailingMedian": 1697,
+        "observedDaysInWindow": 5
       },
       {
         "dispensaryId": "evolve-cannabis-bellingham",
         "status": "suspected-extraction-failure",
         "todayCount": null,
         "trailingMedian": 24,
-        "observedDaysInWindow": 6
+        "observedDaysInWindow": 5
       },
       {
         "dispensaryId": "cannazone-bellingham",
         "status": "suspected-extraction-failure",
         "todayCount": null,
-        "trailingMedian": 2375,
-        "observedDaysInWindow": 6
+        "trailingMedian": 2391,
+        "observedDaysInWindow": 5
       },
       {
         "dispensaryId": "2020-solutions-north-bellingham",
         "status": "suspected-extraction-failure",
         "todayCount": null,
         "trailingMedian": 2273,
-        "observedDaysInWindow": 6
+        "observedDaysInWindow": 5
       },
       {
         "dispensaryId": "2020-solutions-pacific-highway",
         "status": "suspected-extraction-failure",
         "todayCount": null,
-        "trailingMedian": 2645.5,
-        "observedDaysInWindow": 6
+        "trailingMedian": 2652,
+        "observedDaysInWindow": 5
       },
       {
         "dispensaryId": "starbuds-bellingham",
         "status": "suspected-extraction-failure",
         "todayCount": null,
         "trailingMedian": 1016,
-        "observedDaysInWindow": 6
+        "observedDaysInWindow": 5
       },
       {
         "dispensaryId": "salish-coast-cannabis",
         "status": "suspected-extraction-failure",
         "todayCount": null,
-        "trailingMedian": 737.5,
-        "observedDaysInWindow": 6
+        "trailingMedian": 1450,
+        "observedDaysInWindow": 5
       },
       {
         "dispensaryId": "the-joint-everett",
         "status": "suspected-extraction-failure",
         "todayCount": null,
         "trailingMedian": 7,
-        "observedDaysInWindow": 6
+        "observedDaysInWindow": 5
       },
       {
         "dispensaryId": "jet-cannabis-everett",
-        "status": "suspected-extraction-failure",
+        "status": "insufficient-history",
         "todayCount": null,
-        "trailingMedian": 255,
-        "observedDaysInWindow": 5
+        "trailingMedian": null,
+        "observedDaysInWindow": 4
       },
       {
         "dispensaryId": "kush21-everett-evergreen",
         "status": "suspected-extraction-failure",
         "todayCount": null,
-        "trailingMedian": 2311,
-        "observedDaysInWindow": 6
+        "trailingMedian": 2283,
+        "observedDaysInWindow": 5
       },
       {
         "dispensaryId": "remedy-tulalip",
@@ -186,20 +186,20 @@
     ],
     "totalStores": 26,
     "okCount": 0,
-    "suspectedCount": 16,
-    "insufficientHistoryCount": 10
+    "suspectedCount": 15,
+    "insufficientHistoryCount": 11
   },
   "excluded": [
     {
       "reason": "insufficientHistory",
-      "count": 10
+      "count": 11
     }
   ],
   "coverage": {
     "totalStores": 26,
     "okCount": 0,
-    "suspectedCount": 16,
-    "insufficientHistoryCount": 10
+    "suspectedCount": 15,
+    "insufficientHistoryCount": 11
   },
-  "generatedAt": "2026-10-22T11:00:27.970Z"
+  "generatedAt": "2026-10-23T11:00:28.017Z"
 }
